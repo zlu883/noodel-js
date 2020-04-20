@@ -1,24 +1,13 @@
-# noodel
+# Noodel.js
 
-## Project setup
-```
-npm install
-```
+Noodel is a flexible view component for presenting beautiful, dynamic content trees.
+Based on a unique swipe-based design that is simple and intuitive.
 
-### Compiles and hot-reloads for development
-```
-npm run serve
-```
+Currently available as a javascript library.
+Powered by [Vue.js](https://vuejs.org/).
 
-### Compiles and minifies for production
-```
-npm run build
-```
+# Demo and documentation
 
-### Lints and fixes files
-```
-npm run lint
-```
+Yes, Noodel renders its own docs ;)
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
+[See here for the documentation (and hence live demo).](https://zlu883.github.io/Noodel/)
