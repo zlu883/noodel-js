@@ -1,16 +1,18 @@
 {
   "name": "noodel",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "license": "MIT",
   "scripts": {
     "serve": "vue-cli-service serve",
     "build": "vue-cli-service build --target lib --inline-vue --name noodel src/main/Noodel.ts",
     "lint": "vue-cli-service lint"
   },
   "main": "dist/noodel.common.js",
-  "types": "dist/types/main/Noodel.d.ts",
+  "types": "types/index.d.ts",
   "files": [
     "dist",
-    "src"
+    "src",
+    "types"
   ],
   "dependencies": {
     "@tweenjs/tween.js": "^18.5.0",
