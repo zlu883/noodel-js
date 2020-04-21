@@ -97,35 +97,8 @@
         }
 
         get sliderStyle() {
-            let maxWidth = this.store.options.maxNoodeWidth;
-
-            if (typeof maxWidth === "number") {
-                maxWidth = (this.store.containerSize.x * maxWidth) + 'px';
-            }
-            else if (maxWidth === null) {
-                maxWidth = (this.store.containerSize.x * 0.6) + 'px'
-            }
-
-            let minWidth = this.store.options.minNoodeWidth;
-
-            if (typeof minWidth === "number") {
-                minWidth = (this.store.containerSize.x * minWidth) + 'px';
-            }
-            else if (minWidth === null) {
-                minWidth = (this.store.containerSize.x * 0.15) + 'px'
-            }
-
-            let absWidth = this.store.options.absNoodeWidth;
-
-            if (typeof absWidth === "number") {
-                absWidth = (this.store.containerSize.x * absWidth) + 'px';
-            }
-
             return {
-                transform: 'translateY(' + (this.parent.branchOffset + getFocalHeight(this.store)) + 'px)',
-                'max-width': maxWidth,
-                'min-width': minWidth,
-                width: absWidth
+                transform: 'translateY(' + (this.parent.branchOffset + getFocalHeight(this.store)) + 'px)'
             }
         }
 
@@ -169,5 +142,5 @@
     .nd-slider-focal {
         opacity: 1;
     }
-
+ 
 </style>

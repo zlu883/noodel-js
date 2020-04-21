@@ -4,7 +4,6 @@
 
     <div 
         class="nd-noode" 
-        :style="noodeStyle"
     >
         <div
             class="nd-content-box"
@@ -17,14 +16,14 @@
         </div>   
         <AnimationFade>   
             <svg 
-                v-if="showArrow" 
-                class="nd-arrow-box"
+                v-if="showChildIndicator" 
+                class="nd-child-indicator-box"
                 viewBox="0 0 100 100"
             >
                 <polygon
-                    class="nd-arrow"
-                    :class="arrowClass"
-                    :points="arrowPath" 
+                    class="nd-child-indicator"
+                    :class="childIndicatorClass"
+                    :points="childIndicatorPath" 
                 />
             </svg>
         </AnimationFade>
@@ -163,57 +162,25 @@
             return this.noode.parent.isFocalParent && this.noode.isActive;
         }
 
-        get noodeStyle() {
-            let maxHeight = this.store.options.maxNoodeHeight;
-
-            if (typeof maxHeight === "number") {
-                maxHeight = (this.store.containerSize.y * maxHeight) + 'px';
-            }
-            else if (maxHeight === null) {
-                maxHeight = (this.store.containerSize.y * 0.9) + 'px'
-            }
-
-            let minHeight = this.store.options.minNoodeHeight;
-
-            if (typeof minHeight === "number") {
-                minHeight = (this.store.containerSize.y * minHeight) + 'px';
-            }
-            else if (maxHeight === null) {
-                minHeight = (this.store.containerSize.y * 0.1) + 'px'
-            }
-
-            let absHeight = this.store.options.absNoodeHeight;
-
-            if (typeof absHeight === "number") {
-                absHeight = (this.store.containerSize.y * absHeight) + 'px';
-            }
-
-            return {
-                'max-height': maxHeight,
-                'min-height': minHeight,
-                height: absHeight
-            }
-        }
-
         get contentBoxClass() {
             return {
                 'nd-content-box-active': this.noode.isActive
             }
         }
 
-        get showArrow() {
+        get showChildIndicator() {
             return this.noode.children.length > 0;
         }
 
-        get arrowPath() {
+        get childIndicatorPath() {
             return this.noode.isActive
                 ? "0 15 60 15 100 50 60 85 0 85"
                 : "0 15 40 15 40 85 0 85";
         }
 
-        get arrowClass() {
+        get childIndicatorClass() {
             return {
-                'nd-arrow-active': this.noode.isActive
+                'nd-child-indicator-active': this.noode.isActive
             }
         }
     }
@@ -257,19 +224,43 @@
         background-color: #ffffff;
     }
 
-    .nd-arrow-box {
+    .nd-child-indicator-box {
         position: absolute;
         height: 1.2em;
         width: 1.2em;
         right: -0.6em;
     }
 
-    .nd-arrow {
+    .nd-child-indicator {
         fill: #d2edf9;
     }
 
-    .nd-arrow-active {
+    .nd-child-indicator-active {
         fill: #ffffff;
+    }
+
+    @media (max-width: 800px) {
+        .nd-noode {
+            max-width: 90vw;
+        }
+    }
+
+    @media (max-height: 800px) {
+        .nd-noode {
+            max-height: 90vh;
+        }
+    }
+
+    @media (min-width: 801px) {
+        .nd-noode {
+            max-width: 720px;
+        }
+    }
+
+    @media (min-height: 801px) {
+        .nd-noode {
+            max-height: 720px;
+        }
     }
 
 </style>

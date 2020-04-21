@@ -8,8 +8,11 @@
     <link rel="icon" href="<%= BASE_URL %>logo_v5.png">
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="styles.css"> 
-    <title>Noodel.js</title>
+    <link rel="stylesheet" type="text/css" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.css">
+    <!-- <script src="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.umd.min.js"></script> -->
+    <script src="../dist/noodel.umd.min.js"></script>
+    <title>Noodel</title>
 </head>
 
 <body>
@@ -18,9 +21,94 @@
     </noscript>
     <div id="root">
         <div class="noode">
-            Noodel
+            <h1>Noodel.js Documentation</h1>
+            <hr>
+            <h2>Navigation controls</h2>
+            <p><b>[Mouse]:</b> Hold click + drag (← ↑ → ↓)</p>
+            <p><b>[Scroll wheel]:</b> Scroll (↑ ↓) / Hold click + scroll (← →)</p>
+            <p><b>[Keyboard]:</b> Arrow keys (← ↑ → ↓)</p>
+            <p><b>[Touch]:</b> Swipe (← ↑ → ↓)</p>
+            <p><b>[Mouse/Touch]:</b> Tap on destination</p>
+        </div>
+        <div class="noode">
+            <h1>Motivation</h1>
+            <div class="noode">
+                <p>Much of the content we encounter everyday can naturally be organized into tree structures.
+                    Trees, however, are difficult to present on a viewing surface. As result, conventional
+                    UI schemes tend to "flatten" trees into linear layouts - the most common offender being
+                    lengthy vertical documents sliced into various sections and subsections, where
+                    jumping between them can be a pain.</p>
+            </div>
+            <div class="noode">
+                <p>This is sometimes helped by the presence of table of contents and navigation bars. But
+                    such components occupy precious screen space (especially on mobile devices) and does not
+                    scale well.</p>
+            </div>
+            <div class="noode">
+                <p>Noodel is a system design from the ground up for presenting content trees in a <i>different</i>
+                    way - by directly integrating content with the navigation mechanism itself. It aims to be
+                    much more intuitive and human-friendly by invoking the spatial memory of the viewer.</p>
+            </div>
+        </div>
+        <div class="noode">
+            <h1>Concept</h1>
+            <div class="noode">
+                <h2>Noodes</h2>
+                <p>Noodel breaks down content into individual containers called <i>noodes</i> (like
+                the one you are looking at right now), which are equivalent to <i>nodes</i> in a content tree.
+                Each noode contains its own block of content, and can have multiple ordered child noodes that
+                contain blocks of sub-content. This
+                can recurse infinitely to form a content tree of arbitrary size. A <i>noodel</i> refers
+                to a whole content tree formed by noodes.</p>
+                <div class="noode">
+                    <p>Think of it like an infinite cascade of dropdown menus.</p>
+                </div>
+            </div>
+            <div class="noode">
+                <h2>Trunk and branches</h2>
+                <p>A set of sibling noodes listed in order is called a <i>branch</i>, and the axis on
+                which they are ordered (vertical by default) is called the <i>branch axis</i>. The axis
+                on which branches are ordered from parent branch to descendent branches (horizontal
+                by default) is called the <i>trunk axis</i>.</p>
+            </div>
+            <div class="noode">
+                <h2>Navigation</h2>
+                <p>The content tree can be navigated by moving in either of the 4 directions.
+                Moving in the branch axis changes the <i>active</i> noode in that branch, which allows
+                its descendent branches to be shown. Moving in the trunk axis changes the <i>focal</i>
+                branch to a parent or child branch. At any given time, there is always a highlighted
+                noode in focus, which is the active noode of the focal branch.</p>
+            </div>
+        </div>
+        <div class="noode">
+            <h1>Usage guide</h1>
+            <div class="noode">
+                <h2>Getting started</h2>
+            </div>
+            <div class="noode">
+                <h2>Dynamic content</h2>
+            </div>
+            <div class="noode">
+                <h2>Style customization</h2>
+            </div>
+            <div class="noode">
+                <h2>Notes and tips</h2>
+            </div>
+        </div>
+        <div class="noode">
+            <h1>API</h1>
+            <div class="noode">
+                <p>Coming soon!</p>
+            </div>
+        </div>
+        <div class="noode">
+            <p>MIT License</p>
+            <p>© 2019-2020 Zuohao Lu</p>
         </div>
     </div>
+    <script>
+        new Noodel("#root").mount("#root");
+    </script>
 </body>
 
 </html>

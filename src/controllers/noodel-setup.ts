@@ -83,7 +83,7 @@ export function parseHTMLToNoode(el: Element): Noode {
         const node = el.childNodes[i];
 
         if (node.nodeType === Node.TEXT_NODE) {
-            content += node.textContent.replace(/\n\s*/g, '').trim();
+            content += node.textContent.replace(/\n\s*/g, ' ').trim();
         }
         else if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.nodeName === "DIV" && (node as Element).className.split(' ').some(c => c === 'noode')) {
@@ -96,7 +96,7 @@ export function parseHTMLToNoode(el: Element): Noode {
                 children.push(parseHTMLToNoode(node as Element));
             }
             else {
-                content += (node as Element).outerHTML.replace(/\n\s*/g, '').trim();
+                content += (node as Element).outerHTML.replace(/\n\s*/g, ' ').trim();
             }
         }
     }
@@ -177,24 +177,6 @@ function buildOptions(options?: NoodelOptions): NoodelOptions {
 
     if (typeof options.visibleSubtreeDepth !== "number") {
         options.visibleSubtreeDepth = 1;
-    }
-    if (typeof options.maxNoodeHeight !== "number" && typeof options.maxNoodeHeight !== "string") {
-        options.maxNoodeHeight = null;
-    }
-    if (typeof options.minNoodeHeight !== "number" && typeof options.minNoodeHeight !== "string") {
-        options.minNoodeHeight = null;
-    }
-    if (typeof options.maxNoodeWidth !== "number" && typeof options.maxNoodeWidth !== "string") {
-        options.maxNoodeWidth = null;
-    }
-    if (typeof options.minNoodeWidth !== "number" && typeof options.minNoodeWidth !== "string") {
-        options.minNoodeWidth = null;
-    }
-    if (typeof options.absNoodeHeight !== "number" && typeof options.absNoodeHeight !== "string") {
-        options.absNoodeHeight = null;
-    }
-    if (typeof options.absNoodeWidth !== "number" && typeof options.absNoodeWidth !== "string") {
-        options.absNoodeWidth = null;
     }
 
     return options;
