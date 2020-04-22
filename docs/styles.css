@@ -4,3 +4,12 @@ body {
     margin: 0;
     padding: 0;
 }
+
+#title {
+    display: inline-block;
+}
+
+#subtitle {
+    display: inline-block; 
+    margin-left: 0.5em;
+}

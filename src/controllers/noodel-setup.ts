@@ -83,7 +83,7 @@ export function parseHTMLToNoode(el: Element): Noode {
         const node = el.childNodes[i];
 
         if (node.nodeType === Node.TEXT_NODE) {
-            content += node.textContent.replace(/\n\s*/g, ' ').trim();
+            content += node.textContent; // Depends on css white-space property for ignoring white spaces
         }
         else if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.nodeName === "DIV" && (node as Element).className.split(' ').some(c => c === 'noode')) {
@@ -96,7 +96,7 @@ export function parseHTMLToNoode(el: Element): Noode {
                 children.push(parseHTMLToNoode(node as Element));
             }
             else {
-                content += (node as Element).outerHTML.replace(/\n\s*/g, ' ').trim();
+                content += (node as Element).outerHTML; // Depends on css white-space property for ignoring white spaces
             }
         }
     }
@@ -177,6 +177,10 @@ function buildOptions(options?: NoodelOptions): NoodelOptions {
 
     if (typeof options.visibleSubtreeDepth !== "number") {
         options.visibleSubtreeDepth = 1;
+    }
+
+    if (typeof options.snapDuration !== "number") {
+        options.snapDuration = 600;
     }
 
     return options;

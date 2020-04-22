@@ -254,7 +254,7 @@ function startTrunkSnap(noodel: NoodelView, snapCount: number) {
     } 
 
     noodel.trunkSnapAnimation = new TWEEN.Tween({d: noodel.trunkOffset})
-        .to({d: destinationOffset}, 500 + Math.abs(destinationOffset - noodel.trunkOffset) * 0.1)
+        .to({d: destinationOffset}, noodel.options.snapDuration)
         .easing(TWEEN.Easing.Exponential.Out)
         .onUpdate(dispObj => moveTrunk(noodel, dispObj.d))
         .onComplete(() => {
@@ -277,7 +277,7 @@ function startBranchSnap(noodel: NoodelView, parent: NoodeView, snapCount: numbe
     } 
 
     noodel.branchSnapAnimation = new TWEEN.Tween({d: parent.branchOffset})
-        .to({d: destinationOffset}, 400 + Math.abs(destinationOffset - parent.branchOffset) * 0.05)
+        .to({d: destinationOffset}, noodel.options.snapDuration)
         .easing(TWEEN.Easing.Exponential.Out)
         .onUpdate(dispObj => moveBranch(noodel, parent, dispObj.d))
         .onComplete(() => {
@@ -535,58 +535,52 @@ export function jumpToNoode(noodel: NoodelView, targetPath: number[]) {
         noodel.isLocked = true;
     }
 
-    // Manually changes the active child and focal parent properties.
-    // Must do these after initializeMovement to prevent visual glitch.
     noodel.focalParent.isFocalParent = false;
     noodel.focalParent = targetParent;
     noodel.focalParent.isFocalParent = true;
     noodel.focalLevel = targetPath.length - 2;
 
+    let from = {};
+    let to = {};
+
     if (animateBranch) {
-        noodel.branchSnapAnimation = new TWEEN.Tween({d: nearestVisibleBranchParent.branchOffset})
-            .to({d: targetBranchSnapOffset}, 400 + Math.abs(targetBranchSnapOffset - nearestVisibleBranchParent.branchOffset) * 0.05)
-            .easing(TWEEN.Easing.Exponential.Out)
-            .onUpdate(dispObj => nearestVisibleBranchParent.branchOffset = dispObj.d)
-            .onComplete(() => {
-                nearestVisibleBranchParent.branchRelativeOffset = getMidSize(getActiveChild(nearestVisibleBranchParent));
-                finalizeBranchPosition(noodel, nearestVisibleBranchParent, targetBranchSnapOffset);
-                finalizeMovement(noodel);
-            })
-            .start();
+        from['b'] = nearestVisibleBranchParent.branchOffset;
+        to['b'] = targetBranchSnapOffset;       
     }
 
     if (animateTrunk) {
-        noodel.trunkSnapAnimation = new TWEEN.Tween({d: noodel.trunkOffset})
-            .to({d: targetTrunkOffset}, 500 + Math.abs(targetTrunkOffset - noodel.trunkOffset) * 0.1)
-            .easing(TWEEN.Easing.Exponential.Out)
-            .onUpdate(dispObj => noodel.trunkOffset = dispObj.d)
-            .onComplete(() => {
+        from['t'] = noodel.trunkOffset;
+        to['t'] = targetTrunkOffset; 
+    }
+
+    new TWEEN.Tween(from)
+        .to(to, noodel.options.snapDuration)
+        .easing(TWEEN.Easing.Exponential.Out)
+        .onUpdate(next => {
+            if (animateBranch) nearestVisibleBranchParent.branchOffset = next.b;
+            if (animateTrunk) noodel.trunkOffset = next.t;
+        })
+        .onComplete(() => {
+            if (animateBranch) {
+                nearestVisibleBranchParent.branchRelativeOffset = getMidSize(getActiveChild(nearestVisibleBranchParent));
+                finalizeBranchPosition(noodel, nearestVisibleBranchParent, targetBranchSnapOffset);
+            }
+
+            if (animateTrunk) {
                 noodel.trunkRelativeOffset = getChildrenBranchMidSize(noodel.focalParent);
                 finalizeTrunkPosition(noodel, targetTrunkOffset);
-                finalizeMovement(noodel);
-            })
-            .start();
-    }
+            }
+            
+            finalizeMovement(noodel);
+        })
+        .start();
 
     animateSnap();
 }
 
-/**
- * Finalize all ongoing movements and snap animations.
- */
 export function finalizeMovement(noodel: NoodelView) {
 
     noodel.movingAxis = null;
     noodel.isLocked = false;
     unsetLimitIndicators(noodel);
-
-    if (noodel.trunkSnapAnimation) {
-        noodel.trunkSnapAnimation.stop();
-        noodel.trunkSnapAnimation = null;
-    }
-
-    if (noodel.branchSnapAnimation) {
-        noodel.branchSnapAnimation.stop();
-        noodel.branchSnapAnimation = null;
-    }
 }

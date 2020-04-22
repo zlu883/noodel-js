@@ -196,7 +196,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: stretch;
-        box-sizing: border-box;
+        box-sizing: border-box !important;
         position: relative;
         padding: 0.2em 0.6em;
         text-align: start;
@@ -208,20 +208,27 @@
         width: 100%;
         position: relative;
         overflow: auto;
-        touch-action: none; /* Important as hammerjs will break on mobile without this */
+        touch-action: none !important; /* Important as hammerjs will break on mobile without this */
         outline: none;
-        white-space: pre-wrap;
-        word-break: break-word;
         overflow-wrap: break-word;
         box-sizing: border-box;
         padding: 1.0em;
         border-radius: 0.4em;
         background-color: #d2edf9;
         transition: background-color 0.5s ease-in;
+        line-height: 1.5;
     }
 
     .nd-content-box-active {
         background-color: #ffffff;
+    }
+
+    .nd-content-box > *:first-child {
+        margin-top: 0;
+    }
+
+    .nd-content-box > *:last-child {
+        margin-bottom: 0;
     }
 
     .nd-child-indicator-box {
