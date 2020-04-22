@@ -5,26 +5,34 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
-    <link rel="icon" href="<%= BASE_URL %>logo_v5.png">
+
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css?family=Roboto+Mono&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel@1.0.1/dist/noodel.css">
+    <script src="https://cdn.jsdelivr.net/npm/noodel@1.0.1/dist/noodel.umd.min.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/themes/prism.css" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/plugins/normalize-whitespace/prism-normalize-whitespace.min.js"></script>
+
     <link rel="stylesheet" type="text/css" href="styles.css">
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.css">
-    <script src="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.umd.min.js"></script>
+
     <title>Noodel</title>
 </head>
 
 <body>
     <noscript>
-        <strong>We're sorry but this site doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
+        <strong>We're sorry but this site doesn't work properly without JavaScript enabled. Please enable it to
+            continue.</strong>
     </noscript>
     <div id="root">
         <div class="noode">
             <h1 id="title">Noodel.js</h1>
             <h2 id="subtitle">Documentation</h2>
+            <hr>
             <p>
-                <b>[How to navigate]</b><br>
-                <br>
+                <b>-- Controls --</b><br>
                 <b>[Mouse]:</b> Hold click + drag (← ↑ → ↓)<br>
                 <b>[Scroll wheel]:</b> Scroll (↑ ↓) / Hold click + scroll (← →)<br>
                 <b>[Keyboard]:</b> Arrow keys (← ↑ → ↓)<br>
@@ -33,79 +41,146 @@
             </p>
         </div>
         <div class="noode">
-            <h1>Motivation</h1>
+            <h2>Overview</h2>
+            <p>
+                Noodel is a view component for presenting beautiful, dynamic content trees. Based on a
+                unique swipe-based design that is simple and intuitive.
+            </p>
+            <p>
+                Noodel is incredibly versatile. You can use it as part of your webpage or use it to
+                create and control a full site. As most types of content can be organized into trees,
+                you can use it for blogs, documentation, mindmaps and virtually anything else.
+            </p>
+            <p>
+                Currently available as a javascript library. Powered by <a href="https://vuejs.org/">Vue.js</a>.
+            </p>
             <div class="noode">
-                <p>Much of the content we encounter everyday can naturally be organized into tree structures.
-                    Trees, however, are difficult to present on a viewing surface. As result, conventional
-                    UI schemes tend to "flatten" trees into linear layouts - the most common offender being
-                    lengthy vertical documents sliced into various sections and subsections, where
-                    jumping between them can be a pain.</p>
-            </div>
-            <div class="noode">
-                <p>This is sometimes helped by the presence of table of contents and navigation bars. But
-                    such components occupy precious screen space (especially on mobile devices) and does not
-                    scale well.</p>
-            </div>
-            <div class="noode">
-                <p>Noodel is a system design from the ground up for presenting content trees in a <i>different</i>
-                    way - by directly integrating content with the navigation mechanism itself. It aims to be
-                    much more intuitive and human-friendly by invoking the spatial memory of the viewer.</p>
-            </div>
-        </div>
-        <div class="noode">
-            <h1>Concept</h1>
-            <div class="noode">
-                <h2>Noodes</h2>
-                <p>Noodel breaks down content into individual containers called <i>noodes</i> (like
-                the one you are looking at right now), which are equivalent to <i>nodes</i> in a content tree.
-                Each noode contains its own block of content, and can have multiple ordered child noodes that
-                contain blocks of sub-content. This
-                can recurse infinitely to form a content tree of arbitrary size. A <i>noodel</i> refers
-                to a whole content tree formed by noodes.</p>
+                <h2>Motivation</h2>
                 <div class="noode">
-                    <p>Think of it like an infinite cascade of dropdown menus.</p>
+                    <p>
+                        Much of the content we encounter everyday can naturally be organized into tree structures.
+                        Trees, however, are difficult to present on a viewing surface. As result, conventional
+                        UI schemes tend to "flatten" trees into linear layouts - the most common offender being
+                        lengthy vertical documents sliced into various sections and subsections, where
+                        jumping between them can be a pain.
+                    </p>
+                </div>
+                <div class="noode">
+                    <p>
+                        This is sometimes helped by the presence of table of contents and navigation bars. But
+                        such components occupy precious screen space (especially on mobile devices) and does not
+                        scale well.
+                    </p>
+                </div>
+                <div class="noode">
+                    <p>
+                        Noodel is a system design from the ground up for presenting content trees in a <i>different</i>
+                        way - by directly integrating content with the navigation mechanism itself. It aims to be
+                        much more intuitive and human-friendly by invoking the spatial memory of the viewer.
+                    </p>
                 </div>
             </div>
             <div class="noode">
-                <h2>Trunk and branches</h2>
-                <p>A set of sibling noodes listed in order is called a <i>branch</i>, and the axis on
-                which they are ordered (vertical by default) is called the <i>branch axis</i>. The axis
-                on which branches are ordered from parent branch to descendent branches (horizontal
-                by default) is called the <i>trunk axis</i>.</p>
-            </div>
-            <div class="noode">
-                <h2>Navigation</h2>
-                <p>The content tree can be navigated by moving in either of the 4 directions.
-                Moving in the branch axis changes the <i>active</i> noode in that branch, which allows
-                its descendent branches to be shown. Moving in the trunk axis changes the <i>focal</i>
-                branch to a parent or child branch. At any given time, there is always a highlighted
-                noode in focus, which is the active noode of the focal branch.</p>
+                <h2>Concept</h2>
+                <div class="noode">
+                    <h3>Noodes</h3>
+                    <p>
+                        Noodel breaks down content into individual containers called <i>noodes</i> (just like
+                        the one you are looking at right now), which are equivalent to <i>nodes</i> in a content tree.
+                        Each noode contains its own block of content, and can also have multiple ordered child noodes
+                        each with their own block of sub-content. This
+                        can recurse infinitely to form a content tree of arbitrary size. A <i>noodel</i> refers
+                        to a whole content tree formed by noodes.
+                    </p>
+                    <div class="noode">
+                        <p>Think of it like an infinite cascade of dropdown menus.</p>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>Trunk and branches</h3>
+                    <p>
+                        A set of sibling noodes listed in order is called a <i>branch</i>, and the axis on
+                        which they are ordered (vertical by default) is called the <i>branch axis</i>. The axis
+                        on which branches are ordered from parent branch to descendent branches (horizontal
+                        by default) is called the <i>trunk axis</i>.
+                    </p>
+                </div>
+                <div class="noode">
+                    <h3>Navigation</h3>
+                    <p>
+                        The content tree can be navigated by moving in either of the 4 directions.
+                        Moving in the branch axis changes the <i>active</i> noode in that branch, which allows
+                        its descendent branches to be shown. Moving in the trunk axis changes the <i>focal</i>
+                        branch to a parent or child branch. At any given time, there is always a highlighted
+                        noode in focus, which is the active noode of the focal branch.
+                    </p>
+                </div>
             </div>
         </div>
         <div class="noode">
-            <h1>Usage guide</h1>
+            <h2>Guide</h2>
             <div class="noode">
-                <h2>Getting started</h2>
+                <h2>Installation</h2>
+                <div class="noode">
+                    <h3>Direct <code class="language-markup">&lt;script&gt;</code> embed</h3>
+                    <p>You can use Noodel by directly embedding its script and css from a CDN into your HTML:</p>
+                    <pre data-prevent-nav-all>
+                        <code class="language-html">
+                            // You should specify the version number (e.g noodel@1.0.1) in production
+                            &lt;script src="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.umd.min.js"&gt;&lt;/script&gt;
+                            &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.css"&gt;
+                        </code>
+                    </pre>
+                </div>
+                <div class="noode">
+                    <h3>NPM</h3>
+                    <p>For more advanced projects with bundlers, install from npm:</p>
+                    <pre data-prevent-nav-all>
+                        <code class="language-shell">
+                            npm install noodel
+                        </code>
+                    </pre>
+                    <p>And import into your code:</p>
+                    <pre data-prevent-nav-all>
+                        <code class="language-js">
+                            import Noodel from 'noodel'
+
+                            // Don't forget to also include the css somewhere in your project, e.g
+                            // import '../node_modules/noodel/dist/noodel.css' 
+                        </code>
+                    </pre>
+                </div>
+            </div>
+            <div class="noode">
+                <h2>Basic usage</h2>
+                <div class="noode">
+                    <p>Coming soon!</p>
+                </div>
             </div>
             <div class="noode">
                 <h2>Dynamic content</h2>
+                <div class="noode">
+                    <p>Coming soon!</p>
+                </div>
             </div>
             <div class="noode">
                 <h2>Style customization</h2>
-            </div>
-            <div class="noode">
-                <h2>Notes and tips</h2>
-            </div>
+                <div class="noode">
+                    <p>Coming soon!</p>
+                </div>
+            </div>           
         </div>
         <div class="noode">
-            <h1>API</h1>
+            <h2>API</h2>
             <div class="noode">
                 <p>Coming soon!</p>
             </div>
         </div>
         <div class="noode">
-            <p>MIT License</p>
-            <p>© 2019-2020 Zuohao Lu</p>
+            <p>
+                MIT License<br>
+                © 2019-2020 Zuohao (Jonny) Lu
+            </p>
         </div>
     </div>
     <script>

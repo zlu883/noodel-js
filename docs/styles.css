@@ -11,5 +11,22 @@ body {
 
 #subtitle {
     display: inline-block; 
-    margin-left: 0.5em;
+    margin-left: 0.5em
+}
+
+p {
+    margin-top: 0.25em;
+}
+
+h1, h2, h3 {
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+pre, code {
+    user-select: text;
+    -webkit-user-select: text;
+    -moz-user-select: text;
+    -ms-user-select: text;
+    cursor: text;
 }
