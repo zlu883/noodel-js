@@ -1,5 +1,6 @@
 import NoodeView from '@/model/NoodeView';
 import NoodelView from '@/model/NoodelView';
+import { traverseDescendents } from './noodel-traverse';
 
 /**
  * Handler for when a branch changes its size (on trunk axis), to align the trunk if necessary.
@@ -7,7 +8,7 @@ import NoodelView from '@/model/NoodelView';
  * @param newSize new branch size
  * @param level level of the branch
  */
-export function alignTrunkOnBranchSizeChange(parent: NoodeView, newSize: number, level: number, noodel: NoodelView) {
+export function alignTrunkOnBranchSizeChange(parent: NoodeView, newSize: number, noodel: NoodelView) {
     let diff = newSize - parent.branchSize;
 
     if (Math.abs(diff) < 0.01) return; // diff too small for alignment
@@ -19,10 +20,12 @@ export function alignTrunkOnBranchSizeChange(parent: NoodeView, newSize: number,
         noodel.trunkOffsetOrigin -= diff / 2;
         noodel.trunkRelativeOffset += diff / 2;
     }
-    else if (parent.isChildrenVisible && level < noodel.focalLevel) {
+    else if (parent.isChildrenVisible && parent.level < noodel.focalLevel) {
         noodel.trunkOffset -= diff;
         noodel.trunkOffsetOrigin -= diff;
     }
+
+    traverseDescendents(parent, desc => desc.offset += diff, false);
 }
 
 /**
@@ -31,7 +34,7 @@ export function alignTrunkOnBranchSizeChange(parent: NoodeView, newSize: number,
  * @param newSize new noode size
  * @param index child index of the noode
  */
-export function alignBranchOnNoodeSizeChange(noode: NoodeView, newSize: number, index: number) {
+export function alignBranchOnNoodeSizeChange(noode: NoodeView, newSize: number) {
     const parent = noode.parent;
     
     let diff = newSize - noode.size;  
@@ -40,12 +43,12 @@ export function alignBranchOnNoodeSizeChange(noode: NoodeView, newSize: number, 
 
     noode.size = newSize;
     
-    if (index === noode.parent.activeChildIndex) {
+    if (noode.index === noode.parent.activeChildIndex) {
         parent.branchOffset -= diff / 2;
         parent.branchOffsetOrigin -= diff / 2;
         parent.branchRelativeOffset += diff / 2;
     }
-    else if (index < parent.activeChildIndex) {
+    else if (noode.index < parent.activeChildIndex) {
         parent.branchOffset -= diff;
         parent.branchOffsetOrigin -= diff;
     }

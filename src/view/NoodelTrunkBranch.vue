@@ -1,36 +1,22 @@
 <!--------------------------- TEMPLATE ----------------------------->
 
 <template>
-    <div 
-        class="nd-branch" 
-        :style="branchStyle"
-        :class="branchClass"
-    >  
+
+    <AnimationFade>
         <div 
-            class="nd-slider"
-            :class="sliderClass"
-            ref="slider"
-            :style="sliderStyle"
-        >
+            class="nd-branch" 
+            ref="branch"
+            :class="branchClass"
+            :style="branchStyle"
+        >  
             <NoodelTrunkBranchNoode
-                v-for="(child, index) in parent.children"
+                v-for="child in parent.children"
                 :key="child.id"
                 :noode="child" 
-                :index="index"
-                :path="path + ' ' + index"
                 :store="store"
             />
         </div>
-        <NoodelTrunkBranch
-            v-for="child in childrenWithDescendents"
-            :key="child.noode.id"
-            :parent="child.noode"
-            :level="level + 1"
-            :path="path + ' ' + child.index"
-            :offset="parent.branchSize"
-            :store="store"
-        />
-    </div>
+    </AnimationFade>
     
 </template>
 
@@ -50,7 +36,6 @@
     import NoodelView from '@/model/NoodelView';
 
 	@Component({
-        name: 'NoodelTrunkBranch', // necessary for recursion
         components: {
             NoodelTrunkBranchNoode,
             NoodelTrunkBranch,
@@ -60,16 +45,12 @@
 	export default class NoodelTrunkBranch extends Vue {
 
         @Prop() parent: NoodeView;
-        @Prop() offset: number;
-        @Prop() level: number;
-        @Prop() path: string;
-
         @Prop() store: NoodelView;
 
         mounted() {
             this.$nextTick(() => {
                 this.updateRenderedSize();
-                new ResizeSensor(this.$refs.slider as Element, () => {
+                new ResizeSensor(this.$refs.branch as Element, () => {
                     this.updateRenderedSize();
                 }); 
             });     
@@ -78,39 +59,22 @@
         updateRenderedSize() {  
             alignTrunkOnBranchSizeChange(
                 this.parent, 
-                (this.$refs.slider as Element).getBoundingClientRect().width, 
-                this.level,
+                (this.$refs.branch as Element).getBoundingClientRect().width, 
                 this.store
             );
         }
 
-        get branchStyle() {
+        get branchStyle() {            
             return {
-                left: this.offset + 'px',
+                transform: 'translate(' + this.parent.offset + 'px, ' + (this.parent.branchOffset + getFocalHeight(this.store)) + 'px)'
             }
         }
 
         get branchClass() {
             return {
-                'nd-branch-hidden': !this.parent.isChildrenVisible
+                'nd-branch-hidden': !this.parent.isChildrenVisible,
+                'nd-branch-focal': this.parent.isFocalParent
             }
-        }
-
-        get sliderStyle() {
-            return {
-                transform: 'translateY(' + (this.parent.branchOffset + getFocalHeight(this.store)) + 'px)'
-            }
-        }
-
-        get sliderClass() {
-            return {
-                "nd-slider-focal": this.parent.isFocalParent
-            }
-        }
-
-        get childrenWithDescendents() {
-            // also maps the original index to the filtered array
-            return this.parent.children.map((noode, index) => {return {noode, index}}).filter(c => c.noode.children.length > 0);
         }
     }
     
@@ -121,8 +85,9 @@
 <style>
     
     .nd-branch {
-        position: relative; /** Not absolute, important trick to make noodes flexible inside slider */
+        position: absolute;
         transition: opacity 0.3s ease-in;
+        opacity: 0.75;
     }
 
     .nd-branch-hidden {
@@ -130,16 +95,7 @@
         pointer-events: none;       
     }
 
-    .nd-slider {
-        display: flex;
-        transition: opacity 0.3s ease-in;
-        position: absolute;
-        z-index: 100;
-        flex-direction: column;
-        opacity: 0.75;
-    }
-
-    .nd-slider-focal {
+    .nd-branch-focal {
         opacity: 1;
     }
  

@@ -42,6 +42,7 @@
     import NoodeView from "@/model/NoodeView";
     import { alignBranchOnNoodeSizeChange } from "@/controllers/noodel-align";
     import NoodelView from '../model/NoodelView';
+    import { traverseAncestors } from '../controllers/noodel-traverse';
 
 	@Component({
         components: {
@@ -51,9 +52,6 @@
 	export default class NoodelTrunkBranchNoode extends Vue {
 
         @Prop() noode: NoodeView;
-        @Prop() index: number;
-        @Prop() path: string;
-
         @Prop() store: NoodelView;
 
         mounted() {
@@ -78,8 +76,7 @@
         updateRenderedSize() {
             alignBranchOnNoodeSizeChange(
                 this.noode, 
-                this.$el.getBoundingClientRect().height, 
-                this.index
+                this.$el.getBoundingClientRect().height
             );
         }
 
@@ -155,7 +152,13 @@
                 this.store.pointerDownSrcContentBox = el;
             }
             
-            this.store.pointerDownSrcNoodePath = this.path;
+            let path = this.noode.index.toString();
+
+            traverseAncestors(this.noode, noode => {
+                path = noode.index + ' ' + path;
+            }, false, true);
+
+            this.store.pointerDownSrcNoodePath = path;
         }
 
         get isFocalActive() {
@@ -173,7 +176,7 @@
         }
 
         get childIndicatorPath() {
-            return this.noode.isActive
+            return this.noode.isActive && this.noode.isChildrenVisible
                 ? "0 15 60 15 100 50 60 85 0 85"
                 : "0 15 40 15 40 85 0 85";
         }
@@ -192,10 +195,6 @@
 <style>
 
     .nd-noode {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: stretch;
         box-sizing: border-box !important;
         position: relative;
         padding: 0.2em 0.6em;
@@ -236,6 +235,8 @@
         height: 1.2em;
         width: 1.2em;
         right: -0.6em;
+        top: 50%;
+        transform: translateY(-50%);
     }
 
     .nd-child-indicator {

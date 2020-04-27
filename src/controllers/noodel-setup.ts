@@ -9,7 +9,7 @@ import { traverseDescendents } from './noodel-traverse';
 
 export function setupNoodel(idCounter: {n: number}, root: Noode, options?: NoodelOptions): NoodelView {
 
-    let rootNoode = buildNoodeView(idCounter, root);
+    let rootNoode = buildNoodeView(idCounter, root, 0, 0);
     let noodelOptions = buildOptions(options);
     let focalParent = rootNoode;
     let focalLevel = 0;
@@ -127,7 +127,7 @@ export function setupContainer(el: Element, noodel: NoodelView) {
  * each noode to make it into a NoodeView. Necessary before initializing Vue
  * as Vue will not bind undefined properties.
  */
-function buildNoodeView(idCounter: {n: number}, noode: Noode): NoodeView {
+function buildNoodeView(idCounter: {n: number}, noode: Noode, level: number, index: number): NoodeView {
     let noodeView = noode as NoodeView;
     
     if (typeof noodeView.id !== 'string') {
@@ -151,18 +151,21 @@ function buildNoodeView(idCounter: {n: number}, noode: Noode): NoodeView {
         noodeView.content = null;
     }
 
+    noodeView.index = index;
+    noodeView.level = level;
     noodeView.isChildrenVisible = false;
     noodeView.isFocalParent = false;
     noodeView.isActive = false;
     noodeView.size = 0;
+    noodeView.offset = 0;
     noodeView.branchOffset = 0;
     noodeView.branchOffsetOrigin = 0;
     noodeView.branchRelativeOffset = 0;
     noodeView.branchSize = 0;
 
-    noodeView.children.forEach(child => {
+    noodeView.children.forEach((child, index) => {
         child.parent = noodeView;
-        buildNoodeView(idCounter, child);
+        buildNoodeView(idCounter, child, level + 1, index);
     });
 
     return noodeView;

@@ -454,6 +454,10 @@ export function shiftDown(noodel: NoodelView, noodeCount = 1) {
     } 
 }
 
+/**
+ * Logic for animating a 'jump' between noodes.
+ * Currently incompatible with the normal movement logic, may need refactoring in future.
+ */
 export function jumpToNoode(noodel: NoodelView, targetPath: number[]) {
      
     let nearestVisibleBranchParent = noodel.root;
@@ -514,7 +518,7 @@ export function jumpToNoode(noodel: NoodelView, targetPath: number[]) {
         }
     }
 
-    setActiveSubtreeVisibility(noodel.root, true, (targetPath.length - 1) + noodel.options.visibleSubtreeDepth);
+    setActiveSubtreeVisibility(noodel.root, true, (targetPath.length - 2) + noodel.options.visibleSubtreeDepth);
 
     let targetBranchSnapOffset = 0;
     let targetIndex = targetPath[nearestVisibleBranchLevel + 1];

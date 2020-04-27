@@ -11,15 +11,17 @@
             :store="store"
         />
         <AnimationFade>
-            <NoodelTrunkBranch
-                v-if="store.root && store.root.isChildrenVisible"
+            <div
+                class="nd-trunk"
                 :style="trunkStyle"
-                :parent="store.root"
-                :level="0"
-                :path="'0'"
-                :offset="0"
-                :store="store"
-            />
+            >
+                <NoodelTrunkBranch
+                    v-for="parent in allBranchParents"
+                    :key="parent.id"                  
+                    :parent="parent"
+                    :store="store"
+                />
+            </div>
         </AnimationFade>
     </div>
     
@@ -39,6 +41,7 @@
     import Noodel from '@/main/Noodel';
     import { setupContainer } from '@/controllers/noodel-setup';
     import { setupNoodelInputBindings } from '@/controllers/input-binding';
+    import { traverseDescendents } from '../controllers/noodel-traverse';
 
     @Component({
 		components: {
@@ -61,10 +64,20 @@
 
         get trunkStyle() {
             return {
-                // Using left instead of translateX actually results in smoother movement
-                // as well as prevents glitch in Chrome
-                left: (this.store.trunkOffset + getFocalWidth(this.store)) + 'px',
+                transform: 'translateX(' + (this.store.trunkOffset + getFocalWidth(this.store)) + 'px)'
             };
+        }
+
+        get allBranchParents() {
+            let allBranchParents = [];
+
+            traverseDescendents(this.store.root, desc => {
+                if (desc.children.length > 0) {
+                    allBranchParents.push(desc);
+                }
+            }, true);
+
+            return allBranchParents;
         }
     }
     
@@ -81,7 +94,6 @@
         width: 100%;
         height: 100%;
         cursor: grab;
-        position: relative;
         overflow: hidden;
         -webkit-touch-callout: none;
         -webkit-user-select: none;
@@ -91,5 +103,10 @@
         user-select: none;
         background-color: #49b9e9;
 	}
+
+    .nd-trunk {
+        width: 9999999px;
+        position: relative;
+    }
     
 </style>
