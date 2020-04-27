@@ -48,6 +48,7 @@
         position: absolute;
         z-index: 9999;
         border: solid 0px;
+        background-color: #595959;
     }
 
     .nd-limit-left {   
@@ -55,7 +56,6 @@
         left: 0;
         height: 100%;
         width: 2em;
-        background-color: #116488;
         border-top-right-radius: 2em;
         border-bottom-right-radius: 2em;
     }
@@ -65,7 +65,6 @@
         right: 0;
         height: 100%;
         width: 2em;
-        background-color: #116488;
         border-top-left-radius: 2em;
         border-bottom-left-radius: 2em;
     }
@@ -75,7 +74,6 @@
         left: 0;
         height: 2em;
         width: 100%;
-        background-color: #116488;
         border-bottom-right-radius: 2em;
         border-bottom-left-radius: 2em;
     }
@@ -85,7 +83,6 @@
         left: 0;
         height: 2em;
         width: 100%;
-        background-color: #116488;
         border-top-right-radius: 2em;
         border-top-left-radius: 2em;
     }

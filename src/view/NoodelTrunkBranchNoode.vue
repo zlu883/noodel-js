@@ -213,7 +213,7 @@
         box-sizing: border-box;
         padding: 1.0em;
         border-radius: 0.4em;
-        background-color: #d2edf9;
+        background-color: #e6e6e6;
         transition: background-color 0.5s ease-in;
         line-height: 1.5;
     }
@@ -240,7 +240,7 @@
     }
 
     .nd-child-indicator {
-        fill: #d2edf9;
+        fill: #e6e6e6;
     }
 
     .nd-child-indicator-active {

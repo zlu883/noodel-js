@@ -101,11 +101,10 @@
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
-        background-color: #49b9e9;
+        background-color: #a6a6a6;
 	}
 
     .nd-trunk {
-        width: 9999999px;
         position: relative;
     }
     
