@@ -6,10 +6,11 @@ import { getActiveChild } from '@/getters/getters';
 import { ResizeSensor } from 'css-element-queries';
 import { setActiveSubtreeVisibility, setActiveChild } from './noodel-mutate';
 import { traverseDescendents } from './noodel-traverse';
+import IdRegister from '@/main/IdRegister';
 
-export function setupNoodel(idCounter: {n: number}, root: NoodeDefinition, options?: NoodelOptions): NoodelView {
+export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, options?: NoodelOptions): NoodelView {
 
-    let rootNoode = buildNoodeView(idCounter, root, 0, 0, null);
+    let rootNoode = buildNoodeView(idRegister, root, 0, 0, null);
 
     rootNoode.isActive = true;
 
@@ -150,7 +151,7 @@ export function mergeOptions(options: NoodelOptions, noodel: NoodelView) {
     }
 }
 
-function buildNoodeView(idCounter: {n: number}, def: NoodeDefinition, level: number, index: number, parent: NoodeView): NoodeView {
+function buildNoodeView(idRegister: IdRegister, def: NoodeDefinition, level: number, index: number, parent: NoodeView): NoodeView {
     
     let noodeView: NoodeView = {
         index: index,
@@ -165,14 +166,16 @@ function buildNoodeView(idCounter: {n: number}, def: NoodeDefinition, level: num
         branchRelativeOffset: 0,
         branchSize: 0,
         parent: parent,
-        id: typeof def.id === 'string' ? def.id : generateNoodeId(idCounter),
+        id: typeof def.id === 'string' ? def.id : idRegister.generateNoodeId(),
         children: [],
         content: def.content || null,
         activeChildIndex: null
     }
 
+    idRegister.registerNoode(noodeView.id, noodeView);
+
     if (Array.isArray(def.children)) {
-        noodeView.children = def.children.map((n, i) => buildNoodeView(idCounter, n, level + 1, i, noodeView));
+        noodeView.children = def.children.map((n, i) => buildNoodeView(idRegister, n, level + 1, i, noodeView));
     }
 
     if (typeof def.activeChildIndex !== 'number') {
@@ -189,9 +192,4 @@ function buildNoodeView(idCounter: {n: number}, def: NoodeDefinition, level: num
     }
 
     return noodeView;
-}
-
-function generateNoodeId(idCounter: {n: number}) {
-    idCounter.n++;
-    return '_' + idCounter.n.toString();
 }

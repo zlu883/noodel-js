@@ -4,13 +4,16 @@ import { setupNoodel, parseHTMLToNoode, mergeOptions } from '@/controllers/noode
 import NoodelTrunk from '@/view/NoodelTrunk.vue';
 import Vue from 'vue';
 import NoodelView from '@/model/NoodelView';
+import Noode from './Noode';
+import IdRegister from './IdRegister';
+import { getActiveChild } from '@/getters/getters';
 
 export default class Noodel {
 
-    private store: NoodelView;
-    private idCounter = {n: 0};
-    private vueRoot: Element = null;
-    private vueInstance: Vue = null;
+    store: NoodelView;
+    idRegister = new IdRegister();
+    vueRoot: Element = null;
+    vueInstance: Vue = null;
 
     constructor(root?: NoodeDefinition | Element | string, options?: NoodelOptions) {
         if (!root) {
@@ -29,7 +32,7 @@ export default class Noodel {
             root = parseHTMLToNoode(root);
         }
 
-        this.store = setupNoodel(this.idCounter, root, options);
+        this.store = setupNoodel(this.idRegister, root, options);
     }
 
     mount(el: string | Element) {
@@ -52,5 +55,87 @@ export default class Noodel {
 
     setOptions(options: NoodelOptions) {
         mergeOptions(options, this.store);
+    }
+
+    getFocalLevel(): number {
+        return this.store.focalLevel;
+    }
+
+    setFocalLevel(level: number) {
+        //TODO
+    }
+
+    getActiveLevelCount(): number {
+        let count = 0;
+        let focalParent = this.store.focalParent;
+
+        while (focalParent.activeChildIndex !== null) {
+            count++;
+            focalParent = getActiveChild(focalParent);
+        }
+
+        return count;
+    }
+
+    getRoot(): Noode {
+        return new Noode(this.store.root, this);
+    }
+
+    getFocalParent(): Noode {
+        return new Noode(this.store.focalParent, this);
+    }
+
+    getFocalNoode(): Noode {
+        let focalNoode = getActiveChild(this.store.focalParent);
+        return focalNoode ? new Noode(focalNoode, this) : null;
+    }
+
+    findNoodeByPath(): Noode {
+        // TODO
+        return null;
+    }
+
+    findNoodeById(id: string): Noode {
+        return new Noode(this.idRegister.findNoode(id), this);
+    }
+
+    moveIn(levelCount: number, onComplete?: () => any) {
+        //TODO
+    }
+
+    moveInMax(onComplete?: () => any) {
+        //TODO
+    }
+
+    moveOut(levelCount: number, onComplete?: () => any) {
+        //TODO
+    }
+
+    moveOutMax(onComplete?: () => any) {
+        //TODO
+    }
+
+    moveForward(noodeCount: number, onComplete?: () => any) {
+        //TODO
+    }
+
+    moveForwardMax(onComplete?: () => any) {
+        //TODO
+    }
+
+    moveBack(noodeCount: number, onComplete?: () => any) {
+        //TODO
+    }
+
+    moveBackMax(onComplete?: () => any) {
+        //TODO
+    }
+
+    jumpToNoodeByPath(path: number[]) {
+        //TODO
+    }
+
+    jumpToNoodeById(id: string) {
+        //TODO
     }
 }
