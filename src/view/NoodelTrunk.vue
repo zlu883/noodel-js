@@ -42,6 +42,7 @@
     import { setupContainer } from '@/controllers/noodel-setup';
     import { setupNoodelInputBindings } from '@/controllers/input-binding';
     import { traverseDescendents } from '../controllers/noodel-traverse';
+    import NoodelView from '@/model/NoodelView';
 
     @Component({
 		components: {
@@ -52,9 +53,7 @@
 	})
     export default class NoodelTrunk extends Vue {
         
-        @Prop() noodel: Noodel;
-
-        store = (this.noodel as any).store;
+        @Prop() store: NoodelView;
 
         mounted() {
             setupContainer(this.$el, this.store);

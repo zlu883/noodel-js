@@ -1,4 +1,4 @@
-import Noode from '../model/Noode';
+import NoodeDefinition from '../model/NoodeDefinition';
 import NoodelOptions from '../model/NoodelOptions';
 import NoodeView from '../model/NoodeView';
 import NoodelView from '@/model/NoodelView';
@@ -7,40 +7,16 @@ import { ResizeSensor } from 'css-element-queries';
 import { setActiveSubtreeVisibility, setActiveChild } from './noodel-mutate';
 import { traverseDescendents } from './noodel-traverse';
 
-export function setupNoodel(idCounter: {n: number}, root: Noode, options?: NoodelOptions): NoodelView {
+export function setupNoodel(idCounter: {n: number}, root: NoodeDefinition, options?: NoodelOptions): NoodelView {
 
-    let rootNoode = buildNoodeView(idCounter, root, 0, 0);
-    let noodelOptions = buildOptions(options);
-    let focalParent = rootNoode;
-    let focalLevel = 0;
+    let rootNoode = buildNoodeView(idCounter, root, 0, 0, null);
 
-    traverseDescendents(rootNoode, noode => setActiveChild(noode, noode.activeChildIndex), true);
+    rootNoode.isActive = true;
 
-    if (noodelOptions.initialPath && noodelOptions.initialPath.length > 0) {
-        for (let i = 0; i < noodelOptions.initialPath.length; i++) {
-            let nextIndex = noodelOptions.initialPath[i];
-    
-            if (typeof nextIndex !== "number" || nextIndex < 0 || nextIndex > focalParent.children.length) {
-                throw new Error("Invalid initial path at index " + i);
-            }
-    
-            setActiveChild(focalParent, nextIndex);
-
-            if (i < noodelOptions.initialPath.length - 1) { // only when not in last iteration
-                focalParent = getActiveChild(focalParent);
-            }          
-        }
-    
-        focalLevel = noodelOptions.initialPath.length - 1;       
-    }
-
-    focalParent.isFocalParent = true;
-    setActiveSubtreeVisibility(rootNoode, true, focalLevel + noodelOptions.visibleSubtreeDepth);
-    
-    return {
+    let noodel = {
         root: rootNoode,
-        focalParent: focalParent,
-        focalLevel: focalLevel,
+        focalParent: null,
+        focalLevel: null,
         
         trunkOffset: 0,
         trunkOffsetOrigin: 0,
@@ -64,20 +40,57 @@ export function setupNoodel(idCounter: {n: number}, root: Noode, options?: Noode
             y: 0
         },
         
-        options: noodelOptions
+        options: {
+            visibleSubtreeDepth: 1,
+            snapDuration: 600
+        }
     }
+
+    mergeOptions(options, noodel);
+
+    traverseDescendents(rootNoode, noode => setActiveChild(noode, noode.activeChildIndex), true);
+
+    let focalLevel = 0;
+    let focalParent = rootNoode;
+
+    if (Array.isArray(options.initialPath)) {
+        for (let i = 0; i < options.initialPath.length; i++) {
+            let nextIndex = options.initialPath[i];
+    
+            if (typeof nextIndex !== "number" || nextIndex < 0 || nextIndex > focalParent.children.length) {
+                throw new Error("Invalid initial path at index " + i);
+            }
+    
+            setActiveChild(focalParent, nextIndex);
+
+            if (i < options.initialPath.length - 1) { // only when not in last iteration
+                focalParent = getActiveChild(focalParent);
+            }          
+        }
+    
+        if (options.initialPath.length > 0) {
+            focalLevel = options.initialPath.length - 1;
+        }  
+    }
+
+    noodel.focalParent = focalParent;
+    noodel.focalParent.isFocalParent = true;
+    noodel.focalLevel = focalLevel;
+    setActiveSubtreeVisibility(rootNoode, true, focalLevel + noodel.options.visibleSubtreeDepth);
+
+    return noodel;
 }
 
 /**
  * Recursively parses the given HTML element into a noode tree. 
  */
-export function parseHTMLToNoode(el: Element): Noode {
+export function parseHTMLToNoode(el: Element): NoodeDefinition {
 
     let id = el.getAttribute('data-id');
     let activeChildIndex = 0;
     let content = '';
     let noodeCount = 0;
-    let children: Noode[] = [];
+    let children: NoodeDefinition[] = [];
 
     for (let i = 0; i < el.childNodes.length; i++) {
         const node = el.childNodes[i];
@@ -122,74 +135,63 @@ export function setupContainer(el: Element, noodel: NoodelView) {
     });
 }
 
-/**
- * Recursively parses the input noode tree and adds properties to 
- * each noode to make it into a NoodeView. Necessary before initializing Vue
- * as Vue will not bind undefined properties.
- */
-function buildNoodeView(idCounter: {n: number}, noode: Noode, level: number, index: number): NoodeView {
-    let noodeView = noode as NoodeView;
+export function mergeOptions(options: NoodelOptions, noodel: NoodelView) {
+
+    if (typeof options.visibleSubtreeDepth === "number") {
+        noodel.options.visibleSubtreeDepth = options.visibleSubtreeDepth;
+    }
+
+    if (typeof options.snapDuration === "number") {
+        noodel.options.snapDuration = options.snapDuration;
+    }
+
+    if (typeof options.mounted === "function") {
+        noodel.options.mounted = options.mounted;
+    }
+}
+
+function buildNoodeView(idCounter: {n: number}, def: NoodeDefinition, level: number, index: number, parent: NoodeView): NoodeView {
     
-    if (typeof noodeView.id !== 'string') {
-        noodeView.id = generateNoodeId(idCounter);
+    let noodeView: NoodeView = {
+        index: index,
+        level: level,
+        isChildrenVisible: false,
+        isFocalParent: false,
+        isActive: false,
+        size: 0,
+        offset: 0,
+        branchOffset: 0,
+        branchOffsetOrigin: 0,
+        branchRelativeOffset: 0,
+        branchSize: 0,
+        parent: parent,
+        id: typeof def.id === 'string' ? def.id : generateNoodeId(idCounter),
+        children: [],
+        content: def.content || null,
+        activeChildIndex: null
     }
 
-    if (!Array.isArray(noodeView.children)) {
-        noodeView.children = [];
+    if (Array.isArray(def.children)) {
+        noodeView.children = def.children.map((n, i) => buildNoodeView(idCounter, n, level + 1, i, noodeView));
     }
 
-    if (typeof noodeView.activeChildIndex !== 'number') {
+    if (typeof def.activeChildIndex !== 'number') {
         noodeView.activeChildIndex = noodeView.children.length > 0 ? 0 : null;
     }
-    else if (noodeView.activeChildIndex < 0 || noodeView.activeChildIndex >= noodeView.children.length) {
-        console.warn("Invalid initial active child index for noode ID " + noodeView.id);
-
-        noodeView.activeChildIndex = noodeView.children.length > 0 ? 0 : null;
+    else {
+        if (def.activeChildIndex < 0 || def.activeChildIndex >= noodeView.children.length) {
+            console.warn("Invalid initial active child index for noode ID " + noodeView.id);
+            noodeView.activeChildIndex = noodeView.children.length > 0 ? 0 : null;
+        }
+        else {
+            noodeView.activeChildIndex = def.activeChildIndex;
+        }
     }
-
-    if (!noodeView.content) {
-        noodeView.content = null;
-    }
-
-    noodeView.index = index;
-    noodeView.level = level;
-    noodeView.isChildrenVisible = false;
-    noodeView.isFocalParent = false;
-    noodeView.isActive = false;
-    noodeView.size = 0;
-    noodeView.offset = 0;
-    noodeView.branchOffset = 0;
-    noodeView.branchOffsetOrigin = 0;
-    noodeView.branchRelativeOffset = 0;
-    noodeView.branchSize = 0;
-
-    noodeView.children.forEach((child, index) => {
-        child.parent = noodeView;
-        buildNoodeView(idCounter, child, level + 1, index);
-    });
 
     return noodeView;
 }
 
-/**
- * Parses the options object and adds undefined properties that should be reactive. 
- * Necessary before initializing Vue as Vue will not bind undefined properties.
- */
-function buildOptions(options?: NoodelOptions): NoodelOptions {
-    if (!options) options = {};
-
-    if (typeof options.visibleSubtreeDepth !== "number") {
-        options.visibleSubtreeDepth = 1;
-    }
-
-    if (typeof options.snapDuration !== "number") {
-        options.snapDuration = 600;
-    }
-
-    return options;
-}
-
 function generateNoodeId(idCounter: {n: number}) {
     idCounter.n++;
-    return 'n_' + idCounter.n.toString();
+    return '_' + idCounter.n.toString();
 }

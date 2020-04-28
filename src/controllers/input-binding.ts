@@ -6,6 +6,7 @@ function onKeyDown(noodel: NoodelView, event: KeyboardEvent) {
 
     if (noodel.hasSwipe) return;
     if (noodel.isLocked) return;
+    if (noodel.focalParent.children.length === 0) return;
 
     if (event.key === "ArrowDown") {
         shiftDown(noodel);
@@ -29,6 +30,7 @@ function onWheel(noodel: NoodelView, ev: WheelEvent) {
 
     if (noodel.hasSwipe) return;
     if (noodel.isLocked) return;
+    if (noodel.focalParent.children.length === 0) return;
 
     if (Math.abs(ev.deltaY) > Math.abs(ev.deltaX)) {
         if (noodel.hasPress) {
@@ -82,6 +84,7 @@ function onPanStart(noodel: NoodelView, ev: HammerInput) {
     if (noodel.doInnerScroll) return;
     if (noodel.hasSwipe) return;
     if (noodel.isLocked) return;
+    if (noodel.focalParent.children.length === 0) return;
 
     noodel.hasSwipe = true;
     startSwipe(noodel, ev);

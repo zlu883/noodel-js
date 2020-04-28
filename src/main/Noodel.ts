@@ -1,6 +1,6 @@
-import Noode from '@/model/Noode';
+import NoodeDefinition from '@/model/NoodeDefinition';
 import NoodelOptions from '@/model/NoodelOptions';
-import { setupNoodel, parseHTMLToNoode } from '@/controllers/noodel-setup';
+import { setupNoodel, parseHTMLToNoode, mergeOptions } from '@/controllers/noodel-setup';
 import NoodelTrunk from '@/view/NoodelTrunk.vue';
 import Vue from 'vue';
 import NoodelView from '@/model/NoodelView';
@@ -9,8 +9,14 @@ export default class Noodel {
 
     private store: NoodelView;
     private idCounter = {n: 0};
+    private vueRoot: Element = null;
+    private vueInstance: Vue = null;
 
-    constructor(root: Noode | Element | string, options?: NoodelOptions) {
+    constructor(root?: NoodeDefinition | Element | string, options?: NoodelOptions) {
+        if (!root) {
+            root = {};
+        } 
+
         if (typeof root === "string") {
             root = document.querySelector(root);
         }
@@ -27,14 +33,24 @@ export default class Noodel {
     }
 
     mount(el: string | Element) {
-        if (this.store.root.children.length === 0) {
-            throw new Error("Cannot render noodel: root has no children");
-        }
-
         Vue.config.productionTip = false;
     
-        new Vue({
-            render: h => h(NoodelTrunk, { props: { noodel: this }})
+        this.vueInstance = new Vue({
+            render: h => h(NoodelTrunk, { props: { store: this.store }}),
+            data: this.store
         }).$mount(el);
+
+        this.vueRoot = this.vueInstance.$el;
+    }
+
+    unmount() {
+        if (this.vueInstance) this.vueInstance.$destroy();
+        if (this.vueRoot) this.vueRoot.remove();
+        this.vueInstance = null;
+        this.vueRoot = null;
+    }
+
+    setOptions(options: NoodelOptions) {
+        mergeOptions(options, this.store);
     }
 }
