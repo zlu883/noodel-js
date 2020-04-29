@@ -43,6 +43,7 @@
     import { alignBranchOnNoodeSizeChange } from "@/controllers/noodel-align";
     import NoodelView from '../model/NoodelView';
     import { traverseAncestors } from '../controllers/noodel-traverse';
+    import { getPath } from '../util/getters';
 
 	@Component({
         components: {
@@ -151,14 +152,8 @@
             if (this.noode.isActive && this.noode.parent.isFocalParent) {
                 this.store.pointerDownSrcContentBox = el;
             }
-            
-            let path = this.noode.index.toString();
 
-            traverseAncestors(this.noode, noode => {
-                path = noode.index + ' ' + path;
-            }, false, true);
-
-            this.store.pointerDownSrcNoodePath = path;
+            this.store.pointerDownSrcNoodePath = getPath(this.noode);
         }
 
         get isFocalActive() {
@@ -203,8 +198,6 @@
     }
 
     .nd-content-box {
-        height: 100%;
-        width: 100%;
         position: relative;
         overflow: auto;
         touch-action: none !important; /* Important as hammerjs will break on mobile without this */
@@ -248,26 +241,26 @@
     }
 
     @media (max-width: 800px) {
-        .nd-noode {
-            max-width: 90vw;
+        .nd-content-box {
+            max-width: 85vw;
         }
     }
 
     @media (max-height: 800px) {
-        .nd-noode {
-            max-height: 90vh;
+        .nd-content-box {
+            max-height: 85vh;
         }
     }
 
     @media (min-width: 801px) {
-        .nd-noode {
-            max-width: 720px;
+        .nd-content-box {
+            max-width: 700px;
         }
     }
 
     @media (min-height: 801px) {
-        .nd-noode {
-            max-height: 720px;
+        .nd-content-box {
+            max-height: 700px;
         }
     }
 

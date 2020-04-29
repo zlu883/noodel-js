@@ -2,7 +2,7 @@ import NoodeDefinition from '../model/NoodeDefinition';
 import NoodelOptions from '../model/NoodelOptions';
 import NoodeView from '../model/NoodeView';
 import NoodelView from '@/model/NoodelView';
-import { getActiveChild } from '@/getters/getters';
+import { getActiveChild } from '@/util/getters';
 import { ResizeSensor } from 'css-element-queries';
 import { setActiveSubtreeVisibility, setActiveChild } from './noodel-mutate';
 import { traverseDescendents } from './noodel-traverse';
@@ -151,7 +151,7 @@ export function mergeOptions(options: NoodelOptions, noodel: NoodelView) {
     }
 }
 
-function buildNoodeView(idRegister: IdRegister, def: NoodeDefinition, level: number, index: number, parent: NoodeView): NoodeView {
+export function buildNoodeView(idRegister: IdRegister, def: NoodeDefinition, level: number, index: number, parent: NoodeView): NoodeView {
     
     let noodeView: NoodeView = {
         index: index,

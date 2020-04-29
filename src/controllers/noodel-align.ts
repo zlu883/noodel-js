@@ -1,6 +1,7 @@
 import NoodeView from '@/model/NoodeView';
 import NoodelView from '@/model/NoodelView';
 import { traverseDescendents } from './noodel-traverse';
+import { getActiveChild } from '@/util/getters';
 
 /**
  * Handler for when a branch changes its size (on trunk axis), to align the trunk if necessary.
@@ -10,8 +11,6 @@ import { traverseDescendents } from './noodel-traverse';
  */
 export function alignTrunkOnBranchSizeChange(parent: NoodeView, newSize: number, noodel: NoodelView) {
     let diff = newSize - parent.branchSize;
-
-    if (Math.abs(diff) < 0.01) return; // diff too small for alignment
 
     parent.branchSize = newSize;
 
@@ -38,8 +37,6 @@ export function alignBranchOnNoodeSizeChange(noode: NoodeView, newSize: number) 
     const parent = noode.parent;
     
     let diff = newSize - noode.size;  
-
-    if (Math.abs(diff) < 0.01) return; // diff too small to need re-render
 
     noode.size = newSize;
     

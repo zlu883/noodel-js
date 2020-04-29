@@ -132,10 +132,9 @@ function onTap(noodel: NoodelView, ev: HammerInput) {
     noodel.hasPress = false;
     
     if (noodel.hasSwipe) return;
-    //if (noodel.isLocked) return;
     
     if (noodel.pointerDownSrcNoodePath) {
-        jumpToNoode(noodel, noodel.pointerDownSrcNoodePath.split(' ').map(i => parseInt(i)));
+        jumpToNoode(noodel, noodel.pointerDownSrcNoodePath);
         noodel.pointerDownSrcContentBox = null;
         noodel.pointerDownSrcNoodePath = null;
     }

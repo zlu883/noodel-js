@@ -27,7 +27,7 @@ export default interface NoodelView {
     pointerDownSrcContentBox?: Element;
     // The path of the noode where pointerdown events originated.
     // Used to determine the target for jump navigation.
-    pointerDownSrcNoodePath?: string;
+    pointerDownSrcNoodePath?: number[];
     doInnerScroll?: boolean;
     innerScrollOriginLeft?: number;
     innerScrollOriginTop?: number;

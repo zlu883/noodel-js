@@ -30,7 +30,7 @@
     import NoodelTrunkBranchNoode from '@/view/NoodelTrunkBranchNoode.vue';
     import AnimationFade from './AnimationFade.vue';
 
-    import { getFocalHeight, getActiveChild } from '@/getters/getters';
+    import { getFocalHeight, getActiveChild } from '@/util/getters';
     import NoodeView from '@/model/NoodeView';
     import { alignTrunkOnBranchSizeChange } from '@/controllers/noodel-align';
     import NoodelView from '@/model/NoodelView';

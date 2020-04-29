@@ -6,7 +6,8 @@ import Vue from 'vue';
 import NoodelView from '@/model/NoodelView';
 import Noode from './Noode';
 import IdRegister from './IdRegister';
-import { getActiveChild } from '@/getters/getters';
+import { getActiveChild } from '@/util/getters';
+import { alignTrunkToLevel } from '@/controllers/noodel-navigate';
 
 export default class Noodel {
 
@@ -62,7 +63,7 @@ export default class Noodel {
     }
 
     setFocalLevel(level: number) {
-        //TODO
+        alignTrunkToLevel(this.store, level);
     }
 
     getActiveLevelCount(): number {
@@ -90,52 +91,35 @@ export default class Noodel {
         return focalNoode ? new Noode(focalNoode, this) : null;
     }
 
-    findNoodeByPath(): Noode {
-        // TODO
-        return null;
+    findNoode(selector: number[] | string): Noode {
+        if (typeof selector === 'string') {
+            let target = this.idRegister.findNoode(selector);
+            return target ? new Noode(target, this) : null;
+        }
+        else if (Array.isArray(selector)) {
+            let target = this.store.root;
+
+            for (let i = 0; i < selector.length; i++) {
+                target = target.children[selector[i]];
+                if (!target) return null;
+            }
+
+            return new Noode(target, this);
+        }
+        else {
+            return null;
+        }
     }
 
-    findNoodeById(id: string): Noode {
-        return new Noode(this.idRegister.findNoode(id), this);
-    }
-
-    moveIn(levelCount: number, onComplete?: () => any) {
+    shiftFocalBranch(levelDiff: number, animate = true, onComplete?: () => any) {
         //TODO
     }
 
-    moveInMax(onComplete?: () => any) {
+    shiftFocalNoode(indexDiff: number, animate = true, onComplete?: () => any) {
         //TODO
     }
 
-    moveOut(levelCount: number, onComplete?: () => any) {
-        //TODO
-    }
-
-    moveOutMax(onComplete?: () => any) {
-        //TODO
-    }
-
-    moveForward(noodeCount: number, onComplete?: () => any) {
-        //TODO
-    }
-
-    moveForwardMax(onComplete?: () => any) {
-        //TODO
-    }
-
-    moveBack(noodeCount: number, onComplete?: () => any) {
-        //TODO
-    }
-
-    moveBackMax(onComplete?: () => any) {
-        //TODO
-    }
-
-    jumpToNoodeByPath(path: number[]) {
-        //TODO
-    }
-
-    jumpToNoodeById(id: string) {
+    jumpToNoode(selector: number[] | string, animate = true, onComplete?: () => any) {
         //TODO
     }
 }

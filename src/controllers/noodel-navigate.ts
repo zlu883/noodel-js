@@ -3,7 +3,7 @@ import { setActiveChild, setActiveSubtreeVisibility } from "@/controllers/noodel
 import { Axis } from '@/enums/Axis';
 import NoodeView from '@/model/NoodeView';
 import NoodelView from '@/model/NoodelView';
-import { getChildrenBranchMidSize, getActiveChild, getMidSize, isRoot, canNavigateLeft, canNavigateRight, canNavigateUp, canNavigateDown } from '@/getters/getters';
+import { getChildrenBranchMidSize, getActiveChild, getMidSize, isRoot, canNavigateLeft, canNavigateRight, canNavigateUp, canNavigateDown } from '@/util/getters';
 
 /**
  * Core function for moving the trunk to a specified position.
@@ -381,10 +381,7 @@ export function updateSwipe(noodel: NoodelView, ev: HammerInput) {
 }
 
 export function releaseSwipe(noodel: NoodelView, ev: HammerInput) {
-    noodel.showLimits.top = false;
-    noodel.showLimits.bottom = false;
-    noodel.showLimits.left = false;
-    noodel.showLimits.right = false;
+    unsetLimitIndicators(noodel);
 
     if (noodel.movingAxis === Axis.HORIZONTAL) {
         startTrunkSnap(noodel, computeSnapCount(ev.velocityX));
@@ -395,7 +392,6 @@ export function releaseSwipe(noodel: NoodelView, ev: HammerInput) {
 }
 
 export function unsetLimitIndicators(noodel: NoodelView) {
-
     noodel.showLimits.top = false;
     noodel.showLimits.bottom = false;
     noodel.showLimits.left = false;
@@ -454,6 +450,54 @@ export function shiftDown(noodel: NoodelView, noodeCount = 1) {
     } 
 }
 
+export function alignTrunkToLevel(noodel: NoodelView, level: number) {
+
+    if (level < 0) {
+        console.warn("Cannot align trunk to level: invalid level");
+        return;
+    }
+
+    let targetOffset = 0;
+    let currentBranch = noodel.root;
+
+    for (let i = 0; i <= level; i++) {
+        if (currentBranch.activeChildIndex !== null) {
+            targetOffset -= currentBranch.branchSize;
+            currentBranch = getActiveChild(currentBranch);
+        }
+        else {
+            console.warn("Cannot align trunk to level: invalid level");
+            return;
+        }
+    }
+
+    targetOffset += currentBranch.branchSize / 2;
+
+    initializeMovement(noodel, Axis.HORIZONTAL);
+    finalizeTrunkPosition(noodel, targetOffset);
+    finalizeMovement(noodel);
+}
+
+export function alignBranchToIndex(noodel: NoodelView, parent: NoodeView, index: number) {
+
+    if (index < 0 || index >= parent.children.length) {
+        console.warn("Cannot align branch to index: invalid index");
+        return;
+    }
+
+    let targetOffset = 0;
+
+    for (let i = 0; i <= index; i++) {
+        targetOffset -= parent.children[i].size;
+    }
+
+    targetOffset += parent.children[index].size / 2;
+
+    initializeMovement(noodel, Axis.HORIZONTAL);
+    finalizeBranchPosition(noodel, parent, targetOffset);
+    finalizeMovement(noodel);
+}
+
 /**
  * Logic for animating a 'jump' between noodes.
  * Currently incompatible with the normal movement logic, may need refactoring in future.
@@ -463,10 +507,10 @@ export function jumpToNoode(noodel: NoodelView, targetPath: number[]) {
     let nearestVisibleBranchParent = noodel.root;
     let nearestVisibleBranchLevel = 0;
     
-    for (let i = 1; i < targetPath.length - 1; i++) {
+    for (let i = 0; i < targetPath.length - 1; i++) {
         if (nearestVisibleBranchParent.children[targetPath[i]].isChildrenVisible) {
             nearestVisibleBranchParent = nearestVisibleBranchParent.children[targetPath[i]];
-            nearestVisibleBranchLevel = i;
+            nearestVisibleBranchLevel++;
         }
         else {
             break;
@@ -488,19 +532,19 @@ export function jumpToNoode(noodel: NoodelView, targetPath: number[]) {
     let targetTrunkOffset = 0;
     let targetParent = noodel.root;
 
-    for (let i = 1; i < targetPath.length; i++) {
+    for (let i = 0; i < targetPath.length; i++) {
         setActiveChild(targetParent, targetPath[i]);
 
-        if (i > nearestVisibleBranchLevel + 1) {
+        if (i > nearestVisibleBranchLevel) {
 
             let targetBranchOffset = 0;
 
-            for (let i = 0; i <= targetParent.activeChildIndex; i++) {
-                if (i < targetParent.activeChildIndex) {
-                    targetBranchOffset -= targetParent.children[i].size;
+            for (let j = 0; j <= targetParent.activeChildIndex; j++) {
+                if (j < targetParent.activeChildIndex) {
+                    targetBranchOffset -= targetParent.children[j].size;
                 }
                 else {
-                    targetBranchOffset -= getMidSize(targetParent.children[i]);
+                    targetBranchOffset -= getMidSize(targetParent.children[j]);
                 }
             }
 
@@ -518,10 +562,10 @@ export function jumpToNoode(noodel: NoodelView, targetPath: number[]) {
         }
     }
 
-    setActiveSubtreeVisibility(noodel.root, true, (targetPath.length - 2) + noodel.options.visibleSubtreeDepth);
+    setActiveSubtreeVisibility(noodel.root, true, (targetPath.length - 1) + noodel.options.visibleSubtreeDepth);
 
     let targetBranchSnapOffset = 0;
-    let targetIndex = targetPath[nearestVisibleBranchLevel + 1];
+    let targetIndex = targetPath[nearestVisibleBranchLevel];
 
     for (let i = 0; i <= targetIndex; i++) {
         if (i < targetIndex) {
@@ -542,7 +586,7 @@ export function jumpToNoode(noodel: NoodelView, targetPath: number[]) {
     noodel.focalParent.isFocalParent = false;
     noodel.focalParent = targetParent;
     noodel.focalParent.isFocalParent = true;
-    noodel.focalLevel = targetPath.length - 2;
+    noodel.focalLevel = targetPath.length - 1;
 
     let from = {};
     let to = {};

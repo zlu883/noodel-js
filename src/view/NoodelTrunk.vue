@@ -37,7 +37,7 @@
     import NoodelTrunkBranch from "@/view/NoodelTrunkBranch.vue";
     import AnimationFade from '@/view/AnimationFade.vue';
 
-    import { getFocalWidth } from '@/getters/getters';
+    import { getFocalWidth } from '@/util/getters';
     import Noodel from '@/main/Noodel';
     import { setupContainer } from '@/controllers/noodel-setup';
     import { setupNoodelInputBindings } from '@/controllers/input-binding';

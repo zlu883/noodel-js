@@ -1,5 +1,6 @@
 import NoodeView from '@/model/NoodeView';
 import NoodelView from '@/model/NoodelView';
+import { traverseAncestors } from '@/controllers/noodel-traverse';
 
 export function getFocalHeight(noodel: NoodelView) {
     return noodel.containerSize.y / 2;
@@ -62,4 +63,14 @@ export function canNavigateLeft(noodel: NoodelView): boolean {
 export function canNavigateRight(noodel: NoodelView): boolean {
     if (!getActiveChild(noodel.focalParent)) return false;  
     return !!getActiveChild(getActiveChild(noodel.focalParent));
+}
+
+export function getPath(noode: NoodeView): number[] {
+    let path = [];
+
+    traverseAncestors(noode, noode => {
+        path.push(noode.index);
+    }, true, false);
+
+    return path.reverse();
 }

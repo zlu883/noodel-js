@@ -1,6 +1,6 @@
 import NoodeView from '@/model/NoodeView';
 import { traverseActiveDescendents } from './noodel-traverse';
-import { getActiveChild } from '@/getters/getters';
+import { getActiveChild } from '@/util/getters';
 
 export function setActiveChild(parent: NoodeView, index: number) {
     if (getActiveChild(parent)) {
