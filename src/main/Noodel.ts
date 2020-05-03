@@ -72,11 +72,11 @@ export default class Noodel {
 
     getActiveLevelCount(): number {
         let count = 0;
-        let focalParent = this.store.focalParent;
+        let currentParent = this.store.root;
 
-        while (focalParent.activeChildIndex !== null) {
+        while (currentParent.activeChildIndex !== null) {
             count++;
-            focalParent = getActiveChild(focalParent);
+            currentParent = getActiveChild(currentParent);
         }
 
         return count;

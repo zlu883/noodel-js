@@ -460,7 +460,7 @@ export function alignTrunkToLevel(noodel: NoodelView, level: number) {
     let targetOffset = 0;
     let currentBranch = noodel.root;
 
-    for (let i = 0; i <= level; i++) {
+    for (let i = 0; i < level; i++) {
         if (currentBranch.activeChildIndex !== null) {
             targetOffset -= currentBranch.branchSize;
             currentBranch = getActiveChild(currentBranch);
@@ -471,7 +471,7 @@ export function alignTrunkToLevel(noodel: NoodelView, level: number) {
         }
     }
 
-    targetOffset += currentBranch.branchSize / 2;
+    targetOffset -= currentBranch.branchSize / 2;
 
     initializeMovement(noodel, Axis.HORIZONTAL);
     finalizeTrunkPosition(noodel, targetOffset);
