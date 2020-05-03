@@ -2,11 +2,12 @@ import NoodeView from '@/model/NoodeView';
 import NoodeDefinition from '@/model/NoodeDefinition';
 import Noodel from './Noodel';
 import { setActiveChild as _setActiveChild, setActiveSubtreeVisibility } from '../controllers/noodel-mutate';
-import { buildNoodeView } from '@/controllers/noodel-setup';
-import { isRoot } from '@/util/getters';
+import { buildNoodeView, extractNoodeDefinition } from '@/controllers/noodel-setup';
+import { isRoot, getPath as _getPath } from '@/util/getters';
+import { alignBranchToIndex, alignTrunkToLevel } from '@/controllers/noodel-navigate';
 
 export default class Noode {
-    
+
     view: NoodeView;
     noodel: Noodel;
 
@@ -18,6 +19,14 @@ export default class Noode {
     getParent(): Noode {
         if (!this.view.parent) return null;
         return new Noode(this.view.parent, this.noodel);
+    }
+
+    getPath(): number[] {
+        return _getPath(this.view);
+    }
+
+    getDefinition(): NoodeDefinition {
+        return extractNoodeDefinition(this.view);
     }
 
     getChild(index: number): Noode {
@@ -69,12 +78,19 @@ export default class Noode {
     }
 
     setActiveChild(index: number) {
-        if (typeof index !== "number" || index < 0 || index >= this.view.children.length) {
+        if (typeof index !== "number" || this.view.children.length === 0) {
             console.warn("Cannot set active child: invalid index");
             return;
         }
-        
-        _setActiveChild(this.view, index);
+
+        if (index < 0) {
+            index = 0;
+        }
+        else if (index >= this.view.children.length) {
+            index = this.view.children.length - 1;
+        }
+
+        alignBranchToIndex(this.noodel.store, this.view, index);
     }
 
     addChild(childDef: NoodeDefinition, index?: number): Noode {
@@ -82,11 +98,11 @@ export default class Noode {
             console.warn("Cannot add child: invalid index");
             return;
         }
-       
+
         let child = buildNoodeView(
-            this.noodel.idRegister, 
-            childDef, 
-            this.view.level + 1, 
+            this.noodel.idRegister,
+            childDef,
+            this.view.level + 1,
             typeof index === 'number' ? index : this.view.children.length,
             this.view
         );
@@ -127,13 +143,13 @@ export default class Noode {
 
         let children = childDefs.map((def, index) => {
             let child = buildNoodeView(
-                this.noodel.idRegister, 
-                def, 
-                this.view.level + 1, 
+                this.noodel.idRegister,
+                def,
+                this.view.level + 1,
                 typeof index === 'number' ? index : this.view.children.length,
                 this.view
             )
-    
+
             child.offset = this.view.offset + this.view.branchSize;
             return child;
         });
@@ -152,7 +168,7 @@ export default class Noode {
                 this.view.children[i].index += children.length;
             }
         }
-       
+
         if (this.view.children.length === childDefs.length) {
             _setActiveChild(this.view, 0);
         }
@@ -162,13 +178,93 @@ export default class Noode {
         }
     }
 
-    removeChild(index: number) {
-        // TODO
-        return null;
+    removeChild(index: number): NoodeDefinition {
+        return this.removeChildren(index, 1)[0] || null;
     }
 
-    removeChildren(index: number, count: number) {
-        // TODO
-        return null;
+    removeChildren(index: number, count: number): NoodeDefinition[] {
+        if (typeof index !== "number" || typeof count !== "number" || index < 0 || index >= this.view.children.length) {
+            console.warn("Cannot remove child noode(s): invalid index or count");
+            return [];
+        }
+
+        let deletedNoodes = this.view.children.splice(index, count);
+        let moveToTargetLevel = null;
+
+        if (index + count <= this.view.activeChildIndex) { // deletion before active child
+            this.view.activeChildIndex -= count;
+        }
+        else if (index <= this.view.activeChildIndex) { // deletion includes active child
+            if (this.view.children.length === count) {
+                _setActiveChild(this.view, null);
+            }
+            else if (index + count < this.view.children.length) {
+                _setActiveChild(this.view, this.view.activeChildIndex);
+            }
+            else {
+                _setActiveChild(this.view, index - 1);
+            }
+
+            if (this.view.isChildrenVisible) {
+                if (this.view.level <= this.noodel.store.focalLevel && this.view.children.length === 0) {
+                    moveToTargetLevel = this.view.level - 1;
+                    this.view.isChildrenVisible = false;
+                }
+                else if (this.view.level < this.noodel.store.focalLevel) {
+                    moveToTargetLevel = this.view.level;
+                }
+            }
+        }
+        else { // deletion after active child
+            // do nothing
+        }
+
+        // update sibling indices
+        for (let i = index; i < this.view.children.length; i++) {
+            this.view.children[i].index -= count;
+        }
+
+        if (this.view.activeChildIndex !== null) {
+            // if there are still children, align branch
+            let targetOffset = 0;
+
+            for (let i = 0; i < this.view.activeChildIndex; i++) {
+                targetOffset -= this.view.children[i].size;
+            }
+
+            targetOffset -= this.view.children[this.view.activeChildIndex].size / 2;
+            this.view.branchOffset = targetOffset;
+            this.view.branchOffsetOrigin = targetOffset;
+            this.view.branchRelativeOffset = this.view.children[this.view.activeChildIndex].size / 2;
+        }
+        else {
+            // if no more children, clear branch position and size values
+            this.view.branchOffset = 0;
+            this.view.branchOffsetOrigin = 0;
+            this.view.branchRelativeOffset = 0;
+            this.view.branchSize = 0;            
+        }
+
+        if (moveToTargetLevel !== null) {
+            let targetOffset = 0;
+            let currentBranch = this.noodel.store.root;
+
+            for (let i = 0; i < moveToTargetLevel; i++) {
+                targetOffset -= currentBranch.branchSize;
+                currentBranch = currentBranch.children[currentBranch.activeChildIndex];
+            }
+
+            targetOffset -= currentBranch.branchSize / 2;
+
+            this.noodel.store.trunkOffset = targetOffset;
+            this.noodel.store.trunkOffsetOrigin = targetOffset;
+            this.noodel.store.trunkRelativeOffset = currentBranch.branchSize / 2;
+            this.noodel.store.focalParent.isFocalParent = false;
+            this.noodel.store.focalParent = currentBranch;
+            this.noodel.store.focalParent.isFocalParent = true;
+            setActiveSubtreeVisibility(currentBranch, true, this.noodel.store.options.visibleSubtreeDepth);
+        }
+
+        return deletedNoodes.map(n => extractNoodeDefinition(n));
     }
 }

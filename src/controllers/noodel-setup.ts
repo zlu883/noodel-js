@@ -193,3 +193,13 @@ export function buildNoodeView(idRegister: IdRegister, def: NoodeDefinition, lev
 
     return noodeView;
 }
+
+export function extractNoodeDefinition(noode: NoodeView): NoodeDefinition {
+
+    return {
+        id: noode.id,
+        content: noode.content,
+        activeChildIndex: noode.activeChildIndex,
+        children: noode.children.map(c => extractNoodeDefinition(c))
+    };
+}

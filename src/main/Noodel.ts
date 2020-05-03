@@ -7,7 +7,7 @@ import NoodelView from '@/model/NoodelView';
 import Noode from './Noode';
 import IdRegister from './IdRegister';
 import { getActiveChild } from '@/util/getters';
-import { alignTrunkToLevel } from '@/controllers/noodel-navigate';
+import { alignTrunkToLevel, shiftRight, shiftLeft, shiftDown, shiftUp, jumpToNoode as _jumpToNoode } from '@/controllers/noodel-navigate';
 
 export default class Noodel {
 
@@ -63,6 +63,10 @@ export default class Noodel {
     }
 
     setFocalLevel(level: number) {
+        let levelCount = this.getActiveLevelCount();
+
+        if (level < 0) level = 0;
+        if (level > levelCount - 1) level = levelCount - 1;
         alignTrunkToLevel(this.store, level);
     }
 
@@ -111,15 +115,47 @@ export default class Noodel {
         }
     }
 
-    shiftFocalBranch(levelDiff: number, animate = true, onComplete?: () => any) {
-        //TODO
+    shiftTrunk(levelDiff: number, animate = true, onComplete?: () => any) {
+        if (animate) {
+            if (levelDiff > 0) {
+                shiftRight(this.store, levelDiff);
+            }
+            else if (levelDiff < 0) {
+                shiftLeft(this.store, levelDiff);
+            }
+        }
+        else {
+            this.setFocalLevel(this.store.focalLevel + levelDiff);
+        }
     }
 
-    shiftFocalNoode(indexDiff: number, animate = true, onComplete?: () => any) {
-        //TODO
+    shiftBranch(indexDiff: number, animate = true, onComplete?: () => any) {
+        if (animate) {
+            if (indexDiff > 0) {
+                shiftDown(this.store, indexDiff);
+            }
+            else if (indexDiff < 0) {
+                shiftUp(this.store, indexDiff);
+            }
+        }
+        else {
+            new Noode(this.store.focalParent, this).setActiveChild(this.store.focalParent.activeChildIndex + indexDiff);
+        }
     }
 
     jumpToNoode(selector: number[] | string, animate = true, onComplete?: () => any) {
-        //TODO
+        if (animate) {
+            let target = this.findNoode(selector);             
+
+            if (target) {
+                _jumpToNoode(this.store, target.getPath());
+            }
+            else {
+                console.warn("Cannot jump to noode: invalid selector");
+            }
+        }
+        else {
+            //TODO
+        }
     }
 }

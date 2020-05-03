@@ -500,7 +500,7 @@ export function alignBranchToIndex(noodel: NoodelView, parent: NoodeView, index:
 
 /**
  * Logic for animating a 'jump' between noodes.
- * Currently incompatible with the normal movement logic, may need refactoring in future.
+ * Currently incompatible with the normal movement logic, needs refactoring.
  */
 export function jumpToNoode(noodel: NoodelView, targetPath: number[]) {
      
