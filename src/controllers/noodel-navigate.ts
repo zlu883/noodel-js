@@ -1,9 +1,11 @@
 import TWEEN from '@tweenjs/tween.js';
-import { setActiveChild, setActiveSubtreeVisibility } from "@/controllers/noodel-mutate";
+import { setActiveChild, setActiveSubtreeVisibility, setFocalParent, hideActiveSubtree, showActiveSubtree } from "@/controllers/noodel-mutate";
 import { Axis } from '@/enums/Axis';
 import NoodeView from '@/model/NoodeView';
 import NoodelView from '@/model/NoodelView';
-import { getChildrenBranchMidSize, getActiveChild, getMidSize, isRoot, canNavigateLeft, canNavigateRight, canNavigateUp, canNavigateDown } from '@/util/getters';
+import { getChildrenBranchMidSize, getActiveChild, getMidSize, isRoot } from '@/util/getters';
+import { alignTrunkToFocalParent, alignBranchToIndex } from './noodel-align';
+import { forceReflow } from '@/util/animate';
 
 /**
  * Core function for moving the trunk to a specified position.
@@ -398,104 +400,62 @@ export function unsetLimitIndicators(noodel: NoodelView) {
     noodel.showLimits.right = false;
 }
 
-export function shiftLeft(noodel: NoodelView, noodeCount = -1) {
+/**
+ * Shifts the focal level by a level difference.
+ */
+export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
 
-    if (canNavigateLeft(noodel)) {
-        initializeMovement(noodel, Axis.HORIZONTAL);
-        startTrunkSnap(noodel, noodeCount);
-    }
-    else {
-        if (noodel.movingAxis === null) {
+    let newFocalParent = findNewFocalParent(noodel, levelDiff);
+
+    // if unable to shift anymore in the target direction
+    if (newFocalParent.id === noodel.focalParent.id) {
+        if (levelDiff < 0) {
             noodel.showLimits.left = true;
         }
-    }
-}
-
-export function shiftRight(noodel: NoodelView, noodeCount = 1) {
-
-    if (canNavigateRight(noodel)) {
-        initializeMovement(noodel, Axis.HORIZONTAL);
-        startTrunkSnap(noodel, noodeCount);
-    }
-    else {
-        if (noodel.movingAxis === null) {
+        else if (levelDiff > 0) {
             noodel.showLimits.right = true;
         }
+
+        return;
     }
+
+    setFocalParent(noodel, newFocalParent);
+    alignTrunkToFocalParent(noodel, newFocalParent);
+    forceReflow();
 }
 
-export function shiftUp(noodel: NoodelView, noodeCount = -1) {
+/**
+ * Shifts the active noode in the focal branch by an index difference.
+ */
+export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
 
-    if (canNavigateUp(noodel)) {
-        initializeMovement(noodel, Axis.VERTICAL);
-        startBranchSnap(noodel, noodel.focalParent, noodeCount);
+    let targetIndex = noodel.focalParent.activeChildIndex + indexDiff;
+
+    // clamp index to valid range
+    if (targetIndex < 0) {
+        targetIndex = 0;
     }
-    else {
-        if (noodel.movingAxis === null) {
+    else if (targetIndex >= noodel.focalParent.children.length) {
+        targetIndex = noodel.focalParent.children.length - 1;
+    }
+
+    // if unable to shift anymore in the target direction
+    if (targetIndex === noodel.focalParent.activeChildIndex) {
+        if (indexDiff < 0) {
             noodel.showLimits.top = true;
         }
-    } 
-}
-
-export function shiftDown(noodel: NoodelView, noodeCount = 1) {
-
-    if (canNavigateDown(noodel)) {
-        initializeMovement(noodel, Axis.VERTICAL);
-        startBranchSnap(noodel, noodel.focalParent, noodeCount);
-    }
-    else {
-        if (noodel.movingAxis === null) {
+        else if (indexDiff > 0) {
             noodel.showLimits.bottom = true;
         }
-    } 
-}
 
-export function alignTrunkToLevel(noodel: NoodelView, level: number) {
-
-    if (level < 0) {
-        console.warn("Cannot align trunk to level: invalid level");
         return;
     }
 
-    let targetOffset = 0;
-    let currentBranch = noodel.root;
-
-    for (let i = 0; i < level; i++) {
-        if (currentBranch.activeChildIndex !== null) {
-            targetOffset -= currentBranch.branchSize;
-            currentBranch = getActiveChild(currentBranch);
-        }
-        else {
-            console.warn("Cannot align trunk to level: invalid level");
-            return;
-        }
-    }
-
-    targetOffset -= currentBranch.branchSize / 2;
-
-    initializeMovement(noodel, Axis.HORIZONTAL);
-    finalizeTrunkPosition(noodel, targetOffset);
-    finalizeMovement(noodel);
-}
-
-export function alignBranchToIndex(noodel: NoodelView, parent: NoodeView, index: number) {
-
-    if (index < 0 || index >= parent.children.length) {
-        console.warn("Cannot align branch to index: invalid index");
-        return;
-    }
-
-    let targetOffset = 0;
-
-    for (let i = 0; i <= index; i++) {
-        targetOffset -= parent.children[i].size;
-    }
-
-    targetOffset += parent.children[index].size / 2;
-
-    initializeMovement(noodel, Axis.HORIZONTAL);
-    finalizeBranchPosition(noodel, parent, targetOffset);
-    finalizeMovement(noodel);
+    hideActiveSubtree(noodel.focalParent);
+    setActiveChild(noodel.focalParent, targetIndex);
+    showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
+    alignBranchToIndex(noodel.focalParent, targetIndex);
+    forceReflow();
 }
 
 /**
@@ -631,4 +591,37 @@ export function finalizeMovement(noodel: NoodelView) {
     noodel.movingAxis = null;
     noodel.isLocked = false;
     unsetLimitIndicators(noodel);
+}
+
+/**
+ * Finds the new focal parent to move to when the a focal level change should occur
+ * on the current active subtree. If levelDiff goes beyond the existing
+ * branches, will return the furthest branch possible, i.e. the root or the deepest branch.
+ */
+function findNewFocalParent(noodel: NoodelView, levelDiff: number): NoodeView {
+    
+    let nextParent = noodel.focalParent;
+
+    if (levelDiff < 0) {
+        for (let i = 0; i > levelDiff; i--) {
+            if (nextParent.parent) {
+                nextParent = nextParent.parent;
+            }
+            else {
+                break;
+            }
+        }
+    }
+    else if (levelDiff > 0) {
+        for (let i = 0; i < levelDiff; i++) {
+            if (nextParent.children[nextParent.activeChildIndex].activeChildIndex !== null) {
+                nextParent = nextParent.children[nextParent.activeChildIndex];
+            }
+            else {
+                break;
+            }
+        }
+    }
+
+    return nextParent;
 }

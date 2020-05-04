@@ -24,7 +24,7 @@ export default interface NoodelView {
 
     // The content box element of the noode where pointerdown events originated.
     // Used to check the presence of inner scrolling.
-    pointerDownSrcContentBox?: Element;
+    pointerDownSrcNoode?: Element;
     // The path of the noode where pointerdown events originated.
     // Used to determine the target for jump navigation.
     pointerDownSrcNoodePath?: number[];

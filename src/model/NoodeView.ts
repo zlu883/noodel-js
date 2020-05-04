@@ -14,10 +14,11 @@ export default interface NoodeView {
     isActive: boolean;
 
     offset: number;
-
     branchOffset: number;
     branchOffsetOrigin: number;
     branchRelativeOffset: number;
+
+    noodeOffset: number;
 
     size: number;
     branchSize: number;

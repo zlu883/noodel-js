@@ -1,52 +1,73 @@
 import NoodeView from '@/model/NoodeView';
 import NoodelView from '@/model/NoodelView';
 import { traverseDescendents } from './noodel-traverse';
-import { getActiveChild } from '@/util/getters';
 
 /**
- * Handler for when a branch changes its size (on trunk axis), to align the trunk if necessary.
- * @param parent parent noode of the branch
- * @param newSize new branch size
- * @param level level of the branch
+ * Handler for noode size change. Realigns the trunk, trunk axis offsets of the noode's subtree
+ * and the branch offset of the parent branch, if necessary.
  */
-export function alignTrunkOnBranchSizeChange(parent: NoodeView, newSize: number, noodel: NoodelView) {
-    let diff = newSize - parent.branchSize;
+export function alignNoodelOnNoodeSizeChange(noodel: NoodelView, noode: NoodeView, newWidth: number, newHeight: number) {
+    const parent = noode.parent;
+    
+    let heightDiff = newHeight - noode.size;
+    let widthDiff = newWidth - parent.branchSize;
 
-    parent.branchSize = newSize;
+    noode.size = newHeight;
+    parent.branchSize = newWidth;
 
-    if (parent.isFocalParent) {
-        noodel.trunkOffset -= diff / 2;
-        noodel.trunkOffsetOrigin -= diff / 2;
-        noodel.trunkRelativeOffset += diff / 2;
+    if (Math.abs(heightDiff) > 0.001) {
+        
+        // align branch
+        if (noode.index === noode.parent.activeChildIndex) {
+            parent.branchOffset -= heightDiff / 2;
+            parent.branchOffsetOrigin -= heightDiff / 2;
+        }
+        else if (noode.index < parent.activeChildIndex) {
+            parent.branchOffset -= heightDiff;
+            parent.branchOffsetOrigin -= heightDiff;
+        }
     }
-    else if (parent.isChildrenVisible && parent.level < noodel.focalLevel) {
-        noodel.trunkOffset -= diff;
-        noodel.trunkOffsetOrigin -= diff;
-    }
 
-    traverseDescendents(parent, desc => desc.offset += diff, false);
+    if (Math.abs(widthDiff) > 0.001) {
+        
+        // align trunk
+        if (parent.isFocalParent) {
+            noodel.trunkOffset -= widthDiff / 2;
+            noodel.trunkOffsetOrigin -= widthDiff / 2;
+        }
+        else if (parent.isChildrenVisible && parent.level < noodel.focalLevel) {
+            noodel.trunkOffset -= widthDiff;
+            noodel.trunkOffsetOrigin -= widthDiff;
+        }
+
+        // align noode subtree
+        traverseDescendents(parent, desc => desc.offset += widthDiff, false);
+    }
 }
 
 /**
- * Handler for when a noode changes its size (on branch axis), to align the branch if necessary
- * @param noode noode with size change
- * @param newSize new noode size
- * @param index child index of the noode
+ * Aligns the trunk to center on the branch of a focal parent noode.
  */
-export function alignBranchOnNoodeSizeChange(noode: NoodeView, newSize: number) {
-    const parent = noode.parent;
-    
-    let diff = newSize - noode.size;  
+export function alignTrunkToFocalParent(noodel: NoodelView, focalParent: NoodeView) {
 
-    noode.size = newSize;
+    let targetOffset = (-focalParent.offset) - (focalParent.branchSize / 2);
     
-    if (noode.index === noode.parent.activeChildIndex) {
-        parent.branchOffset -= diff / 2;
-        parent.branchOffsetOrigin -= diff / 2;
-        parent.branchRelativeOffset += diff / 2;
+    noodel.trunkOffset = targetOffset;
+    noodel.trunkOffsetOrigin = targetOffset;
+}
+
+/**
+ * Aligns a branch to center on the noode at the given index.
+ */
+export function alignBranchToIndex(parent: NoodeView, index: number) {
+
+    let targetOffset = 0;
+
+    for (let i = 0; i < index; i++) {
+        targetOffset -= parent.children[i].size;
     }
-    else if (noode.index < parent.activeChildIndex) {
-        parent.branchOffset -= diff;
-        parent.branchOffsetOrigin -= diff;
-    }
+
+    targetOffset -= parent.children[index].size / 2;
+    parent.branchOffset = targetOffset;
+    parent.branchOffsetOrigin = targetOffset;
 }

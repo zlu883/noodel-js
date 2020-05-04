@@ -1,10 +1,11 @@
 import NoodeView from '@/model/NoodeView';
 import NoodeDefinition from '@/model/NoodeDefinition';
 import Noodel from './Noodel';
-import { setActiveChild as _setActiveChild, setActiveSubtreeVisibility } from '../controllers/noodel-mutate';
+import { setActiveChild as _setActiveChild, setActiveSubtreeVisibility, setActiveChild } from '../controllers/noodel-mutate';
 import { buildNoodeView, extractNoodeDefinition } from '@/controllers/noodel-setup';
 import { isRoot, getPath as _getPath } from '@/util/getters';
-import { alignBranchToIndex, alignTrunkToLevel } from '@/controllers/noodel-navigate';
+import { alignBranchToIndex } from '@/controllers/noodel-align';
+import { forceReflow } from '@/util/animate';
 
 export default class Noode {
 
@@ -78,19 +79,14 @@ export default class Noode {
     }
 
     setActiveChild(index: number) {
-        if (typeof index !== "number" || this.view.children.length === 0) {
-            console.warn("Cannot set active child: invalid index");
+        if (typeof index !== "number" || index < 0 || index >= this.view.children.length) {
+            console.warn("Cannot set active child: noode has no children or invalid index");
             return;
         }
-
-        if (index < 0) {
-            index = 0;
-        }
-        else if (index >= this.view.children.length) {
-            index = this.view.children.length - 1;
-        }
-
-        alignBranchToIndex(this.noodel.store, this.view, index);
+        
+        setActiveChild(this.view, index);
+        alignBranchToIndex(this.view, index);
+        forceReflow();
     }
 
     addChild(childDef: NoodeDefinition, index?: number): Noode {

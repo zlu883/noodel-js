@@ -164,6 +164,7 @@ export function buildNoodeView(idRegister: IdRegister, def: NoodeDefinition, lev
         branchOffset: 0,
         branchOffsetOrigin: 0,
         branchRelativeOffset: 0,
+        noodeOffset: 0,
         branchSize: 0,
         parent: parent,
         id: typeof def.id === 'string' ? def.id : idRegister.generateNoodeId(),

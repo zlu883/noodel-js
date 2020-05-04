@@ -5,7 +5,6 @@
     <AnimationFade>
         <div 
             class="nd-branch" 
-            ref="branch"
             :class="branchClass"
             :style="branchStyle"
         >  
@@ -30,9 +29,8 @@
     import NoodelTrunkBranchNoode from '@/view/NoodelTrunkBranchNoode.vue';
     import AnimationFade from './AnimationFade.vue';
 
-    import { getFocalHeight, getActiveChild } from '@/util/getters';
+    import { getFocalHeight } from '@/util/getters';
     import NoodeView from '@/model/NoodeView';
-    import { alignTrunkOnBranchSizeChange } from '@/controllers/noodel-align';
     import NoodelView from '@/model/NoodelView';
 
 	@Component({
@@ -46,23 +44,6 @@
 
         @Prop() parent: NoodeView;
         @Prop() store: NoodelView;
-
-        mounted() {
-            this.$nextTick(() => {
-                this.updateRenderedSize();
-                new ResizeSensor(this.$refs.branch as Element, () => {
-                    this.updateRenderedSize();
-                }); 
-            });     
-        }
-
-        updateRenderedSize() {  
-            alignTrunkOnBranchSizeChange(
-                this.parent, 
-                (this.$refs.branch as Element).getBoundingClientRect().width, 
-                this.store
-            );
-        }
 
         get branchStyle() {            
             return {
@@ -86,7 +67,9 @@
     
     .nd-branch {
         position: absolute;
-        transition: opacity 0.3s ease-in;
+        transition-property: opacity, transform;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
+        transition-duration: 0.5s; 
         opacity: 0.75;
     }
 

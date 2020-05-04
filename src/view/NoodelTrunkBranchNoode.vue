@@ -3,15 +3,15 @@
 <template>
 
     <div 
-        class="nd-noode" 
+        class="nd-noode-box"
     >
         <div
-            class="nd-content-box"
-            ref="contentBox"
+            class="nd-noode"
+            ref="noode"
             v-html="noode.content"
-            :class="contentBoxClass"
-            @wheel="onContentBoxWheel"
-            @pointerdown="onContentBoxPointerDown"
+            :class="noodeClass"
+            @wheel="onNoodeWheel"
+            @pointerdown="onNoodePointerDown"
         >
         </div>   
         <AnimationFade>   
@@ -40,7 +40,7 @@
     import AnimationFade from './AnimationFade.vue';
 
     import NoodeView from "@/model/NoodeView";
-    import { alignBranchOnNoodeSizeChange } from "@/controllers/noodel-align";
+    import { alignNoodelOnNoodeSizeChange } from "@/controllers/noodel-align";
     import NoodelView from '../model/NoodelView';
     import { traverseAncestors } from '../controllers/noodel-traverse';
     import { getPath } from '../util/getters';
@@ -75,10 +75,9 @@
         }
 
         updateRenderedSize() {
-            alignBranchOnNoodeSizeChange(
-                this.noode, 
-                this.$el.getBoundingClientRect().height
-            );
+            let rect = this.$el.getBoundingClientRect();
+            
+            alignNoodelOnNoodeSizeChange(this.store, this.noode, rect.width, rect.height);
         }
 
         applyPreventNav() {
@@ -104,9 +103,9 @@
             });
         }
 
-        onContentBoxWheel(ev: WheelEvent) {
+        onNoodeWheel(ev: WheelEvent) {
 
-            let el = this.$refs.contentBox as HTMLDivElement;
+            let el = this.$refs.noode as HTMLDivElement;
 
             if (!(this.noode.isActive && this.noode.parent.isFocalParent)) {
                 return;
@@ -138,9 +137,9 @@
             }
         }
 
-        onContentBoxPointerDown(ev: PointerEvent) {
+        onNoodePointerDown(ev: PointerEvent) {
 
-            let el = this.$refs.contentBox as HTMLDivElement;
+            let el = this.$refs.noode as HTMLDivElement;
 
             // detect click on scrollbar
             if (ev.clientX > el.getBoundingClientRect().left + el.clientWidth ||
@@ -150,7 +149,7 @@
             }
 
             if (this.noode.isActive && this.noode.parent.isFocalParent) {
-                this.store.pointerDownSrcContentBox = el;
+                this.store.pointerDownSrcNoode = el;
             }
 
             this.store.pointerDownSrcNoodePath = getPath(this.noode);
@@ -160,9 +159,9 @@
             return this.noode.parent.isFocalParent && this.noode.isActive;
         }
 
-        get contentBoxClass() {
+        get noodeClass() {
             return {
-                'nd-content-box-active': this.noode.isActive
+                'nd-noode-active': this.noode.isActive
             }
         }
 
@@ -189,7 +188,7 @@
 
 <style>
 
-    .nd-noode {
+    .nd-noode-box {
         box-sizing: border-box !important;
         position: relative;
         padding: 0.2em 0.6em;
@@ -197,7 +196,7 @@
         margin: 0 !important;
     }
 
-    .nd-content-box {
+    .nd-noode {
         position: relative;
         overflow: auto;
         touch-action: none !important; /* Important as hammerjs will break on mobile without this */
@@ -211,15 +210,15 @@
         line-height: 1.5;
     }
 
-    .nd-content-box-active {
+    .nd-noode-active {
         background-color: #ffffff;
     }
 
-    .nd-content-box > *:first-child {
+    .nd-noode > *:first-child {
         margin-top: 0;
     }
 
-    .nd-content-box > *:last-child {
+    .nd-noode > *:last-child {
         margin-bottom: 0;
     }
 
@@ -241,25 +240,25 @@
     }
 
     @media (max-width: 800px) {
-        .nd-content-box {
+        .nd-noode {
             max-width: 85vw;
         }
     }
 
     @media (max-height: 800px) {
-        .nd-content-box {
+        .nd-noode {
             max-height: 85vh;
         }
     }
 
     @media (min-width: 801px) {
-        .nd-content-box {
+        .nd-noode {
             max-width: 700px;
         }
     }
 
     @media (min-height: 801px) {
-        .nd-content-box {
+        .nd-noode {
             max-height: 700px;
         }
     }
