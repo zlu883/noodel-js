@@ -4,7 +4,7 @@ import { Axis } from '@/enums/Axis';
 import NoodeView from '@/model/NoodeView';
 import NoodelView from '@/model/NoodelView';
 import { getChildrenBranchMidSize, getActiveChild, getMidSize, isRoot } from '@/util/getters';
-import { alignTrunkToFocalParent, alignBranchToIndex } from './noodel-align';
+import { alignTrunkToBranch, alignBranchToIndex } from './noodel-align';
 import { forceReflow } from '@/util/animate';
 
 /**
@@ -420,7 +420,7 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
     }
 
     setFocalParent(noodel, newFocalParent);
-    alignTrunkToFocalParent(noodel, newFocalParent);
+    alignTrunkToBranch(noodel, newFocalParent);
     forceReflow();
 }
 
@@ -459,131 +459,51 @@ export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
 }
 
 /**
- * Logic for animating a 'jump' between noodes.
- * Currently incompatible with the normal movement logic, needs refactoring.
+ * Jumps to a specific noode in the tree, realigning all affected branches and trunk
+ * if necessary.
  */
-export function jumpToNoode(noodel: NoodelView, targetPath: number[]) {
+export function jumpToNoode(noodel: NoodelView, target: NoodeView) {
+
+    // No need to jump if target is already focal noode
+    if (target.id === noodel.focalParent.children[noodel.focalParent.activeChildIndex].id) {
+        return;
+    }
      
-    let nearestVisibleBranchParent = noodel.root;
-    let nearestVisibleBranchLevel = 0;
+    // finds the nearest visible branch
+    let nearestVisibleBranchParent = target.parent;
     
-    for (let i = 0; i < targetPath.length - 1; i++) {
-        if (nearestVisibleBranchParent.children[targetPath[i]].isChildrenVisible) {
-            nearestVisibleBranchParent = nearestVisibleBranchParent.children[targetPath[i]];
-            nearestVisibleBranchLevel++;
+    while (!nearestVisibleBranchParent.isChildrenVisible) {
+        nearestVisibleBranchParent = nearestVisibleBranchParent.parent;
+    }
+
+    hideActiveSubtree(nearestVisibleBranchParent);
+
+    // adjusts the active child of ancestors up to the nearest visible branch to point to target
+    let nextParent = target.parent;
+    let nextActiveChildIndex = target.index;
+
+    while (true) {
+        if (nextParent.activeChildIndex !== nextActiveChildIndex) {
+            setActiveChild(nextParent, nextActiveChildIndex);
+            alignBranchToIndex(nextParent, nextActiveChildIndex);
         }
-        else {
+
+        if (nextParent.id === nearestVisibleBranchParent.id) {
             break;
         }
+
+        nextActiveChildIndex = nextParent.index;
+        nextParent = nextParent.parent;
     }
 
-    if (noodel.trunkSnapAnimation) {
-        noodel.trunkSnapAnimation.stop();
-        noodel.trunkSnapAnimation = null;
+    showActiveSubtree(nearestVisibleBranchParent, (target.level - nearestVisibleBranchParent.level) + noodel.options.visibleSubtreeDepth);
+    
+    if (target.parent.id !== noodel.focalParent.id) {
+        setFocalParent(noodel, target.parent);
+        alignTrunkToBranch(noodel, target.parent);
     }
-
-    if (noodel.branchSnapAnimation) {
-        noodel.branchSnapAnimation.stop();
-        noodel.branchSnapAnimation = null;
-    };
-
-    setActiveSubtreeVisibility(noodel.root, false);
-
-    let targetTrunkOffset = 0;
-    let targetParent = noodel.root;
-
-    for (let i = 0; i < targetPath.length; i++) {
-        setActiveChild(targetParent, targetPath[i]);
-
-        if (i > nearestVisibleBranchLevel) {
-
-            let targetBranchOffset = 0;
-
-            for (let j = 0; j <= targetParent.activeChildIndex; j++) {
-                if (j < targetParent.activeChildIndex) {
-                    targetBranchOffset -= targetParent.children[j].size;
-                }
-                else {
-                    targetBranchOffset -= getMidSize(targetParent.children[j]);
-                }
-            }
-
-            targetParent.branchOffset = targetBranchOffset;
-            targetParent.branchOffsetOrigin = targetBranchOffset;
-            targetParent.branchRelativeOffset = getMidSize(getActiveChild(targetParent));
-        }    
-
-        if (i < targetPath.length - 1) {
-            targetTrunkOffset -= targetParent.branchSize;
-            targetParent = getActiveChild(targetParent);
-        }
-        else {
-            targetTrunkOffset -= getChildrenBranchMidSize(targetParent);
-        }
-    }
-
-    setActiveSubtreeVisibility(noodel.root, true, (targetPath.length - 1) + noodel.options.visibleSubtreeDepth);
-
-    let targetBranchSnapOffset = 0;
-    let targetIndex = targetPath[nearestVisibleBranchLevel];
-
-    for (let i = 0; i <= targetIndex; i++) {
-        if (i < targetIndex) {
-            targetBranchSnapOffset -= nearestVisibleBranchParent.children[i].size;
-        }
-        else {
-            targetBranchSnapOffset -= getMidSize(nearestVisibleBranchParent.children[i]);
-        }
-    }
-
-    let animateBranch = Math.abs(targetBranchSnapOffset - nearestVisibleBranchParent.branchOffset) > 0.0001;
-    let animateTrunk = Math.abs(targetTrunkOffset - noodel.trunkOffset) > 0.0001;
-
-    if (animateBranch || animateTrunk) {
-        noodel.isLocked = true;
-    }
-
-    noodel.focalParent.isFocalParent = false;
-    noodel.focalParent = targetParent;
-    noodel.focalParent.isFocalParent = true;
-    noodel.focalLevel = targetPath.length - 1;
-
-    let from = {};
-    let to = {};
-
-    if (animateBranch) {
-        from['b'] = nearestVisibleBranchParent.branchOffset;
-        to['b'] = targetBranchSnapOffset;       
-    }
-
-    if (animateTrunk) {
-        from['t'] = noodel.trunkOffset;
-        to['t'] = targetTrunkOffset; 
-    }
-
-    new TWEEN.Tween(from)
-        .to(to, noodel.options.snapDuration)
-        .easing(TWEEN.Easing.Exponential.Out)
-        .onUpdate(next => {
-            if (animateBranch) nearestVisibleBranchParent.branchOffset = next.b;
-            if (animateTrunk) noodel.trunkOffset = next.t;
-        })
-        .onComplete(() => {
-            if (animateBranch) {
-                nearestVisibleBranchParent.branchRelativeOffset = getMidSize(getActiveChild(nearestVisibleBranchParent));
-                finalizeBranchPosition(noodel, nearestVisibleBranchParent, targetBranchSnapOffset);
-            }
-
-            if (animateTrunk) {
-                noodel.trunkRelativeOffset = getChildrenBranchMidSize(noodel.focalParent);
-                finalizeTrunkPosition(noodel, targetTrunkOffset);
-            }
-            
-            finalizeMovement(noodel);
-        })
-        .start();
-
-    animateSnap();
+    
+    forceReflow();
 }
 
 export function finalizeMovement(noodel: NoodelView) {

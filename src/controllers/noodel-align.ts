@@ -46,11 +46,11 @@ export function alignNoodelOnNoodeSizeChange(noodel: NoodelView, noode: NoodeVie
 }
 
 /**
- * Aligns the trunk to center on the branch of a focal parent noode.
+ * Aligns the trunk to center on the given branch.
  */
-export function alignTrunkToFocalParent(noodel: NoodelView, focalParent: NoodeView) {
+export function alignTrunkToBranch(noodel: NoodelView, branchParent: NoodeView) {
 
-    let targetOffset = (-focalParent.offset) - (focalParent.branchSize / 2);
+    let targetOffset = (-branchParent.offset) - (branchParent.branchSize / 2);
     
     noodel.trunkOffset = targetOffset;
     noodel.trunkOffsetOrigin = targetOffset;

@@ -65,7 +65,7 @@ function onWheel(noodel: NoodelView, ev: WheelEvent) {
 
 function onPanStart(noodel: NoodelView, ev: HammerInput) {
     
-    const src = noodel.pointerDownSrcNoode;
+    const src = noodel.pointerDownSrcNoodeEl;
 
     // known issue: using scrollLeft does not account for rtl direction
     if (src) {
@@ -93,8 +93,8 @@ function onPanStart(noodel: NoodelView, ev: HammerInput) {
 function onPan(noodel: NoodelView, ev: HammerInput) {
 
     if (noodel.doInnerScroll) {
-        noodel.pointerDownSrcNoode.scrollLeft = noodel.innerScrollOriginLeft - ev.deltaX;
-        noodel.pointerDownSrcNoode.scrollTop = noodel.innerScrollOriginTop - ev.deltaY;
+        noodel.pointerDownSrcNoodeEl.scrollLeft = noodel.innerScrollOriginLeft - ev.deltaX;
+        noodel.pointerDownSrcNoodeEl.scrollTop = noodel.innerScrollOriginTop - ev.deltaY;
     }
     else {
         if (!noodel.hasSwipe) return;
@@ -108,8 +108,8 @@ function onPanEnd(noodel: NoodelView, ev: HammerInput) {
         noodel.doInnerScroll = false;
         noodel.innerScrollOriginTop = 0;
         noodel.innerScrollOriginLeft = 0;
+        noodel.pointerDownSrcNoodeEl = null;
         noodel.pointerDownSrcNoode = null;
-        noodel.pointerDownSrcNoodePath = null;
     }  
     else {
         if (!noodel.hasSwipe) return;
@@ -123,8 +123,8 @@ function onPress(noodel: NoodelView, ev: HammerInput) {
 }
 
 function onPressUp(noodel: NoodelView, ev: HammerInput) {
+    noodel.pointerDownSrcNoodeEl = null;
     noodel.pointerDownSrcNoode = null;
-    noodel.pointerDownSrcNoodePath = null;
     noodel.hasPress = false;
 }
 
@@ -133,10 +133,10 @@ function onTap(noodel: NoodelView, ev: HammerInput) {
     
     if (noodel.hasSwipe) return;
     
-    if (noodel.pointerDownSrcNoodePath) {
-        jumpToNoode(noodel, noodel.pointerDownSrcNoodePath);
+    if (noodel.pointerDownSrcNoode) {
+        jumpToNoode(noodel, noodel.pointerDownSrcNoode);
+        noodel.pointerDownSrcNoodeEl = null;
         noodel.pointerDownSrcNoode = null;
-        noodel.pointerDownSrcNoodePath = null;
     }
 }
 

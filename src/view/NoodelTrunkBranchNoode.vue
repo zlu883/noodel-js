@@ -149,10 +149,10 @@
             }
 
             if (this.noode.isActive && this.noode.parent.isFocalParent) {
-                this.store.pointerDownSrcNoode = el;
+                this.store.pointerDownSrcNoodeEl = el;
             }
 
-            this.store.pointerDownSrcNoodePath = getPath(this.noode);
+            this.store.pointerDownSrcNoode = this.noode;
         }
 
         get isFocalActive() {

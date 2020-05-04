@@ -7,7 +7,7 @@ import NoodelView from '@/model/NoodelView';
 import Noode from './Noode';
 import IdRegister from './IdRegister';
 import { getActiveChild } from '@/util/getters';
-import { jumpToNoode as _jumpToNoode, shiftFocalLevel, shiftFocalNoode } from '@/controllers/noodel-navigate';
+import { jumpToNoode, shiftFocalLevel, shiftFocalNoode } from '@/controllers/noodel-navigate';
 
 export default class Noodel {
 
@@ -96,24 +96,31 @@ export default class Noodel {
         return focalNoode ? new Noode(focalNoode, this) : null;
     }
 
-    findNoode(selector: number[] | string): Noode {
-        if (typeof selector === 'string') {
-            let target = this.idRegister.findNoode(selector);
-            return target ? new Noode(target, this) : null;
-        }
-        else if (Array.isArray(selector)) {
-            let target = this.store.root;
-
-            for (let i = 0; i < selector.length; i++) {
-                target = target.children[selector[i]];
-                if (!target) return null;
-            }
-
-            return new Noode(target, this);
-        }
-        else {
+    findNoodeByPath(path: number[]): Noode {
+        if (!Array.isArray(path)) {
+            console.warn("Cannot find noode: invalid path");
             return null;
         }
+
+        let target = this.store.root;
+
+        for (let i = 0; i < path.length; i++) {
+            target = target.children[path[i]];
+            if (!target) return null;
+        }
+
+        return new Noode(target, this);
+    }
+
+    findNoodeById(id: string): Noode {
+        if (typeof id !== 'string') {
+            console.warn("Cannot find noode: invalid id");
+            return null;
+        }
+
+        let target = this.idRegister.findNoode(id);
+        
+        return target ? new Noode(target, this) : null;
     }
 
     moveIn(levelCount: number = 1) {
@@ -132,14 +139,17 @@ export default class Noodel {
         shiftFocalNoode(this.store, -noodeCount);
     }
 
-    jumpToNoode(selector: number[] | string) {
-        let target = this.findNoode(selector);             
+    jumpTo(noode: Noode) {
+        if (!(noode instanceof Noode)) {
+            console.warn("Cannot jump to noode: invalid target");
+            return;
+        }
 
-        if (target) {
-            _jumpToNoode(this.store, target.getPath());
+        if (!noode.getParent()) {
+            console.warn("Cannot jump to noode: target is root");
+            return;
         }
-        else {
-            console.warn("Cannot jump to noode: invalid selector");
-        }
+
+        jumpToNoode(this.store, noode.view);
     }
 }
