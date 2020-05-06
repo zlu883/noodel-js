@@ -1,11 +1,10 @@
-import { startSwipe, updateSwipe, releaseSwipe, unsetLimitIndicators, jumpToNoode, shiftFocalNoode, shiftFocalLevel } from './noodel-navigate';
+import { startPan, updatePan, releasePan, unsetLimitIndicators, jumpToNoode, shiftFocalNoode, shiftFocalLevel } from './noodel-navigate';
 import Hammer from 'hammerjs';
 import NoodelView from '@/model/NoodelView';
 
 function onKeyDown(noodel: NoodelView, event: KeyboardEvent) {    
 
     if (noodel.hasSwipe) return;
-    if (noodel.isLocked) return;
     if (noodel.focalParent.children.length === 0) return;
 
     if (event.key === "ArrowDown") {
@@ -29,7 +28,6 @@ function onKeyUp(noodel: NoodelView, event: KeyboardEvent) {
 function onWheel(noodel: NoodelView, ev: WheelEvent) {
 
     if (noodel.hasSwipe) return;
-    if (noodel.isLocked) return;
     if (noodel.focalParent.children.length === 0) return;
 
     if (Math.abs(ev.deltaY) > Math.abs(ev.deltaX)) {
@@ -83,11 +81,10 @@ function onPanStart(noodel: NoodelView, ev: HammerInput) {
 
     if (noodel.doInnerScroll) return;
     if (noodel.hasSwipe) return;
-    if (noodel.isLocked) return;
     if (noodel.focalParent.children.length === 0) return;
 
     noodel.hasSwipe = true;
-    startSwipe(noodel, ev);
+    startPan(noodel, ev);
 }
 
 function onPan(noodel: NoodelView, ev: HammerInput) {
@@ -98,7 +95,7 @@ function onPan(noodel: NoodelView, ev: HammerInput) {
     }
     else {
         if (!noodel.hasSwipe) return;
-        updateSwipe(noodel, ev);
+        updatePan(noodel, ev);
     }
 }
 
@@ -114,7 +111,7 @@ function onPanEnd(noodel: NoodelView, ev: HammerInput) {
     else {
         if (!noodel.hasSwipe) return;
         noodel.hasSwipe = false;
-        releaseSwipe(noodel, ev); 
+        releasePan(noodel, ev); 
     }
 }
 

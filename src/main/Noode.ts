@@ -230,14 +230,12 @@ export default class Noode {
 
             targetOffset -= this.view.children[this.view.activeChildIndex].size / 2;
             this.view.branchOffset = targetOffset;
-            this.view.branchOffsetOrigin = targetOffset;
-            this.view.branchRelativeOffset = this.view.children[this.view.activeChildIndex].size / 2;
+            this.view.branchOffsetAligned = this.view.children[this.view.activeChildIndex].size / 2;
         }
         else {
             // if no more children, clear branch position and size values
             this.view.branchOffset = 0;
-            this.view.branchOffsetOrigin = 0;
-            this.view.branchRelativeOffset = 0;
+            this.view.branchOffsetAligned = 0;
             this.view.branchSize = 0;            
         }
 
@@ -253,8 +251,8 @@ export default class Noode {
             targetOffset -= currentBranch.branchSize / 2;
 
             this.noodel.store.trunkOffset = targetOffset;
-            this.noodel.store.trunkOffsetOrigin = targetOffset;
-            this.noodel.store.trunkRelativeOffset = currentBranch.branchSize / 2;
+            this.noodel.store.panOffsetOrigin = targetOffset;
+            this.noodel.store.trunkOffsetAligned = currentBranch.branchSize / 2;
             this.noodel.store.focalParent.isFocalParent = false;
             this.noodel.store.focalParent = currentBranch;
             this.noodel.store.focalParent.isFocalParent = true;

@@ -15,8 +15,7 @@ export default interface NoodeView {
 
     offset: number;
     branchOffset: number;
-    branchOffsetOrigin: number;
-    branchRelativeOffset: number;
+    branchOffsetAligned: number;
 
     noodeOffset: number;
 

@@ -4,6 +4,7 @@
 
     <div 
         class="nd-canvas"
+        ref="canvas"
         tabindex="0"
         @dragstart.prevent
     >
@@ -13,6 +14,7 @@
         <AnimationFade>
             <div
                 class="nd-trunk"
+                ref="trunk"
                 :style="trunkStyle"
             >
                 <NoodelTrunkBranch
@@ -43,6 +45,7 @@
     import { setupNoodelInputBindings } from '@/controllers/input-binding';
     import { traverseDescendents } from '../controllers/noodel-traverse';
     import NoodelView from '@/model/NoodelView';
+    import { Axis } from '@/enums/Axis';
 
     @Component({
 		components: {
@@ -58,13 +61,21 @@
         mounted() {
             setupContainer(this.$el, this.store);
             setupNoodelInputBindings(this.$el, this.store);
+            this.store.trunkEl = this.$refs.trunk as Element;
+            this.store.canvasEl = this.$refs.canvas as Element;
             this.$nextTick(this.store.options.mounted);
         }
 
         get trunkStyle() {
-            return {
+            let style = {
                 transform: 'translateX(' + (this.store.trunkOffset + getFocalWidth(this.store)) + 'px)'
             };
+
+            if (this.store.hasSwipe && this.store.panAxis === Axis.HORIZONTAL) {
+                style["transition-property"] = "none"; // disable transform transition if user is panning
+            }
+
+            return style;
         }
 
         get allBranchParents() {
@@ -105,7 +116,9 @@
 
     .nd-trunk {
         position: relative;
-        transition: transform .5s cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
+        transition-property: transform;
+        transition-duration: .5s; 
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
     }
     
 </style>

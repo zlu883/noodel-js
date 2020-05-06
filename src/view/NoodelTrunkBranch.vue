@@ -5,6 +5,7 @@
     <AnimationFade>
         <div 
             class="nd-branch" 
+            ref="branch"
             :class="branchClass"
             :style="branchStyle"
         >  
@@ -32,6 +33,7 @@
     import { getFocalHeight } from '@/util/getters';
     import NoodeView from '@/model/NoodeView';
     import NoodelView from '@/model/NoodelView';
+    import { Axis } from '@/enums/Axis';
 
 	@Component({
         components: {
@@ -45,16 +47,35 @@
         @Prop() parent: NoodeView;
         @Prop() store: NoodelView;
 
-        get branchStyle() {            
-            return {
+        mounted() {
+            if (this.parent.isFocalParent) {
+                this.store.focalBranchEl = this.$refs.branch as Element;
+            }
+        }
+
+        get branchStyle() {
+            let style = {
                 transform: 'translate(' + this.parent.offset + 'px, ' + (this.parent.branchOffset + getFocalHeight(this.store)) + 'px)'
             }
+
+            if (this.store.hasSwipe && this.store.panAxis === Axis.VERTICAL && this.parent.isFocalParent) {
+                style["transition-property"] = "opacity"; // disable transform transition if user is panning
+            }
+
+            return style;
         }
 
         get branchClass() {
             return {
                 'nd-branch-hidden': !this.parent.isChildrenVisible,
                 'nd-branch-focal': this.parent.isFocalParent
+            }
+        }
+
+        @Watch("parent.isFocalParent")
+        onIsFocalParentChanged(newVal: boolean, oldVal: boolean) {
+            if (newVal === true) {
+                this.store.focalBranchEl = this.$refs.branch as Element;
             }
         }
     }

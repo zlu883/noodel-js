@@ -14,14 +14,13 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
 
     rootNoode.isActive = true;
 
-    let noodel = {
+    let noodel: NoodelView = {
         root: rootNoode,
         focalParent: null,
         focalLevel: null,
         
         trunkOffset: 0,
-        trunkOffsetOrigin: 0,
-        trunkRelativeOffset: 0,
+        trunkOffsetAligned: 0,
     
         showLimits: {
             top: false,
@@ -29,12 +28,10 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
             left: false,
             right: false
         },
-        movingAxis: null,
+        panOffsetOrigin: 0,
+        panAxis: null,
         hasPress: false,
         hasSwipe: false,
-
-        lastSwipeDelta: 0,
-        totalSwipeDelta: 0,
 
         containerSize: {
             x: 0,
@@ -43,7 +40,10 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
         
         options: {
             visibleSubtreeDepth: 1,
-            snapDuration: 600
+            swipeFrictionBranch: 0.7,
+            swipeFrictionTrunk: 0.2,
+            swipeWeightBranch: 100,
+            swipeWeightTrunk: 100
         }
     }
 
@@ -142,8 +142,20 @@ export function mergeOptions(options: NoodelOptions, noodel: NoodelView) {
         noodel.options.visibleSubtreeDepth = options.visibleSubtreeDepth;
     }
 
-    if (typeof options.snapDuration === "number") {
-        noodel.options.snapDuration = options.snapDuration;
+    if (typeof options.swipeWeightBranch === "number") {
+        noodel.options.swipeWeightBranch = options.swipeWeightBranch;
+    }
+
+    if (typeof options.swipeWeightTrunk === "number") {
+        noodel.options.swipeWeightTrunk = options.swipeWeightTrunk;
+    }
+
+    if (typeof options.swipeFrictionBranch === "number") {
+        noodel.options.swipeFrictionBranch = options.swipeFrictionBranch;
+    }
+
+    if (typeof options.swipeFrictionTrunk === "number") {
+        noodel.options.swipeFrictionTrunk = options.swipeFrictionTrunk;
     }
 
     if (typeof options.mounted === "function") {
@@ -162,8 +174,7 @@ export function buildNoodeView(idRegister: IdRegister, def: NoodeDefinition, lev
         size: 0,
         offset: 0,
         branchOffset: 0,
-        branchOffsetOrigin: 0,
-        branchRelativeOffset: 0,
+        branchOffsetAligned: 0,
         noodeOffset: 0,
         branchSize: 0,
         parent: parent,

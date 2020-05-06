@@ -11,29 +11,42 @@ export default interface NoodelView {
     focalLevel: number;
     
     trunkOffset: number;
-    trunkOffsetOrigin: number;
-    trunkRelativeOffset: number;
+    /**
+     * This is the expected offset if the trunk is aligned to the current focal branch.
+     */
+    trunkOffsetAligned: number;
 
     showLimits: Compass;
-    movingAxis: Axis;
-    isLocked?: boolean; // if locked, user interactions will not move the carousel
     limitIndicatorTimeout?: number;
+
+    /**
+     * This is the offset of the trunk or focal branch when panning begins.
+     */
+    panOffsetOrigin: number;
+    panAxis: Axis;
 
     hasPress: boolean;
     hasSwipe: boolean;
 
-    // The DOM element of the noode where pointerdown events originated.
-    // Used to check the presence of inner scrolling.
+    /**
+     *  The DOM element of the noode where pointerdown events originated.
+     *  Used to check the presence of inner scrolling.
+     */
     pointerDownSrcNoodeEl?: Element;
-    // The noode where pointerdown events originated.
-    // Used to determine the target for jump navigation.
+    /**
+     * The noode where pointerdown events originated.
+     * Used to determine the target for jump navigation.
+     */
     pointerDownSrcNoode?: NoodeView;
     doInnerScroll?: boolean;
     innerScrollOriginLeft?: number;
     innerScrollOriginTop?: number;
 
-    lastSwipeDelta: number;
-    totalSwipeDelta: number;
+    // references to DOM elements mainly for calculating positions
+    canvasEl?: Element;
+    trunkEl?: Element;
+    focalBranchEl?: Element;
+
     trunkSnapAnimation?: any;
     branchSnapAnimation?: any;
 

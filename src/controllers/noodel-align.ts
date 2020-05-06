@@ -20,11 +20,11 @@ export function alignNoodelOnNoodeSizeChange(noodel: NoodelView, noode: NoodeVie
         // align branch
         if (noode.index === noode.parent.activeChildIndex) {
             parent.branchOffset -= heightDiff / 2;
-            parent.branchOffsetOrigin -= heightDiff / 2;
+            parent.branchOffsetAligned -= heightDiff / 2;
         }
         else if (noode.index < parent.activeChildIndex) {
             parent.branchOffset -= heightDiff;
-            parent.branchOffsetOrigin -= heightDiff;
+            parent.branchOffsetAligned -= heightDiff;
         }
     }
 
@@ -33,11 +33,11 @@ export function alignNoodelOnNoodeSizeChange(noodel: NoodelView, noode: NoodeVie
         // align trunk
         if (parent.isFocalParent) {
             noodel.trunkOffset -= widthDiff / 2;
-            noodel.trunkOffsetOrigin -= widthDiff / 2;
+            noodel.trunkOffsetAligned -= widthDiff / 2;
         }
         else if (parent.isChildrenVisible && parent.level < noodel.focalLevel) {
             noodel.trunkOffset -= widthDiff;
-            noodel.trunkOffsetOrigin -= widthDiff;
+            noodel.trunkOffsetAligned -= widthDiff;
         }
 
         // align noode subtree
@@ -53,7 +53,7 @@ export function alignTrunkToBranch(noodel: NoodelView, branchParent: NoodeView) 
     let targetOffset = (-branchParent.offset) - (branchParent.branchSize / 2);
     
     noodel.trunkOffset = targetOffset;
-    noodel.trunkOffsetOrigin = targetOffset;
+    noodel.trunkOffsetAligned = targetOffset;
 }
 
 /**
@@ -69,5 +69,5 @@ export function alignBranchToIndex(parent: NoodeView, index: number) {
 
     targetOffset -= parent.children[index].size / 2;
     parent.branchOffset = targetOffset;
-    parent.branchOffsetOrigin = targetOffset;
+    parent.branchOffsetAligned = targetOffset;
 }

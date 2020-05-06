@@ -206,7 +206,7 @@
         padding: 1.0em;
         border-radius: 0.4em;
         background-color: #e6e6e6;
-        transition: background-color 0.5s ease-in;
+        transition: background-color 0.5s cubic-bezier(0.215, 0.610, 0.355, 1.000);
         line-height: 1.5;
     }
 
