@@ -63,7 +63,13 @@
             setupNoodelInputBindings(this.$el, this.store);
             this.store.trunkEl = this.$refs.trunk as Element;
             this.store.canvasEl = this.$refs.canvas as Element;
-            this.$nextTick(this.store.options.mounted);
+            requestAnimationFrame(() => {
+                this.store.isFirstRenderDone = true;
+
+                if (typeof this.store.options.mounted === 'function') {
+                    this.store.options.mounted();
+                };                
+            });
         }
 
         get trunkStyle() {

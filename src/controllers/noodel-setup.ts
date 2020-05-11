@@ -32,6 +32,7 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
         panAxis: null,
         hasPress: false,
         hasSwipe: false,
+        isFirstRenderDone: false,
 
         containerSize: {
             x: 0,
@@ -172,16 +173,17 @@ export function buildNoodeView(idRegister: IdRegister, def: NoodeDefinition, lev
         isFocalParent: false,
         isActive: false,
         size: 0,
-        offset: 0,
-        branchOffset: 0,
-        branchOffsetAligned: 0,
-        noodeOffset: 0,
+        childTrunkOffset: 0,
+        childBranchOffset: 0,
+        childBranchOffsetAligned: 0,
+        branchRelativeOffset: 0,
         branchSize: 0,
         parent: parent,
         id: typeof def.id === 'string' ? def.id : idRegister.generateNoodeId(),
         children: [],
         content: def.content || null,
-        activeChildIndex: null
+        activeChildIndex: null,
+        flipInvert: 0,
     }
 
     idRegister.registerNoode(noodeView.id, noodeView);

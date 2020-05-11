@@ -4,6 +4,7 @@
 
     <div 
         class="nd-noode-box"
+        :style="noodeBoxStyle"
     >
         <div
             class="nd-noode"
@@ -56,28 +57,26 @@
         @Prop() store: NoodelView;
 
         mounted() {
-            this.$nextTick(() => {
+            new ResizeSensor(this.$el, () => {
                 this.updateRenderedSize();
-
-                new ResizeSensor(this.$el, () => {
-                    this.updateRenderedSize();
-                });
-
-                this.applyPreventNav();
             });
+
+            this.applyPreventNav();
+
+            this.noode.el = this.$el;
         }
 
         @Watch("noode.content")
         onContentUpdated() {
             this.$nextTick(() => {
+                this.updateRenderedSize();
                 this.applyPreventNav();
             });
         }
 
         updateRenderedSize() {
             let rect = this.$el.getBoundingClientRect();
-            
-            alignNoodelOnNoodeSizeChange(this.store, this.noode, rect.width, rect.height);
+            alignNoodelOnNoodeSizeChange(this.store, this.noode, rect.width, rect.height, this.store.isFirstRenderDone);
         }
 
         applyPreventNav() {
@@ -165,6 +164,17 @@
             }
         }
 
+        get noodeBoxStyle() {
+            let style = {};
+
+            if (this.noode.flipInvert !== 0) {
+                style["transform"] = "translateY(" + this.noode.flipInvert + "px)";
+                style["transition-property"] = "none";
+            }
+            
+            return style;
+        }
+
         get showChildIndicator() {
             return this.noode.children.length > 0;
         }
@@ -194,6 +204,9 @@
         padding: 0.2em 0.6em;
         text-align: start;
         margin: 0 !important;
+        transition-property: transform;
+        transition-duration: 0.5s;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
 
     .nd-noode {
@@ -206,7 +219,9 @@
         padding: 1.0em;
         border-radius: 0.4em;
         background-color: #e6e6e6;
-        transition: background-color 0.5s cubic-bezier(0.215, 0.610, 0.355, 1.000);
+        transition-property: background-color;
+        transition-duration: 0.5s;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
         line-height: 1.5;
     }
 

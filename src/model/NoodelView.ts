@@ -27,6 +27,8 @@ export default interface NoodelView {
 
     hasPress: boolean;
     hasSwipe: boolean;
+    
+    isFirstRenderDone: boolean;
 
     /**
      *  The DOM element of the noode where pointerdown events originated.
@@ -46,9 +48,6 @@ export default interface NoodelView {
     canvasEl?: Element;
     trunkEl?: Element;
     focalBranchEl?: Element;
-
-    trunkSnapAnimation?: any;
-    branchSnapAnimation?: any;
 
     containerSize: Vector2D;
     options: NoodelOptions;

@@ -51,15 +51,18 @@
             if (this.parent.isFocalParent) {
                 this.store.focalBranchEl = this.$refs.branch as Element;
             }
+
+            this.parent.childBranchEl = this.$refs.branch as Element;
         }
 
         get branchStyle() {
             let style = {
-                transform: 'translate(' + this.parent.offset + 'px, ' + (this.parent.branchOffset + getFocalHeight(this.store)) + 'px)'
+                transform: 'translate(' + this.parent.childTrunkOffset + 'px, ' + (this.parent.childBranchOffset + getFocalHeight(this.store)) + 'px)'
             }
 
+            // disable transform transition if user is panning
             if (this.store.hasSwipe && this.store.panAxis === Axis.VERTICAL && this.parent.isFocalParent) {
-                style["transition-property"] = "opacity"; // disable transform transition if user is panning
+                style["transition-property"] = "opacity";
             }
 
             return style;

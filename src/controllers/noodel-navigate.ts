@@ -4,7 +4,7 @@ import NoodeView from '@/model/NoodeView';
 import NoodelView from '@/model/NoodelView';
 import { getActiveChild, getFocalWidth, getFocalHeight } from '@/util/getters';
 import { alignTrunkToBranch, alignBranchToIndex } from './noodel-align';
-import { forceReflow } from '@/util/animate';
+import { forceReflow } from '@/controllers/noodel-animate';
 
 /**
  * Core function for panning the trunk to a specified position, changing the focal parent
@@ -77,7 +77,7 @@ function panTrunk(noodel: NoodelView, targetOffset: number) {
  */
 function panFocalBranch(noodel: NoodelView, targetOffset: number) {
 
-    let offsetDiff = targetOffset - noodel.focalParent.branchOffsetAligned;
+    let offsetDiff = targetOffset - noodel.focalParent.childBranchOffsetAligned;
     let targetIndex = noodel.focalParent.activeChildIndex;
     let alignedOffsetDiff = 0;
 
@@ -128,10 +128,10 @@ function panFocalBranch(noodel: NoodelView, targetOffset: number) {
         hideActiveSubtree(noodel.focalParent);
         setActiveChild(noodel.focalParent, targetIndex);
         showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
-        noodel.focalParent.branchOffsetAligned += alignedOffsetDiff; 
+        noodel.focalParent.childBranchOffsetAligned += alignedOffsetDiff; 
     }
 
-    noodel.focalParent.branchOffset = targetOffset;
+    noodel.focalParent.childBranchOffset = targetOffset;
 }
 
 export function startPan(noodel: NoodelView, ev: HammerInput) {
@@ -153,7 +153,7 @@ export function startPan(noodel: NoodelView, ev: HammerInput) {
         // taking into account the canvas's position as it may not be full page
         let currentFocalBranchOffset = noodel.focalBranchEl.getBoundingClientRect().top - noodel.canvasEl.getBoundingClientRect().top - getFocalHeight(noodel);
 
-        noodel.focalParent.branchOffset = currentFocalBranchOffset;
+        noodel.focalParent.childBranchOffset = currentFocalBranchOffset;
         noodel.panOffsetOrigin = currentFocalBranchOffset;
     }
 }

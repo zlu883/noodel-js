@@ -13,12 +13,17 @@ export default interface NoodeView {
     isFocalParent: boolean;
     isActive: boolean;
 
-    offset: number;
-    branchOffset: number;
-    branchOffsetAligned: number;
+    childTrunkOffset: number;
+    childBranchOffset: number;
+    childBranchOffsetAligned: number;
 
-    noodeOffset: number;
+    branchRelativeOffset: number;
 
     size: number;
     branchSize: number;
+
+    flipInvert: number;
+
+    el?: Element;
+    childBranchEl?: Element;
 }

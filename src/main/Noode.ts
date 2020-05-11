@@ -5,7 +5,7 @@ import { setActiveChild as _setActiveChild, setActiveSubtreeVisibility, setActiv
 import { buildNoodeView, extractNoodeDefinition } from '@/controllers/noodel-setup';
 import { isRoot, getPath as _getPath } from '@/util/getters';
 import { alignBranchToIndex } from '@/controllers/noodel-align';
-import { forceReflow } from '@/util/animate';
+import { forceReflow } from '@/controllers/noodel-animate';
 
 export default class Noode {
 
@@ -90,51 +90,13 @@ export default class Noode {
     }
 
     addChild(childDef: NoodeDefinition, index?: number): Noode {
-        if (typeof index === "number" && (index < 0 || index > this.view.children.length)) {
-            console.warn("Cannot add child: invalid index");
-            return;
-        }
-
-        let child = buildNoodeView(
-            this.noodel.idRegister,
-            childDef,
-            this.view.level + 1,
-            typeof index === 'number' ? index : this.view.children.length,
-            this.view
-        );
-
-        child.offset = this.view.offset + this.view.branchSize;
-
-        if (typeof index !== 'number') {
-            this.view.children.push(child);
-        }
-        else {
-            this.view.children.splice(index, 0, child);
-
-            if (this.view.activeChildIndex !== null && index <= this.view.activeChildIndex) {
-                this.view.activeChildIndex++;
-            }
-
-            for (let i = index + 1; i < this.view.children.length; i++) {
-                this.view.children[i].index++;
-            }
-        }
-
-        if (this.view.children.length === 1) {
-            _setActiveChild(this.view, 0);
-        }
-
-        if (this.view.isActive && (isRoot(this.view) || this.view.parent.isChildrenVisible)) {
-            setActiveSubtreeVisibility(this.noodel.getFocalParent().view, true, this.noodel.store.options.visibleSubtreeDepth);
-        }
-
-        return new Noode(child, this.noodel);
+        return this.addChildren([childDef], index)[0] || null;
     }
 
-    addChildren(childDefs: NoodeDefinition[], index?: number): Noode {
+    addChildren(childDefs: NoodeDefinition[], index?: number): Noode[] {
         if (typeof index === "number" && (index < 0 || index > this.view.children.length)) {
             console.warn("Cannot add child: invalid index");
-            return;
+            return [];
         }
 
         let children = childDefs.map((def, index) => {
@@ -146,7 +108,7 @@ export default class Noode {
                 this.view
             )
 
-            child.offset = this.view.offset + this.view.branchSize;
+            child.childTrunkOffset = this.view.childTrunkOffset + this.view.branchSize;
             return child;
         });
 
@@ -160,7 +122,7 @@ export default class Noode {
                 this.view.activeChildIndex += children.length;
             }
 
-            for (let i = index + 1; i < this.view.children.length; i++) {
+            for (let i = index + childDefs.length; i < this.view.children.length; i++) {
                 this.view.children[i].index += children.length;
             }
         }
@@ -172,6 +134,8 @@ export default class Noode {
         if (this.view.isActive && (isRoot(this.view) || this.view.parent.isChildrenVisible)) {
             setActiveSubtreeVisibility(this.noodel.getFocalParent().view, true, this.noodel.store.options.visibleSubtreeDepth);
         }
+
+        return children.map(c => new Noode(c, this.noodel));
     }
 
     removeChild(index: number): NoodeDefinition {
@@ -229,13 +193,13 @@ export default class Noode {
             }
 
             targetOffset -= this.view.children[this.view.activeChildIndex].size / 2;
-            this.view.branchOffset = targetOffset;
-            this.view.branchOffsetAligned = this.view.children[this.view.activeChildIndex].size / 2;
+            this.view.childBranchOffset = targetOffset;
+            this.view.childBranchOffsetAligned = this.view.children[this.view.activeChildIndex].size / 2;
         }
         else {
             // if no more children, clear branch position and size values
-            this.view.branchOffset = 0;
-            this.view.branchOffsetAligned = 0;
+            this.view.childBranchOffset = 0;
+            this.view.childBranchOffsetAligned = 0;
             this.view.branchSize = 0;            
         }
 
