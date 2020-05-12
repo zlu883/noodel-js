@@ -57,7 +57,7 @@
 
         get branchStyle() {
             let style = {
-                transform: 'translate(' + this.parent.childTrunkOffset + 'px, ' + (this.parent.childBranchOffset + getFocalHeight(this.store)) + 'px)'
+                transform: 'translate(' + this.parent.trunkRelativeOffset + 'px, ' + (this.parent.childBranchOffset + getFocalHeight(this.store)) + 'px)'
             }
 
             // disable transform transition if user is panning

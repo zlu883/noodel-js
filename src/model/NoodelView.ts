@@ -27,8 +27,6 @@ export default interface NoodelView {
 
     hasPress: boolean;
     hasSwipe: boolean;
-    
-    isFirstRenderDone: boolean;
 
     /**
      *  The DOM element of the noode where pointerdown events originated.

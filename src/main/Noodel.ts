@@ -8,6 +8,7 @@ import Noode from './Noode';
 import IdRegister from './IdRegister';
 import { getActiveChild } from '@/util/getters';
 import { jumpToNoode, shiftFocalLevel, shiftFocalNoode } from '@/controllers/noodel-navigate';
+import { findNoodeByPath as _findNoodeByPath } from '@/controllers/noodel-traverse';
 
 export default class Noodel {
 
@@ -102,14 +103,9 @@ export default class Noodel {
             return null;
         }
 
-        let target = this.store.root;
-
-        for (let i = 0; i < path.length; i++) {
-            target = target.children[path[i]];
-            if (!target) return null;
-        }
-
-        return new Noode(target, this);
+        let target = _findNoodeByPath(this.store, path);
+        
+        return target ? new Noode(target, this) : null;
     }
 
     findNoodeById(id: string): Noode {

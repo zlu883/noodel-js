@@ -43,9 +43,12 @@
     import Noodel from '@/main/Noodel';
     import { setupContainer } from '@/controllers/noodel-setup';
     import { setupNoodelInputBindings } from '@/controllers/input-binding';
-    import { traverseDescendents } from '../controllers/noodel-traverse';
+    import { traverseDescendents, findNoodeByPath } from '../controllers/noodel-traverse';
     import NoodelView from '@/model/NoodelView';
     import { Axis } from '@/enums/Axis';
+    import { jumpToNoode } from '../controllers/noodel-navigate';
+    import { alignBranchToIndex, alignTrunkToBranch } from '../controllers/noodel-align';
+    import NoodeView from '@/model/NoodeView';
 
     @Component({
 		components: {
@@ -63,12 +66,22 @@
             setupNoodelInputBindings(this.$el, this.store);
             this.store.trunkEl = this.$refs.trunk as Element;
             this.store.canvasEl = this.$refs.canvas as Element;
-            requestAnimationFrame(() => {
-                this.store.isFirstRenderDone = true;
+            
+            this.allBranchParents.forEach(parent => {
+                alignBranchToIndex(parent, parent.activeChildIndex);
+            });
 
+            alignTrunkToBranch(this.store, this.store.focalParent);
+            
+            if (this.store.options.initialPath) {
+                let target = findNoodeByPath(this.store, this.store.options.initialPath);
+                if (target) jumpToNoode(this.store, target);
+            }
+            
+            requestAnimationFrame(() => {
                 if (typeof this.store.options.mounted === 'function') {
                     this.store.options.mounted();
-                };                
+                };           
             });
         }
 
@@ -85,7 +98,7 @@
         }
 
         get allBranchParents() {
-            let allBranchParents = [];
+            let allBranchParents: NoodeView[] = [];
 
             traverseDescendents(this.store.root, desc => {
                 if (desc.children.length > 0) {

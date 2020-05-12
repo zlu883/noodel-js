@@ -1,56 +1,37 @@
 import NoodeView from '@/model/NoodeView';
 import NoodelView from '@/model/NoodelView';
 import { traverseDescendents } from './noodel-traverse';
-import { animateNoodeSizeChange } from './noodel-animate';
+import Vector2D from '@/model/Vector2D';
 
 /**
- * Handler for noode size change. Realigns the trunk, trunk axis offsets of the noode's subtree
- * and the branch offset of the parent branch, if necessary.
+ * Handler for noode size change. Updates the relative offsets of siblings and descendents,
+ * but will not move the trunk or branches. Returns a vector of the noode size difference.
  */
-export function alignNoodelOnNoodeSizeChange(noodel: NoodelView, noode: NoodeView, newWidth: number, newHeight: number, animate: boolean) {
+export function updateOffsetsOnNoodeSizeChange(noode: NoodeView, newWidth: number, newHeight: number): Vector2D {
     const parent = noode.parent;
 
     let heightDiff = newHeight - noode.size;
     let widthDiff = newWidth - parent.branchSize;
+    let diffVector: Vector2D = {x: 0, y: 0};
 
     noode.size = newHeight;
     parent.branchSize = newWidth;
 
     if (Math.abs(heightDiff) > 0.001) {
-        
-        // align branch
-        if (noode.index === noode.parent.activeChildIndex) {
-            parent.childBranchOffset -= heightDiff / 2;
-            parent.childBranchOffsetAligned -= heightDiff / 2;
-        }
-        else if (noode.index < parent.activeChildIndex) {
-            parent.childBranchOffset -= heightDiff;
-            parent.childBranchOffsetAligned -= heightDiff;
-        }
-
-        // set branch relative offset for siblings, necessary for animations
         for (let i = noode.index + 1; i < parent.children.length; i++) {
             parent.children[i].branchRelativeOffset += heightDiff;
         }
 
-        if (animate) animateNoodeSizeChange(noode, heightDiff);
+        diffVector.y = heightDiff;
     }
 
     if (Math.abs(widthDiff) > 0.001) {
-        
-        // align trunk
-        if (parent.isFocalParent) {
-            noodel.trunkOffset -= widthDiff / 2;
-            noodel.trunkOffsetAligned -= widthDiff / 2;
-        }
-        else if (parent.isChildrenVisible && parent.level < noodel.focalLevel) {
-            noodel.trunkOffset -= widthDiff;
-            noodel.trunkOffsetAligned -= widthDiff;
-        }
+        traverseDescendents(parent, desc => desc.trunkRelativeOffset += widthDiff, false);
 
-        // align noode subtree
-        traverseDescendents(parent, desc => desc.childTrunkOffset += widthDiff, false);
+        diffVector.x = widthDiff;
     }
+
+    return diffVector;
 }
 
 /**
@@ -58,7 +39,7 @@ export function alignNoodelOnNoodeSizeChange(noodel: NoodelView, noode: NoodeVie
  */
 export function alignTrunkToBranch(noodel: NoodelView, branchParent: NoodeView) {
 
-    let targetOffset = (-branchParent.childTrunkOffset) - (branchParent.branchSize / 2);
+    let targetOffset = (-branchParent.trunkRelativeOffset) - (branchParent.branchSize / 2);
     
     noodel.trunkOffset = targetOffset;
     noodel.trunkOffsetAligned = targetOffset;
@@ -69,13 +50,8 @@ export function alignTrunkToBranch(noodel: NoodelView, branchParent: NoodeView) 
  */
 export function alignBranchToIndex(parent: NoodeView, index: number) {
 
-    let targetOffset = 0;
+    let targetOffset = (-parent.children[index].branchRelativeOffset) - (parent.children[index].size / 2);
 
-    for (let i = 0; i < index; i++) {
-        targetOffset -= parent.children[i].size;
-    }
-
-    targetOffset -= parent.children[index].size / 2;
     parent.childBranchOffset = targetOffset;
     parent.childBranchOffsetAligned = targetOffset;
 }

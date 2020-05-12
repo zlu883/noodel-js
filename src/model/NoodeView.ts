@@ -13,7 +13,7 @@ export default interface NoodeView {
     isFocalParent: boolean;
     isActive: boolean;
 
-    childTrunkOffset: number;
+    trunkRelativeOffset: number;
     childBranchOffset: number;
     childBranchOffsetAligned: number;
 

@@ -2,33 +2,35 @@
 
 <template>
 
-    <div 
-        class="nd-noode-box"
-        :style="noodeBoxStyle"
-    >
-        <div
-            class="nd-noode"
-            ref="noode"
-            v-html="noode.content"
-            :class="noodeClass"
-            @wheel="onNoodeWheel"
-            @pointerdown="onNoodePointerDown"
+    <AnimationFade>
+        <div 
+            class="nd-noode-box"
+            :style="noodeBoxStyle"
         >
-        </div>   
-        <AnimationFade>   
-            <svg 
-                v-if="showChildIndicator" 
-                class="nd-child-indicator-box"
-                viewBox="0 0 100 100"
+            <div
+                class="nd-noode"
+                ref="noode"
+                v-html="noode.content"
+                :class="noodeClass"
+                @wheel="onNoodeWheel"
+                @pointerdown="onNoodePointerDown"
             >
-                <polygon
-                    class="nd-child-indicator"
-                    :class="childIndicatorClass"
-                    :points="childIndicatorPath" 
-                />
-            </svg>
-        </AnimationFade>
-    </div>	      
+            </div>   
+            <AnimationFade>   
+                <svg 
+                    v-if="showChildIndicator" 
+                    class="nd-child-indicator-box"
+                    viewBox="0 0 100 100"
+                >
+                    <polygon
+                        class="nd-child-indicator"
+                        :class="childIndicatorClass"
+                        :points="childIndicatorPath" 
+                    />
+                </svg>
+            </AnimationFade>
+        </div>	  
+    </AnimationFade>    
 </template>
 
 <!---------------------------- SCRIPT ------------------------------>
@@ -41,10 +43,11 @@
     import AnimationFade from './AnimationFade.vue';
 
     import NoodeView from "@/model/NoodeView";
-    import { alignNoodelOnNoodeSizeChange } from "@/controllers/noodel-align";
+    import { updateOffsetsOnNoodeSizeChange, alignBranchToIndex } from "@/controllers/noodel-align";
     import NoodelView from '../model/NoodelView';
     import { traverseAncestors } from '../controllers/noodel-traverse';
     import { getPath } from '../util/getters';
+    import { setSiblingInvertOnNoodeSizeChange, releaseSiblingInverts } from '../controllers/noodel-animate';
 
 	@Component({
         components: {
@@ -57,18 +60,21 @@
         @Prop() store: NoodelView;
 
         mounted() {
+            this.noode.el = this.$el;
+            // Skip alignment for first render. Alignment should be called explicitly by the
+            // process that created the noode.
+            this.updateRenderedSize();
+
             new ResizeSensor(this.$el, () => {
                 this.updateRenderedSize();
             });
 
             this.applyPreventNav();
-
-            this.noode.el = this.$el;
         }
 
         @Watch("noode.content")
         onContentUpdated() {
-            this.$nextTick(() => {
+            Vue.nextTick(() => {
                 this.updateRenderedSize();
                 this.applyPreventNav();
             });
@@ -76,7 +82,19 @@
 
         updateRenderedSize() {
             let rect = this.$el.getBoundingClientRect();
-            alignNoodelOnNoodeSizeChange(this.store, this.noode, rect.width, rect.height, this.store.isFirstRenderDone);
+            let diff = updateOffsetsOnNoodeSizeChange(this.noode, rect.width, rect.height);
+
+            Vue.nextTick(() => {
+                if (diff.y !== 0) {
+                    setSiblingInvertOnNoodeSizeChange(this.noode, diff.y);
+
+                    // wait one frame for invert to take hold, then animate
+                    requestAnimationFrame(() => {
+                        alignBranchToIndex(this.noode.parent, this.noode.parent.activeChildIndex);
+                        releaseSiblingInverts(this.noode);
+                    });
+                }
+            })        
         }
 
         applyPreventNav() {
@@ -165,14 +183,15 @@
         }
 
         get noodeBoxStyle() {
-            let style = {};
-
             if (this.noode.flipInvert !== 0) {
-                style["transform"] = "translateY(" + this.noode.flipInvert + "px)";
-                style["transition-property"] = "none";
+                return {
+                    transform: "translateY(" + this.noode.flipInvert + "px)",
+                    "transition-property": "none"
+                }
             }
-            
-            return style;
+            else {
+                return null;
+            }           
         }
 
         get showChildIndicator() {
@@ -204,6 +223,7 @@
         padding: 0.2em 0.6em;
         text-align: start;
         margin: 0 !important;
+        transform: translateY(0); /* Edge needs this explicitly to perform transitions */
         transition-property: transform;
         transition-duration: 0.5s;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);

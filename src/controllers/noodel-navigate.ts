@@ -189,7 +189,8 @@ export function unsetLimitIndicators(noodel: NoodelView) {
 }
 
 /**
- * Shifts the focal level by a level difference.
+ * Shifts the focal level by a level difference. If the difference is 0,
+ * will align trunk to the current focal level.
  */
 export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
 
@@ -211,7 +212,8 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
 }
 
 /**
- * Shifts the active noode in the focal branch by an index difference.
+ * Shifts the active noode in the focal branch by an index difference. If the difference
+ * is 0, will align the branch to the current active noode.
  */
 export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
 

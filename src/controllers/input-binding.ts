@@ -149,7 +149,7 @@ export function setupNoodelInputBindings(el: Element, noodel: NoodelView) {
     const manager = new Hammer.Manager(el);
 
     manager.add(new Hammer.Swipe({direction: Hammer.DIRECTION_ALL}));
-    manager.add(new Hammer.Pan({direction: Hammer.DIRECTION_ALL}));
+    manager.add(new Hammer.Pan({threshold: 3, direction: Hammer.DIRECTION_ALL}));
     manager.add(new Hammer.Tap());
     manager.add(new Hammer.Press({time: 0}));
 
