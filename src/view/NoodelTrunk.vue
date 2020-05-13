@@ -11,20 +11,19 @@
         <NoodelLimits 
             :store="store"
         />
-        <AnimationFade>
-            <div
-                class="nd-trunk"
-                ref="trunk"
-                :style="trunkStyle"
-            >
-                <NoodelTrunkBranch
-                    v-for="parent in allBranchParents"
-                    :key="parent.id"                  
-                    :parent="parent"
-                    :store="store"
-                />
-            </div>
-        </AnimationFade>
+        <div
+            class="nd-trunk"
+            :class="trunkClass"
+            ref="trunk"
+            :style="trunkStyle"
+        >
+            <NoodelTrunkBranch
+                v-for="parent in allBranchParents"
+                :key="parent.id"                  
+                :parent="parent"
+                :store="store"
+            />
+        </div>
     </div>
     
 </template>
@@ -37,7 +36,6 @@
 
     import NoodelLimits from '@/view/NoodelLimits.vue';
     import NoodelTrunkBranch from "@/view/NoodelTrunkBranch.vue";
-    import AnimationFade from '@/view/AnimationFade.vue';
 
     import { getFocalWidth } from '@/util/getters';
     import Noodel from '@/main/Noodel';
@@ -54,7 +52,6 @@
 		components: {
             NoodelLimits,
             NoodelTrunkBranch,
-            AnimationFade,
 		}
 	})
     export default class NoodelTrunk extends Vue {
@@ -73,12 +70,9 @@
 
             alignTrunkToBranch(this.store, this.store.focalParent);
             
-            if (this.store.options.initialPath) {
-                let target = findNoodeByPath(this.store, this.store.options.initialPath);
-                if (target) jumpToNoode(this.store, target);
-            }
-            
             requestAnimationFrame(() => {
+                this.store.isFirstRenderDone = true;
+
                 if (typeof this.store.options.mounted === 'function') {
                     this.store.options.mounted();
                 };           
@@ -86,15 +80,23 @@
         }
 
         get trunkStyle() {
-            let style = {
-                transform: 'translateX(' + (this.store.trunkOffset + getFocalWidth(this.store)) + 'px)'
-            };
-
-            if (this.store.hasSwipe && this.store.panAxis === Axis.HORIZONTAL) {
-                style["transition-property"] = "none"; // disable transform transition if user is panning
+            if (this.store.trunkOffsetForced !== null) {
+                return {
+                    transform: 'translateX(' + (this.store.trunkOffsetForced + getFocalWidth(this.store)) + 'px)',
+                    "transition-property": "none"
+                };
             }
+            else {
+                return {
+                    transform: 'translateX(' + (this.store.trunkOffset + getFocalWidth(this.store)) + 'px)'
+                };
+            }
+        }
 
-            return style;
+        get trunkClass() {
+            return {
+                'nd-trunk-enter': !this.store.isFirstRenderDone
+            };
         }
 
         get allBranchParents() {
@@ -135,9 +137,15 @@
 
     .nd-trunk {
         position: relative;
+        opacity: 1;
+        width: 99999999px !important; /* Need arbitrary large width otherwise noodes may collapse */
         transition-property: transform;
         transition-duration: .5s; 
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
+    }
+
+    .nd-trunk-enter {
+        transition-property: none;
     }
     
 </style>

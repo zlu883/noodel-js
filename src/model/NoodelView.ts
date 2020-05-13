@@ -15,18 +15,28 @@ export default interface NoodelView {
      * This is the expected offset if the trunk is aligned to the current focal branch.
      */
     trunkOffsetAligned: number;
+    /**
+     * Takes precedence over the normal trunk offset. Used to override transition effects.
+     */
+    trunkOffsetForced: number;
 
     showLimits: Compass;
     limitIndicatorTimeout?: number;
 
     /**
-     * This is the offset of the trunk or focal branch when panning begins.
+     * This is the offset of the trunk when panning begins.
      */
-    panOffsetOrigin: number;
+    panOffsetOriginTrunk: number;
+    /**
+     * This is the offset of the focal branch when panning begins.
+     */
+    panOffsetOriginFocalBranch: number;
     panAxis: Axis;
 
     hasPress: boolean;
     hasSwipe: boolean;
+
+    isFirstRenderDone: boolean;
 
     /**
      *  The DOM element of the noode where pointerdown events originated.

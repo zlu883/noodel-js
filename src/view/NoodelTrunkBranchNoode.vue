@@ -43,7 +43,7 @@
     import AnimationFade from './AnimationFade.vue';
 
     import NoodeView from "@/model/NoodeView";
-    import { updateOffsetsOnNoodeSizeChange, alignBranchToIndex } from "@/controllers/noodel-align";
+    import { alignNoodelOnNoodeSizeUpdate, alignBranchToIndex } from "@/controllers/noodel-align";
     import NoodelView from '../model/NoodelView';
     import { traverseAncestors } from '../controllers/noodel-traverse';
     import { getPath } from '../util/getters';
@@ -61,40 +61,35 @@
 
         mounted() {
             this.noode.el = this.$el;
-            // Skip alignment for first render. Alignment should be called explicitly by the
-            // process that created the noode.
             this.updateRenderedSize();
 
             new ResizeSensor(this.$el, () => {
                 this.updateRenderedSize();
             });
 
-            this.applyPreventNav();
+            this.
+            
+            applyPreventNav();
+        }
+
+        beforeDestroy() {
+            alignNoodelOnNoodeSizeUpdate(this.store, this.noode, this.noode.parent.branchSize, 0)
         }
 
         @Watch("noode.content")
         onContentUpdated() {
-            Vue.nextTick(() => {
+            this.$nextTick(() => {
                 this.updateRenderedSize();
                 this.applyPreventNav();
             });
         }
 
         updateRenderedSize() {
-            let rect = this.$el.getBoundingClientRect();
-            let diff = updateOffsetsOnNoodeSizeChange(this.noode, rect.width, rect.height);
-
-            Vue.nextTick(() => {
-                if (diff.y !== 0) {
-                    setSiblingInvertOnNoodeSizeChange(this.noode, diff.y);
-
-                    // wait one frame for invert to take hold, then animate
-                    requestAnimationFrame(() => {
-                        alignBranchToIndex(this.noode.parent, this.noode.parent.activeChildIndex);
-                        releaseSiblingInverts(this.noode);
-                    });
-                }
-            })        
+            this.$nextTick(() => {
+                let rect = this.$el.getBoundingClientRect();
+            
+                alignNoodelOnNoodeSizeUpdate(this.store, this.noode, rect.width, rect.height);
+            })
         }
 
         applyPreventNav() {
@@ -186,7 +181,7 @@
             if (this.noode.flipInvert !== 0) {
                 return {
                     transform: "translateY(" + this.noode.flipInvert + "px)",
-                    "transition-property": "none"
+                    "transition-property": "opacity"
                 }
             }
             else {
@@ -224,7 +219,7 @@
         text-align: start;
         margin: 0 !important;
         transform: translateY(0); /* Edge needs this explicitly to perform transitions */
-        transition-property: transform;
+        transition-property: transform, opacity;
         transition-duration: 0.5s;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
@@ -240,7 +235,7 @@
         border-radius: 0.4em;
         background-color: #e6e6e6;
         transition-property: background-color;
-        transition-duration: 0.5s;
+        transition-duration: .5s;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
         line-height: 1.5;
     }
@@ -264,6 +259,9 @@
         right: -0.6em;
         top: 50%;
         transform: translateY(-50%);
+        transition-property: opacity;
+        transition-duration: 0.5s;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
 
     .nd-child-indicator {

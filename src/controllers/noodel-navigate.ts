@@ -66,7 +66,7 @@ function panTrunk(noodel: NoodelView, targetOffset: number) {
         noodel.trunkOffsetAligned += alignedOffsetDiff; 
     }
 
-    noodel.trunkOffset = targetOffset;
+    noodel.trunkOffsetForced = targetOffset;
 }
 
 /**
@@ -131,7 +131,7 @@ function panFocalBranch(noodel: NoodelView, targetOffset: number) {
         noodel.focalParent.childBranchOffsetAligned += alignedOffsetDiff; 
     }
 
-    noodel.focalParent.childBranchOffset = targetOffset;
+    noodel.focalParent.childBranchOffsetForced = targetOffset;
 }
 
 export function startPan(noodel: NoodelView, ev: HammerInput) {
@@ -143,8 +143,8 @@ export function startPan(noodel: NoodelView, ev: HammerInput) {
         // taking into account the canvas's position as it may not be full page
         let currentTrunkOffset = noodel.trunkEl.getBoundingClientRect().left - noodel.canvasEl.getBoundingClientRect().left - getFocalWidth(noodel);
 
-        noodel.trunkOffset = currentTrunkOffset;
-        noodel.panOffsetOrigin = currentTrunkOffset;
+        noodel.trunkOffsetForced = currentTrunkOffset;
+        noodel.panOffsetOriginTrunk = currentTrunkOffset;
     }
     else if (ev.direction === Hammer.DIRECTION_UP || ev.direction === Hammer.DIRECTION_DOWN) {
         noodel.panAxis = Axis.VERTICAL;
@@ -153,27 +153,31 @@ export function startPan(noodel: NoodelView, ev: HammerInput) {
         // taking into account the canvas's position as it may not be full page
         let currentFocalBranchOffset = noodel.focalBranchEl.getBoundingClientRect().top - noodel.canvasEl.getBoundingClientRect().top - getFocalHeight(noodel);
 
-        noodel.focalParent.childBranchOffset = currentFocalBranchOffset;
-        noodel.panOffsetOrigin = currentFocalBranchOffset;
+        noodel.focalParent.childBranchOffsetForced = currentFocalBranchOffset;
+        noodel.panOffsetOriginFocalBranch = currentFocalBranchOffset;
     }
 }
 
 export function updatePan(noodel: NoodelView, ev: HammerInput) {
 
     if (noodel.panAxis === Axis.HORIZONTAL) {
-        panTrunk(noodel, noodel.panOffsetOrigin + (ev.deltaX * (1 - noodel.options.swipeFrictionTrunk)));     
+        panTrunk(noodel, noodel.panOffsetOriginTrunk + (ev.deltaX * (1 - noodel.options.swipeFrictionTrunk)));     
     }
     else if (noodel.panAxis === Axis.VERTICAL) {
-        panFocalBranch(noodel, noodel.panOffsetOrigin + (ev.deltaY * (1 - noodel.options.swipeFrictionBranch)));
+        panFocalBranch(noodel, noodel.panOffsetOriginFocalBranch + (ev.deltaY * (1 - noodel.options.swipeFrictionBranch)));
     }
 }
 
 export function releasePan(noodel: NoodelView, ev: HammerInput) {
 
     if (noodel.panAxis === Axis.HORIZONTAL) {
+        noodel.trunkOffsetForced = null;
+        noodel.panOffsetOriginTrunk = null;
         shiftFocalLevel(noodel, computeSnapCount(ev.velocityX, noodel.options.swipeWeightTrunk));
     }
     else if (noodel.panAxis === Axis.VERTICAL) {
+        noodel.focalParent.childBranchOffsetForced = null;
+        noodel.panOffsetOriginFocalBranch = null;
         shiftFocalNoode(noodel, computeSnapCount(ev.velocityY, noodel.options.swipeWeightBranch));
     }
 

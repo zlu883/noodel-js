@@ -53,6 +53,7 @@ export default class Noodel {
         if (this.vueRoot) this.vueRoot.remove();
         this.vueInstance = null;
         this.vueRoot = null;
+        this.store.isFirstRenderDone = false;
     }
 
     setOptions(options: NoodelOptions) {

@@ -2,21 +2,19 @@
 
 <template>
 
-    <AnimationFade>
-        <div 
-            class="nd-branch" 
-            ref="branch"
-            :class="branchClass"
-            :style="branchStyle"
-        >  
-            <NoodelTrunkBranchNoode
-                v-for="child in parent.children"
-                :key="child.id"
-                :noode="child" 
-                :store="store"
-            />
-        </div>
-    </AnimationFade>
+    <div 
+        class="nd-branch" 
+        ref="branch"
+        :class="branchClass"
+        :style="branchStyle"
+    >  
+        <NoodelTrunkBranchNoode
+            v-for="child in parent.children"
+            :key="child.id"
+            :noode="child" 
+            :store="store"
+        />
+    </div>
     
 </template>
 
@@ -56,22 +54,26 @@
         }
 
         get branchStyle() {
-            let style = {
-                transform: 'translate(' + this.parent.trunkRelativeOffset + 'px, ' + (this.parent.childBranchOffset + getFocalHeight(this.store)) + 'px)'
+            if (this.parent.childBranchOffsetForced !== null) {
+                return {
+                    left: this.parent.trunkRelativeOffset + 'px',
+                    transform: 'translateY(' + (this.parent.childBranchOffsetForced + getFocalHeight(this.store)) + 'px)',
+                    "transition-property": "opacity"
+                };
             }
-
-            // disable transform transition if user is panning
-            if (this.store.hasSwipe && this.store.panAxis === Axis.VERTICAL && this.parent.isFocalParent) {
-                style["transition-property"] = "opacity";
+            else {
+                return {
+                    left: this.parent.trunkRelativeOffset + 'px',
+                    transform: 'translateY(' + (this.parent.childBranchOffset + getFocalHeight(this.store)) + 'px)'
+                };
             }
-
-            return style;
         }
 
         get branchClass() {
             return {
                 'nd-branch-hidden': !this.parent.isChildrenVisible,
-                'nd-branch-focal': this.parent.isFocalParent
+                'nd-branch-focal': this.parent.isFocalParent,
+                'nd-branch-enter': !this.store.isFirstRenderDone
             }
         }
 
@@ -95,6 +97,10 @@
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
         transition-duration: 0.5s; 
         opacity: 0.75;
+    }
+
+    .nd-branch-enter {
+        transition-property: opacity;
     }
 
     .nd-branch-hidden {

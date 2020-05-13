@@ -5,8 +5,7 @@ import { setActiveChild as _setActiveChild, setActiveSubtreeVisibility, setActiv
 import { buildNoodeView, extractNoodeDefinition } from '@/controllers/noodel-setup';
 import { isRoot, getPath as _getPath } from '@/util/getters';
 import { alignBranchToIndex } from '@/controllers/noodel-align';
-import { forceReflow, setSiblingInvertOnNoodeSizeChange } from '@/controllers/noodel-animate';
-import Vue from 'vue';
+import { forceReflow } from '@/controllers/noodel-animate';
 
 export default class Noode {
 
@@ -159,6 +158,11 @@ export default class Noode {
 
         let deletedNoodes = this.view.children.splice(index, count);
 
+        // update sibling indices
+        for (let i = index; i < this.view.children.length; i++) {
+            this.view.children[i].index -= count;
+        }
+
         if (index + count <= this.view.activeChildIndex) { // deletion before active child
             this.view.activeChildIndex -= count;
         }
@@ -175,60 +179,13 @@ export default class Noode {
 
             if (this.view.isChildrenVisible) {
                 if (this.view.level <= this.noodel.store.focalLevel && this.view.children.length === 0) {
-                    //setFocalParent(this.view.level - 1);
+                    //setFocalParent(this.noodel.store, this.view.level - 1);
                 }
                 else if (this.view.level < this.noodel.store.focalLevel) {
                     //moveToTargetLevel = this.view.level;
                 }
             }
         }
-        else { // deletion after active child
-            // do nothing
-        }
-
-        // update sibling indices
-        for (let i = index; i < this.view.children.length; i++) {
-            this.view.children[i].index -= count;
-        }
-
-        if (this.view.activeChildIndex !== null) {
-            // if there are still children, align branch
-            let targetOffset = 0;
-
-            for (let i = 0; i < this.view.activeChildIndex; i++) {
-                targetOffset -= this.view.children[i].size;
-            }
-
-            targetOffset -= this.view.children[this.view.activeChildIndex].size / 2;
-            this.view.childBranchOffset = targetOffset;
-            this.view.childBranchOffsetAligned = this.view.children[this.view.activeChildIndex].size / 2;
-        }
-        else {
-            // if no more children, clear branch position and size values
-            this.view.childBranchOffset = 0;
-            this.view.childBranchOffsetAligned = 0;
-            this.view.branchSize = 0;            
-        }
-
-        // if (moveToTargetLevel !== null) {
-        //     let targetOffset = 0;
-        //     let currentBranch = this.noodel.store.root;
-
-        //     for (let i = 0; i < moveToTargetLevel; i++) {
-        //         targetOffset -= currentBranch.branchSize;
-        //         currentBranch = currentBranch.children[currentBranch.activeChildIndex];
-        //     }
-
-        //     targetOffset -= currentBranch.branchSize / 2;
-
-        //     this.noodel.store.trunkOffset = targetOffset;
-        //     this.noodel.store.panOffsetOrigin = targetOffset;
-        //     this.noodel.store.trunkOffsetAligned = currentBranch.branchSize / 2;
-        //     this.noodel.store.focalParent.isFocalParent = false;
-        //     this.noodel.store.focalParent = currentBranch;
-        //     this.noodel.store.focalParent.isFocalParent = true;
-        //     setActiveSubtreeVisibility(currentBranch, true, this.noodel.store.options.visibleSubtreeDepth);
-        // }
 
         return deletedNoodes.map(n => extractNoodeDefinition(n));
     }

@@ -4,8 +4,9 @@ import NoodeView from '../model/NoodeView';
 import NoodelView from '@/model/NoodelView';
 import { ResizeSensor } from 'css-element-queries';
 import { setActiveChild, setFocalParent } from './noodel-mutate';
-import { traverseDescendents } from './noodel-traverse';
+import { traverseDescendents, findNoodeByPath } from './noodel-traverse';
 import IdRegister from '@/main/IdRegister';
+import { jumpToNoode } from './noodel-navigate';
 
 export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, options?: NoodelOptions): NoodelView {
 
@@ -20,6 +21,7 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
         
         trunkOffset: 0,
         trunkOffsetAligned: 0,
+        trunkOffsetForced: null,
     
         showLimits: {
             top: false,
@@ -27,10 +29,12 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
             left: false,
             right: false
         },
-        panOffsetOrigin: 0,
+        panOffsetOriginTrunk: null,
+        panOffsetOriginFocalBranch: null,
         panAxis: null,
         hasPress: false,
         hasSwipe: false,
+        isFirstRenderDone: false,
 
         containerSize: {
             x: 0,
@@ -50,6 +54,11 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
 
     setFocalParent(noodel, rootNoode);
     traverseDescendents(rootNoode, noode => setActiveChild(noode, noode.activeChildIndex), true);
+
+    if (noodel.options.initialPath) {
+        let target = findNoodeByPath(noodel, noodel.options.initialPath);
+        if (target) jumpToNoode(noodel, target);
+    }
 
     return noodel;
 }
@@ -151,6 +160,7 @@ export function buildNoodeView(idRegister: IdRegister, def: NoodeDefinition, lev
         trunkRelativeOffset: 0,
         childBranchOffset: 0,
         childBranchOffsetAligned: 0,
+        childBranchOffsetForced: null,
         branchRelativeOffset: 0,
         branchSize: 0,
         parent: parent,

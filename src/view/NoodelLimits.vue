@@ -49,6 +49,9 @@
         z-index: 9999;
         border: solid 0px;
         background-color: #595959;
+        transition-property: opacity;
+        transition-duration: 0.5s;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
 
     .nd-limit-left {   
