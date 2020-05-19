@@ -2,11 +2,11 @@ import NoodeDefinition from '../model/NoodeDefinition';
 import NoodelOptions from '../model/NoodelOptions';
 import NoodeView from '../model/NoodeView';
 import NoodelView from '@/model/NoodelView';
-import { getActiveChild } from '@/util/getters';
 import { ResizeSensor } from 'css-element-queries';
-import { setActiveSubtreeVisibility, setActiveChild } from './noodel-mutate';
-import { traverseDescendents } from './noodel-traverse';
+import { setActiveChild, setFocalParent } from './noodel-mutate';
+import { traverseDescendents, findNoodeByPath } from './noodel-traverse';
 import IdRegister from '@/main/IdRegister';
+import { jumpToNoode } from './noodel-navigate';
 
 export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, options?: NoodelOptions): NoodelView {
 
@@ -14,14 +14,14 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
 
     rootNoode.isActive = true;
 
-    let noodel = {
+    let noodel: NoodelView = {
         root: rootNoode,
-        focalParent: null,
-        focalLevel: null,
+        focalParent: rootNoode,
+        focalLevel: 0,
         
         trunkOffset: 0,
-        trunkOffsetOrigin: 0,
-        trunkRelativeOffset: 0,
+        trunkOffsetAligned: 0,
+        trunkOffsetForced: null,
     
         showLimits: {
             top: false,
@@ -29,12 +29,11 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
             left: false,
             right: false
         },
-        movingAxis: null,
+        panOffsetOriginTrunk: null,
+        panOffsetOriginFocalBranch: null,
+        panAxis: null,
         hasPress: false,
-        hasSwipe: false,
-
-        lastSwipeDelta: 0,
-        totalSwipeDelta: 0,
+        isFirstRenderDone: false,
 
         containerSize: {
             x: 0,
@@ -43,41 +42,22 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
         
         options: {
             visibleSubtreeDepth: 1,
-            snapDuration: 600
+            swipeFrictionBranch: 0.7,
+            swipeFrictionTrunk: 0.2,
+            swipeWeightBranch: 100,
+            swipeWeightTrunk: 100
         }
     }
 
     mergeOptions(options, noodel);
 
+    setFocalParent(noodel, rootNoode);
     traverseDescendents(rootNoode, noode => setActiveChild(noode, noode.activeChildIndex), true);
 
-    let focalLevel = 0;
-    let focalParent = rootNoode;
-
-    if (Array.isArray(options.initialPath)) {
-        for (let i = 0; i < options.initialPath.length; i++) {
-            let nextIndex = options.initialPath[i];
-    
-            if (typeof nextIndex !== "number" || nextIndex < 0 || nextIndex > focalParent.children.length) {
-                throw new Error("Invalid initial path at index " + i);
-            }
-    
-            setActiveChild(focalParent, nextIndex);
-
-            if (i < options.initialPath.length - 1) { // only when not in last iteration
-                focalParent = getActiveChild(focalParent);
-            }          
-        }
-    
-        if (options.initialPath.length > 0) {
-            focalLevel = options.initialPath.length - 1;
-        }  
+    if (noodel.options.initialPath) {
+        let target = findNoodeByPath(noodel, noodel.options.initialPath);
+        if (target) jumpToNoode(noodel, target);
     }
-
-    noodel.focalParent = focalParent;
-    noodel.focalParent.isFocalParent = true;
-    noodel.focalLevel = focalLevel;
-    setActiveSubtreeVisibility(rootNoode, true, focalLevel + noodel.options.visibleSubtreeDepth);
 
     return noodel;
 }
@@ -142,8 +122,24 @@ export function mergeOptions(options: NoodelOptions, noodel: NoodelView) {
         noodel.options.visibleSubtreeDepth = options.visibleSubtreeDepth;
     }
 
-    if (typeof options.snapDuration === "number") {
-        noodel.options.snapDuration = options.snapDuration;
+    if (typeof options.swipeWeightBranch === "number") {
+        noodel.options.swipeWeightBranch = options.swipeWeightBranch;
+    }
+
+    if (typeof options.swipeWeightTrunk === "number") {
+        noodel.options.swipeWeightTrunk = options.swipeWeightTrunk;
+    }
+
+    if (typeof options.swipeFrictionBranch === "number") {
+        noodel.options.swipeFrictionBranch = options.swipeFrictionBranch;
+    }
+
+    if (typeof options.swipeFrictionTrunk === "number") {
+        noodel.options.swipeFrictionTrunk = options.swipeFrictionTrunk;
+    }
+
+    if (Array.isArray(options.initialPath)) {
+        noodel.options.initialPath = options.initialPath;
     }
 
     if (typeof options.mounted === "function") {
@@ -160,16 +156,18 @@ export function buildNoodeView(idRegister: IdRegister, def: NoodeDefinition, lev
         isFocalParent: false,
         isActive: false,
         size: 0,
-        offset: 0,
-        branchOffset: 0,
-        branchOffsetOrigin: 0,
+        trunkRelativeOffset: 0,
+        childBranchOffset: 0,
+        childBranchOffsetAligned: 0,
+        childBranchOffsetForced: null,
         branchRelativeOffset: 0,
         branchSize: 0,
         parent: parent,
         id: typeof def.id === 'string' ? def.id : idRegister.generateNoodeId(),
         children: [],
         content: def.content || null,
-        activeChildIndex: null
+        activeChildIndex: null,
+        flipInvert: 0,
     }
 
     idRegister.registerNoode(noodeView.id, noodeView);

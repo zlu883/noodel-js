@@ -7,7 +7,8 @@ import NoodelView from '@/model/NoodelView';
 import Noode from './Noode';
 import IdRegister from './IdRegister';
 import { getActiveChild } from '@/util/getters';
-import { alignTrunkToLevel, shiftRight, shiftLeft, shiftDown, shiftUp, jumpToNoode as _jumpToNoode } from '@/controllers/noodel-navigate';
+import { jumpToNoode, shiftFocalLevel, shiftFocalNoode } from '@/controllers/noodel-navigate';
+import { findNoodeByPath as _findNoodeByPath } from '@/controllers/noodel-traverse';
 
 export default class Noodel {
 
@@ -52,6 +53,7 @@ export default class Noodel {
         if (this.vueRoot) this.vueRoot.remove();
         this.vueInstance = null;
         this.vueRoot = null;
+        this.store.isFirstRenderDone = false;
     }
 
     setOptions(options: NoodelOptions) {
@@ -63,11 +65,12 @@ export default class Noodel {
     }
 
     setFocalLevel(level: number) {
-        let levelCount = this.getActiveLevelCount();
+        if (typeof level !== 'number' || level < 0 || level >= this.getActiveLevelCount()) {
+            console.warn("Cannot set focal level: invalid level");
+            return;
+        }
 
-        if (level < 0) level = 0;
-        if (level > levelCount - 1) level = levelCount - 1;
-        alignTrunkToLevel(this.store, level);
+        shiftFocalLevel(this.store, level - this.store.focalLevel);
     }
 
     getActiveLevelCount(): number {
@@ -95,67 +98,55 @@ export default class Noodel {
         return focalNoode ? new Noode(focalNoode, this) : null;
     }
 
-    findNoode(selector: number[] | string): Noode {
-        if (typeof selector === 'string') {
-            let target = this.idRegister.findNoode(selector);
-            return target ? new Noode(target, this) : null;
-        }
-        else if (Array.isArray(selector)) {
-            let target = this.store.root;
-
-            for (let i = 0; i < selector.length; i++) {
-                target = target.children[selector[i]];
-                if (!target) return null;
-            }
-
-            return new Noode(target, this);
-        }
-        else {
+    findNoodeByPath(path: number[]): Noode {
+        if (!Array.isArray(path)) {
+            console.warn("Cannot find noode: invalid path");
             return null;
         }
+
+        let target = _findNoodeByPath(this.store, path);
+        
+        return target ? new Noode(target, this) : null;
     }
 
-    shiftTrunk(levelDiff: number, animate = true, onComplete?: () => any) {
-        if (animate) {
-            if (levelDiff > 0) {
-                shiftRight(this.store, levelDiff);
-            }
-            else if (levelDiff < 0) {
-                shiftLeft(this.store, levelDiff);
-            }
+    findNoodeById(id: string): Noode {
+        if (typeof id !== 'string') {
+            console.warn("Cannot find noode: invalid id");
+            return null;
         }
-        else {
-            this.setFocalLevel(this.store.focalLevel + levelDiff);
-        }
+
+        let target = this.idRegister.findNoode(id);
+        
+        return target ? new Noode(target, this) : null;
     }
 
-    shiftBranch(indexDiff: number, animate = true, onComplete?: () => any) {
-        if (animate) {
-            if (indexDiff > 0) {
-                shiftDown(this.store, indexDiff);
-            }
-            else if (indexDiff < 0) {
-                shiftUp(this.store, indexDiff);
-            }
-        }
-        else {
-            new Noode(this.store.focalParent, this).setActiveChild(this.store.focalParent.activeChildIndex + indexDiff);
-        }
+    moveIn(levelCount: number = 1) {
+        shiftFocalLevel(this.store, levelCount);
     }
 
-    jumpToNoode(selector: number[] | string, animate = true, onComplete?: () => any) {
-        if (animate) {
-            let target = this.findNoode(selector);             
+    moveOut(levelCount: number = 1) {
+        shiftFocalLevel(this.store, -levelCount);
+    }
 
-            if (target) {
-                _jumpToNoode(this.store, target.getPath());
-            }
-            else {
-                console.warn("Cannot jump to noode: invalid selector");
-            }
+    moveForward(noodeCount: number = 1) {
+        shiftFocalNoode(this.store, noodeCount);
+    }
+
+    moveBack(noodeCount: number = 1) {
+        shiftFocalNoode(this.store, -noodeCount);
+    }
+
+    jumpTo(noode: Noode) {
+        if (!(noode instanceof Noode)) {
+            console.warn("Cannot jump to noode: invalid target");
+            return;
         }
-        else {
-            //TODO
+
+        if (!noode.getParent()) {
+            console.warn("Cannot jump to noode: target is root");
+            return;
         }
+
+        jumpToNoode(this.store, noode.view);
     }
 }

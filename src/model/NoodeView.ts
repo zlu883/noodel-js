@@ -1,3 +1,5 @@
+import Vector2D from './Vector2D';
+
 export default interface NoodeView {
 
     id: string;
@@ -13,12 +15,25 @@ export default interface NoodeView {
     isFocalParent: boolean;
     isActive: boolean;
 
-    offset: number;
+    trunkRelativeOffset: number;
+    childBranchOffset: number;
+    /**
+     * This is the expected offset if a branch is aligned to its active index.
+     */
+    childBranchOffsetAligned: number;
+    /**
+     * Takes precedence over the normal child branch offset. Used to override transition effects.
+     */
+    childBranchOffsetForced: number;
 
-    branchOffset: number;
-    branchOffsetOrigin: number;
     branchRelativeOffset: number;
 
     size: number;
     branchSize: number;
+
+    posSnapshot?: Vector2D;
+    flipInvert: number;
+
+    el?: Element;
+    childBranchEl?: Element;
 }

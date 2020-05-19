@@ -11,31 +11,50 @@ export default interface NoodelView {
     focalLevel: number;
     
     trunkOffset: number;
-    trunkOffsetOrigin: number;
-    trunkRelativeOffset: number;
+    /**
+     * This is the expected offset if the trunk is aligned to the current focal branch.
+     */
+    trunkOffsetAligned: number;
+    /**
+     * Takes precedence over the normal trunk offset. Used to override transition effects.
+     */
+    trunkOffsetForced: number;
 
     showLimits: Compass;
-    movingAxis: Axis;
-    isLocked?: boolean; // if locked, user interactions will not move the carousel
     limitIndicatorTimeout?: number;
 
-    hasPress: boolean;
-    hasSwipe: boolean;
+    /**
+     * This is the offset of the trunk when panning begins.
+     */
+    panOffsetOriginTrunk: number;
+    /**
+     * This is the offset of the focal branch when panning begins.
+     */
+    panOffsetOriginFocalBranch: number;
+    panAxis: Axis;
 
-    // The content box element of the noode where pointerdown events originated.
-    // Used to check the presence of inner scrolling.
-    pointerDownSrcContentBox?: Element;
-    // The path of the noode where pointerdown events originated.
-    // Used to determine the target for jump navigation.
-    pointerDownSrcNoodePath?: number[];
+    hasPress: boolean;
+
+    isFirstRenderDone: boolean;
+
+    /**
+     *  The DOM element of the noode where pointerdown events originated.
+     *  Used to check the presence of inner scrolling.
+     */
+    pointerDownSrcNoodeEl?: Element;
+    /**
+     * The noode where pointerdown events originated.
+     * Used to determine the target for jump navigation.
+     */
+    pointerDownSrcNoode?: NoodeView;
     doInnerScroll?: boolean;
     innerScrollOriginLeft?: number;
     innerScrollOriginTop?: number;
 
-    lastSwipeDelta: number;
-    totalSwipeDelta: number;
-    trunkSnapAnimation?: any;
-    branchSnapAnimation?: any;
+    // references to DOM elements mainly for calculating positions
+    canvasEl?: Element;
+    trunkEl?: Element;
+    focalBranchEl?: Element;
 
     containerSize: Vector2D;
     options: NoodelOptions;

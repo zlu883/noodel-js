@@ -1,24 +1,22 @@
-import { startSwipe, updateSwipe, releaseSwipe, shiftRight, shiftLeft, shiftDown, shiftUp, unsetLimitIndicators, jumpToNoode } from './noodel-navigate';
+import { startPan, updatePan, releasePan, unsetLimitIndicators, jumpToNoode, shiftFocalNoode, shiftFocalLevel } from './noodel-navigate';
 import Hammer from 'hammerjs';
 import NoodelView from '@/model/NoodelView';
 
 function onKeyDown(noodel: NoodelView, event: KeyboardEvent) {    
 
-    if (noodel.hasSwipe) return;
-    if (noodel.isLocked) return;
     if (noodel.focalParent.children.length === 0) return;
 
     if (event.key === "ArrowDown") {
-        shiftDown(noodel);
+        shiftFocalNoode(noodel, 1);
     }
     else if (event.key === "ArrowUp") {
-        shiftUp(noodel);
+        shiftFocalNoode(noodel, -1);
     }
     else if (event.key === "ArrowLeft") {
-        shiftLeft(noodel);
+        shiftFocalLevel(noodel, -1);
     }
     else if (event.key === "ArrowRight") {
-        shiftRight(noodel);
+        shiftFocalLevel(noodel, 1);
     }
 }
 
@@ -28,34 +26,32 @@ function onKeyUp(noodel: NoodelView, event: KeyboardEvent) {
 
 function onWheel(noodel: NoodelView, ev: WheelEvent) {
 
-    if (noodel.hasSwipe) return;
-    if (noodel.isLocked) return;
     if (noodel.focalParent.children.length === 0) return;
 
     if (Math.abs(ev.deltaY) > Math.abs(ev.deltaX)) {
         if (noodel.hasPress) {
             if (ev.deltaY > 0) {
-                shiftRight(noodel);
+                shiftFocalLevel(noodel, 1);
             }
             else if (ev.deltaY < 0) {
-                shiftLeft(noodel);
+                shiftFocalLevel(noodel, -1);
             }
         }
         else {
             if (ev.deltaY > 0) {
-                shiftDown(noodel);
+                shiftFocalNoode(noodel, 1);
             }
             else if (ev.deltaY < 0) {
-                shiftUp(noodel);
+                shiftFocalNoode(noodel, -1);
             }
         }      
     }
     else if (Math.abs(ev.deltaX) > Math.abs(ev.deltaY)) {
         if (ev.deltaX > 0) {
-            shiftRight(noodel);
+            shiftFocalLevel(noodel, 1);
         }
         else if (ev.deltaX < 0) {
-            shiftLeft(noodel);
+            shiftFocalLevel(noodel, -1);
         }
     }
 
@@ -65,7 +61,7 @@ function onWheel(noodel: NoodelView, ev: WheelEvent) {
 
 function onPanStart(noodel: NoodelView, ev: HammerInput) {
     
-    const src = noodel.pointerDownSrcContentBox;
+    const src = noodel.pointerDownSrcNoodeEl;
 
     // known issue: using scrollLeft does not account for rtl direction
     if (src) {
@@ -82,23 +78,19 @@ function onPanStart(noodel: NoodelView, ev: HammerInput) {
     noodel.hasPress = false;
 
     if (noodel.doInnerScroll) return;
-    if (noodel.hasSwipe) return;
-    if (noodel.isLocked) return;
     if (noodel.focalParent.children.length === 0) return;
 
-    noodel.hasSwipe = true;
-    startSwipe(noodel, ev);
+    startPan(noodel, ev);
 }
 
 function onPan(noodel: NoodelView, ev: HammerInput) {
 
     if (noodel.doInnerScroll) {
-        noodel.pointerDownSrcContentBox.scrollLeft = noodel.innerScrollOriginLeft - ev.deltaX;
-        noodel.pointerDownSrcContentBox.scrollTop = noodel.innerScrollOriginTop - ev.deltaY;
+        noodel.pointerDownSrcNoodeEl.scrollLeft = noodel.innerScrollOriginLeft - ev.deltaX;
+        noodel.pointerDownSrcNoodeEl.scrollTop = noodel.innerScrollOriginTop - ev.deltaY;
     }
     else {
-        if (!noodel.hasSwipe) return;
-        updateSwipe(noodel, ev);
+        updatePan(noodel, ev);
     }
 }
 
@@ -108,13 +100,11 @@ function onPanEnd(noodel: NoodelView, ev: HammerInput) {
         noodel.doInnerScroll = false;
         noodel.innerScrollOriginTop = 0;
         noodel.innerScrollOriginLeft = 0;
-        noodel.pointerDownSrcContentBox = null;
-        noodel.pointerDownSrcNoodePath = null;
+        noodel.pointerDownSrcNoodeEl = null;
+        noodel.pointerDownSrcNoode = null;
     }  
     else {
-        if (!noodel.hasSwipe) return;
-        noodel.hasSwipe = false;
-        releaseSwipe(noodel, ev); 
+        releasePan(noodel, ev); 
     }
 }
 
@@ -123,20 +113,18 @@ function onPress(noodel: NoodelView, ev: HammerInput) {
 }
 
 function onPressUp(noodel: NoodelView, ev: HammerInput) {
-    noodel.pointerDownSrcContentBox = null;
-    noodel.pointerDownSrcNoodePath = null;
+    noodel.pointerDownSrcNoodeEl = null;
+    noodel.pointerDownSrcNoode = null;
     noodel.hasPress = false;
 }
 
 function onTap(noodel: NoodelView, ev: HammerInput) {
     noodel.hasPress = false;
-    
-    if (noodel.hasSwipe) return;
-    
-    if (noodel.pointerDownSrcNoodePath) {
-        jumpToNoode(noodel, noodel.pointerDownSrcNoodePath);
-        noodel.pointerDownSrcContentBox = null;
-        noodel.pointerDownSrcNoodePath = null;
+        
+    if (noodel.pointerDownSrcNoode) {
+        jumpToNoode(noodel, noodel.pointerDownSrcNoode);
+        noodel.pointerDownSrcNoodeEl = null;
+        noodel.pointerDownSrcNoode = null;
     }
 }
 
@@ -152,7 +140,7 @@ export function setupNoodelInputBindings(el: Element, noodel: NoodelView) {
     const manager = new Hammer.Manager(el);
 
     manager.add(new Hammer.Swipe({direction: Hammer.DIRECTION_ALL}));
-    manager.add(new Hammer.Pan({direction: Hammer.DIRECTION_ALL}));
+    manager.add(new Hammer.Pan({threshold: 3, direction: Hammer.DIRECTION_ALL}));
     manager.add(new Hammer.Tap());
     manager.add(new Hammer.Press({time: 0}));
 

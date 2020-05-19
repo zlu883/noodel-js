@@ -1,394 +1,205 @@
-import TWEEN from '@tweenjs/tween.js';
-import { setActiveChild, setActiveSubtreeVisibility } from "@/controllers/noodel-mutate";
+import { setActiveChild, setFocalParent, hideActiveSubtree, showActiveSubtree } from "@/controllers/noodel-mutate";
 import { Axis } from '@/enums/Axis';
 import NoodeView from '@/model/NoodeView';
 import NoodelView from '@/model/NoodelView';
-import { getChildrenBranchMidSize, getActiveChild, getMidSize, isRoot, canNavigateLeft, canNavigateRight, canNavigateUp, canNavigateDown } from '@/util/getters';
+import { getActiveChild, getFocalWidth, getFocalHeight } from '@/util/getters';
+import { alignTrunkToBranch, alignBranchToIndex } from './noodel-align';
+import { forceReflow } from '@/controllers/noodel-animate';
 
 /**
- * Core function for moving the trunk to a specified position.
- * Makes no assumption on the magnitude of the movement, and aims to be correct
- * regardless of the target offset, bounding the movement to the possible limits.
+ * Core function for panning the trunk to a specified position, changing the focal parent
+ * or set limit indicators as necessary. Makes no assumption on the magnitude of the movement, 
+ * and aims to be correct regardless of the target offset, bounding the movement to the possible limits.
  */
-function moveTrunk(noodel: NoodelView, destinationOffset: number) {
+function panTrunk(noodel: NoodelView, targetOffset: number) {
 
-    let offsetDiff = destinationOffset - noodel.trunkOffset;
+    let offsetDiff = targetOffset - noodel.trunkOffsetAligned;
+    let targetFocalParent = noodel.focalParent;
+    let alignedOffsetDiff = 0;
 
-    if (offsetDiff === 0) return;
+    noodel.showLimits.right = false;
+    noodel.showLimits.left = false;
 
-    let newTrunkOffset = noodel.trunkOffset;
-    let newFocalParent = noodel.focalParent;
-    let levelDiff = 0;
-    let newRelativeOffset = noodel.trunkRelativeOffset;
-    let remainingDiff = Math.abs(offsetDiff);
-
-    if (offsetDiff < 0) {
-        noodel.showLimits.left = false;
-
-        while (true) {      
-            if (!getActiveChild(getActiveChild(newFocalParent)) && newRelativeOffset + remainingDiff > getChildrenBranchMidSize(newFocalParent)) {
-                newTrunkOffset -= getChildrenBranchMidSize(newFocalParent) - newRelativeOffset;
-                newRelativeOffset = getChildrenBranchMidSize(newFocalParent);
-                noodel.showLimits.right = true;
-                break;
-            }
-
-            let relativeDiff = newFocalParent.branchSize - newRelativeOffset;
-
-            if (remainingDiff > relativeDiff) {
-                newTrunkOffset -= relativeDiff;
-                newRelativeOffset = 0;
-                remainingDiff -= relativeDiff;
-                newFocalParent = getActiveChild(newFocalParent);
-                levelDiff++;
-            }
-            else {
-                newTrunkOffset -= remainingDiff;
-                newRelativeOffset += remainingDiff;
-                noodel.showLimits.right = false;
-                break;
-            } 
-        }
-    }
-    else if (offsetDiff > 0) {
-        noodel.showLimits.right = false;
-
-        while (true) {
-            if (isRoot(newFocalParent) && newRelativeOffset - remainingDiff < getChildrenBranchMidSize(newFocalParent)) {
-                newTrunkOffset += newRelativeOffset - getChildrenBranchMidSize(newFocalParent);
-                newRelativeOffset = getChildrenBranchMidSize(newFocalParent);
-                noodel.showLimits.left = true;
-                break;
-            }
-
-            let relativeDiff = newRelativeOffset;
-
-            if (remainingDiff > relativeDiff) {
-                newTrunkOffset += relativeDiff;
-                newFocalParent = newFocalParent.parent;
-                newRelativeOffset = newFocalParent.branchSize;
-                remainingDiff -= relativeDiff;
-                levelDiff--;
-            }
-            else {
-                newTrunkOffset += remainingDiff;
-                newRelativeOffset -= remainingDiff;
-                noodel.showLimits.left = false;
-                break;
-            } 
-        }
-    }
-    
-    noodel.trunkOffset = newTrunkOffset;
-    noodel.trunkRelativeOffset = newRelativeOffset;
-
-    if (newFocalParent.id !== noodel.focalParent.id) {
-        changeFocalLevel(noodel, newFocalParent, levelDiff);
-    }
-}
-
-function changeFocalLevel(noodel: NoodelView, newFocalParent: NoodeView, levelDiff: number) {
-
-    noodel.focalParent.isFocalParent = false;
-    newFocalParent.isFocalParent = true;
-
-    if (levelDiff < 0) {
-        setActiveSubtreeVisibility(newFocalParent, false, Math.abs(levelDiff) + noodel.options.visibleSubtreeDepth);
-        setActiveSubtreeVisibility(newFocalParent, true, noodel.options.visibleSubtreeDepth);
-    } 
-    else if (levelDiff > 0) {
-        setActiveSubtreeVisibility(noodel.focalParent, true, Math.abs(levelDiff) + noodel.options.visibleSubtreeDepth);
-    }
-
-    noodel.focalParent = newFocalParent;
-    noodel.focalLevel += levelDiff;
-}
-
-/**
- * Core function for moving a branch to a specified position.
- * Makes no assumption on the magnitude of the movement, and aims to be correct
- * regardless of the target offset, bounding the movement to the possible limits.
- */
-function moveBranch(noodel: NoodelView, parent: NoodeView, destinationOffset: number) {
-
-    let offsetDiff = destinationOffset - parent.branchOffset;
-
-    if (offsetDiff === 0) return;
-
-    let newBranchOffset = parent.branchOffset;
-    let newActiveIndex = parent.activeChildIndex;
-    let newRelativeOffset = parent.branchRelativeOffset;
-    let remainingDiff = Math.abs(offsetDiff);
-
-    if (offsetDiff < 0) {
-        if (parent.isFocalParent) noodel.showLimits.top = false;
-
-        while (true) {      
-            if (newActiveIndex >= parent.children.length - 1 && newRelativeOffset + remainingDiff > getMidSize(parent.children[newActiveIndex])) {
-                newBranchOffset -= getMidSize(parent.children[newActiveIndex]) - newRelativeOffset;
-                newRelativeOffset = getMidSize(parent.children[newActiveIndex]);
-                if (parent.isFocalParent) noodel.showLimits.bottom = true;
-                break;
-            }
+    // takes the offset difference, reduce it branch by branch to find the target focal parent
+    if (offsetDiff < 0) { // revealing right
+        while (getActiveChild(targetFocalParent).activeChildIndex !== null) {
+            offsetDiff += targetFocalParent.branchSize / 2;
             
-            let relativeDiff = parent.children[newActiveIndex].size - newRelativeOffset;
+            if (offsetDiff >= 0) break;
 
-            if (remainingDiff> relativeDiff) {
-                newBranchOffset -= relativeDiff;
-                newRelativeOffset = 0;
-                remainingDiff -= relativeDiff;
-                newActiveIndex++;
-            }
-            else {
-                newBranchOffset -= remainingDiff;
-                newRelativeOffset += remainingDiff;
-                if (parent.isFocalParent) noodel.showLimits.bottom = false;
-                break;
-            } 
+            alignedOffsetDiff -= targetFocalParent.branchSize / 2;
+            targetFocalParent = getActiveChild(targetFocalParent);
+            alignedOffsetDiff -= targetFocalParent.branchSize / 2;
+            
+            offsetDiff += targetFocalParent.branchSize / 2;
+        }
+
+        // check if diff exceeds trunk offset limit
+        if (offsetDiff < 0) {
+            noodel.showLimits.right = true;
+            targetOffset -= offsetDiff; // adjust target offset to boundary
+        }
+    }
+    else if (offsetDiff > 0) { // revealing left
+        while (targetFocalParent.parent !== null) {
+
+            offsetDiff -= targetFocalParent.branchSize / 2;
+            
+            if (offsetDiff <= 0) break;
+
+            alignedOffsetDiff += targetFocalParent.branchSize / 2;
+            targetFocalParent = targetFocalParent.parent;
+            alignedOffsetDiff += targetFocalParent.branchSize / 2;
+            
+            offsetDiff -= targetFocalParent.branchSize / 2;
+        }
+
+        // check if diff exceeds trunk offset limit
+        if (offsetDiff > 0) {
+            noodel.showLimits.left = true;
+            targetOffset -= offsetDiff; // adjust target offset to boundary
+        }
+    }
+
+    if (targetFocalParent.id !== noodel.focalParent.id) {
+        setFocalParent(noodel, targetFocalParent);
+        noodel.trunkOffsetAligned += alignedOffsetDiff; 
+    }
+
+    noodel.trunkOffsetForced = targetOffset;
+}
+
+/**
+ * Core function for panning the focal branch to a specified position.
+ * Changes active noode or set limit indicators as necessary.
+ * Makes no assumption on the magnitude of the movement, and aims to be correct
+ * regardless of the target offset, bounding the movement to the possible limits.
+ */
+function panFocalBranch(noodel: NoodelView, targetOffset: number) {
+
+    let offsetDiff = targetOffset - noodel.focalParent.childBranchOffsetAligned;
+    let targetIndex = noodel.focalParent.activeChildIndex;
+    let alignedOffsetDiff = 0;
+
+    noodel.showLimits.top = false;
+    noodel.showLimits.bottom = false;
+
+    // takes the offset difference, reduce it noode by noode to find the target index
+    if (offsetDiff < 0) { // revealing bottom
+        while (targetIndex < noodel.focalParent.children.length - 1) {
+            offsetDiff += noodel.focalParent.children[targetIndex].size / 2;
+             
+            if (offsetDiff >= 0) break;
+
+            alignedOffsetDiff -= noodel.focalParent.children[targetIndex].size / 2;
+            targetIndex++;
+            alignedOffsetDiff -= noodel.focalParent.children[targetIndex].size / 2;
+            
+            offsetDiff += noodel.focalParent.children[targetIndex].size / 2;
+        }
+
+        // check if diff exceeds branch offset limit
+        if (offsetDiff < 0) { // revealing top
+            noodel.showLimits.bottom = true;
+            targetOffset -= offsetDiff; // adjust target offset to boundary
         }
     }
     else if (offsetDiff > 0) {
-        if (parent.isFocalParent) noodel.showLimits.bottom = false;
+        while (targetIndex > 0) {
+            offsetDiff -= noodel.focalParent.children[targetIndex].size / 2;
+            
+            if (offsetDiff <= 0) break;
 
-        while (true) {
-            if (newActiveIndex <= 0 && newRelativeOffset - remainingDiff < getMidSize(parent.children[newActiveIndex])) {
-                newBranchOffset += newRelativeOffset - getMidSize(parent.children[newActiveIndex]);
-                newRelativeOffset = getMidSize(parent.children[newActiveIndex]);
-                if (parent.isFocalParent) noodel.showLimits.top = true;
-                break;
-            }
-
-            let relativeDiff = newRelativeOffset;
-
-            if (remainingDiff > relativeDiff) {
-                newBranchOffset += relativeDiff;
-                newActiveIndex--;
-                newRelativeOffset = parent.children[newActiveIndex].size;
-                remainingDiff -= relativeDiff;
-            }
-            else {
-                newBranchOffset += remainingDiff;
-                newRelativeOffset -= remainingDiff;
-                if (parent.isFocalParent) noodel.showLimits.top = false;
-                break;
-            } 
+            alignedOffsetDiff += noodel.focalParent.children[targetIndex].size / 2;
+            targetIndex--;
+            alignedOffsetDiff += noodel.focalParent.children[targetIndex].size / 2;
+            
+            offsetDiff -= noodel.focalParent.children[targetIndex].size / 2;
         }
-    }
-    
-    parent.branchOffset = newBranchOffset;
-    parent.branchRelativeOffset = newRelativeOffset;
 
-    if (newActiveIndex !== parent.activeChildIndex) {
-        changeActiveChild(noodel, parent, newActiveIndex);
-    }
-}
-
-function changeActiveChild(noodel: NoodelView, parent: NoodeView, newActiveIndex: number) {
-
-    setActiveSubtreeVisibility(parent, false);
-    setActiveChild(parent, newActiveIndex);
-    setActiveSubtreeVisibility(parent, true, noodel.options.visibleSubtreeDepth);
-}
-
-function initializeMovement(noodel: NoodelView, axis: Axis) {
-
-    noodel.lastSwipeDelta = 0;
-    noodel.totalSwipeDelta = 0;
-    noodel.movingAxis = axis;
-
-    if (axis === Axis.HORIZONTAL) {
-        finalizeTrunkPosition(noodel, noodel.trunkOffset);
-        finalizeBranchPosition(noodel, noodel.focalParent, noodel.focalParent.branchOffset - (getMidSize(getActiveChild(noodel.focalParent)) - noodel.focalParent.branchRelativeOffset));
-    }
-    else if (axis === Axis.VERTICAL) {
-        finalizeTrunkPosition(noodel, noodel.trunkOffset - (getChildrenBranchMidSize(noodel.focalParent) - noodel.trunkRelativeOffset));
-        finalizeBranchPosition(noodel, noodel.focalParent, noodel.focalParent.branchOffset);
-    }
-}
-
-function finalizeTrunkPosition(noodel: NoodelView, offset: number) {
-
-    if (noodel.trunkSnapAnimation) {
-        noodel.trunkSnapAnimation.stop();
-        noodel.trunkSnapAnimation = null;
-    }
-
-    moveTrunk(noodel, offset);
-    noodel.trunkOffsetOrigin = noodel.trunkOffset;
-}
-
-function finalizeBranchPosition(noodel: NoodelView, parent: NoodeView, offset: number) {
-
-    if (noodel.branchSnapAnimation) {
-        noodel.branchSnapAnimation.stop();
-        noodel.branchSnapAnimation = null;
-    };
-
-    moveBranch(noodel, parent, offset);
-    parent.branchOffsetOrigin = parent.branchOffset;
-} 
-
-/**
- * Algorithm for computing how many noodes to snap across depending on swipe velocity.
- * Currently just a rough formula, can be further adjusted if necessary. 
- */
-function computeSnapCount(velocity: number) {
-    if (Math.abs(velocity) < 0.1) return 0;
-    let count = Math.max(0, Math.round(Math.log(Math.abs(velocity) + Math.E)));
-    
-    return (velocity > 0) ? -count : count;
-}
-
-function animateSnap() {
-    if (TWEEN.update()) requestAnimationFrame(animateSnap);
-} 
-
-function startTrunkSnap(noodel: NoodelView, snapCount: number) {
-
-    let destinationOffset = calculateTargetTrunkOffset(noodel, snapCount);
-
-    if (destinationOffset === noodel.trunkOffset) {
-        finalizeTrunkPosition(noodel, destinationOffset);
-        finalizeMovement(noodel);
-        return;
-    } 
-
-    noodel.trunkSnapAnimation = new TWEEN.Tween({d: noodel.trunkOffset})
-        .to({d: destinationOffset}, noodel.options.snapDuration)
-        .easing(TWEEN.Easing.Exponential.Out)
-        .onUpdate(dispObj => moveTrunk(noodel, dispObj.d))
-        .onComplete(() => {
-            finalizeTrunkPosition(noodel, destinationOffset);
-            finalizeMovement(noodel);
-        })
-        .start();
-       
-    animateSnap();
-}
-
-function startBranchSnap(noodel: NoodelView, parent: NoodeView, snapCount: number) {
-
-    let destinationOffset = calculateTargetBranchOffset(parent, snapCount);
-
-    if (destinationOffset === parent.branchOffset) {
-        finalizeBranchPosition(noodel, parent, destinationOffset);
-        finalizeMovement(noodel);
-        return;
-    } 
-
-    noodel.branchSnapAnimation = new TWEEN.Tween({d: parent.branchOffset})
-        .to({d: destinationOffset}, noodel.options.snapDuration)
-        .easing(TWEEN.Easing.Exponential.Out)
-        .onUpdate(dispObj => moveBranch(noodel, parent, dispObj.d))
-        .onComplete(() => {
-            finalizeBranchPosition(noodel, parent, destinationOffset);
-            finalizeMovement(noodel);
-        })
-        .start();
-       
-    animateSnap();
-}
-
-function calculateTargetTrunkOffset(noodel: NoodelView, levelDiff: number): number {
-
-    let destinationOffset = noodel.trunkOffset - (getChildrenBranchMidSize(noodel.focalParent) - noodel.trunkRelativeOffset);
-    let currentParent = noodel.focalParent;
-
-    if (levelDiff > 0) {
-        for (let i = 0; i < levelDiff; i++) {
-            if (getActiveChild(getActiveChild(currentParent))) {
-                destinationOffset -= (getChildrenBranchMidSize(currentParent) + getChildrenBranchMidSize(getActiveChild(currentParent)));
-                currentParent = getActiveChild(currentParent);
-            }
-            else {
-                break;
-            }
-        }
-    }
-    else if (levelDiff < 0) {
-        for (let i = 0; i > levelDiff; i--) {
-            if (!isRoot(currentParent)) {
-                destinationOffset += (getChildrenBranchMidSize(currentParent) + getChildrenBranchMidSize(currentParent.parent));
-                currentParent = currentParent.parent;
-            }
-            else {
-                break;
-            }
+        // check if diff exceeds branch offset limit
+        if (offsetDiff > 0) {
+            noodel.showLimits.top = true;
+            targetOffset -= offsetDiff; // adjust target offset to boundary
         }
     }
 
-    return destinationOffset;
-}
-
-function calculateTargetBranchOffset(parent: NoodeView, noodeDiff: number) {
-
-    let destinationOffset = parent.branchOffset - (getMidSize(getActiveChild(parent)) - parent.branchRelativeOffset);
-    let currentActiveIndex = parent.activeChildIndex;
-
-    if (noodeDiff > 0) {
-        for (let i = 0; i < noodeDiff; i++) {
-            if (currentActiveIndex < parent.children.length - 1) {
-                destinationOffset -= (getMidSize(parent.children[currentActiveIndex]) + getMidSize(parent.children[currentActiveIndex + 1]));
-                currentActiveIndex++;
-            }
-            else {
-                break;
-            }
-        }
-    }
-    else if (noodeDiff < 0) {
-        for (let i = 0; i > noodeDiff; i--) {
-            if (currentActiveIndex > 0) {
-                destinationOffset += (getMidSize(parent.children[currentActiveIndex]) + getMidSize(parent.children[currentActiveIndex - 1]));
-                currentActiveIndex--;
-            }
-            else {
-                break;
-            }
-        }
+    if (targetIndex !== noodel.focalParent.activeChildIndex) {
+        hideActiveSubtree(noodel.focalParent);
+        setActiveChild(noodel.focalParent, targetIndex);
+        showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
+        noodel.focalParent.childBranchOffsetAligned += alignedOffsetDiff; 
     }
 
-    return destinationOffset;
+    noodel.focalParent.childBranchOffsetForced = targetOffset;
 }
 
-export function startSwipe(noodel: NoodelView, ev: HammerInput) {
+export function startPan(noodel: NoodelView, ev: HammerInput) {
+
     if (ev.direction === Hammer.DIRECTION_LEFT || ev.direction === Hammer.DIRECTION_RIGHT) {
-        initializeMovement(noodel, Axis.HORIZONTAL);
+        noodel.panAxis = Axis.HORIZONTAL;
+
+        // finds the current trunk offset with getBoundingClientRect, even if trunk is in transition,
+        // taking into account the canvas's position as it may not be full page
+        let currentTrunkOffset = noodel.trunkEl.getBoundingClientRect().left - noodel.canvasEl.getBoundingClientRect().left - getFocalWidth(noodel);
+
+        noodel.trunkOffsetForced = currentTrunkOffset;
+        noodel.panOffsetOriginTrunk = currentTrunkOffset;
     }
     else if (ev.direction === Hammer.DIRECTION_UP || ev.direction === Hammer.DIRECTION_DOWN) {
-        initializeMovement(noodel, Axis.VERTICAL);
+        noodel.panAxis = Axis.VERTICAL;
+
+        // finds the current focal branch offset with getBoundingClientRect, even if branch is in transition,
+        // taking into account the canvas's position as it may not be full page
+        let currentFocalBranchOffset = noodel.focalBranchEl.getBoundingClientRect().top - noodel.canvasEl.getBoundingClientRect().top - getFocalHeight(noodel);
+
+        noodel.focalParent.childBranchOffsetForced = currentFocalBranchOffset;
+        noodel.panOffsetOriginFocalBranch = currentFocalBranchOffset;
     }
 }
 
-export function updateSwipe(noodel: NoodelView, ev: HammerInput) {
+export function updatePan(noodel: NoodelView, ev: HammerInput) {
 
-    if (noodel.movingAxis === Axis.HORIZONTAL) {
-        noodel.totalSwipeDelta += Math.abs(ev.deltaX - noodel.lastSwipeDelta);
-
-        let multiplier = Math.min(noodel.totalSwipeDelta / 30, 1);
-
-        moveTrunk(noodel, noodel.trunkOffset + (ev.deltaX - noodel.lastSwipeDelta) * multiplier);
-        noodel.lastSwipeDelta = ev.deltaX;
+    if (noodel.panAxis === Axis.HORIZONTAL) {
+        panTrunk(noodel, noodel.panOffsetOriginTrunk + (ev.deltaX * (1 - noodel.options.swipeFrictionTrunk)));     
     }
-    else if (noodel.movingAxis === Axis.VERTICAL) {
-        noodel.totalSwipeDelta += Math.abs(ev.deltaY - noodel.lastSwipeDelta);
-
-        let multiplier = Math.min(noodel.totalSwipeDelta / 140, 1.1);
-
-        moveBranch(noodel, noodel.focalParent, noodel.focalParent.branchOffset + (ev.deltaY - noodel.lastSwipeDelta) * multiplier);
-        noodel.lastSwipeDelta = ev.deltaY;
+    else if (noodel.panAxis === Axis.VERTICAL) {
+        panFocalBranch(noodel, noodel.panOffsetOriginFocalBranch + (ev.deltaY * (1 - noodel.options.swipeFrictionBranch)));
     }
 }
 
-export function releaseSwipe(noodel: NoodelView, ev: HammerInput) {
+export function releasePan(noodel: NoodelView, ev: HammerInput) {
+
+    if (noodel.panAxis === Axis.HORIZONTAL) {
+        noodel.trunkOffsetForced = null;
+        noodel.panOffsetOriginTrunk = null;
+        shiftFocalLevel(noodel, computeSnapCount(ev.velocityX, noodel.options.swipeWeightTrunk));
+    }
+    else if (noodel.panAxis === Axis.VERTICAL) {
+        noodel.focalParent.childBranchOffsetForced = null;
+        noodel.panOffsetOriginFocalBranch = null;
+        shiftFocalNoode(noodel, computeSnapCount(ev.velocityY, noodel.options.swipeWeightBranch));
+    }
+
+    noodel.panAxis = null;
     unsetLimitIndicators(noodel);
+}
 
-    if (noodel.movingAxis === Axis.HORIZONTAL) {
-        startTrunkSnap(noodel, computeSnapCount(ev.velocityX));
+export function cancelPan(noodel: NoodelView) {
+
+    if (noodel.panAxis === Axis.HORIZONTAL) {
+        noodel.trunkOffsetForced = null;
+        noodel.panOffsetOriginTrunk = null;
+        noodel.trunkOffset = noodel.trunkOffsetAligned;
     }
-    else if (noodel.movingAxis === Axis.VERTICAL) {
-        startBranchSnap(noodel, noodel.focalParent, computeSnapCount(ev.velocityY));
+    else if (noodel.panAxis === Axis.VERTICAL) {
+        noodel.focalParent.childBranchOffsetForced = null;
+        noodel.panOffsetOriginFocalBranch = null;
+        noodel.focalParent.childBranchOffset = noodel.focalParent.childBranchOffsetAligned;
     }
+
+    noodel.panAxis = null;
+    unsetLimitIndicators(noodel);
 }
 
 export function unsetLimitIndicators(noodel: NoodelView) {
@@ -398,237 +209,165 @@ export function unsetLimitIndicators(noodel: NoodelView) {
     noodel.showLimits.right = false;
 }
 
-export function shiftLeft(noodel: NoodelView, noodeCount = -1) {
+/**
+ * Shifts the focal level by a level difference. If the difference is 0,
+ * will align trunk to the current focal level.
+ */
+export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
 
-    if (canNavigateLeft(noodel)) {
-        initializeMovement(noodel, Axis.HORIZONTAL);
-        startTrunkSnap(noodel, noodeCount);
+    // if panning, cancel it
+    if (noodel.panAxis === Axis.HORIZONTAL) {
+        cancelPan(noodel);
     }
-    else {
-        if (noodel.movingAxis === null) {
+
+    let newFocalParent = findNewFocalParent(noodel, levelDiff);
+
+    // if unable to shift anymore in the target direction
+    if (newFocalParent.id === noodel.focalParent.id) {
+        if (levelDiff < 0) {
             noodel.showLimits.left = true;
         }
-    }
-}
-
-export function shiftRight(noodel: NoodelView, noodeCount = 1) {
-
-    if (canNavigateRight(noodel)) {
-        initializeMovement(noodel, Axis.HORIZONTAL);
-        startTrunkSnap(noodel, noodeCount);
-    }
-    else {
-        if (noodel.movingAxis === null) {
+        else if (levelDiff > 0) {
             noodel.showLimits.right = true;
         }
     }
-}
 
-export function shiftUp(noodel: NoodelView, noodeCount = -1) {
-
-    if (canNavigateUp(noodel)) {
-        initializeMovement(noodel, Axis.VERTICAL);
-        startBranchSnap(noodel, noodel.focalParent, noodeCount);
-    }
-    else {
-        if (noodel.movingAxis === null) {
-            noodel.showLimits.top = true;
-        }
-    } 
-}
-
-export function shiftDown(noodel: NoodelView, noodeCount = 1) {
-
-    if (canNavigateDown(noodel)) {
-        initializeMovement(noodel, Axis.VERTICAL);
-        startBranchSnap(noodel, noodel.focalParent, noodeCount);
-    }
-    else {
-        if (noodel.movingAxis === null) {
-            noodel.showLimits.bottom = true;
-        }
-    } 
-}
-
-export function alignTrunkToLevel(noodel: NoodelView, level: number) {
-
-    if (level < 0) {
-        console.warn("Cannot align trunk to level: invalid level");
-        return;
-    }
-
-    let targetOffset = 0;
-    let currentBranch = noodel.root;
-
-    for (let i = 0; i < level; i++) {
-        if (currentBranch.activeChildIndex !== null) {
-            targetOffset -= currentBranch.branchSize;
-            currentBranch = getActiveChild(currentBranch);
-        }
-        else {
-            console.warn("Cannot align trunk to level: invalid level");
-            return;
-        }
-    }
-
-    targetOffset -= currentBranch.branchSize / 2;
-
-    initializeMovement(noodel, Axis.HORIZONTAL);
-    finalizeTrunkPosition(noodel, targetOffset);
-    finalizeMovement(noodel);
-}
-
-export function alignBranchToIndex(noodel: NoodelView, parent: NoodeView, index: number) {
-
-    if (index < 0 || index >= parent.children.length) {
-        console.warn("Cannot align branch to index: invalid index");
-        return;
-    }
-
-    let targetOffset = 0;
-
-    for (let i = 0; i <= index; i++) {
-        targetOffset -= parent.children[i].size;
-    }
-
-    targetOffset += parent.children[index].size / 2;
-
-    initializeMovement(noodel, Axis.HORIZONTAL);
-    finalizeBranchPosition(noodel, parent, targetOffset);
-    finalizeMovement(noodel);
+    setFocalParent(noodel, newFocalParent);
+    alignTrunkToBranch(noodel, newFocalParent);
+    forceReflow();
 }
 
 /**
- * Logic for animating a 'jump' between noodes.
- * Currently incompatible with the normal movement logic, needs refactoring.
+ * Shifts the active noode in the focal branch by an index difference. If the difference
+ * is 0, will align the branch to the current active noode.
  */
-export function jumpToNoode(noodel: NoodelView, targetPath: number[]) {
-     
-    let nearestVisibleBranchParent = noodel.root;
-    let nearestVisibleBranchLevel = 0;
-    
-    for (let i = 0; i < targetPath.length - 1; i++) {
-        if (nearestVisibleBranchParent.children[targetPath[i]].isChildrenVisible) {
-            nearestVisibleBranchParent = nearestVisibleBranchParent.children[targetPath[i]];
-            nearestVisibleBranchLevel++;
-        }
-        else {
-            break;
-        }
+export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
+
+    // if panning, cancel it
+    if (noodel.panAxis === Axis.VERTICAL) {
+        cancelPan(noodel);
     }
 
-    if (noodel.trunkSnapAnimation) {
-        noodel.trunkSnapAnimation.stop();
-        noodel.trunkSnapAnimation = null;
+    let targetIndex = noodel.focalParent.activeChildIndex + indexDiff;
+
+    // clamp index to valid range
+    if (targetIndex < 0) {
+        targetIndex = 0;
+    }
+    else if (targetIndex >= noodel.focalParent.children.length) {
+        targetIndex = noodel.focalParent.children.length - 1;
     }
 
-    if (noodel.branchSnapAnimation) {
-        noodel.branchSnapAnimation.stop();
-        noodel.branchSnapAnimation = null;
-    };
-
-    setActiveSubtreeVisibility(noodel.root, false);
-
-    let targetTrunkOffset = 0;
-    let targetParent = noodel.root;
-
-    for (let i = 0; i < targetPath.length; i++) {
-        setActiveChild(targetParent, targetPath[i]);
-
-        if (i > nearestVisibleBranchLevel) {
-
-            let targetBranchOffset = 0;
-
-            for (let j = 0; j <= targetParent.activeChildIndex; j++) {
-                if (j < targetParent.activeChildIndex) {
-                    targetBranchOffset -= targetParent.children[j].size;
-                }
-                else {
-                    targetBranchOffset -= getMidSize(targetParent.children[j]);
-                }
-            }
-
-            targetParent.branchOffset = targetBranchOffset;
-            targetParent.branchOffsetOrigin = targetBranchOffset;
-            targetParent.branchRelativeOffset = getMidSize(getActiveChild(targetParent));
-        }    
-
-        if (i < targetPath.length - 1) {
-            targetTrunkOffset -= targetParent.branchSize;
-            targetParent = getActiveChild(targetParent);
+    // if unable to shift anymore in the target direction
+    if (targetIndex === noodel.focalParent.activeChildIndex) {
+        if (indexDiff < 0) {
+            noodel.showLimits.top = true;
         }
-        else {
-            targetTrunkOffset -= getChildrenBranchMidSize(targetParent);
+        else if (indexDiff > 0) {
+            noodel.showLimits.bottom = true;
         }
     }
 
-    setActiveSubtreeVisibility(noodel.root, true, (targetPath.length - 1) + noodel.options.visibleSubtreeDepth);
-
-    let targetBranchSnapOffset = 0;
-    let targetIndex = targetPath[nearestVisibleBranchLevel];
-
-    for (let i = 0; i <= targetIndex; i++) {
-        if (i < targetIndex) {
-            targetBranchSnapOffset -= nearestVisibleBranchParent.children[i].size;
-        }
-        else {
-            targetBranchSnapOffset -= getMidSize(nearestVisibleBranchParent.children[i]);
-        }
-    }
-
-    let animateBranch = Math.abs(targetBranchSnapOffset - nearestVisibleBranchParent.branchOffset) > 0.0001;
-    let animateTrunk = Math.abs(targetTrunkOffset - noodel.trunkOffset) > 0.0001;
-
-    if (animateBranch || animateTrunk) {
-        noodel.isLocked = true;
-    }
-
-    noodel.focalParent.isFocalParent = false;
-    noodel.focalParent = targetParent;
-    noodel.focalParent.isFocalParent = true;
-    noodel.focalLevel = targetPath.length - 1;
-
-    let from = {};
-    let to = {};
-
-    if (animateBranch) {
-        from['b'] = nearestVisibleBranchParent.branchOffset;
-        to['b'] = targetBranchSnapOffset;       
-    }
-
-    if (animateTrunk) {
-        from['t'] = noodel.trunkOffset;
-        to['t'] = targetTrunkOffset; 
-    }
-
-    new TWEEN.Tween(from)
-        .to(to, noodel.options.snapDuration)
-        .easing(TWEEN.Easing.Exponential.Out)
-        .onUpdate(next => {
-            if (animateBranch) nearestVisibleBranchParent.branchOffset = next.b;
-            if (animateTrunk) noodel.trunkOffset = next.t;
-        })
-        .onComplete(() => {
-            if (animateBranch) {
-                nearestVisibleBranchParent.branchRelativeOffset = getMidSize(getActiveChild(nearestVisibleBranchParent));
-                finalizeBranchPosition(noodel, nearestVisibleBranchParent, targetBranchSnapOffset);
-            }
-
-            if (animateTrunk) {
-                noodel.trunkRelativeOffset = getChildrenBranchMidSize(noodel.focalParent);
-                finalizeTrunkPosition(noodel, targetTrunkOffset);
-            }
-            
-            finalizeMovement(noodel);
-        })
-        .start();
-
-    animateSnap();
+    hideActiveSubtree(noodel.focalParent);
+    setActiveChild(noodel.focalParent, targetIndex);
+    showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
+    alignBranchToIndex(noodel.focalParent, targetIndex);
+    forceReflow();
 }
 
-export function finalizeMovement(noodel: NoodelView) {
+/**
+ * Jumps to a specific noode in the tree, realigning all affected branches and trunk
+ * if necessary.
+ */
+export function jumpToNoode(noodel: NoodelView, target: NoodeView) {
 
-    noodel.movingAxis = null;
-    noodel.isLocked = false;
-    unsetLimitIndicators(noodel);
+    // if panning, cancel it
+    if (noodel.panAxis !== null) {
+        cancelPan(noodel);
+    }
+
+    // No need to jump if target is already focal noode
+    if (target.id === noodel.focalParent.children[noodel.focalParent.activeChildIndex].id) {
+        return;
+    }
+
+    // finds the nearest visible branch
+    let nearestVisibleBranchParent = target.parent;
+
+    while (!nearestVisibleBranchParent.isChildrenVisible) {
+        nearestVisibleBranchParent = nearestVisibleBranchParent.parent;
+    }
+
+    hideActiveSubtree(nearestVisibleBranchParent);
+
+    // adjusts the active child of ancestors up to the nearest visible branch to point to target
+    let nextParent = target.parent;
+    let nextActiveChildIndex = target.index;
+
+    while (true) {
+        if (nextParent.activeChildIndex !== nextActiveChildIndex) {
+            setActiveChild(nextParent, nextActiveChildIndex);
+            alignBranchToIndex(nextParent, nextActiveChildIndex);
+        }
+
+        if (nextParent.id === nearestVisibleBranchParent.id) {
+            break;
+        }
+
+        nextActiveChildIndex = nextParent.index;
+        nextParent = nextParent.parent;
+    }
+
+    showActiveSubtree(nearestVisibleBranchParent, (target.level - 1 - nearestVisibleBranchParent.level) + noodel.options.visibleSubtreeDepth);
+
+    if (target.parent.id !== noodel.focalParent.id) {
+        setFocalParent(noodel, target.parent);
+        alignTrunkToBranch(noodel, target.parent);
+    }
+
+    forceReflow();
+}
+
+/**
+ * Finds the new focal parent to move to when the a focal level change should occur
+ * on the current active subtree. If levelDiff goes beyond the existing
+ * branches, will return the furthest branch possible, i.e. the root or the deepest branch.
+ */
+function findNewFocalParent(noodel: NoodelView, levelDiff: number): NoodeView {
+
+    let nextParent = noodel.focalParent;
+
+    if (levelDiff < 0) {
+        for (let i = 0; i > levelDiff; i--) {
+            if (nextParent.parent) {
+                nextParent = nextParent.parent;
+            }
+            else {
+                break;
+            }
+        }
+    }
+    else if (levelDiff > 0) {
+        for (let i = 0; i < levelDiff; i++) {
+            if (getActiveChild(nextParent).activeChildIndex !== null) {
+                nextParent = getActiveChild(nextParent);
+            }
+            else {
+                break;
+            }
+        }
+    }
+
+    return nextParent;
+}
+
+/**
+ * Algorithm for computing how many noodes to snap across depending on swipe velocity.
+ * Currently just a rough formula, can be further adjusted if necessary. 
+ */
+function computeSnapCount(velocity: number, weight: number) {
+    if (Math.abs(velocity) < 0.1) return 0;
+    let count = Math.max(0, Math.round(Math.log(Math.abs(velocity) + Math.E)) * (100 / weight));
+
+    return (velocity > 0) ? -count : count;
 }

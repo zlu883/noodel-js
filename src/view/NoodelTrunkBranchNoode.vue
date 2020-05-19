@@ -3,15 +3,16 @@
 <template>
 
     <div 
-        class="nd-noode" 
+        class="nd-noode-box"
+        :style="noodeBoxStyle"
     >
         <div
-            class="nd-content-box"
-            ref="contentBox"
+            class="nd-noode"
+            ref="noode"
             v-html="noode.content"
-            :class="contentBoxClass"
-            @wheel="onContentBoxWheel"
-            @pointerdown="onContentBoxPointerDown"
+            :class="noodeClass"
+            @wheel="onNoodeWheel"
+            @pointerdown="onNoodePointerDown"
         >
         </div>   
         <AnimationFade>   
@@ -27,7 +28,8 @@
                 />
             </svg>
         </AnimationFade>
-    </div>	      
+    </div>
+
 </template>
 
 <!---------------------------- SCRIPT ------------------------------>
@@ -40,7 +42,7 @@
     import AnimationFade from './AnimationFade.vue';
 
     import NoodeView from "@/model/NoodeView";
-    import { alignBranchOnNoodeSizeChange } from "@/controllers/noodel-align";
+    import { alignNoodelOnNoodeResize, alignNoodelOnNoodeInsert } from "@/controllers/noodel-align";
     import NoodelView from '../model/NoodelView';
     import { traverseAncestors } from '../controllers/noodel-traverse';
     import { getPath } from '../util/getters';
@@ -55,30 +57,42 @@
         @Prop() noode: NoodeView;
         @Prop() store: NoodelView;
 
+        private resizeSensor;
+
         mounted() {
+            this.noode.el = this.$el;
+            
             this.$nextTick(() => {
-                this.updateRenderedSize();
-
-                new ResizeSensor(this.$el, () => {
-                    this.updateRenderedSize();
-                });
-
-                this.applyPreventNav();
+                let rect = this.$el.getBoundingClientRect();
+        
+                alignNoodelOnNoodeInsert(this.store, this.noode, rect.width, rect.height);
             });
+            
+            this.resizeSensor = new ResizeSensor(this.$el, () => {
+                this.updateRenderedSize();
+            });
+            
+            this.applyPreventNav();
+        }
+
+        beforeDestroy() {
+            this.resizeSensor.detach();
+            (this.$refs.noode as HTMLDivElement).style.overflow = 'hidden';
+            (this.$refs.noode as HTMLDivElement).classList.remove('nd-noode-active');
         }
 
         @Watch("noode.content")
         onContentUpdated() {
             this.$nextTick(() => {
+                this.updateRenderedSize();
                 this.applyPreventNav();
             });
         }
 
         updateRenderedSize() {
-            alignBranchOnNoodeSizeChange(
-                this.noode, 
-                this.$el.getBoundingClientRect().height
-            );
+            let rect = this.$el.getBoundingClientRect();
+        
+            alignNoodelOnNoodeResize(this.store, this.noode, rect.width, rect.height);
         }
 
         applyPreventNav() {
@@ -104,9 +118,9 @@
             });
         }
 
-        onContentBoxWheel(ev: WheelEvent) {
+        onNoodeWheel(ev: WheelEvent) {
 
-            let el = this.$refs.contentBox as HTMLDivElement;
+            let el = this.$refs.noode as HTMLDivElement;
 
             if (!(this.noode.isActive && this.noode.parent.isFocalParent)) {
                 return;
@@ -138,9 +152,9 @@
             }
         }
 
-        onContentBoxPointerDown(ev: PointerEvent) {
+        onNoodePointerDown(ev: PointerEvent) {
 
-            let el = this.$refs.contentBox as HTMLDivElement;
+            let el = this.$refs.noode as HTMLDivElement;
 
             // detect click on scrollbar
             if (ev.clientX > el.getBoundingClientRect().left + el.clientWidth ||
@@ -150,20 +164,32 @@
             }
 
             if (this.noode.isActive && this.noode.parent.isFocalParent) {
-                this.store.pointerDownSrcContentBox = el;
+                this.store.pointerDownSrcNoodeEl = el;
             }
 
-            this.store.pointerDownSrcNoodePath = getPath(this.noode);
+            this.store.pointerDownSrcNoode = this.noode;
         }
 
         get isFocalActive() {
             return this.noode.parent.isFocalParent && this.noode.isActive;
         }
 
-        get contentBoxClass() {
+        get noodeClass() {
             return {
-                'nd-content-box-active': this.noode.isActive
+                'nd-noode-active': this.noode.isActive
             }
+        }
+
+        get noodeBoxStyle() {
+            if (this.noode.flipInvert !== 0) {
+                return {
+                    transform: "translateY(" + this.noode.flipInvert + "px)",
+                    "transition-property": "opacity"
+                }
+            }
+            else {
+                return null;
+            }           
         }
 
         get showChildIndicator() {
@@ -189,15 +215,19 @@
 
 <style>
 
-    .nd-noode {
+    .nd-noode-box {
         box-sizing: border-box !important;
         position: relative;
         padding: 0.2em 0.6em;
         text-align: start;
         margin: 0 !important;
+        transform: translateY(0);
+        transition-property: opacity, transform;
+        transition-duration: .5s;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
 
-    .nd-content-box {
+    .nd-noode {
         position: relative;
         overflow: auto;
         touch-action: none !important; /* Important as hammerjs will break on mobile without this */
@@ -207,19 +237,21 @@
         padding: 1.0em;
         border-radius: 0.4em;
         background-color: #e6e6e6;
-        transition: background-color 0.5s ease-in;
+        transition-property: background-color;
+        transition-duration: .5s;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
         line-height: 1.5;
     }
 
-    .nd-content-box-active {
+    .nd-noode-active {
         background-color: #ffffff;
     }
 
-    .nd-content-box > *:first-child {
+    .nd-noode > *:first-child {
         margin-top: 0;
     }
 
-    .nd-content-box > *:last-child {
+    .nd-noode > *:last-child {
         margin-bottom: 0;
     }
 
@@ -230,6 +262,9 @@
         right: -0.6em;
         top: 50%;
         transform: translateY(-50%);
+        transition-property: opacity;
+        transition-duration: 0.5s;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
 
     .nd-child-indicator {
@@ -241,25 +276,25 @@
     }
 
     @media (max-width: 800px) {
-        .nd-content-box {
+        .nd-noode {
             max-width: 85vw;
         }
     }
 
     @media (max-height: 800px) {
-        .nd-content-box {
+        .nd-noode {
             max-height: 85vh;
         }
     }
 
     @media (min-width: 801px) {
-        .nd-content-box {
+        .nd-noode {
             max-width: 700px;
         }
     }
 
     @media (min-height: 801px) {
-        .nd-content-box {
+        .nd-noode {
             max-height: 700px;
         }
     }

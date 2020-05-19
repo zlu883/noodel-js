@@ -4,25 +4,26 @@
 
     <div 
         class="nd-canvas"
+        ref="canvas"
         tabindex="0"
         @dragstart.prevent
     >
         <NoodelLimits 
             :store="store"
         />
-        <AnimationFade>
-            <div
-                class="nd-trunk"
-                :style="trunkStyle"
-            >
-                <NoodelTrunkBranch
-                    v-for="parent in allBranchParents"
-                    :key="parent.id"                  
-                    :parent="parent"
-                    :store="store"
-                />
-            </div>
-        </AnimationFade>
+        <div
+            class="nd-trunk"
+            :class="trunkClass"
+            ref="trunk"
+            :style="trunkStyle"
+        >
+            <NoodelTrunkBranch
+                v-for="parent in allBranchParents"
+                :key="parent.id"                  
+                :parent="parent"
+                :store="store"
+            />
+        </div>
     </div>
     
 </template>
@@ -35,20 +36,22 @@
 
     import NoodelLimits from '@/view/NoodelLimits.vue';
     import NoodelTrunkBranch from "@/view/NoodelTrunkBranch.vue";
-    import AnimationFade from '@/view/AnimationFade.vue';
 
     import { getFocalWidth } from '@/util/getters';
     import Noodel from '@/main/Noodel';
     import { setupContainer } from '@/controllers/noodel-setup';
     import { setupNoodelInputBindings } from '@/controllers/input-binding';
-    import { traverseDescendents } from '../controllers/noodel-traverse';
+    import { traverseDescendents, findNoodeByPath } from '../controllers/noodel-traverse';
     import NoodelView from '@/model/NoodelView';
+    import { Axis } from '@/enums/Axis';
+    import { jumpToNoode } from '../controllers/noodel-navigate';
+    import { alignBranchToIndex, alignTrunkToBranch } from '../controllers/noodel-align';
+    import NoodeView from '@/model/NoodeView';
 
     @Component({
 		components: {
             NoodelLimits,
             NoodelTrunkBranch,
-            AnimationFade,
 		}
 	})
     export default class NoodelTrunk extends Vue {
@@ -58,17 +61,48 @@
         mounted() {
             setupContainer(this.$el, this.store);
             setupNoodelInputBindings(this.$el, this.store);
-            this.$nextTick(this.store.options.mounted);
+            this.store.trunkEl = this.$refs.trunk as Element;
+            this.store.canvasEl = this.$refs.canvas as Element;
+            
+            this.$nextTick(() => {
+                this.allBranchParents.forEach(parent => {
+                    alignBranchToIndex(parent, parent.activeChildIndex);
+                });
+
+                alignTrunkToBranch(this.store, this.store.focalParent);
+                
+                requestAnimationFrame(() => {
+                    this.store.isFirstRenderDone = true;
+
+                    if (typeof this.store.options.mounted === 'function') {
+                        this.store.options.mounted();
+                    };           
+                });
+            });   
         }
 
         get trunkStyle() {
+            if (this.store.trunkOffsetForced !== null) {
+                return {
+                    transform: 'translateX(' + (this.store.trunkOffsetForced + getFocalWidth(this.store)) + 'px)',
+                    "transition-property": "none"
+                };
+            }
+            else {
+                return {
+                    transform: 'translateX(' + (this.store.trunkOffset + getFocalWidth(this.store)) + 'px)'
+                };
+            }
+        }
+
+        get trunkClass() {
             return {
-                transform: 'translateX(' + (this.store.trunkOffset + getFocalWidth(this.store)) + 'px)'
+                'nd-trunk-enter': !this.store.isFirstRenderDone
             };
         }
 
         get allBranchParents() {
-            let allBranchParents = [];
+            let allBranchParents: NoodeView[] = [];
 
             traverseDescendents(this.store.root, desc => {
                 if (desc.children.length > 0) {
@@ -105,6 +139,15 @@
 
     .nd-trunk {
         position: relative;
+        width: 100%;
+        opacity: 1;
+        transition-property: transform;
+        transition-duration: .5s; 
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
+    }
+
+    .nd-trunk-enter {
+        transition-property: none;
     }
     
 </style>
