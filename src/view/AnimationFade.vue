@@ -3,7 +3,6 @@
 <template>
 
     <transition 
-        appear
         name="fade"
     >
         <slot></slot>
@@ -19,7 +18,6 @@
 
 	@Component({})
 	export default class AnimationFade extends Vue {
-
     }
 
 </script>

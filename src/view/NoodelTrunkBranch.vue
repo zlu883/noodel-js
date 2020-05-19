@@ -2,19 +2,28 @@
 
 <template>
 
-    <div 
-        class="nd-branch" 
-        ref="branch"
-        :class="branchClass"
-        :style="branchStyle"
-    >  
-        <NoodelTrunkBranchNoode
-            v-for="child in parent.children"
-            :key="child.id"
-            :noode="child" 
-            :store="store"
-        />
-    </div>
+    <div
+        class="nd-branch-box"
+        :style="branchBoxStyle"
+    >
+        <AnimationFade>
+            <div 
+                class="nd-branch" 
+                ref="branch"
+                :class="branchClass"
+                :style="branchStyle"
+            >  
+                <transition-group name="noodes">
+                    <NoodelTrunkBranchNoode
+                        v-for="child in parent.children"
+                        :key="child.id"
+                        :noode="child" 
+                        :store="store"
+                    />
+                </transition-group>
+            </div>
+        </AnimationFade>
+    </div> 
     
 </template>
 
@@ -56,16 +65,20 @@
         get branchStyle() {
             if (this.parent.childBranchOffsetForced !== null) {
                 return {
-                    left: this.parent.trunkRelativeOffset + 'px',
                     transform: 'translateY(' + (this.parent.childBranchOffsetForced + getFocalHeight(this.store)) + 'px)',
                     "transition-property": "opacity"
                 };
             }
             else {
                 return {
-                    left: this.parent.trunkRelativeOffset + 'px',
                     transform: 'translateY(' + (this.parent.childBranchOffset + getFocalHeight(this.store)) + 'px)'
                 };
+            }
+        }
+
+        get branchBoxStyle() {
+            return {
+                transform: "translateX(" + this.parent.trunkRelativeOffset + 'px)'
             }
         }
 
@@ -91,11 +104,16 @@
 
 <style>
     
+    .nd-branch-box {
+        position: absolute;
+        width: 100%;
+    }
+
     .nd-branch {
         position: absolute;
         transition-property: opacity, transform;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
-        transition-duration: 0.5s; 
+        transition-duration: .5s; 
         opacity: 0.75;
     }
 
@@ -111,5 +129,14 @@
     .nd-branch-focal {
         opacity: 1;
     }
- 
+
+    .noodes-enter, .noodes-leave-to {
+        opacity: 0;
+    }
+
+    .noodes-leave-active {
+        position: absolute;
+        width: 100%;
+    }        
+
 </style>

@@ -1,3 +1,5 @@
+import Vector2D from './Vector2D';
+
 export default interface NoodeView {
 
     id: string;
@@ -29,6 +31,7 @@ export default interface NoodeView {
     size: number;
     branchSize: number;
 
+    posSnapshot?: Vector2D;
     flipInvert: number;
 
     el?: Element;

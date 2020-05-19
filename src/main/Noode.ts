@@ -1,7 +1,7 @@
 import NoodeView from '@/model/NoodeView';
 import NoodeDefinition from '@/model/NoodeDefinition';
 import Noodel from './Noodel';
-import { setActiveChild as _setActiveChild, setActiveSubtreeVisibility, setActiveChild, setFocalParent } from '../controllers/noodel-mutate';
+import { setActiveChild as _setActiveChild, setActiveSubtreeVisibility, setActiveChild, setFocalParent, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
 import { buildNoodeView, extractNoodeDefinition } from '@/controllers/noodel-setup';
 import { isRoot, getPath as _getPath } from '@/util/getters';
 import { alignBranchToIndex } from '@/controllers/noodel-align';
@@ -95,7 +95,7 @@ export default class Noode {
 
     addChildren(childDefs: NoodeDefinition[], index?: number): Noode[] {
         if (typeof index === "number" && (index < 0 || index > this.view.children.length)) {
-            console.warn("Cannot add child: invalid index");
+            console.warn("Cannot add child noode(s): invalid index");
             return [];
         }
 
@@ -120,28 +120,7 @@ export default class Noode {
             return child;
         });
 
-        if (typeof index !== 'number') {
-            this.view.children.push(...children);
-        }
-        else {
-            this.view.children.splice(index, 0, ...children);
-
-            if (this.view.activeChildIndex !== null && index <= this.view.activeChildIndex) {
-                this.view.activeChildIndex += children.length;
-            }
-
-            for (let i = index + childDefs.length; i < this.view.children.length; i++) {
-                this.view.children[i].index += children.length;
-            }
-        }
-
-        if (this.view.children.length === childDefs.length) {
-            _setActiveChild(this.view, 0);
-        }
-
-        if (this.view.isActive && (isRoot(this.view) || this.view.parent.isChildrenVisible)) {
-            setActiveSubtreeVisibility(this.noodel.getFocalParent().view, true, this.noodel.store.options.visibleSubtreeDepth);
-        }
+        insertChildren(this.noodel.store, this.view, index, children);
 
         return children.map(c => new Noode(c, this.noodel));
     }
@@ -151,42 +130,21 @@ export default class Noode {
     }
 
     removeChildren(index: number, count: number): NoodeDefinition[] {
-        if (typeof index !== "number" || typeof count !== "number" || index < 0 || index >= this.view.children.length) {
+        if (typeof index !== "number" || typeof count !== "number" || index < 0 || count < 0 || index >= this.view.children.length) {
             console.warn("Cannot remove child noode(s): invalid index or count");
             return [];
         }
 
-        let deletedNoodes = this.view.children.splice(index, count);
-
-        // update sibling indices
-        for (let i = index; i < this.view.children.length; i++) {
-            this.view.children[i].index -= count;
+        if (index + count > this.view.children.length) {
+            count = this.view.children.length - index;
         }
 
-        if (index + count <= this.view.activeChildIndex) { // deletion before active child
-            this.view.activeChildIndex -= count;
-        }
-        else if (index <= this.view.activeChildIndex) { // deletion includes active child
-            if (this.view.children.length === count) {
-                _setActiveChild(this.view, null);
-            }
-            else if (index + count < this.view.children.length) {
-                _setActiveChild(this.view, this.view.activeChildIndex);
-            }
-            else {
-                _setActiveChild(this.view, index - 1);
-            }
+        if (count <= 0) return [];
 
-            if (this.view.isChildrenVisible) {
-                if (this.view.level <= this.noodel.store.focalLevel && this.view.children.length === 0) {
-                    //setFocalParent(this.noodel.store, this.view.level - 1);
-                }
-                else if (this.view.level < this.noodel.store.focalLevel) {
-                    //moveToTargetLevel = this.view.level;
-                }
-            }
-        }
+        let deletedNoodes: NoodeView[] = deleteChildren(this.noodel.store, this.view, index, count);
 
+        deletedNoodes.forEach(n => this.noodel.idRegister.unregisterNoode(n.id));
+        
         return deletedNoodes.map(n => extractNoodeDefinition(n));
     }
 }

@@ -185,6 +185,23 @@ export function releasePan(noodel: NoodelView, ev: HammerInput) {
     unsetLimitIndicators(noodel);
 }
 
+export function cancelPan(noodel: NoodelView) {
+
+    if (noodel.panAxis === Axis.HORIZONTAL) {
+        noodel.trunkOffsetForced = null;
+        noodel.panOffsetOriginTrunk = null;
+        shiftFocalLevel(noodel, 0);
+    }
+    else if (noodel.panAxis === Axis.VERTICAL) {
+        noodel.focalParent.childBranchOffsetForced = null;
+        noodel.panOffsetOriginFocalBranch = null;
+        shiftFocalNoode(noodel, 0);
+    }
+
+    noodel.panAxis = null;
+    unsetLimitIndicators(noodel);
+}
+
 export function unsetLimitIndicators(noodel: NoodelView) {
     noodel.showLimits.top = false;
     noodel.showLimits.bottom = false;
@@ -286,7 +303,7 @@ export function jumpToNoode(noodel: NoodelView, target: NoodeView) {
         nextParent = nextParent.parent;
     }
 
-    showActiveSubtree(nearestVisibleBranchParent, (target.level - nearestVisibleBranchParent.level) + noodel.options.visibleSubtreeDepth);
+    showActiveSubtree(nearestVisibleBranchParent, (target.level - 1 - nearestVisibleBranchParent.level) + noodel.options.visibleSubtreeDepth);
 
     if (target.parent.id !== noodel.focalParent.id) {
         setFocalParent(noodel, target.parent);

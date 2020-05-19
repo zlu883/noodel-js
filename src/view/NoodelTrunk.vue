@@ -64,19 +64,21 @@
             this.store.trunkEl = this.$refs.trunk as Element;
             this.store.canvasEl = this.$refs.canvas as Element;
             
-            this.allBranchParents.forEach(parent => {
-                alignBranchToIndex(parent, parent.activeChildIndex);
-            });
+            this.$nextTick(() => {
+                this.allBranchParents.forEach(parent => {
+                    alignBranchToIndex(parent, parent.activeChildIndex);
+                });
 
-            alignTrunkToBranch(this.store, this.store.focalParent);
-            
-            requestAnimationFrame(() => {
-                this.store.isFirstRenderDone = true;
+                alignTrunkToBranch(this.store, this.store.focalParent);
+                
+                requestAnimationFrame(() => {
+                    this.store.isFirstRenderDone = true;
 
-                if (typeof this.store.options.mounted === 'function') {
-                    this.store.options.mounted();
-                };           
-            });
+                    if (typeof this.store.options.mounted === 'function') {
+                        this.store.options.mounted();
+                    };           
+                });
+            });   
         }
 
         get trunkStyle() {
@@ -137,8 +139,8 @@
 
     .nd-trunk {
         position: relative;
+        width: 100%;
         opacity: 1;
-        width: 99999999px !important; /* Need arbitrary large width otherwise noodes may collapse */
         transition-property: transform;
         transition-duration: .5s; 
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */

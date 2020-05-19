@@ -2,35 +2,34 @@
 
 <template>
 
-    <AnimationFade>
-        <div 
-            class="nd-noode-box"
-            :style="noodeBoxStyle"
+    <div 
+        class="nd-noode-box"
+        :style="noodeBoxStyle"
+    >
+        <div
+            class="nd-noode"
+            ref="noode"
+            v-html="noode.content"
+            :class="noodeClass"
+            @wheel="onNoodeWheel"
+            @pointerdown="onNoodePointerDown"
         >
-            <div
-                class="nd-noode"
-                ref="noode"
-                v-html="noode.content"
-                :class="noodeClass"
-                @wheel="onNoodeWheel"
-                @pointerdown="onNoodePointerDown"
+        </div>   
+        <AnimationFade>   
+            <svg 
+                v-if="showChildIndicator" 
+                class="nd-child-indicator-box"
+                viewBox="0 0 100 100"
             >
-            </div>   
-            <AnimationFade>   
-                <svg 
-                    v-if="showChildIndicator" 
-                    class="nd-child-indicator-box"
-                    viewBox="0 0 100 100"
-                >
-                    <polygon
-                        class="nd-child-indicator"
-                        :class="childIndicatorClass"
-                        :points="childIndicatorPath" 
-                    />
-                </svg>
-            </AnimationFade>
-        </div>	  
-    </AnimationFade>    
+                <polygon
+                    class="nd-child-indicator"
+                    :class="childIndicatorClass"
+                    :points="childIndicatorPath" 
+                />
+            </svg>
+        </AnimationFade>
+    </div>
+
 </template>
 
 <!---------------------------- SCRIPT ------------------------------>
@@ -43,11 +42,10 @@
     import AnimationFade from './AnimationFade.vue';
 
     import NoodeView from "@/model/NoodeView";
-    import { alignNoodelOnNoodeSizeUpdate, alignBranchToIndex } from "@/controllers/noodel-align";
+    import { alignNoodelOnNoodeResize, alignNoodelOnNoodeInsert } from "@/controllers/noodel-align";
     import NoodelView from '../model/NoodelView';
     import { traverseAncestors } from '../controllers/noodel-traverse';
     import { getPath } from '../util/getters';
-    import { setSiblingInvertOnNoodeSizeChange, releaseSiblingInverts } from '../controllers/noodel-animate';
 
 	@Component({
         components: {
@@ -59,21 +57,28 @@
         @Prop() noode: NoodeView;
         @Prop() store: NoodelView;
 
+        private resizeSensor;
+
         mounted() {
             this.noode.el = this.$el;
-            this.updateRenderedSize();
-
-            new ResizeSensor(this.$el, () => {
+            
+            this.$nextTick(() => {
+                let rect = this.$el.getBoundingClientRect();
+        
+                alignNoodelOnNoodeInsert(this.store, this.noode, rect.width, rect.height);
+            });
+            
+            this.resizeSensor = new ResizeSensor(this.$el, () => {
                 this.updateRenderedSize();
             });
-
-            this.
             
-            applyPreventNav();
+            this.applyPreventNav();
         }
 
         beforeDestroy() {
-            alignNoodelOnNoodeSizeUpdate(this.store, this.noode, this.noode.parent.branchSize, 0)
+            this.resizeSensor.detach();
+            (this.$refs.noode as HTMLDivElement).style.overflow = 'hidden';
+            (this.$refs.noode as HTMLDivElement).classList.remove('nd-noode-active');
         }
 
         @Watch("noode.content")
@@ -85,11 +90,9 @@
         }
 
         updateRenderedSize() {
-            this.$nextTick(() => {
-                let rect = this.$el.getBoundingClientRect();
-            
-                alignNoodelOnNoodeSizeUpdate(this.store, this.noode, rect.width, rect.height);
-            })
+            let rect = this.$el.getBoundingClientRect();
+        
+            alignNoodelOnNoodeResize(this.store, this.noode, rect.width, rect.height);
         }
 
         applyPreventNav() {
@@ -218,9 +221,9 @@
         padding: 0.2em 0.6em;
         text-align: start;
         margin: 0 !important;
-        transform: translateY(0); /* Edge needs this explicitly to perform transitions */
-        transition-property: transform, opacity;
-        transition-duration: 0.5s;
+        transform: translateY(0);
+        transition-property: opacity, transform;
+        transition-duration: .5s;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
 
