@@ -190,12 +190,12 @@ export function cancelPan(noodel: NoodelView) {
     if (noodel.panAxis === Axis.HORIZONTAL) {
         noodel.trunkOffsetForced = null;
         noodel.panOffsetOriginTrunk = null;
-        shiftFocalLevel(noodel, 0);
+        noodel.trunkOffset = noodel.trunkOffsetAligned;
     }
     else if (noodel.panAxis === Axis.VERTICAL) {
         noodel.focalParent.childBranchOffsetForced = null;
         noodel.panOffsetOriginFocalBranch = null;
-        shiftFocalNoode(noodel, 0);
+        noodel.focalParent.childBranchOffset = noodel.focalParent.childBranchOffsetAligned;
     }
 
     noodel.panAxis = null;
@@ -214,6 +214,11 @@ export function unsetLimitIndicators(noodel: NoodelView) {
  * will align trunk to the current focal level.
  */
 export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
+
+    // if panning, cancel it
+    if (noodel.panAxis === Axis.HORIZONTAL) {
+        cancelPan(noodel);
+    }
 
     let newFocalParent = findNewFocalParent(noodel, levelDiff);
 
@@ -237,6 +242,11 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
  * is 0, will align the branch to the current active noode.
  */
 export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
+
+    // if panning, cancel it
+    if (noodel.panAxis === Axis.VERTICAL) {
+        cancelPan(noodel);
+    }
 
     let targetIndex = noodel.focalParent.activeChildIndex + indexDiff;
 
@@ -270,6 +280,11 @@ export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
  * if necessary.
  */
 export function jumpToNoode(noodel: NoodelView, target: NoodeView) {
+
+    // if panning, cancel it
+    if (noodel.panAxis !== null) {
+        cancelPan(noodel);
+    }
 
     // No need to jump if target is already focal noode
     if (target.id === noodel.focalParent.children[noodel.focalParent.activeChildIndex].id) {

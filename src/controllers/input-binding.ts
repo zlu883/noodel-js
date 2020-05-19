@@ -4,7 +4,6 @@ import NoodelView from '@/model/NoodelView';
 
 function onKeyDown(noodel: NoodelView, event: KeyboardEvent) {    
 
-    if (noodel.hasSwipe) return;
     if (noodel.focalParent.children.length === 0) return;
 
     if (event.key === "ArrowDown") {
@@ -27,7 +26,6 @@ function onKeyUp(noodel: NoodelView, event: KeyboardEvent) {
 
 function onWheel(noodel: NoodelView, ev: WheelEvent) {
 
-    if (noodel.hasSwipe) return;
     if (noodel.focalParent.children.length === 0) return;
 
     if (Math.abs(ev.deltaY) > Math.abs(ev.deltaX)) {
@@ -80,10 +78,8 @@ function onPanStart(noodel: NoodelView, ev: HammerInput) {
     noodel.hasPress = false;
 
     if (noodel.doInnerScroll) return;
-    if (noodel.hasSwipe) return;
     if (noodel.focalParent.children.length === 0) return;
 
-    noodel.hasSwipe = true;
     startPan(noodel, ev);
 }
 
@@ -94,7 +90,6 @@ function onPan(noodel: NoodelView, ev: HammerInput) {
         noodel.pointerDownSrcNoodeEl.scrollTop = noodel.innerScrollOriginTop - ev.deltaY;
     }
     else {
-        if (!noodel.hasSwipe) return;
         updatePan(noodel, ev);
     }
 }
@@ -109,8 +104,6 @@ function onPanEnd(noodel: NoodelView, ev: HammerInput) {
         noodel.pointerDownSrcNoode = null;
     }  
     else {
-        if (!noodel.hasSwipe) return;
-        noodel.hasSwipe = false;
         releasePan(noodel, ev); 
     }
 }
@@ -127,9 +120,7 @@ function onPressUp(noodel: NoodelView, ev: HammerInput) {
 
 function onTap(noodel: NoodelView, ev: HammerInput) {
     noodel.hasPress = false;
-    
-    if (noodel.hasSwipe) return;
-    
+        
     if (noodel.pointerDownSrcNoode) {
         jumpToNoode(noodel, noodel.pointerDownSrcNoode);
         noodel.pointerDownSrcNoodeEl = null;

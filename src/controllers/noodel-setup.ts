@@ -33,7 +33,6 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
         panOffsetOriginFocalBranch: null,
         panAxis: null,
         hasPress: false,
-        hasSwipe: false,
         isFirstRenderDone: false,
 
         containerSize: {

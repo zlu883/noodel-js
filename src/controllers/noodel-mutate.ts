@@ -19,11 +19,6 @@ export function setActiveSubtreeVisibility(origin: NoodeView, visible: boolean, 
  */
 export function setFocalParent(noodel: NoodelView, newFocalParent: NoodeView) {
 
-    // if panning focal branch, cancel it
-    if (noodel.panAxis === Axis.VERTICAL) {
-        cancelPan(noodel);
-    }
-
     noodel.focalParent.isFocalParent = false;
     hideActiveSubtree(noodel.root);  
 
@@ -101,7 +96,7 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
     if (parent.isFocalParent && noodel.panAxis === Axis.VERTICAL) {
         cancelPan(noodel);
     }
-    
+
     // first adjust alignment of branch
     for (let i = index; i < index + deleteCount; i++) {
         alignNoodelBeforeNoodeDelete(noodel, parent.children[i]);
@@ -112,6 +107,11 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
 
         // align trunk to nearest parent branch if current focal branch is being deleted
         if (parent.level <= noodel.focalLevel && parent.isChildrenVisible) {
+
+            if (noodel.panAxis === Axis.HORIZONTAL) {
+                cancelPan(noodel);
+            }
+
             if (parent.children.length === deleteCount) {
                 if (isRoot(parent)) {
                     setFocalParent(noodel, parent);

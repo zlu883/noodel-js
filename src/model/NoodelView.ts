@@ -34,7 +34,6 @@ export default interface NoodelView {
     panAxis: Axis;
 
     hasPress: boolean;
-    hasSwipe: boolean;
 
     isFirstRenderDone: boolean;
 

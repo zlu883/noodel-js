@@ -6,6 +6,7 @@ import { buildNoodeView, extractNoodeDefinition } from '@/controllers/noodel-set
 import { isRoot, getPath as _getPath } from '@/util/getters';
 import { alignBranchToIndex } from '@/controllers/noodel-align';
 import { forceReflow } from '@/controllers/noodel-animate';
+import { shiftFocalNoode, jumpToNoode } from '@/controllers/noodel-navigate';
 
 export default class Noode {
 
@@ -83,10 +84,17 @@ export default class Noode {
             console.warn("Cannot set active child: noode has no children or invalid index");
             return;
         }
-        
-        _setActiveChild(this.view, index);
-        alignBranchToIndex(this.view, index);
-        forceReflow();
+
+        if (this.view.isFocalParent) {
+            shiftFocalNoode(this.noodel.store, index - this.view.activeChildIndex);
+        }
+        else if (this.view.isChildrenVisible && this.view.level < this.noodel.store.focalLevel) {
+            jumpToNoode(this.noodel.store, this.view.children[index]);
+        }
+        else {
+            _setActiveChild(this.view, index);
+            alignBranchToIndex(this.view, index);
+        }
     }
 
     addChild(childDef: NoodeDefinition, index?: number): Noode {
