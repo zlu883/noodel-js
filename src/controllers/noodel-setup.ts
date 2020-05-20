@@ -54,11 +54,6 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
     setFocalParent(noodel, rootNoode);
     traverseDescendents(rootNoode, noode => setActiveChild(noode, noode.activeChildIndex), true);
 
-    if (noodel.options.initialPath) {
-        let target = findNoodeByPath(noodel, noodel.options.initialPath);
-        if (target) jumpToNoode(noodel, target);
-    }
-
     return noodel;
 }
 
@@ -136,10 +131,6 @@ export function mergeOptions(options: NoodelOptions, noodel: NoodelView) {
 
     if (typeof options.swipeFrictionTrunk === "number") {
         noodel.options.swipeFrictionTrunk = options.swipeFrictionTrunk;
-    }
-
-    if (Array.isArray(options.initialPath)) {
-        noodel.options.initialPath = options.initialPath;
     }
 
     if (typeof options.mounted === "function") {

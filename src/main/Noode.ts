@@ -1,11 +1,10 @@
 import NoodeView from '@/model/NoodeView';
 import NoodeDefinition from '@/model/NoodeDefinition';
 import Noodel from './Noodel';
-import { setActiveChild as _setActiveChild, setActiveSubtreeVisibility, setActiveChild, setFocalParent, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
+import { setActiveChild as _setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
 import { buildNoodeView, extractNoodeDefinition } from '@/controllers/noodel-setup';
-import { isRoot, getPath as _getPath } from '@/util/getters';
+import { getPath as _getPath } from '@/util/getters';
 import { alignBranchToIndex } from '@/controllers/noodel-align';
-import { forceReflow } from '@/controllers/noodel-animate';
 import { shiftFocalNoode, jumpToNoode } from '@/controllers/noodel-navigate';
 
 export default class Noode {
