@@ -85,7 +85,6 @@
         get branchClass() {
             return {
                 'nd-branch-hidden': !this.parent.isChildrenVisible,
-                'nd-branch-focal': this.parent.isFocalParent,
                 'nd-branch-enter': !this.store.isFirstRenderDone
             }
         }
@@ -114,7 +113,7 @@
         transition-property: opacity, transform;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
         transition-duration: .5s; 
-        opacity: 0.75;
+        opacity: 1;
     }
 
     .nd-branch-enter {
@@ -124,10 +123,6 @@
     .nd-branch-hidden {
         opacity: 0;
         pointer-events: none;       
-    }
-
-    .nd-branch-focal {
-        opacity: 1;
     }
 
     .noodes-enter, .noodes-leave-to {

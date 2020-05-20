@@ -4,7 +4,6 @@
 
     <div 
         class="nd-noode-box"
-        :style="noodeBoxStyle"
     >
         <div
             class="nd-noode"
@@ -176,20 +175,9 @@
 
         get noodeClass() {
             return {
-                'nd-noode-active': this.noode.isActive
+                'nd-noode-active': this.noode.isActive,
+                'nd-noode-focal': this.noode.parent.isFocalParent
             }
-        }
-
-        get noodeBoxStyle() {
-            if (this.noode.flipInvert !== 0) {
-                return {
-                    transform: "translateY(" + this.noode.flipInvert + "px)",
-                    "transition-property": "opacity"
-                }
-            }
-            else {
-                return null;
-            }           
         }
 
         get showChildIndicator() {
@@ -237,14 +225,19 @@
         padding: 1.0em;
         border-radius: 0.4em;
         background-color: #e6e6e6;
-        transition-property: background-color;
+        transition-property: background-color, opacity;
         transition-duration: .5s;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
         line-height: 1.5;
+        opacity: 0.75;
     }
 
     .nd-noode-active {
         background-color: #ffffff;
+    }
+
+    .nd-noode-focal {
+        opacity: 1;
     }
 
     .nd-noode > *:first-child {
