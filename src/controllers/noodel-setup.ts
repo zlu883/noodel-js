@@ -4,9 +4,8 @@ import NoodeView from '../model/NoodeView';
 import NoodelView from '@/model/NoodelView';
 import { ResizeSensor } from 'css-element-queries';
 import { setActiveChild, setFocalParent } from './noodel-mutate';
-import { traverseDescendents, findNoodeByPath } from './noodel-traverse';
+import { traverseDescendents } from './noodel-traverse';
 import IdRegister from '@/main/IdRegister';
-import { jumpToNoode } from './noodel-navigate';
 
 export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, options?: NoodelOptions): NoodelView {
 
@@ -49,7 +48,7 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
         }
     }
 
-    mergeOptions(options, noodel);
+    if (options) mergeOptions(options, noodel);
 
     setFocalParent(noodel, rootNoode);
     traverseDescendents(rootNoode, noode => setActiveChild(noode, noode.activeChildIndex), true);
