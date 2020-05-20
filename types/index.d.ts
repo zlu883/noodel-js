@@ -226,23 +226,23 @@ declare interface NoodelOptions {
      */
     visibleSubtreeDepth?: number;
     /**
-     * A number between 0 and 1 that effects the amount of movement when swiping in the branch axis.
+     * A number between 0 and 1 that affects the amount of movement when swiping in the branch axis.
      * For every pixel swiped, the movement will be (1 - friction) pixels. Defaults to 0.7.
      */
     swipeFrictionBranch?: number;
     /**
-     * A number between 0 and 1 that effects the amount of movement when swiping in the trunk axis.
+     * A number between 0 and 1 that affects the amount of movement when swiping in the trunk axis.
      * For every pixel swiped, the movement will be (1 - friction) pixels. Defaults to 0.2.
      */
     swipeFrictionTrunk?: number;
     /**
-     * A positive non-zero number that effects how many noodes to snap across after a swipe is released
+     * A positive non-zero number that affects how many noodes to snap across after a swipe is released
      * in the branch axis. The final number is calculated as a function of the swipe velocity
      * multiplied by (100 / weight). Defaults to 100.
      */
     swipeWeightBranch?: number;
     /**
-     * A positive non-zero number that effects how many levels to snap across after a swipe is released
+     * A positive non-zero number that affects how many levels to snap across after a swipe is released
      * in the trunk axis. The final number is calculated as a function of the swipe velocity
      * multiplied by (100 / weight). Defaults to 100.
      */
