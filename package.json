@@ -1,6 +1,6 @@
 {
   "name": "noodel",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "license": "MIT",
   "scripts": {
     "serve": "vue-cli-service serve",
