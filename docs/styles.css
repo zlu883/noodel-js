@@ -11,7 +11,11 @@ body {
 
 #subtitle {
     display: inline-block; 
-    margin-left: 0.5em
+    margin-left: 0.5em;
+    background-color: #ff8000;
+    color: white;
+    padding: .1em .3em;
+    border-radius: .5em;
 }
 
 p {
@@ -29,4 +33,21 @@ pre, code {
     -moz-user-select: text;
     -ms-user-select: text;
     cursor: text;
+}
+
+.nd-canvas {
+    background-color: #ffa64d;
+}
+
+.nd-noode {
+    background-color: #ffe5cc;
+    opacity: .85;
+}
+
+.nd-noode-active {
+    background-color: white;
+}
+
+.nd-noode-focal {
+    opacity: 1;
 }
