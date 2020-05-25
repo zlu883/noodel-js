@@ -3,7 +3,7 @@ export as namespace Noodel;
 export = Noodel;
 
 /**
- * Represents the view model of a noodel. Syncs with the view.
+ * Represents the view model of a noodel. Has 2-way binding with the view.
  */
 declare class Noodel {
     /**
@@ -94,7 +94,7 @@ declare class Noodel {
 }
 
 /**
- * Represents the view model of a noode. Syncs with the view.
+ * Represents the view model of a noode. Has 2-way binding with the view.
  */
 declare class Noode {
 
@@ -191,13 +191,13 @@ declare class Noode {
      * unless the child is the last in the list, where the previous child
      * will be set active. If the focal branch is deleted, will jump
      * to the nearest ancestor branch. Returns the definitions of the deleted noodes.
+     * @param count number of children to remove
      */
     removeChildren(index: number, count: number): NoodeDefinition[];
 }
 
 /**
- * A plain object that serves as the template for a noode.
- * Not binded with the view.
+ * Defines the template for a noode. Used for noode creation and insertion.
  */
 declare interface NoodeDefinition {
     /**
@@ -219,6 +219,9 @@ declare interface NoodeDefinition {
     content?: string;
 }
 
+/**
+ * Defines the options for a noodel.
+ */
 declare interface NoodelOptions {
     /**
      * The number of levels of descendent branches to show

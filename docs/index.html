@@ -11,6 +11,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/themes/prism.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/plugins/autoloader/prism-autoloader.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/plugins/normalize-whitespace/prism-normalize-whitespace.min.js"></script>
 
     <link rel="stylesheet" type="text/css" href="styles.css">
@@ -767,7 +768,330 @@
         <div class="noode">
             <h2>API</h2>
             <div class="noode">
-                <p>Coming soon!</p>
+                <h3>Noodel<span class="label">class</span></h3>
+                <p>Represents the view model of a noodel. Has 2-way binding with the view.</p>
+                <div class="noode">
+                    <b><code class="language-ts">constructor(root: NoodeDefinition | Element | string, options?: NoodelOptions)</code></b>
+                    <p>Creates the view model of a noodel based on the given content tree.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">mount(el: string | Element)</code></b>
+                    <p>Mounts the noodel's view at the target element, replacing it.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">unmount()</code></b>
+                    <p>Destroys the noodel's view and removes it from the DOM, but keeping the current state of the view model.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setOptions(options: NoodelOptions)</code></b>
+                    <p>Changes the options of the noodel. Properties of the given object will be merged into the current options.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getFocalLevel(): number</code></b>
+                    <p>Gets the current focal level.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getLevelCount(): number</code></b>
+                    <p>Gets the total number of levels in the current active subtree.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getRoot(): Noode</code></b>
+                    <p>Gets the root noode. The root is an invisible noode that serves as the parent of the topmost branch, and always exists.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getFocalParent(): Noode</code></b>
+                    <p>Gets the parent noode of the current focal branch.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getFocalNoode(): Noode</code></b>
+                    <p>Gets the current focal noode.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">findNoodeByPath(path: number[]): Noode</code></b>
+                    <p>
+                        Gets the noode at the given path, an array of 0-based indices
+                        starting from the root (e.g [0, 2] gets the 3rd child of the first child
+                        of the root). Returns null if no noode exists on that path.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">findNoodeById(id: string): Noode</code></b>
+                    <p>Gets the noode with the given ID. Returns null if does not exist.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setFocalLevel(level: number)</code></b>
+                    <p>
+                        Navigates the noodel to focus on the branch at the given level of
+                        the current active subtree. If the level is greater or smaller than
+                        the possible limits, will navigate to the furthest level in that direction.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">moveIn(levelCount?: number)</code></b>
+                    <p>
+                        Navigates towards the child branches of the current focal noode.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">levelCount</code> number of levels to move, defaults to 1</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">moveOut(levelCount?: number)</code></b>
+                    <p>
+                        Navigates towards the parent branches of the current focal noode.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">levelCount</code> number of levels to move, defaults to 1</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">moveForward(noodeCount?: number)</code></b>
+                    <p>
+                        Navigates towards the next siblings of the current focal noode.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">noodeCount</code> number of noodes to move, defaults to 1</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">moveBack(noodeCount?: number)</code></b>
+                    <p>
+                        Navigates towards the previous siblings of the current focal noode.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">noodeCount</code> number of noodes to move, defaults to 1</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">jumpTo(noode: Noode)</code></b>
+                    <p>
+                        Performs a navigational jump to focus on the given noode.
+                        Cannot jump to the root.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">noode</code> the noode to jump to, must be a Noode instance obtained from the noodel</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>Noode<span class="label">class</span></h3>
+                <p>Represents the view model of a noode. Has 2-way binding with the view.</p>
+                <div class="noode">
+                    <b><code class="language-ts">getParent(): Noode</code></b>
+                    <p>
+                        Gets the parent of this noode. All noodes should have a parent
+                        except the root, which will return null.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getPath(): number[]</code></b>
+                    <p>
+                        Gets the path (an array of zero-based indices counting from the root) of this noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getDefinition(): NoodeDefinition</code></b>
+                    <p>
+                        Extracts the definition tree of this noode (including its descendents).
+                        Useful if you want to perform your own operations on the content tree.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getChild(index: number): Noode</code></b>
+                    <p>
+                        Gets the child at the given index. Returns null if does not exist.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getActiveChild(): Noode</code></b>
+                    <p>
+                        Gets the current active child. Returns null if does not exist.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getChildren(): Noode[]</code></b>
+                    <p>
+                        Gets a mapped array of this noode's list of children.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getId(): string</code></b>
+                    <p>
+                        Gets the ID of this noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getContent(): string</code></b>
+                    <p>
+                        Gets the content (innerHTML) of this noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getIndex(): number</code></b>
+                    <p>
+                        Gets the index (position among siblings) of this noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getLevel(): number</code></b>
+                    <p>
+                        Gets the level of this noode. The root has level 0.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getActiveChildIndex(): number</code></b>
+                    <p>
+                        Gets the active child index. Returns null if there's no active child.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setId(id: string)</code></b>
+                    <p>
+                        Sets the ID of this noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setContent(content: string)</code></b>
+                    <p>
+                        Replaces the content of this noode. This will
+                        remove the old content from the DOM.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setActiveChild(index: number)</code></b>
+                    <p>
+                        Changes the active child of this noode. If doing so will toggle
+                        the visibility of the focal branch (i.e this noode is an ancestor
+                        of the focal branch), a jump to the new active child will be triggered.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">addChild(childDef: NoodeDefinition, index?: number): Noode</code></b>
+                    <p>
+                        Inserts a child noode (and its descendents) at the given index.
+                        Will always preserve the current active child. Returns the inserted
+                        child.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">childDef</code> definition tree of the child</li>
+                        <li><code class="language-ts">index</code> if not provided, will append to the end of the children</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">addChildren(childDefs: NoodeDefinition[], index?: number): Noode</code></b>
+                    <p>
+                        Inserts a list of child noodes (and their descendents) at the given index.
+                        Will always preserve the current active child. Returns the inserted
+                        children.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">childDefs</code> definition trees of the children</li>
+                        <li><code class="language-ts">index</code> if not provided, will append to the end of the children</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">removeChild(index: number): NoodeDefinition</code></b>
+                    <p>
+                        Removes a child noode (and its descendents) at the given index.
+                        If the active child is removed, will set the next child active,
+                        unless the child is the last in the list, where the previous child
+                        will be set active. If the focal branch is deleted, will jump
+                        to the nearest ancestor branch. Returns the definition of the deleted noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">removeChildren(index: number, count: number): NoodeDefinition[]</code></b>
+                    <p>
+                        Removes children noodes (and their descendents) at the given index.
+                        If the active child is removed, will set the next child active,
+                        unless the child is the last in the list, where the previous child
+                        will be set active. If the focal branch is deleted, will jump
+                        to the nearest ancestor branch. Returns the definitions of the deleted noodes.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">count</code> number of children to remove</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>NoodeDefinition<span class="label">interface</span></h3>
+                <p>
+                    Defines the template for a noode. Used for noode creation and insertion.
+                </p>
+                <div class="noode">
+                    <b><code class="language-ts">id?: string</code></b>
+                    <p>
+                        ID of this noode. If provided, must be unique and should NOT start with "_" .
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">children?: NoodeDefinition[]</code></b>
+                    <p>
+                        Children noodes of this noode. Defaults to an empty array.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">activeChildIndex?: number</code></b>
+                    <p>
+                        The index of the initial active child of this noode. Defaults to 0 (the first child),
+                        or null if the noode has no children.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">content?: string</code></b>
+                    <p>
+                        Content of this noode. Will be injected as innerHTML of the noode's container.
+                    </p>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>NoodelOptions<span class="label">interface</span></h3>
+                <p>Defines the options for a noodel.</p>
+                <div class="noode">
+                    <b><code class="language-ts">visibleSubtreeDepth?: number</code></b>
+                    <p>
+                        The number of levels of descendent branches to show
+                        after the current focal branch. Defaults to 1.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">swipeFrictionBranch?: number</code></b>
+                    <p>
+                        A number between 0 and 1 that affects the amount of movement when swiping in the branch axis.
+                        For every pixel swiped, the movement will be (1 - friction) pixels. Defaults to 0.7.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">swipeFrictionTrunk?: number</code></b>
+                    <p>
+                        A number between 0 and 1 that affects the amount of movement when swiping in the trunk axis.
+                        For every pixel swiped, the movement will be (1 - friction) pixels. Defaults to 0.2.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">swipeWeightBranch?: number</code></b>
+                    <p>
+                        A positive non-zero number that affects how many noodes to snap across after a swipe is released
+                        in the branch axis. The final number is calculated as a function of the swipe velocity
+                        multiplied by (100 / weight). Defaults to 100.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">swipeWeightTrunk?: number</code></b>
+                    <p>
+                        A positive non-zero number that affects how many levels to snap across after a swipe is released
+                        in the trunk axis. The final number is calculated as a function of the swipe velocity
+                        multiplied by (100 / weight). Defaults to 100.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">mounted?: () => any</code></b>
+                    <p>
+                        Callback after the view has been mounted and properly aligned
+                        after the first render. Changes to the view model from here onward
+                        will sync with the view and trigger animation effects.
+                    </p>
+                </div>
             </div>
         </div>
         <div class="noode">
