@@ -51,3 +51,11 @@ pre, code {
 .nd-noode-focal {
     opacity: 1;
 }
+
+.nd-child-indicator {
+    fill: #ffe5cc;
+}
+
+.nd-child-indicator-active {
+    fill: white;
+}

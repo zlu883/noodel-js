@@ -203,7 +203,7 @@
                 <h3>Installation</h3>
                 <div class="noode">
                     <h3>Direct <code class="language-html">&lt;script&gt;</code> embed</h3>
-                    <p>You can use Noodel by directly embedding its script and css from a CDN into your HTML:</p>
+                    <p>You can use Noodel by directly embedding its script and CSS from a CDN into your HTML:</p>
                     <pre data-prevent-nav-swipe>
                         <code class="language-html">
                             // You should specify the version number (e.g noodel@1.0.1) in production
@@ -225,7 +225,7 @@
                         <code class="language-js">
                             import Noodel from 'noodel'
 
-                            // Don't forget to also include the css somewhere in your project, e.g.
+                            // Don't forget to also include the CSS somewhere in your project, e.g.
                             // import '../node_modules/noodel/dist/noodel.css' 
                         </code>
                     </pre>
@@ -487,19 +487,20 @@
                         The object you get when you create a noodel is its view model. It has 2-way binding
                         with the view, and you can perform operations on it to change the view dynamically.
                     </p>
-                    <pre data-prevent-nav-swipe>
-                        <code class="language-js">
-                            // view model
-                            const noodel = new Noodel(root);
-
-                            noodel.mount("target");
-                        </code>
-                    </pre>
                     <p>
                         Use functions such as <code class="language-js">noodel.getFocalNoode()</code>, 
                         <code class="language-js">noodel.findNoodeById()</code> to get the view model
                         for individual noodes. See API for details.
                     </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            // view model of whole noodel
+                            const noodel = new Noodel(root);
+
+                            // view model of individual noode
+                            const titleNoode = noodel.getFocalNoode();
+                        </code>
+                    </pre>                 
                 </div>
                 <div class="noode">
                     <h3>Programmatic navigation</h3>
@@ -533,19 +534,208 @@
                             The original content elements will be removed.
                         </p>
                     </div>
+                </div>
+                <div class="noode">
+                    <h3>Noode insertion and deletion</h3>
+                    <p>
+                        Use <code class="language-js">noode.addChild()</code> or
+                        <code class="language-js">noode.addChildren()</code> to insert child noodes to
+                        a parent noode.
+                    </p>
+                    <p>
+                        Use <code class="language-js">noode.removeChild()</code> or
+                        <code class="language-js">noode.removeChildren()</code> to delete child noodes from
+                        a parent noode.
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            const rootNoode = new Noodel({}).getRoot();
+
+                            // inserts a noode
+                            rootNoode.addChild({
+                                content: "Hello!"
+                            });
+
+                            // deletes the noode just added
+                            rootNoode.removeChild(0);
+                        </code>
+                    </pre>
                     <div class="noode">
                         <p>
-                            If your noodes have flexible sizing, they will grow or shrink to fit the content
-                            as appropriate.
+                            Noode insertions and deletions inside the active subtree will affect the view,
+                            while those outside the active subtree will not.
                         </p>
+                    </div>
+                    <div class="noode">
+                        <p>
+                            Noodel will always try to preserve the current focal noode during
+                            insertion and deletion, if possible. This means
+                            that if the current focal noode is at index 3, and you insert a noode at index 1,
+                            the focal noode becomes the noode at index 4, and no navigation will occur.
+                        </p>
+                        <p>
+                            Navigation happens only when a deletion includes the focal noode. In that case the
+                            focus will go to an adjacent noode, as appropriate.
+                        </p>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>Mounting and unmounting</h3>
+                    <p>
+                        You render the view model on the page by mounting it on the DOM using
+                        <code class="language-js">mount()</code>. On the other hand, you can remove the view
+                        from the DOM using <code class="language-js">unmount()</code>, while keeping
+                        the view model's state.
+                    </p>
+                    <div class="noode">
+                        <h3>Changing noodel state before mount</h3>
+                        <p>
+                            You can use navigation and mutation functions on the noodel before mounting it
+                            to dynamically construct the content tree or set the initial noode to focus on, e.g.
+                        </p>
+                        <pre data-prevent-nav-swipe>
+                            <code class="language-js">
+                                const noodel = new Noodel({});
+    
+                                noodel.getRoot().addChild({
+                                    content: "first child of root",
+                                    children: [
+                                        {
+                                            id: "grandChild",
+                                            content: "first child of first child of root"
+                                        }
+                                    ]
+                                });
+    
+                                noodel.jumpTo(noodel.findNoodeById("grandChild"));
+    
+                                // the view will focus on the "grandChild" noode initially
+                                noodel.mount("target");
+                            </code>
+                        </pre>
                     </div>
                 </div>
             </div>
             <div class="noode">
                 <h3>Styling</h3>
                 <div class="noode">
-                    <p>Coming soon!</p>
+                    <h3>General</h3>
+                    <p>
+                        You can control most aspects of Noodel's appearance using plain CSS, by overriding
+                        Noodel's CSS classes.
+                    </p>
+                    <p>
+                        In addition, you have complete freedom in styling the content inside your noodes
+                        since they are just plain HTML. You can combine both approaches for more intensive
+                        style customization.
+                    </p>       
                 </div>
+                <div class="noode">
+                    <h3>Customizing look-and-feel</h3>
+                    <p>
+                        Noodel comes with a simple grayscale theme by default.
+                        You can override these CSS classes to customize basic aspects of the look-and-feel,
+                        such as color, background, border and padding.
+                    </p>
+                    <p>
+                        In general, however, you should NOT override properties that relate to element positioning and sizing, e.g.
+                        height, width, position, box-sizing, margin and transform, as they may interfere with how Noodel layout and
+                        moves its elements. 
+                    </p>
+                    <p>
+                        For customizing noode sizes and movement animations, see the sections below.
+                    </p>
+                    <div class="noode">
+                        <ul>
+                            <li><code class="language-css">nd-canvas</code> the overall container</li>
+                            <li><code class="language-css">nd-branch</code> the branch container</li>
+                            <li><code class="language-css">nd-noode-box</code> the logical noode container (including the "gap" around noodes)</li>
+                            <li><code class="language-css">nd-noode</code> the noode container (immediate parent of your content)</li>
+                            <li><code class="language-css">nd-noode-active</code> applied to active noodes</li>
+                            <li><code class="language-css">nd-noode-focal</code> applied to noodes in the focal branch</li>
+                            <li>
+                                <code class="language-css">nd-child-indicator-box</code>,
+                                <code class="language-css">nd-child-indicator</code>, 
+                                <code class="language-css">nd-child-indicator-active</code> classes for child indicators ("breadcrumb" arrows)
+                            </li>
+                            <li>
+                                <code class="language-css">nd-limit</code>,
+                                <code class="language-css">nd-limit-top</code>, 
+                                <code class="language-css">nd-limit-left</code>, 
+                                <code class="language-css">nd-limit-bottom</code>, 
+                                <code class="language-css">nd-limit-right</code> classes for the limit indicators
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>Controlling noode size</h3>
+                    <p>
+                        The size of noodes are actually determined in a very simple way - they are placed in a
+                        block context, so will grow or shrink to fit their content while conforming to the
+                        size of its siblings, while respecting any CSS height and width properties.
+                    </p>
+                    <p>
+                        This means you can fully control the size of noodes by setting the height, width, max-height,
+                        max-width, min-height and min-width properties on the <code class="language-css">nd-noode</code>
+                        class. You can have either fixed size noodes (by setting a specific width/height) or
+                        flexible size noodes (by not setting a specific width/height), and well as using max/min sizes
+                        to adapt to a range of situations. In addition, you can set the size of your content element
+                        inside a specific noode and let that determine the size of the noode container.
+                    </p>
+                    <p>
+                        And whenever the size of a noode changes, Noodel will align everything properly so your
+                        focal noode is always centered at the right position!
+                    </p>
+                    <p>
+                        By default, Noodel comes with flexible size noodes and some basic max/min settings that should
+                        adapt to most screen sizes.
+                    </p>
+                    <div class="noode">
+                        <h3>Example: full-page carousel</h3>
+                        <p>
+                            As an example, it's actually very easy to use Noodel to create the typical full-page
+                            carousel site experience, with some simple CSS overrides:
+                        </p>
+                        <pre data-prevent-nav-swipe>
+                            <code class="language-css">
+                                .nd-noode {
+                                    height: 100vh;
+                                    width: 100vw;
+                                }
+
+                                .nd-noode-box {
+                                    padding: 0; /* Removes the "gap" between noodes */
+                                }
+
+                                .nd-child-indicator-box {
+                                    display: none; /* Hides the child indicator arrows */
+                                }
+                            </code>
+                        </pre>
+                    </div>        
+                </div>
+                <div class="noode">
+                    <h3>Controlling animations</h3>
+                    <p>
+                        All animations are done using CSS transitions. This means you can control
+                        the duration and timing functions of all animations via CSS overrides of the following
+                        classes:
+                    </p>
+                    <ul>
+                        <li><code class="language-css">nd-trunk</code> controls movement in the trunk axis</li>
+                        <li><code class="language-css">nd-branch</code> controls movement in the branch axis, and branch show/hide</li>
+                        <li><code class="language-css">nd-noode-box</code> controls noode movement during insert/delete</li>
+                        <li>any other classes that have transition effects</li>
+                    </ul>
+                    <div class="noode">
+                        <p>
+                            Animation effects during noode insert/delete depend on transitioning the branch
+                            and noodes simultaneously. This means they should have identical duration and timing
+                            functions - otherwise it will cause an odd "jump" in the animations.
+                        </p>
+                    </div>  
+                </div>  
             </div>
             <div class="noode">
                 <h3>Tips and caveats</h3>
