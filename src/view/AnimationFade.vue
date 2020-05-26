@@ -14,11 +14,11 @@
 
 <script lang="ts">
 
-	import { Component, Prop, Vue } from "vue-property-decorator";
+    import Vue from 'vue';
 
-	@Component({})
-	export default class AnimationFade extends Vue {
-    }
+    export default Vue.extend({
+
+    });
 
 </script>
 

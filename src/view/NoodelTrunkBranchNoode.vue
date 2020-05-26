@@ -35,7 +35,6 @@
 
 <script lang="ts">
 
-    import { Component, Prop, Vue, Watch } from "vue-property-decorator";
     import { ResizeSensor } from "css-element-queries";
 
     import AnimationFade from './AnimationFade.vue';
@@ -45,18 +44,18 @@
     import NoodelView from '../model/NoodelView';
     import { traverseAncestors } from '../controllers/noodel-traverse';
     import { getPath } from '../util/getters';
+    import Vue, { PropType } from 'vue';
 
-	@Component({
+    export default Vue.extend({
+
         components: {
             AnimationFade,
-        }
-    })
-	export default class NoodelTrunkBranchNoode extends Vue {
+        },
 
-        @Prop() noode: NoodeView;
-        @Prop() store: NoodelView;
-
-        private resizeSensor;
+        props: {
+            noode: Object as PropType<NoodeView>,
+            store: Object as PropType<NoodelView>
+        },
 
         mounted() {
             this.noode.el = this.$el;
@@ -67,135 +66,142 @@
                 alignNoodelOnNoodeInsert(this.store, this.noode, rect.width, rect.height);
             });
             
-            this.resizeSensor = new ResizeSensor(this.$el, () => {
+            this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
                 this.updateRenderedSize();
             });
             
             this.applyPreventNav();
-        }
+        },
 
         beforeDestroy() {
-            this.resizeSensor.detach();
+            this.noode.resizeSensor.detach();
             (this.$refs.noode as HTMLDivElement).style.overflow = 'hidden';
             (this.$refs.noode as HTMLDivElement).classList.remove('nd-noode-active');
-        }
+        },
 
-        @Watch("noode.content")
-        onContentUpdated() {
-            this.$nextTick(() => {
-                this.updateRenderedSize();
-                this.applyPreventNav();
-            });
-        }
+        methods: {
 
-        updateRenderedSize() {
-            let rect = this.$el.getBoundingClientRect();
-        
-            alignNoodelOnNoodeResize(this.store, this.noode, rect.width, rect.height);
-        }
+            updateRenderedSize() {
+                let rect = this.$el.getBoundingClientRect();
+            
+                alignNoodelOnNoodeResize(this.store, this.noode, rect.width, rect.height);
+            },
 
-        applyPreventNav() {
-            let prevNavListener = (ev: Event) => {
-                if (this.noode.isActive && this.noode.parent.isFocalParent) {
+            applyPreventNav() {
+                let prevNavListener = (ev: Event) => {
+                    if (this.noode.isActive && this.noode.parent.isFocalParent) {
+                        ev.stopPropagation();
+                    }
+                }
+
+                this.$el.querySelectorAll("[data-prevent-nav-key]").forEach(el => {
+                    el.addEventListener("keydown", prevNavListener);
+                });
+                this.$el.querySelectorAll("[data-prevent-nav-swipe]").forEach(el => {
+                    el.addEventListener("pointerdown", prevNavListener);
+                });
+                this.$el.querySelectorAll("[data-prevent-nav-wheel]").forEach(el => {
+                    el.addEventListener("wheel", prevNavListener);
+                });
+                this.$el.querySelectorAll("[data-prevent-nav-all]").forEach(el => {
+                    el.addEventListener("keydown", prevNavListener);
+                    el.addEventListener("pointerdown", prevNavListener);
+                    el.addEventListener("wheel", prevNavListener);
+                });
+            },
+
+            onNoodeWheel(ev: WheelEvent) {
+
+                let el = this.$refs.noode as HTMLDivElement;
+
+                if (!(this.noode.isActive && this.noode.parent.isFocalParent)) {
+                    return;
+                }
+
+                if (Math.abs(ev.deltaY) > Math.abs(ev.deltaX)) {
+                    if (ev.deltaY > 0) {
+                        if (Math.abs((el.scrollHeight - el.scrollTop) - el.clientHeight) > 1) {
+                            ev.stopPropagation();
+                        }
+                    }
+                    else {
+                        if (el.scrollTop !== 0) {
+                            ev.stopPropagation();
+                        }
+                    }
+                }
+                else {
+                    if (ev.deltaX > 0) {
+                        if (Math.abs((el.scrollWidth - el.scrollLeft) - el.clientWidth) > 1) {
+                            ev.stopPropagation();
+                        }
+                    }
+                    else {
+                        if (el.scrollLeft !== 0) {
+                            ev.stopPropagation();
+                        }
+                    }
+                }
+            },
+
+            onNoodePointerDown(ev: PointerEvent) {
+
+                let el = this.$refs.noode as HTMLDivElement;
+
+                // detect click on scrollbar
+                if (ev.clientX > el.getBoundingClientRect().left + el.clientWidth ||
+                ev.clientY > el.getBoundingClientRect().top + el.clientHeight) {
                     ev.stopPropagation();
+                    return;
                 }
+
+                if (this.noode.isActive && this.noode.parent.isFocalParent) {
+                    this.store.pointerDownSrcNoodeEl = el;
+                }
+
+                this.store.pointerDownSrcNoode = this.noode;
             }
+        },
 
-            this.$el.querySelectorAll("[data-prevent-nav-key]").forEach(el => {
-                el.addEventListener("keydown", prevNavListener);
-            });
-            this.$el.querySelectorAll("[data-prevent-nav-swipe]").forEach(el => {
-                el.addEventListener("pointerdown", prevNavListener);
-            });
-            this.$el.querySelectorAll("[data-prevent-nav-wheel]").forEach(el => {
-                el.addEventListener("wheel", prevNavListener);
-            });
-            this.$el.querySelectorAll("[data-prevent-nav-all]").forEach(el => {
-                el.addEventListener("keydown", prevNavListener);
-                el.addEventListener("pointerdown", prevNavListener);
-                el.addEventListener("wheel", prevNavListener);
-            });
-        }
-
-        onNoodeWheel(ev: WheelEvent) {
-
-            let el = this.$refs.noode as HTMLDivElement;
-
-            if (!(this.noode.isActive && this.noode.parent.isFocalParent)) {
-                return;
+        watch: {
+            "noode.content": function() {
+                this.$nextTick(() => {
+                    this.updateRenderedSize();
+                    this.applyPreventNav();
+                });
             }
+        },
 
-            if (Math.abs(ev.deltaY) > Math.abs(ev.deltaX)) {
-                if (ev.deltaY > 0) {
-                    if (Math.abs((el.scrollHeight - el.scrollTop) - el.clientHeight) > 1) {
-                        ev.stopPropagation();
-                    }
+        computed: {
+
+            isFocalActive(): {} {
+                return this.noode.parent.isFocalParent && this.noode.isActive;
+            },
+
+            noodeClass(): {} {
+                return {
+                    'nd-noode-active': this.noode.isActive,
+                    'nd-noode-focal': this.noode.parent.isFocalParent
                 }
-                else {
-                    if (el.scrollTop !== 0) {
-                        ev.stopPropagation();
-                    }
-                }
-            }
-            else {
-                if (ev.deltaX > 0) {
-                    if (Math.abs((el.scrollWidth - el.scrollLeft) - el.clientWidth) > 1) {
-                        ev.stopPropagation();
-                    }
-                }
-                else {
-                    if (el.scrollLeft !== 0) {
-                        ev.stopPropagation();
-                    }
+            },
+
+            showChildIndicator(): {} {
+                return this.noode.children.length > 0;
+            },
+
+            childIndicatorPath(): {} {
+                return this.noode.isActive && this.noode.isChildrenVisible
+                    ? "0 15 60 15 100 50 60 85 0 85"
+                    : "0 15 40 15 40 85 0 85";
+            },
+
+            childIndicatorClass(): {} {
+                return {
+                    'nd-child-indicator-active': this.noode.isActive
                 }
             }
         }
-
-        onNoodePointerDown(ev: PointerEvent) {
-
-            let el = this.$refs.noode as HTMLDivElement;
-
-            // detect click on scrollbar
-            if (ev.clientX > el.getBoundingClientRect().left + el.clientWidth ||
-            ev.clientY > el.getBoundingClientRect().top + el.clientHeight) {
-                ev.stopPropagation();
-                return;
-            }
-
-            if (this.noode.isActive && this.noode.parent.isFocalParent) {
-                this.store.pointerDownSrcNoodeEl = el;
-            }
-
-            this.store.pointerDownSrcNoode = this.noode;
-        }
-
-        get isFocalActive() {
-            return this.noode.parent.isFocalParent && this.noode.isActive;
-        }
-
-        get noodeClass() {
-            return {
-                'nd-noode-active': this.noode.isActive,
-                'nd-noode-focal': this.noode.parent.isFocalParent
-            }
-        }
-
-        get showChildIndicator() {
-            return this.noode.children.length > 0;
-        }
-
-        get childIndicatorPath() {
-            return this.noode.isActive && this.noode.isChildrenVisible
-                ? "0 15 60 15 100 50 60 85 0 85"
-                : "0 15 40 15 40 85 0 85";
-        }
-
-        get childIndicatorClass() {
-            return {
-                'nd-child-indicator-active': this.noode.isActive
-            }
-        }
-    }
+    });
 
 </script>
 

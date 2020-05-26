@@ -31,7 +31,6 @@
 
 <script lang="ts">
 
-    import { Component, Prop, Vue, Watch } from "vue-property-decorator";
     import { ResizeSensor } from 'css-element-queries';
 
     import NoodelTrunkBranchNoode from '@/view/NoodelTrunkBranchNoode.vue';
@@ -41,61 +40,67 @@
     import NoodeView from '@/model/NoodeView';
     import NoodelView from '@/model/NoodelView';
     import { Axis } from '@/enums/Axis';
+    import Vue, { PropType } from 'vue';
 
-	@Component({
+    export default Vue.extend({
+        
         components: {
             NoodelTrunkBranchNoode,
-            NoodelTrunkBranch,
             AnimationFade
-        }
-    })
-	export default class NoodelTrunkBranch extends Vue {
+        },
 
-        @Prop() parent: NoodeView;
-        @Prop() store: NoodelView;
+        props: {
+            parent: Object as PropType<NoodeView>,
+            store: Object as PropType<NoodelView>
+        },
 
-        mounted() {
+        mounted: function() {
             if (this.parent.isFocalParent) {
                 this.store.focalBranchEl = this.$refs.branch as Element;
             }
 
             this.parent.childBranchEl = this.$refs.branch as Element;
-        }
+        },
 
-        get branchStyle() {
-            if (this.parent.childBranchOffsetForced !== null) {
+        computed: {
+
+            branchStyle(): {} {
+                if (this.parent.childBranchOffsetForced !== null) {
+                    return {
+                        transform: 'translateY(' + (this.parent.childBranchOffsetForced + getFocalHeight(this.store)) + 'px)',
+                        "transition-property": "opacity"
+                    };
+                }
+                else {
+                    return {
+                        transform: 'translateY(' + (this.parent.childBranchOffset + getFocalHeight(this.store)) + 'px)'
+                    };
+                }
+            },
+
+            branchBoxStyle(): {} {
                 return {
-                    transform: 'translateY(' + (this.parent.childBranchOffsetForced + getFocalHeight(this.store)) + 'px)',
-                    "transition-property": "opacity"
-                };
-            }
-            else {
+                    transform: "translateX(" + this.parent.trunkRelativeOffset + 'px)'
+                }
+            },
+
+            branchClass(): {} {
                 return {
-                    transform: 'translateY(' + (this.parent.childBranchOffset + getFocalHeight(this.store)) + 'px)'
-                };
+                    'nd-branch-hidden': !this.parent.isChildrenVisible,
+                    'nd-branch-enter': !this.store.isFirstRenderDone
+                }
             }
-        }
+        },
 
-        get branchBoxStyle() {
-            return {
-                transform: "translateX(" + this.parent.trunkRelativeOffset + 'px)'
+        watch: {
+            "parent.isFocalParent": function (newVal: boolean, oldVal: boolean) {
+                if (newVal === true) {
+                    this.store.focalBranchEl = this.$refs.branch as Element;
+                }
             }
         }
-
-        get branchClass() {
-            return {
-                'nd-branch-hidden': !this.parent.isChildrenVisible,
-                'nd-branch-enter': !this.store.isFirstRenderDone
-            }
-        }
-
-        @Watch("parent.isFocalParent")
-        onIsFocalParentChanged(newVal: boolean, oldVal: boolean) {
-            if (newVal === true) {
-                this.store.focalBranchEl = this.$refs.branch as Element;
-            }
-        }
-    }
+        
+    });
     
 </script>
 

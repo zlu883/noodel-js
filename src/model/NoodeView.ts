@@ -1,4 +1,5 @@
 import Vector2D from './Vector2D';
+import { ResizeSensor } from 'css-element-queries';
 
 export default interface NoodeView {
 
@@ -36,4 +37,6 @@ export default interface NoodeView {
 
     el?: Element;
     childBranchEl?: Element;
+
+    resizeSensor?: ResizeSensor;
 }

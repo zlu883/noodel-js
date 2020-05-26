@@ -32,33 +32,30 @@
 
 <script lang="ts">
 
-    import { Component, Vue, Prop } from "vue-property-decorator";
-
     import NoodelLimits from '@/view/NoodelLimits.vue';
     import NoodelTrunkBranch from "@/view/NoodelTrunkBranch.vue";
 
     import { getFocalWidth } from '@/util/getters';
-    import Noodel from '@/main/Noodel';
     import { setupContainer } from '@/controllers/noodel-setup';
     import { setupNoodelInputBindings } from '@/controllers/input-binding';
-    import { traverseDescendents, findNoodeByPath } from '../controllers/noodel-traverse';
+    import { traverseDescendents } from '../controllers/noodel-traverse';
     import NoodelView from '@/model/NoodelView';
-    import { Axis } from '@/enums/Axis';
-    import { jumpToNoode } from '../controllers/noodel-navigate';
     import { alignBranchToIndex, alignTrunkToBranch } from '../controllers/noodel-align';
     import NoodeView from '@/model/NoodeView';
+    import Vue, { PropType } from 'vue';
 
-    @Component({
-		components: {
-            NoodelLimits,
-            NoodelTrunkBranch,
-		}
-	})
-    export default class NoodelTrunk extends Vue {
+    export default Vue.extend({
         
-        @Prop() store: NoodelView;
+        components: {
+            NoodelLimits,
+            NoodelTrunkBranch
+        },
 
-        mounted() {
+        props: {
+            store: Object as PropType<NoodelView>
+        },
+
+        mounted: function() {
             setupContainer(this.$el, this.store);
             setupNoodelInputBindings(this.$el, this.store);
             this.store.trunkEl = this.$refs.trunk as Element;
@@ -79,40 +76,44 @@
                     };           
                 });
             });   
-        }
+        },
 
-        get trunkStyle() {
-            if (this.store.trunkOffsetForced !== null) {
-                return {
-                    transform: 'translateX(' + (this.store.trunkOffsetForced + getFocalWidth(this.store)) + 'px)',
-                    "transition-property": "none"
-                };
-            }
-            else {
-                return {
-                    transform: 'translateX(' + (this.store.trunkOffset + getFocalWidth(this.store)) + 'px)'
-                };
-            }
-        }
+        computed: {
 
-        get trunkClass() {
-            return {
-                'nd-trunk-enter': !this.store.isFirstRenderDone
-            };
-        }
-
-        get allBranchParents() {
-            let allBranchParents: NoodeView[] = [];
-
-            traverseDescendents(this.store.root, desc => {
-                if (desc.children.length > 0) {
-                    allBranchParents.push(desc);
+            trunkStyle(): {} {
+                if (this.store.trunkOffsetForced !== null) {
+                    return {
+                        transform: 'translateX(' + (this.store.trunkOffsetForced + getFocalWidth(this.store)) + 'px)',
+                        "transition-property": "none"
+                    };
                 }
-            }, true);
+                else {
+                    return {
+                        transform: 'translateX(' + (this.store.trunkOffset + getFocalWidth(this.store)) + 'px)'
+                    };
+                }
+            },
 
-            return allBranchParents;
+            trunkClass(): {} {
+                return {
+                    'nd-trunk-enter': !this.store.isFirstRenderDone
+                };
+            },
+
+            allBranchParents(): NoodeView[] {
+                let allBranchParents: NoodeView[] = [];
+
+                traverseDescendents(this.store.root, desc => {
+                    if (desc.children.length > 0) {
+                        allBranchParents.push(desc);
+                    }
+                }, true);
+
+                return allBranchParents;
+            }
         }
-    }
+
+    });
     
 </script>
 

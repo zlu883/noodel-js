@@ -15,13 +15,10 @@
     "types"
   ],
   "dependencies": {
-    "@tweenjs/tween.js": "^18.5.0",
     "core-js": "^3.6.4",
     "css-element-queries": "^1.2.3",
     "hammerjs": "^2.0.8",
-    "vue": "^2.6.11",
-    "vue-class-component": "^7.2.2",
-    "vue-property-decorator": "^8.3.0"
+    "vue": "^2.6.11"
   },
   "devDependencies": {
     "@types/hammerjs": "^2.0.36",

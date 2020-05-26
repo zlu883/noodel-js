@@ -23,20 +23,21 @@
 
 <script lang="ts">
 
-    import { Component, Vue, Prop } from "vue-property-decorator";
+    import Vue, { PropType } from 'vue';
 
     import AnimationFade from './AnimationFade.vue';
     import NoodelView from '../model/NoodelView';
 
-	@Component({
+    export default Vue.extend({
+
         components: {
             AnimationFade
+        },
+        props: {
+            store: Object as PropType<NoodelView>
         }
-    })
-    export default class NoodelLimits extends Vue {
         
-        @Prop() store: NoodelView;
-    }
+    });
     
 </script>
 
