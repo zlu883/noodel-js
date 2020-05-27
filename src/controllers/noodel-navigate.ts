@@ -126,7 +126,7 @@ function panFocalBranch(noodel: NoodelView, targetOffset: number) {
 
     if (targetIndex !== noodel.focalParent.activeChildIndex) {
         hideActiveSubtree(noodel.focalParent);
-        setActiveChild(noodel.focalParent, targetIndex);
+        setActiveChild(noodel, noodel.focalParent, targetIndex);
         showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
         noodel.focalParent.childBranchOffsetAligned += alignedOffsetDiff; 
     }
@@ -269,7 +269,7 @@ export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
     }
 
     hideActiveSubtree(noodel.focalParent);
-    setActiveChild(noodel.focalParent, targetIndex);
+    setActiveChild(noodel, noodel.focalParent, targetIndex);
     showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
     alignBranchToIndex(noodel.focalParent, targetIndex);
     forceReflow();
@@ -306,7 +306,7 @@ export function jumpToNoode(noodel: NoodelView, target: NoodeView) {
 
     while (true) {
         if (nextParent.activeChildIndex !== nextActiveChildIndex) {
-            setActiveChild(nextParent, nextActiveChildIndex);
+            setActiveChild(noodel, nextParent, nextActiveChildIndex);
             alignBranchToIndex(nextParent, nextActiveChildIndex);
         }
 

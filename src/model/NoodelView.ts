@@ -58,4 +58,6 @@ export default interface NoodelView {
 
     containerSize: Vector2D;
     options: NoodelOptions;
+
+    onHashChanged?: () => any;
 }

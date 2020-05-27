@@ -1,6 +1,6 @@
 import NoodeDefinition from '@/model/NoodeDefinition';
 import NoodelOptions from '@/model/NoodelOptions';
-import { setupNoodel, parseHTMLToNoode, mergeOptions } from '@/controllers/noodel-setup';
+import { setupNoodel, parseHTMLToNoode, parseAndApplyOptions } from '@/controllers/noodel-setup';
 import NoodelTrunk from '@/view/NoodelTrunk.vue';
 import Vue from 'vue';
 import NoodelView from '@/model/NoodelView';
@@ -57,7 +57,7 @@ export default class Noodel {
     }
 
     setOptions(options: NoodelOptions) {
-        mergeOptions(options, this.store);
+        parseAndApplyOptions(options, this.store, this.idRegister);
     }
 
     getFocalLevel(): number {

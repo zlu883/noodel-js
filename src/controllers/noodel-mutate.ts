@@ -6,6 +6,7 @@ import { alignTrunkToBranch, alignNoodelBeforeNoodeDelete } from './noodel-align
 import { forceReflow } from './noodel-animate';
 import { Axis } from '@/enums/Axis';
 import { cancelPan } from './noodel-navigate';
+import { replaceHash } from './noodel-routing';
 
 export function setActiveSubtreeVisibility(origin: NoodeView, visible: boolean, depth?: number) {
     traverseActiveDescendents(origin, desc => {
@@ -26,13 +27,17 @@ export function setFocalParent(noodel: NoodelView, newFocalParent: NoodeView) {
     noodel.focalParent = newFocalParent;
     noodel.focalLevel = newFocalParent.level;
     showActiveSubtree(noodel.root, newFocalParent.level + noodel.options.visibleSubtreeDepth);
+
+    if (noodel.options.useRouting) {
+        replaceHash(getActiveChild(newFocalParent).id);
+    }
 }
 
 /**
  * Changes the active child of the parent to the given index (can be null to unset active child).
  * Does not align the branch.
  */
-export function setActiveChild(parent: NoodeView, index: number | null) {
+export function setActiveChild(noodel: NoodelView, parent: NoodeView, index: number | null) {
     if (getActiveChild(parent)) {
         getActiveChild(parent).isActive = false;
     }
@@ -41,6 +46,10 @@ export function setActiveChild(parent: NoodeView, index: number | null) {
 
     if (getActiveChild(parent)) {
         getActiveChild(parent).isActive = true;
+
+        if (noodel.options.useRouting && parent.isFocalParent) {
+            replaceHash(getActiveChild(parent).id);
+        }
     }
 }
 
@@ -78,7 +87,7 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
     }
 
     if (parent.children.length === children.length) {
-        setActiveChild(parent, 0);
+        setActiveChild(noodel, parent, 0);
     }
 
     if (parent.isActive && (isRoot(parent) || parent.parent.isChildrenVisible)) {
@@ -132,16 +141,16 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
         }
 
         if (parent.children.length === deleteCount) { // all children deleted
-            setActiveChild(parent, null);
+            setActiveChild(noodel, parent, null);
         }
         else if (index + deleteCount < parent.children.length) { // siblings exist after the deleted children
-            setActiveChild(parent, index + deleteCount); // set next sibling active
+            setActiveChild(noodel, parent, index + deleteCount); // set next sibling active
             showActiveSubtree(parent, noodel.options.visibleSubtreeDepth);            
             parent.childBranchOffset -= getActiveChild(parent).size / 2;
             parent.childBranchOffsetAligned -= getActiveChild(parent).size / 2;
         }
         else { // no siblings exist after deleted children
-            setActiveChild(parent, index - 1); // set prev sibling active
+            setActiveChild(noodel, parent, index - 1); // set prev sibling active
             showActiveSubtree(parent, noodel.options.visibleSubtreeDepth);
             parent.childBranchOffset += getActiveChild(parent).size / 2;
             parent.childBranchOffsetAligned += getActiveChild(parent).size / 2;

@@ -3,15 +3,18 @@ import NoodelOptions from '../model/NoodelOptions';
 import NoodeView from '../model/NoodeView';
 import NoodelView from '@/model/NoodelView';
 import { ResizeSensor } from 'css-element-queries';
-import { setActiveChild, setFocalParent } from './noodel-mutate';
+import { setActiveChild, setFocalParent, showActiveSubtree } from './noodel-mutate';
 import { traverseDescendents } from './noodel-traverse';
 import IdRegister from '@/main/IdRegister';
+import { setupRouting, unsetRouting, changeHash } from './noodel-routing';
+import { jumpToNoode } from './noodel-navigate';
 
 export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, options?: NoodelOptions): NoodelView {
 
     let rootNoode = buildNoodeView(idRegister, root, 0, 0, null);
 
     rootNoode.isActive = true;
+    rootNoode.isFocalParent = true;
 
     let noodel: NoodelView = {
         root: rootNoode,
@@ -44,14 +47,26 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
             swipeFrictionBranch: 0.7,
             swipeFrictionTrunk: 0.2,
             swipeWeightBranch: 100,
-            swipeWeightTrunk: 100
+            swipeWeightTrunk: 100,
+            useRouting: true
         }
     }
 
-    if (options) mergeOptions(options, noodel);
+    if (options) parseAndApplyOptions(options, noodel, idRegister);
 
-    setFocalParent(noodel, rootNoode);
-    traverseDescendents(rootNoode, noode => setActiveChild(noode, noode.activeChildIndex), true);
+    showActiveSubtree(rootNoode, noodel.options.visibleSubtreeDepth);
+
+    if (noodel.options.useRouting) {
+        let hash = window.location.hash;
+
+        if (hash) {
+            let target = idRegister.findNoode(hash.substr(1));
+
+            if (target && target.parent) {
+                jumpToNoode(noodel, target);
+            }
+        } 
+    }
 
     return noodel;
 }
@@ -110,7 +125,7 @@ export function setupContainer(el: Element, noodel: NoodelView) {
     });
 }
 
-export function mergeOptions(options: NoodelOptions, noodel: NoodelView) {
+export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView, idReg: IdRegister) {
 
     if (typeof options.visibleSubtreeDepth === "number") {
         noodel.options.visibleSubtreeDepth = options.visibleSubtreeDepth;
@@ -130,6 +145,17 @@ export function mergeOptions(options: NoodelOptions, noodel: NoodelView) {
 
     if (typeof options.swipeFrictionTrunk === "number") {
         noodel.options.swipeFrictionTrunk = options.swipeFrictionTrunk;
+    }
+
+    if (typeof options.useRouting === "boolean") {
+        noodel.options.useRouting = options.useRouting;
+
+        if (options.useRouting) {
+            setupRouting(noodel, idReg);
+        }
+        else {
+            unsetRouting(noodel);
+        }
     }
 
     if (typeof options.mounted === "function") {
@@ -162,21 +188,27 @@ export function buildNoodeView(idRegister: IdRegister, def: NoodeDefinition, lev
 
     idRegister.registerNoode(noodeView.id, noodeView);
 
-    if (Array.isArray(def.children)) {
-        noodeView.children = def.children.map((n, i) => buildNoodeView(idRegister, n, level + 1, i, noodeView));
-    }
+    if (!def.children) def.children = [];
 
     if (typeof def.activeChildIndex !== 'number') {
-        noodeView.activeChildIndex = noodeView.children.length > 0 ? 0 : null;
+        noodeView.activeChildIndex = def.children.length > 0 ? 0 : null;
     }
     else {
-        if (def.activeChildIndex < 0 || def.activeChildIndex >= noodeView.children.length) {
+        if (def.activeChildIndex < 0 || def.activeChildIndex >= def.children.length) {
             console.warn("Invalid initial active child index for noode ID " + noodeView.id);
-            noodeView.activeChildIndex = noodeView.children.length > 0 ? 0 : null;
+            noodeView.activeChildIndex = def.children.length > 0 ? 0 : null;
         }
         else {
             noodeView.activeChildIndex = def.activeChildIndex;
         }
+    }
+
+    if (parent && index === parent.activeChildIndex) {
+        noodeView.isActive = true;
+    }
+
+    if (Array.isArray(def.children)) {
+        noodeView.children = def.children.map((n, i) => buildNoodeView(idRegister, n, level + 1, i, noodeView));
     }
 
     return noodeView;

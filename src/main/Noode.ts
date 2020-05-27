@@ -91,7 +91,7 @@ export default class Noode {
             jumpToNoode(this.noodel.store, this.view.children[index]);
         }
         else {
-            _setActiveChild(this.view, index);
+            _setActiveChild(this.noodel.store, this.view, index);
             alignBranchToIndex(this.view, index);
         }
     }

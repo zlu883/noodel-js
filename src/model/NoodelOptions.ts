@@ -5,5 +5,6 @@ export default interface NoodelOptions {
     swipeFrictionTrunk?: number;
     swipeWeightBranch?: number;
     swipeWeightTrunk?: number;
+    useRouting?: boolean;
     mounted?: () => any;
 }
