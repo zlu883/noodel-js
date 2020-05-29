@@ -34,6 +34,10 @@ export default class Noodel {
             root = parseHTMLToNoode(root);
         }
 
+        if (typeof options !== "object") {
+            options = {};
+        }
+
         this.store = setupNoodel(this.idRegister, root, options);
     }
 

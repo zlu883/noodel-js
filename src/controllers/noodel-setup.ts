@@ -8,7 +8,7 @@ import IdRegister from '@/main/IdRegister';
 import { setupRouting, unsetRouting } from './noodel-routing';
 import { jumpToNoode } from './noodel-navigate';
 
-export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, options?: NoodelOptions): NoodelView {
+export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, options: NoodelOptions): NoodelView {
 
     let rootNoode = buildNoodeView(idRegister, root, 0, 0, null);
 
@@ -51,8 +51,8 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
         }
     }
 
-    if (options) parseAndApplyOptions(options, noodel, idRegister);
-
+    parseAndApplyOptions(options, noodel, idRegister);
+    
     showActiveSubtree(rootNoode, noodel.options.visibleSubtreeDepth);
 
     if (noodel.options.useRouting) {
@@ -148,17 +148,17 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView,
 
     if (typeof options.useRouting === "boolean") {
         noodel.options.useRouting = options.useRouting;
-
-        if (options.useRouting) {
-            setupRouting(noodel, idReg);
-        }
-        else {
-            unsetRouting(noodel);
-        }
     }
 
     if (typeof options.mounted === "function") {
         noodel.options.mounted = options.mounted;
+    }
+
+    if (noodel.options.useRouting) {
+        setupRouting(noodel, idReg);
+    }
+    else {
+        unsetRouting(noodel);
     }
 }
 
