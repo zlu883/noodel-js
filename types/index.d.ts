@@ -251,6 +251,10 @@ declare interface NoodelOptions {
      */
     swipeWeightTrunk?: number;
     /**
+     * Determines whether routing should be enabled for this noodel. Defaults to true.
+     */
+    useRouting?: boolean;
+    /**
      * Callback after the view has been mounted and properly aligned
      * after the first render. Changes to the view model from here onward
      * will sync with the view and trigger animation effects.

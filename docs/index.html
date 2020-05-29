@@ -97,6 +97,7 @@
                     <li>Flexible containers that grow or shrink to fit your content</li>
                     <li>Dynamic content insert/replace/delete that syncs with the view</li>
                     <li>Responsive design that behaves similarly regardless of screen size</li>
+                    <li>Routing integration</li>
                     <li>Fully customizable look-and-feel via plain CSS</li>
                     <li>All animations based on CSS transitions as fast as your browser can optimize them</li>
                 </ul>
@@ -619,9 +620,62 @@
                 </div>
             </div>
             <div class="noode">
+                <h3>Routing</h3>
+                <div class="noode">
+                    <h3>Smmmary</h3>
+                    <p>
+                        By default, routing is enabled for your noodel. This allows Noodel to control
+                        the hash of your URL to sync with the location of the current focal noode.
+                        It will use the ID of the focal noode as the fragment identifier.
+                    </p>
+                    <p>
+                        This allows you to use the browser's history navigation to jump between noodes, as well
+                        as create URL links that target specific noodes in a noodel.
+                    </p>
+                    <div class="noode">
+                        <p>
+                            If routing is enabled at a noodel's creation, it will check the URL to focus on
+                            an initial target noode, if applicable.
+                        </p>
+                    </div>
+                    <div class="noode">
+                        <p>
+                            The syncing between the focal noode and the URL hash happens regardless whether the
+                            noodel is in view, i.e. syncing will happen even if you programmatically navigate a noodel
+                            while it's unmounted.
+                        </p>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>History push behavior</h3>
+                    <p>
+                        Currently, only explicit changes to the URL will cause a new entry to be pushed to
+                        the browser history. Noodel uses 
+                        <a href=https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState target="_blank">history.replaceState()</a>
+                        to replace the URL hash as you navigate around the noodel normally to prevent creating
+                        too many unnecessary entries. This includes the use of Noodel's programmatic navigation functions.
+                    </p>
+                    <div class="noode">
+                        <p>
+                            If you need to do a programmatic navigation that pushes to the history stack, you
+                            should manually change the URL hash to point to the target noode instead of using
+                            Noodel's navigation functions.
+                        </p>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>Caveat</h3>
+                    <p>
+                        You should use routing on only one noodel per page (ideally, when you use a single noodel
+                        to control a site). Routing behaviour for multiple
+                        noodels on the same page is not well defined.
+                    </p>
+                </div>
+            </div>
+            <div class="noode">
                 <h3>Styling</h3>
                 <div class="noode">
-                    <h3>General</h3>
+                    <h3>Summary</h3>
                     <p>
                         You can control most aspects of Noodel's appearance using plain CSS, by overriding
                         Noodel's CSS classes.
@@ -1083,6 +1137,12 @@
                         A positive non-zero number that affects how many levels to snap across after a swipe is released
                         in the trunk axis. The final number is calculated as a function of the swipe velocity
                         multiplied by (100 / weight). Defaults to 100.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">useRouting?: boolean</code></b>
+                    <p>
+                        Determines whether routing should be enabled for this noodel. Defaults to true.
                     </p>
                 </div>
                 <div class="noode">

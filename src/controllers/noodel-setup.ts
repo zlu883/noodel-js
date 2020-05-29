@@ -3,10 +3,9 @@ import NoodelOptions from '../model/NoodelOptions';
 import NoodeView from '../model/NoodeView';
 import NoodelView from '@/model/NoodelView';
 import { ResizeSensor } from 'css-element-queries';
-import { setActiveChild, setFocalParent, showActiveSubtree } from './noodel-mutate';
-import { traverseDescendents } from './noodel-traverse';
+import { showActiveSubtree } from './noodel-mutate';
 import IdRegister from '@/main/IdRegister';
-import { setupRouting, unsetRouting, changeHash } from './noodel-routing';
+import { setupRouting, unsetRouting } from './noodel-routing';
 import { jumpToNoode } from './noodel-navigate';
 
 export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, options?: NoodelOptions): NoodelView {
