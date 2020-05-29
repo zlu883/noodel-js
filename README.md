@@ -14,6 +14,12 @@ Well, as the ultimate proof of concept, Noodel uses itself to create and present
 
 [See here for the documentation](https://zlu883.github.io/Noodel/) (and hence live demo).
 
+## Browser support
+
+To be confirmed.
+
+- Should work on IE >= 10 and all major modern browsers.
+
 ## Contribution
 
 Please [see here](https://github.com/zlu883/Noodel/blob/master/CONTRIBUTING.md) for details.
