@@ -50,15 +50,10 @@ pre, code {
 
 .nd-noode {
     background-color: #ffe5cc;
-    opacity: .85;
 }
 
 .nd-noode-active {
     background-color: white;
-}
-
-.nd-noode-focal {
-    opacity: 1;
 }
 
 .nd-child-indicator {
@@ -67,4 +62,28 @@ pre, code {
 
 .nd-child-indicator-active {
     fill: white;
+}
+
+@media (max-width: 800px) {
+    .nd-noode {
+        max-width: 85vw;
+    }
+}
+
+@media (max-height: 800px) {
+    .nd-noode {
+        max-height: 85vh;
+    }
+}
+
+@media (min-width: 801px) {
+    .nd-noode {
+        max-width: 700px;
+    }
+}
+
+@media (min-height: 801px) {
+    .nd-noode {
+        max-height: 700px;
+    }
 }

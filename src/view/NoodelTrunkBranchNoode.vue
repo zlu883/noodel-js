@@ -197,7 +197,8 @@
 
             childIndicatorClass(): {} {
                 return {
-                    'nd-child-indicator-active': this.noode.isActive
+                    'nd-child-indicator-active': this.noode.isActive,
+                    'nd-child-indicator-focal': this.noode.parent.isFocalParent
                 }
             }
         }
@@ -236,6 +237,8 @@
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
         line-height: 1.5;
         opacity: 0.75;
+        max-height: 100vh;
+        max-width: 100vw;
     }
 
     .nd-noode-active {
@@ -268,34 +271,15 @@
 
     .nd-child-indicator {
         fill: #e6e6e6;
+        opacity: 0.75;
     }
 
     .nd-child-indicator-active {
         fill: #ffffff;
     }
 
-    @media (max-width: 800px) {
-        .nd-noode {
-            max-width: 85vw;
-        }
-    }
-
-    @media (max-height: 800px) {
-        .nd-noode {
-            max-height: 85vh;
-        }
-    }
-
-    @media (min-width: 801px) {
-        .nd-noode {
-            max-width: 700px;
-        }
-    }
-
-    @media (min-height: 801px) {
-        .nd-noode {
-            max-height: 700px;
-        }
+    .nd-child-indicator-focal {
+        opacity: 1;
     }
 
 </style>
