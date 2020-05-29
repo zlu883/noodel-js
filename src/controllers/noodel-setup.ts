@@ -10,7 +10,7 @@ import { jumpToNoode } from './noodel-navigate';
 
 export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, options: NoodelOptions): NoodelView {
 
-    let rootNoode = buildNoodeView(idRegister, root, 0, 0, null);
+    let rootNoode = buildNoodeView(idRegister, root, 1, 0, null);
 
     rootNoode.isActive = true;
     rootNoode.isFocalParent = true;
@@ -18,7 +18,7 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
     let noodel: NoodelView = {
         root: rootNoode,
         focalParent: rootNoode,
-        focalLevel: 0,
+        focalLevel: 1,
         
         trunkOffset: 0,
         trunkOffsetAligned: 0,

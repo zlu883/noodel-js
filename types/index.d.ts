@@ -25,13 +25,13 @@ declare class Noodel {
      */
     setOptions(options: NoodelOptions);
     /**
-     * Gets the current focal level.
+     * Gets the current focal level (the level of the focal parent).
      */
     getFocalLevel(): number;
     /**
-     * Gets the total number of levels in the current active subtree.
+     * Gets the height (total number of levels) in the current active tree.
      */
-    getLevelCount(): number;
+    getActiveTreeHeight(): number;
     /**
      * Gets the root noode. The root is an invisible noode
      * that serves as the parent of the topmost branch, and always exists.
@@ -57,7 +57,7 @@ declare class Noodel {
     findNoodeById(id: string): Noode;
     /**
      * Navigates the noodel to focus on the branch at the given level of
-     * the current active subtree. If the level is greater or smaller than
+     * the current active tree. If the level is greater or smaller than
      * the possible limits, will navigate to the furthest level in that direction.
      */
     setFocalLevel(level: number);
@@ -135,11 +135,11 @@ declare class Noode {
      */
     getContent(): string;
     /**
-     * Gets the index (position among siblings) of this noode.
+     * Gets the 0-based index (position among siblings) of this noode.
      */
     getIndex(): number;
     /**
-     * Gets the level of this noode. The root has level 0.
+     * Gets the level of this noode. The root has level 1.
      */
     getLevel(): number;
     /**

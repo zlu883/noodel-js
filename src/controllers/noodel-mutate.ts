@@ -8,14 +8,8 @@ import { Axis } from '@/enums/Axis';
 import { cancelPan } from './noodel-navigate';
 import { replaceHash } from './noodel-routing';
 
-export function setActiveSubtreeVisibility(origin: NoodeView, visible: boolean, depth?: number) {
-    traverseActiveDescendents(origin, desc => {
-        desc.isChildrenVisible = visible;
-    }, true, false, depth);
-}
-
 /**
- * Changes the focal parent of the noodel, and toggles the visibility of the active subtree.
+ * Changes the focal parent of the noodel, and toggles the visibility of the active tree.
  * Does not align the trunk.
  */
 export function setFocalParent(noodel: NoodelView, newFocalParent: NoodeView) {
@@ -26,7 +20,7 @@ export function setFocalParent(noodel: NoodelView, newFocalParent: NoodeView) {
     newFocalParent.isFocalParent = true;
     noodel.focalParent = newFocalParent;
     noodel.focalLevel = newFocalParent.level;
-    showActiveSubtree(noodel.root, newFocalParent.level + noodel.options.visibleSubtreeDepth);
+    showActiveSubtree(noodel.root, newFocalParent.level - 1 + noodel.options.visibleSubtreeDepth);
 
     if (noodel.options.useRouting) {
         replaceHash(getActiveChild(newFocalParent).id);
@@ -91,7 +85,7 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
     }
 
     if (parent.isActive && (isRoot(parent) || parent.parent.isChildrenVisible)) {
-        setActiveSubtreeVisibility(noodel.focalParent, true, noodel.options.visibleSubtreeDepth);
+        showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
     }
 }
 

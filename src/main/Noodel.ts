@@ -69,7 +69,7 @@ export default class Noodel {
     }
 
     setFocalLevel(level: number) {
-        if (typeof level !== 'number' || level < 0 || level >= this.getLevelCount()) {
+        if (typeof level !== 'number' || level < 1 || level > this.getActiveTreeHeight()) {
             console.warn("Cannot set focal level: invalid level");
             return;
         }
@@ -77,7 +77,7 @@ export default class Noodel {
         shiftFocalLevel(this.store, level - this.store.focalLevel);
     }
 
-    getLevelCount(): number {
+    getActiveTreeHeight(): number {
         let count = 0;
         let currentParent = this.store.root;
 

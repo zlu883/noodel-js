@@ -137,10 +137,11 @@
                 </p>
             </div>
             <div class="noode">
-                <h3>Active subtree</h3>
+                <h3>Active tree</h3>
                 <p>
-                    This means that at any given time, only the noodes on the active child path starting
-                    from the root is shown. This is called the <i>active subtree</i>.
+                    This means that, at any given time, only the children of noodes on the hierarchy 
+                    of active noodes starting from the root are shown. This tree of visible
+                    content is called the <i>active tree</i>.
                 </p>
             </div>
             <div class="noode">
@@ -164,7 +165,7 @@
             <div class="noode">
                 <h3>Trunk</h3>
                 <p>
-                    The container for the list of branches in the active subtree, ordered from ancestor
+                    The container for the list of branches in the active tree, ordered from ancestor
                     to descendents, is called the <i>trunk</i>.
                 </p>
             </div>
@@ -565,8 +566,8 @@
                     </pre>
                     <div class="noode">
                         <p>
-                            Noode insertions and deletions inside the active subtree will affect the view,
-                            while those outside the active subtree will not.
+                            Noode insertions and deletions inside the active tree will affect the view,
+                            while those outside the active tree will not.
                         </p>
                     </div>
                     <div class="noode">
@@ -844,11 +845,11 @@
                 </div>
                 <div class="noode">
                     <b><code class="language-ts">getFocalLevel(): number</code></b>
-                    <p>Gets the current focal level.</p>
+                    <p>Gets the current focal level (the level of the focal parent).</p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">getLevelCount(): number</code></b>
-                    <p>Gets the total number of levels in the current active subtree.</p>
+                    <b><code class="language-ts">getActiveTreeHeight(): number</code></b>
+                    <p>Gets the height (total number of levels) in the current active tree.</p>
                 </div>
                 <div class="noode">
                     <b><code class="language-ts">getRoot(): Noode</code></b>
@@ -878,7 +879,7 @@
                     <b><code class="language-ts">setFocalLevel(level: number)</code></b>
                     <p>
                         Navigates the noodel to focus on the branch at the given level of
-                        the current active subtree. If the level is greater or smaller than
+                        the current active tree. If the level is greater or smaller than
                         the possible limits, will navigate to the furthest level in that direction.
                     </p>
                 </div>
@@ -985,13 +986,13 @@
                 <div class="noode">
                     <b><code class="language-ts">getIndex(): number</code></b>
                     <p>
-                        Gets the index (position among siblings) of this noode.
+                        Gets the 0-based index (position among siblings) of this noode.
                     </p>
                 </div>
                 <div class="noode">
                     <b><code class="language-ts">getLevel(): number</code></b>
                     <p>
-                        Gets the level of this noode. The root has level 0.
+                        Gets the level of this noode. The root has level 1.
                     </p>
                 </div>
                 <div class="noode">

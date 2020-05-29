@@ -330,7 +330,7 @@ export function jumpToNoode(noodel: NoodelView, target: NoodeView) {
 
 /**
  * Finds the new focal parent to move to when the a focal level change should occur
- * on the current active subtree. If levelDiff goes beyond the existing
+ * on the current active tree. If levelDiff goes beyond the existing
  * branches, will return the furthest branch possible, i.e. the root or the deepest branch.
  */
 function findNewFocalParent(noodel: NoodelView, levelDiff: number): NoodeView {
