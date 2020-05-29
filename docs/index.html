@@ -6,14 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel@1.1.1/dist/noodel.css">
-    <script src="https://cdn.jsdelivr.net/npm/noodel@1.1.1/dist/noodel.umd.min.js"></script>
-
-    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/themes/prism.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel@1.2.0/dist/noodel.css">
+    <script src="https://cdn.jsdelivr.net/npm/noodel@1.2.0/dist/noodel.umd.min.js"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/prism.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/plugins/autoloader/prism-autoloader.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/components/prism-typescript.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/plugins/normalize-whitespace/prism-normalize-whitespace.min.js"></script>
-
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/themes/prism.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="styles.css">
 
     <title>Noodel</title>
@@ -24,6 +23,7 @@
         <strong>We're sorry but this site doesn't work properly without JavaScript enabled. Please enable it to
             continue.</strong>
     </noscript>
+    
     <div id="root" style="display: none;">
         <div class="noode">
             <h1 id="title">Noodel.js</h1>
@@ -824,8 +824,8 @@
         </div>
         <div class="noode">
             <h2>API</h2>
-            <div class="noode">
-                <h3>Noodel<span class="label" data-id="noodelClass">class</span></h3>
+            <div class="noode" data-id="noodelClass">
+                <h3>Noodel<span class="label">class</span></h3>
                 <p>Represents the view model of a noodel. Has 2-way binding with the view.</p>
                 <div class="noode">
                     <b><code class="language-ts">constructor(root: NoodeDefinition | Element | string, options?: NoodelOptions)</code></b>
@@ -1165,7 +1165,9 @@
         </div>
     </div>
     <script>
-        new Noodel("#root").mount("#root");
+        requestAnimationFrame(() => {
+            new Noodel("#root").mount("#root");
+        });
     </script>
 </body>
 
