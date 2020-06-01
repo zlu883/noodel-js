@@ -17,7 +17,7 @@ So, how does it actually work?
 
 Well, as the ultimate proof of concept, Noodel uses itself to create and present its own docs ;)
 
-[See here for the documentation](https://zlu883.github.io/Noodel/) (and hence live demo).
+### [See here for the documentation](https://zlu883.github.io/Noodel/) (and hence live demo).
 
 ## Browser support
 
