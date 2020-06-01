@@ -2,9 +2,14 @@
 
 Noodel is a UI framework for presenting beautiful, dynamic content trees. Based on an innovative swipe-based design that is simple and intuitive.
 
-Noodel is incredibly versatile. You can use it as part of your webpage, or use it to build and control a full site. As most types of content can be organized into trees, you can use it for virtually anything - from static blogs and wikis, to dynamic sites with complex structure and flow.
-
 Currently available as a javascript library. Powered by [Vue.js](https://vuejs.org/).
+
+## What can I use it for?
+
+At maximum, Noodel offers a *completely new way* to structure and present your website
+that is intuitive and interactive. As most types of content can be organized into trees, you can use it for virtually anything - from static blogs and wikis, to dynamic sites with complex structure and flow.
+
+At minimum, Noodel is a component you can plug in to an existing web page for a touch-responsive carousel of flexible containers, or a full-page slideshow.
 
 ## Demo and documentation
 
