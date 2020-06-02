@@ -28,3 +28,8 @@ To be confirmed.
 ## Contribution
 
 Please [see here](https://github.com/zlu883/Noodel/blob/master/CONTRIBUTING.md) for details.
+
+---
+
+Released under the MIT license
+© 2019-2020 Zuohao (Jonny) Lu
