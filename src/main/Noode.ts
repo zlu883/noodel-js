@@ -6,13 +6,15 @@ import { buildNoodeView, extractNoodeDefinition } from '@/controllers/noodel-set
 import { getPath as _getPath } from '@/util/getters';
 import { alignBranchToIndex } from '@/controllers/noodel-align';
 import { shiftFocalNoode, jumpToNoode } from '@/controllers/noodel-navigate';
+import NoodelView from '@/model/NoodelView';
+import { registerNoode, unregisterNoode } from '@/controllers/id-register';
 
 export default class Noode {
 
     view: NoodeView;
-    noodel: Noodel;
+    noodel: NoodelView;
 
-    constructor(view: NoodeView, noodel: Noodel) {
+    constructor(view: NoodeView, noodel: NoodelView) {
         this.view = view;
         this.noodel = noodel;
     }
@@ -48,9 +50,9 @@ export default class Noode {
 
     setId(id: string) {
         if (id === this.view.id) return;
-        this.noodel.idRegister.registerNoode(id, this.view);
-        this.noodel.idRegister.unregisterNoode(this.view.id);
+        unregisterNoode(this.noodel, this.view.id);
         this.view.id = id;
+        registerNoode(this.noodel, id, this.view);
     }
 
     getContent(): string {
@@ -85,13 +87,13 @@ export default class Noode {
         }
 
         if (this.view.isFocalParent) {
-            shiftFocalNoode(this.noodel.store, index - this.view.activeChildIndex);
+            shiftFocalNoode(this.noodel, index - this.view.activeChildIndex);
         }
-        else if (this.view.isChildrenVisible && this.view.level < this.noodel.store.focalLevel) {
-            jumpToNoode(this.noodel.store, this.view.children[index]);
+        else if (this.view.isChildrenVisible && this.view.level < this.noodel.focalLevel) {
+            jumpToNoode(this.noodel, this.view.children[index]);
         }
         else {
-            _setActiveChild(this.noodel.store, this.view, index);
+            _setActiveChild(this.noodel, this.view, index);
             alignBranchToIndex(this.view, index);
         }
     }
@@ -112,7 +114,7 @@ export default class Noode {
 
         let children = childDefs.map((def, pos) => {
             let child = buildNoodeView(
-                this.noodel.idRegister,
+                this.noodel,
                 def,
                 this.view.level + 1,
                 index + pos,
@@ -127,7 +129,7 @@ export default class Noode {
             return child;
         });
 
-        insertChildren(this.noodel.store, this.view, index, children);
+        insertChildren(this.noodel, this.view, index, children);
 
         return children.map(c => new Noode(c, this.noodel));
     }
@@ -148,9 +150,9 @@ export default class Noode {
 
         if (count <= 0) return [];
 
-        let deletedNoodes: NoodeView[] = deleteChildren(this.noodel.store, this.view, index, count);
+        let deletedNoodes: NoodeView[] = deleteChildren(this.noodel, this.view, index, count);
 
-        deletedNoodes.forEach(n => this.noodel.idRegister.unregisterNoode(n.id));
+        deletedNoodes.forEach(n => unregisterNoode(this.noodel, n.id));
         
         return deletedNoodes.map(n => extractNoodeDefinition(n));
     }

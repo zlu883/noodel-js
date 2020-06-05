@@ -1,24 +1,41 @@
 import NoodelView from '@/model/NoodelView';
-import IdRegister from '@/main/IdRegister';
 import { jumpToNoode } from './noodel-navigate';
+import { findNoode } from './id-register';
+import { getActiveChild } from '@/util/getters';
 
-export function setupRouting(noodel: NoodelView, idReg: IdRegister) {
+export function setupRouting(noodel: NoodelView) {
 
     if (noodel.onHashChanged) return;
 
     noodel.onHashChanged = () => {
-        let hash = window.location.hash;
-
-        if (hash) {
-            let target = idReg.findNoode(hash.substr(1));
-
-            if (target && target.parent) {
-                jumpToNoode(noodel, target);
-            }
-        } 
+        jumpToHash(noodel);
     };
 
     window.addEventListener("hashchange", noodel.onHashChanged);
+}
+
+export function jumpToHash(noodel: NoodelView) {
+    if (!noodel.options.useRouting) return;
+
+    let hash = window.location.hash;
+
+    if (hash) {
+        let target = findNoode(noodel, hash.substr(1));
+
+        if (target && target.parent) {
+            jumpToNoode(noodel, target);
+        }
+    } 
+}
+
+export function syncHashToFocalNoode(noodel: NoodelView) {
+    if (!noodel.options.useRouting) return;
+
+    let focalNoode = getActiveChild(noodel.focalParent);
+
+    if (!focalNoode) return;
+
+    replaceHash(focalNoode.id);
 }
 
 export function unsetRouting(noodel: NoodelView) {
@@ -32,7 +49,7 @@ export function unsetRouting(noodel: NoodelView) {
 /**
  * Replaces the hash fragment without triggering hashchange event.
  */
-export function replaceHash(newHash: string) {
+function replaceHash(newHash: string) {
 
     window.history.replaceState(null, '', window.location.href.split("#")[0] + '#' + newHash);
 }
@@ -40,7 +57,7 @@ export function replaceHash(newHash: string) {
 /**
  * Changes the hash fragment and triggers hashchange event.
  */
-export function changeHash(newHash: string) {
+function changeHash(newHash: string) {
 
     window.location.hash = newHash;
 }

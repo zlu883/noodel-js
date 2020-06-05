@@ -71,8 +71,8 @@
                 requestAnimationFrame(() => {
                     this.store.isFirstRenderDone = true;
 
-                    if (typeof this.store.options.mounted === 'function') {
-                        this.store.options.mounted();
+                    if (typeof this.store.options.onMount === 'function') {
+                        this.store.options.onMount();
                     };           
                 });
             });   

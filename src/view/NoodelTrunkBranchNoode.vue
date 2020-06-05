@@ -45,6 +45,7 @@
     import { traverseAncestors } from '../controllers/noodel-traverse';
     import { getPath } from '../util/getters';
     import Vue, { PropType } from 'vue';
+    import Noode from '../main/Noode';
 
     export default Vue.extend({
 
@@ -64,17 +65,25 @@
                 let rect = this.$el.getBoundingClientRect();
         
                 alignNoodelOnNoodeInsert(this.store, this.noode, rect.width, rect.height);
+
+                if (typeof this.noode.options.onMount === "function") {
+                    requestAnimationFrame(() => {
+                        this.noode.options.onMount(new Noode(this.noode, this.store));
+                    });
+                }
             });
             
-            this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
-                this.updateRenderedSize();
-            });
+            if (!this.noode.options.skipResizeDetection) {
+                this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
+                    this.updateRenderedSize();
+                });
+            }
             
             this.applyPreventNav();
         },
 
         beforeDestroy() {
-            this.noode.resizeSensor.detach();
+            if (this.noode.resizeSensor) this.noode.resizeSensor.detach();
             (this.$refs.noode as HTMLDivElement).style.overflow = 'hidden';
             (this.$refs.noode as HTMLDivElement).classList.remove('nd-noode-active');
         },

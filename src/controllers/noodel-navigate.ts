@@ -5,6 +5,7 @@ import NoodelView from '@/model/NoodelView';
 import { getActiveChild, getFocalWidth, getFocalHeight } from '@/util/getters';
 import { alignTrunkToBranch, alignBranchToIndex } from './noodel-align';
 import { forceReflow } from '@/controllers/noodel-animate';
+import { syncHashToFocalNoode } from './noodel-routing';
 
 /**
  * Core function for panning the trunk to a specified position, changing the focal parent
@@ -64,6 +65,7 @@ function panTrunk(noodel: NoodelView, targetOffset: number) {
     if (targetFocalParent.id !== noodel.focalParent.id) {
         setFocalParent(noodel, targetFocalParent);
         noodel.trunkOffsetAligned += alignedOffsetDiff; 
+        syncHashToFocalNoode(noodel);
     }
 
     noodel.trunkOffsetForced = targetOffset;
@@ -129,6 +131,7 @@ function panFocalBranch(noodel: NoodelView, targetOffset: number) {
         setActiveChild(noodel, noodel.focalParent, targetIndex);
         showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
         noodel.focalParent.childBranchOffsetAligned += alignedOffsetDiff; 
+        syncHashToFocalNoode(noodel);
     }
 
     noodel.focalParent.childBranchOffsetForced = targetOffset;
@@ -221,9 +224,12 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
     }
 
     let newFocalParent = findNewFocalParent(noodel, levelDiff);
+    let focalParentWillChange = true;
 
-    // if unable to shift anymore in the target direction
     if (newFocalParent.id === noodel.focalParent.id) {
+        focalParentWillChange = false;
+
+        // if unable to shift anymore in the target direction
         if (levelDiff < 0) {
             noodel.showLimits.left = true;
         }
@@ -232,7 +238,11 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
         }
     }
 
-    setFocalParent(noodel, newFocalParent);
+    if (focalParentWillChange) {
+        setFocalParent(noodel, newFocalParent);
+        syncHashToFocalNoode(noodel);
+    }
+
     alignTrunkToBranch(noodel, newFocalParent);
     forceReflow();
 }
@@ -258,8 +268,12 @@ export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
         targetIndex = noodel.focalParent.children.length - 1;
     }
 
-    // if unable to shift anymore in the target direction
+    let focalNoodeWillChange = true;
+
     if (targetIndex === noodel.focalParent.activeChildIndex) {
+        focalNoodeWillChange = false;
+
+        // if unable to shift anymore in the target direction
         if (indexDiff < 0) {
             noodel.showLimits.top = true;
         }
@@ -268,9 +282,13 @@ export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
         }
     }
 
-    hideActiveSubtree(noodel.focalParent);
-    setActiveChild(noodel, noodel.focalParent, targetIndex);
-    showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
+    if (focalNoodeWillChange) {
+        hideActiveSubtree(noodel.focalParent);
+        setActiveChild(noodel, noodel.focalParent, targetIndex);
+        showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
+        syncHashToFocalNoode(noodel);
+    }
+
     alignBranchToIndex(noodel.focalParent, targetIndex);
     forceReflow();
 }
@@ -325,6 +343,8 @@ export function jumpToNoode(noodel: NoodelView, target: NoodeView) {
         alignTrunkToBranch(noodel, target.parent);
     }
 
+    syncHashToFocalNoode(noodel);
+    
     forceReflow();
 }
 

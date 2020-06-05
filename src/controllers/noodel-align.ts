@@ -117,10 +117,10 @@ export function alignNoodelOnNoodeResize(noodel: NoodelView, noode: NoodeView, n
 }
 
 /**
- * Aligns trunk and branches as necessary BEFORE the deletion of a noode
+ * Aligns the branch as necessary BEFORE the deletion of a noode
  * and the mutation of its array of siblings.
  */
-export function alignNoodelBeforeNoodeDelete(noodel: NoodelView, noode: NoodeView) {
+export function alignBranchBeforeNoodeDelete(noode: NoodeView) {
 
     let parent = noode.parent;
 

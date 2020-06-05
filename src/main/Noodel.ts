@@ -5,15 +5,14 @@ import NoodelTrunk from '@/view/NoodelTrunk.vue';
 import Vue from 'vue';
 import NoodelView from '@/model/NoodelView';
 import Noode from './Noode';
-import IdRegister from './IdRegister';
 import { getActiveChild } from '@/util/getters';
 import { jumpToNoode, shiftFocalLevel, shiftFocalNoode } from '@/controllers/noodel-navigate';
 import { findNoodeByPath as _findNoodeByPath } from '@/controllers/noodel-traverse';
+import { findNoode } from '@/controllers/id-register';
 
 export default class Noodel {
 
     store: NoodelView;
-    idRegister = new IdRegister();
     vueRoot: Element = null;
     vueInstance: Vue = null;
 
@@ -38,7 +37,7 @@ export default class Noodel {
             options = {};
         }
 
-        this.store = setupNoodel(this.idRegister, root, options);
+        this.store = setupNoodel(root, options);
     }
 
     mount(el: string | Element) {
@@ -61,7 +60,7 @@ export default class Noodel {
     }
 
     setOptions(options: NoodelOptions) {
-        parseAndApplyOptions(options, this.store, this.idRegister);
+        parseAndApplyOptions(options, this.store);
     }
 
     getFocalLevel(): number {
@@ -90,16 +89,16 @@ export default class Noodel {
     }
 
     getRoot(): Noode {
-        return new Noode(this.store.root, this);
+        return new Noode(this.store.root, this.store);
     }
 
     getFocalParent(): Noode {
-        return new Noode(this.store.focalParent, this);
+        return new Noode(this.store.focalParent, this.store);
     }
 
     getFocalNoode(): Noode {
         let focalNoode = getActiveChild(this.store.focalParent);
-        return focalNoode ? new Noode(focalNoode, this) : null;
+        return focalNoode ? new Noode(focalNoode, this.store) : null;
     }
 
     findNoodeByPath(path: number[]): Noode {
@@ -110,7 +109,7 @@ export default class Noodel {
 
         let target = _findNoodeByPath(this.store, path);
         
-        return target ? new Noode(target, this) : null;
+        return target ? new Noode(target, this.store) : null;
     }
 
     findNoodeById(id: string): Noode {
@@ -119,9 +118,9 @@ export default class Noodel {
             return null;
         }
 
-        let target = this.idRegister.findNoode(id);
+        let target = findNoode(this.store, id);
         
-        return target ? new Noode(target, this) : null;
+        return target ? new Noode(target, this.store) : null;
     }
 
     moveIn(levelCount: number = 1) {

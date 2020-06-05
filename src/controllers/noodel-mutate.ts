@@ -2,11 +2,11 @@ import NoodeView from '@/model/NoodeView';
 import { traverseActiveDescendents } from './noodel-traverse';
 import { getActiveChild, isRoot } from '@/util/getters';
 import NoodelView from '@/model/NoodelView';
-import { alignTrunkToBranch, alignNoodelBeforeNoodeDelete } from './noodel-align';
+import { alignTrunkToBranch, alignBranchBeforeNoodeDelete } from './noodel-align';
 import { forceReflow } from './noodel-animate';
 import { Axis } from '@/enums/Axis';
 import { cancelPan } from './noodel-navigate';
-import { replaceHash } from './noodel-routing';
+import { syncHashToFocalNoode } from './noodel-routing';
 
 /**
  * Changes the focal parent of the noodel, and toggles the visibility of the active tree.
@@ -21,10 +21,6 @@ export function setFocalParent(noodel: NoodelView, newFocalParent: NoodeView) {
     noodel.focalParent = newFocalParent;
     noodel.focalLevel = newFocalParent.level;
     showActiveSubtree(noodel.root, newFocalParent.level - 1 + noodel.options.visibleSubtreeDepth);
-
-    if (noodel.options.useRouting) {
-        replaceHash(getActiveChild(newFocalParent).id);
-    }
 }
 
 /**
@@ -40,10 +36,6 @@ export function setActiveChild(noodel: NoodelView, parent: NoodeView, index: num
 
     if (getActiveChild(parent)) {
         getActiveChild(parent).isActive = true;
-
-        if (noodel.options.useRouting && parent.isFocalParent) {
-            replaceHash(getActiveChild(parent).id);
-        }
     }
 }
 
@@ -102,7 +94,7 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
 
     // first adjust alignment of branch
     for (let i = index; i < index + deleteCount; i++) {
-        alignNoodelBeforeNoodeDelete(noodel, parent.children[i]);
+        alignBranchBeforeNoodeDelete(parent.children[i]);
     }
 
     // if deletion includes active child, change the active child as appropriate
@@ -162,5 +154,9 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
     }
 
     // do delete
-    return parent.children.splice(index, deleteCount);
+    let deleted = parent.children.splice(index, deleteCount);
+
+    syncHashToFocalNoode(noodel);
+
+    return deleted;
 }

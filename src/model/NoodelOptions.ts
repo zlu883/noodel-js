@@ -1,3 +1,5 @@
+import Noode from '@/main/Noode';
+
 export default interface NoodelOptions {
 
     visibleSubtreeDepth?: number;
@@ -6,5 +8,7 @@ export default interface NoodelOptions {
     swipeWeightBranch?: number;
     swipeWeightTrunk?: number;
     useRouting?: boolean;
-    mounted?: () => any;
+    onMount?: () => any;
+    onFocalNoodeChange?: (to: Noode, from: Noode) => any;
+    onFocalParentChange?: (to: Noode, from: Noode) => any;
 }

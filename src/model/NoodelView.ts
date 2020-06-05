@@ -6,6 +6,9 @@ import Vector2D from './Vector2D';
 
 export default interface NoodelView {
 
+    idCount: number;
+    idMap: Map<string, NoodeView>;
+
     root: NoodeView;
     focalParent: NoodeView;
     focalLevel: number;

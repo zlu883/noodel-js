@@ -4,20 +4,17 @@ import NoodeView from '../model/NoodeView';
 import NoodelView from '@/model/NoodelView';
 import { ResizeSensor } from 'css-element-queries';
 import { showActiveSubtree } from './noodel-mutate';
-import IdRegister from '@/main/IdRegister';
-import { setupRouting, unsetRouting } from './noodel-routing';
-import { jumpToNoode } from './noodel-navigate';
+import { setupRouting, unsetRouting, jumpToHash } from './noodel-routing';
+import NoodeOptions from '@/model/NoodeOptions';
+import { generateNoodeId, registerNoode } from './id-register';
 
-export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, options: NoodelOptions): NoodelView {
-
-    let rootNoode = buildNoodeView(idRegister, root, 1, 0, null);
-
-    rootNoode.isActive = true;
-    rootNoode.isFocalParent = true;
+export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelView {
 
     let noodel: NoodelView = {
-        root: rootNoode,
-        focalParent: rootNoode,
+        idCount: 0,
+        idMap: new Map([]),
+        root: null,
+        focalParent: null,
         focalLevel: 1,
         
         trunkOffset: 0,
@@ -51,21 +48,18 @@ export function setupNoodel(idRegister: IdRegister, root: NoodeDefinition, optio
         }
     }
 
-    parseAndApplyOptions(options, noodel, idRegister);
+    let rootNoode = buildNoodeView(noodel, root, 1, 0, null);
+
+    rootNoode.isActive = true;
+    rootNoode.isFocalParent = true;
+    noodel.root = rootNoode;
+    noodel.focalParent = rootNoode;
+
+    parseAndApplyOptions(options, noodel);
     
     showActiveSubtree(rootNoode, noodel.options.visibleSubtreeDepth);
 
-    if (noodel.options.useRouting) {
-        let hash = window.location.hash;
-
-        if (hash) {
-            let target = idRegister.findNoode(hash.substr(1));
-
-            if (target && target.parent) {
-                jumpToNoode(noodel, target);
-            }
-        } 
-    }
+    jumpToHash(noodel);
 
     return noodel;
 }
@@ -124,7 +118,7 @@ export function setupContainer(el: Element, noodel: NoodelView) {
     });
 }
 
-export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView, idReg: IdRegister) {
+export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView) {
 
     if (typeof options.visibleSubtreeDepth === "number") {
         noodel.options.visibleSubtreeDepth = options.visibleSubtreeDepth;
@@ -150,19 +144,54 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView,
         noodel.options.useRouting = options.useRouting;
     }
 
-    if (typeof options.mounted === "function") {
-        noodel.options.mounted = options.mounted;
+    if (options.onMount === null || typeof options.onMount === "function") {
+        noodel.options.onMount = options.onMount;
+    }
+
+    if (options.onFocalNoodeChange === null || typeof options.onFocalNoodeChange === "function") {
+        noodel.options.onFocalNoodeChange = options.onFocalNoodeChange;
+    }
+
+    if (options.onFocalParentChange === null || typeof options.onFocalParentChange === "function") {
+        noodel.options.onFocalParentChange = options.onFocalParentChange;
     }
 
     if (noodel.options.useRouting) {
-        setupRouting(noodel, idReg);
+        setupRouting(noodel);
     }
     else {
         unsetRouting(noodel);
     }
 }
 
-export function buildNoodeView(idRegister: IdRegister, def: NoodeDefinition, level: number, index: number, parent: NoodeView): NoodeView {
+export function parseAndApplyNoodeOptions(options: NoodeOptions, noode: NoodeView) {
+
+    if (typeof options.skipResizeDetection === "boolean") {
+        noode.options.skipResizeDetection = options.skipResizeDetection;
+    }
+
+    if (options.onMount === null || typeof options.onMount === "function") {
+        noode.options.onMount = options.onMount;
+    }
+
+    if (options.onEnterFocus === null || typeof options.onEnterFocus === "function") {
+        noode.options.onEnterFocus = options.onEnterFocus;
+    }
+
+    if (options.onExitFocus === null || typeof options.onExitFocus === "function") {
+        noode.options.onExitFocus = options.onExitFocus;
+    }
+
+    if (options.onChildrenEnterFocus === null || typeof options.onChildrenEnterFocus === "function") {
+        noode.options.onChildrenEnterFocus = options.onChildrenEnterFocus;
+    }
+
+    if (options.onChildrenExitFocus === null || typeof options.onChildrenExitFocus === "function") {
+        noode.options.onChildrenExitFocus = options.onChildrenExitFocus;
+    }
+}
+
+export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, level: number, index: number, parent: NoodeView): NoodeView {
     
     let noodeView: NoodeView = {
         index: index,
@@ -178,24 +207,31 @@ export function buildNoodeView(idRegister: IdRegister, def: NoodeDefinition, lev
         branchRelativeOffset: 0,
         branchSize: 0,
         parent: parent,
-        id: typeof def.id === 'string' ? def.id : idRegister.generateNoodeId(),
+        id: typeof def.id === 'string' ? def.id : generateNoodeId(noodel),
         children: [],
         content: def.content || null,
         activeChildIndex: null,
         flipInvert: 0,
+        options: {
+            skipResizeDetection: false
+        }
     }
 
-    idRegister.registerNoode(noodeView.id, noodeView);
+    registerNoode(noodel, noodeView.id, noodeView);
 
-    if (!def.children) def.children = [];
+    if (def.options && typeof def.options === "object") {
+        parseAndApplyNoodeOptions(def.options, noodeView);
+    }
+
+    let numOfChildren = Array.isArray(def.children) ? def.children.length : 0;
 
     if (typeof def.activeChildIndex !== 'number') {
-        noodeView.activeChildIndex = def.children.length > 0 ? 0 : null;
+        noodeView.activeChildIndex = numOfChildren > 0 ? 0 : null;
     }
     else {
-        if (def.activeChildIndex < 0 || def.activeChildIndex >= def.children.length) {
+        if (def.activeChildIndex < 0 || def.activeChildIndex >= numOfChildren) {
             console.warn("Invalid initial active child index for noode ID " + noodeView.id);
-            noodeView.activeChildIndex = def.children.length > 0 ? 0 : null;
+            noodeView.activeChildIndex = numOfChildren > 0 ? 0 : null;
         }
         else {
             noodeView.activeChildIndex = def.activeChildIndex;
@@ -206,8 +242,8 @@ export function buildNoodeView(idRegister: IdRegister, def: NoodeDefinition, lev
         noodeView.isActive = true;
     }
 
-    if (Array.isArray(def.children)) {
-        noodeView.children = def.children.map((n, i) => buildNoodeView(idRegister, n, level + 1, i, noodeView));
+    if (numOfChildren > 0) {
+        noodeView.children = def.children.map((n, i) => buildNoodeView(noodel, n, level + 1, i, noodeView));
     }
 
     return noodeView;
