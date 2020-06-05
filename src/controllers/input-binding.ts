@@ -1,4 +1,4 @@
-import { startPan, updatePan, releasePan, unsetLimitIndicators, jumpToNoode, shiftFocalNoode, shiftFocalLevel } from './noodel-navigate';
+import { startPan, updatePan, releasePan, unsetLimitIndicators, doJumpNavigation, shiftFocalNoode, shiftFocalLevel } from './noodel-navigate';
 import Hammer from 'hammerjs';
 import NoodelView from '@/model/NoodelView';
 
@@ -122,9 +122,11 @@ function onTap(noodel: NoodelView, ev: HammerInput) {
     noodel.hasPress = false;
         
     if (noodel.pointerDownSrcNoode) {
-        jumpToNoode(noodel, noodel.pointerDownSrcNoode);
+        let target = noodel.pointerDownSrcNoode;
+        
         noodel.pointerDownSrcNoodeEl = null;
         noodel.pointerDownSrcNoode = null;
+        doJumpNavigation(noodel, target);
     }
 }
 

@@ -1,100 +1,112 @@
 import NoodeView from '@/model/NoodeView';
 import NoodeDefinition from '@/model/NoodeDefinition';
-import Noodel from './Noodel';
 import { setActiveChild as _setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
-import { buildNoodeView, extractNoodeDefinition } from '@/controllers/noodel-setup';
+import { buildNoodeView, extractNoodeDefinition, parseAndApplyNoodeOptions } from '@/controllers/noodel-setup';
 import { getPath as _getPath } from '@/util/getters';
 import { alignBranchToIndex } from '@/controllers/noodel-align';
-import { shiftFocalNoode, jumpToNoode } from '@/controllers/noodel-navigate';
+import { shiftFocalNoode, alignNoodelOnJump } from '@/controllers/noodel-navigate';
 import NoodelView from '@/model/NoodelView';
 import { registerNoode, unregisterNoode } from '@/controllers/id-register';
+import NoodeOptions from '@/model/NoodeOptions';
 
 export default class Noode {
 
-    view: NoodeView;
-    noodel: NoodelView;
+    _v: NoodeView;
+    _nv: NoodelView;
 
-    constructor(view: NoodeView, noodel: NoodelView) {
-        this.view = view;
-        this.noodel = noodel;
+    constructor(view: NoodeView, noodelView: NoodelView) {
+        this._v = view;
+        this._nv = noodelView;
     }
 
     getParent(): Noode {
-        if (!this.view.parent) return null;
-        return new Noode(this.view.parent, this.noodel);
+        if (!this._v.parent) return null;
+        return new Noode(this._v.parent, this._nv);
     }
 
     getPath(): number[] {
-        return _getPath(this.view);
+        return _getPath(this._v);
     }
 
     getDefinition(): NoodeDefinition {
-        return extractNoodeDefinition(this.view);
+        return extractNoodeDefinition(this._v);
+    }
+
+    getEl(): HTMLDivElement {
+        return this._v.el as HTMLDivElement;
+    }
+
+    getChildBranchEl(): HTMLDivElement {
+        return this._v.childBranchEl as HTMLDivElement;
     }
 
     getChild(index: number): Noode {
-        if (typeof index !== "number" || index < 0 || index >= this.view.children.length) {
+        if (typeof index !== "number" || index < 0 || index >= this._v.children.length) {
             return null;
         }
 
-        return new Noode(this.view.children[index], this.noodel);
+        return new Noode(this._v.children[index], this._nv);
     }
 
     getChildren(): Noode[] {
-        return this.view.children.map(c => new Noode(c, this.noodel));
+        return this._v.children.map(c => new Noode(c, this._nv));
     }
 
     getId(): string {
-        return this.view.id;
+        return this._v.id;
     }
 
     setId(id: string) {
-        if (id === this.view.id) return;
-        unregisterNoode(this.noodel, this.view.id);
-        this.view.id = id;
-        registerNoode(this.noodel, id, this.view);
+        if (id === this._v.id) return;
+        unregisterNoode(this._nv, this._v.id);
+        this._v.id = id;
+        registerNoode(this._nv, id, this._v);
     }
 
     getContent(): string {
-        return this.view.content;
+        return this._v.content;
     }
 
     setContent(content: string) {
-        this.view.content = content;
+        this._v.content = content;
+    }
+
+    setOptions(options: NoodeOptions) {
+        parseAndApplyNoodeOptions(options, this._v);
     }
 
     getIndex(): number {
-        return this.view.index;
+        return this._v.index;
     }
 
     getLevel(): number {
-        return this.view.level;
+        return this._v.level;
     }
 
     getActiveChildIndex(): number {
-        return this.view.activeChildIndex;
+        return this._v.activeChildIndex;
     }
 
     getActiveChild(): Noode {
-        if (this.view.activeChildIndex === null) return null;
-        return new Noode(this.view.children[this.view.activeChildIndex], this.noodel);
+        if (this._v.activeChildIndex === null) return null;
+        return new Noode(this._v.children[this._v.activeChildIndex], this._nv);
     }
 
     setActiveChild(index: number) {
-        if (typeof index !== "number" || index < 0 || index >= this.view.children.length) {
+        if (typeof index !== "number" || index < 0 || index >= this._v.children.length) {
             console.warn("Cannot set active child: noode has no children or invalid index");
             return;
         }
 
-        if (this.view.isFocalParent) {
-            shiftFocalNoode(this.noodel, index - this.view.activeChildIndex);
+        if (this._v.isFocalParent) {
+            shiftFocalNoode(this._nv, index - this._v.activeChildIndex);
         }
-        else if (this.view.isChildrenVisible && this.view.level < this.noodel.focalLevel) {
-            jumpToNoode(this.noodel, this.view.children[index]);
+        else if (this._v.isChildrenVisible && this._v.level < this._nv.focalLevel) {
+            alignNoodelOnJump(this._nv, this._v.children[index]);
         }
         else {
-            _setActiveChild(this.noodel, this.view, index);
-            alignBranchToIndex(this.view, index);
+            _setActiveChild(this._nv, this._v, index);
+            alignBranchToIndex(this._v, index);
         }
     }
 
@@ -103,35 +115,35 @@ export default class Noode {
     }
 
     addChildren(childDefs: NoodeDefinition[], index?: number): Noode[] {
-        if (typeof index === "number" && (index < 0 || index > this.view.children.length)) {
+        if (typeof index === "number" && (index < 0 || index > this._v.children.length)) {
             console.warn("Cannot add child noode(s): invalid index");
             return [];
         }
 
         if (typeof index !== "number") {
-            index = this.view.children.length;
+            index = this._v.children.length;
         }
 
         let children = childDefs.map((def, pos) => {
             let child = buildNoodeView(
-                this.noodel,
+                this._nv,
                 def,
-                this.view.level + 1,
+                this._v.level + 1,
                 index + pos,
-                this.view
+                this._v
             )
 
-            child.trunkRelativeOffset = this.view.trunkRelativeOffset + this.view.branchSize;
+            child.trunkRelativeOffset = this._v.trunkRelativeOffset + this._v.branchSize;
             child.branchRelativeOffset = index > 0 ? 
-                this.view.children[index - 1].branchRelativeOffset + this.view.children[index - 1].size :
+                this._v.children[index - 1].branchRelativeOffset + this._v.children[index - 1].size :
                 0;
 
             return child;
         });
 
-        insertChildren(this.noodel, this.view, index, children);
+        insertChildren(this._nv, this._v, index, children);
 
-        return children.map(c => new Noode(c, this.noodel));
+        return children.map(c => new Noode(c, this._nv));
     }
 
     removeChild(index: number): NoodeDefinition {
@@ -139,20 +151,18 @@ export default class Noode {
     }
 
     removeChildren(index: number, count: number): NoodeDefinition[] {
-        if (typeof index !== "number" || typeof count !== "number" || index < 0 || count < 0 || index >= this.view.children.length) {
+        if (typeof index !== "number" || typeof count !== "number" || index < 0 || count < 0 || index >= this._v.children.length) {
             console.warn("Cannot remove child noode(s): invalid index or count");
             return [];
         }
 
-        if (index + count > this.view.children.length) {
-            count = this.view.children.length - index;
+        if (index + count > this._v.children.length) {
+            count = this._v.children.length - index;
         }
 
         if (count <= 0) return [];
 
-        let deletedNoodes: NoodeView[] = deleteChildren(this.noodel, this.view, index, count);
-
-        deletedNoodes.forEach(n => unregisterNoode(this.noodel, n.id));
+        let deletedNoodes = deleteChildren(this._nv, this._v, index, count);
         
         return deletedNoodes.map(n => extractNoodeDefinition(n));
     }

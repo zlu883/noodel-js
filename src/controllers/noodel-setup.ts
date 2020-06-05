@@ -4,14 +4,15 @@ import NoodeView from '../model/NoodeView';
 import NoodelView from '@/model/NoodelView';
 import { ResizeSensor } from 'css-element-queries';
 import { showActiveSubtree } from './noodel-mutate';
-import { setupRouting, unsetRouting, jumpToHash } from './noodel-routing';
+import { setupRouting, unsetRouting } from './noodel-routing';
 import NoodeOptions from '@/model/NoodeOptions';
-import { generateNoodeId, registerNoode } from './id-register';
+import { generateNoodeId, registerNoode, findNoode } from './id-register';
+import { alignNoodelOnJump } from './noodel-navigate';
 
 export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelView {
 
     let noodel: NoodelView = {
-        idCount: 0,
+        idCount: -1,
         idMap: new Map([]),
         root: null,
         focalParent: null,
@@ -59,7 +60,17 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
     
     showActiveSubtree(rootNoode, noodel.options.visibleSubtreeDepth);
 
-    jumpToHash(noodel);
+    if (noodel.options.useRouting) {
+        let hash = window.location.hash;
+
+        if (hash) {
+            let target = findNoode(noodel, hash.substr(1));
+
+            if (target && target.parent) {
+                alignNoodelOnJump(noodel, target);
+            }
+        } 
+    }
 
     return noodel;
 }
@@ -211,7 +222,6 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, level: 
         children: [],
         content: def.content || null,
         activeChildIndex: null,
-        flipInvert: 0,
         options: {
             skipResizeDetection: false
         }

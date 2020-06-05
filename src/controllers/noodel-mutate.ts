@@ -7,6 +7,8 @@ import { forceReflow } from './noodel-animate';
 import { Axis } from '@/enums/Axis';
 import { cancelPan } from './noodel-navigate';
 import { syncHashToFocalNoode } from './noodel-routing';
+import Noode from '@/main/Noode';
+import { unregisterNoode } from './id-register';
 
 /**
  * Changes the focal parent of the noodel, and toggles the visibility of the active tree.
@@ -57,6 +59,8 @@ export function hideActiveSubtree(origin: NoodeView, depth?: number) {
  */
 export function insertChildren(noodel: NoodelView, parent: NoodeView, index: number, children: NoodeView[]) {
 
+    let prevFocalNoode = getActiveChild(noodel.focalParent);
+
     // if panning focal branch, cancel it
     if (parent.isFocalParent && noodel.panAxis === Axis.VERTICAL) {
         cancelPan(noodel);
@@ -79,6 +83,8 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
     if (parent.isActive && (isRoot(parent) || parent.parent.isChildrenVisible)) {
         showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
     }
+
+    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
 }
 
 /**
@@ -86,6 +92,8 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
  * and the parent's active child if necessary.
  */
 export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: number, deleteCount: number): NoodeView[] {
+
+    let prevFocalNoode = getActiveChild(noodel.focalParent);
 
     // if panning focal branch, cancel it
     if (parent.isFocalParent && noodel.panAxis === Axis.VERTICAL) {
@@ -154,9 +162,52 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
     }
 
     // do delete
-    let deleted = parent.children.splice(index, deleteCount);
+    let deletedNoodes = parent.children.splice(index, deleteCount);
+
+    deletedNoodes.forEach(n => unregisterNoode(noodel, n.id));
+
+    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
+
+    return deletedNoodes;
+}
+
+/**
+ * Triggers events and sync hash if the focal noode (and maybe also focal parent) have changed.
+ * Does nothing if prev equals current.
+ */
+export function handleFocalNoodeChange(noodel: NoodelView, prev: NoodeView, current: NoodeView) {
+
+    if (prev.id === current.id) return;
 
     syncHashToFocalNoode(noodel);
 
-    return deleted;
+    if (typeof prev.options.onExitFocus === 'function') {
+        prev.options.onExitFocus(new Noode(prev, noodel), new Noode(current, noodel));
+    }
+
+    if (typeof current.options.onEnterFocus === 'function') {
+        current.options.onEnterFocus(new Noode(current, noodel), new Noode(prev, noodel));
+    }
+
+    if (typeof noodel.options.onFocalNoodeChange === 'function') {
+        noodel.options.onFocalNoodeChange(new Noode(current, noodel), new Noode(prev, noodel));
+    }
+
+    let prevParent = prev.parent;
+    let currentParent = current.parent;
+
+    if (prevParent.id !== currentParent.id) {
+
+        if (typeof prevParent.options.onChildrenExitFocus === 'function') {
+            prevParent.options.onChildrenExitFocus(new Noode(prevParent, noodel), new Noode(currentParent, noodel));
+        }
+    
+        if (typeof currentParent.options.onChildrenEnterFocus === 'function') {
+            currentParent.options.onChildrenEnterFocus(new Noode(currentParent, noodel), new Noode(prevParent, noodel));
+        }
+    
+        if (typeof noodel.options.onFocalParentChange === 'function') {
+            noodel.options.onFocalParentChange(new Noode(currentParent, noodel), new Noode(prevParent, noodel));
+        }
+    }
 }

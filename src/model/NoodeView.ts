@@ -33,9 +33,6 @@ export default interface NoodeView {
     size: number;
     branchSize: number;
 
-    posSnapshot?: Vector2D;
-    flipInvert: number;
-
     el?: Element;
     childBranchEl?: Element;
 

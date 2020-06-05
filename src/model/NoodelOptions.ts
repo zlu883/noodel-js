@@ -9,6 +9,6 @@ export default interface NoodelOptions {
     swipeWeightTrunk?: number;
     useRouting?: boolean;
     onMount?: () => any;
-    onFocalNoodeChange?: (to: Noode, from: Noode) => any;
-    onFocalParentChange?: (to: Noode, from: Noode) => any;
+    onFocalNoodeChange?: (current: Noode, prev: Noode) => any;
+    onFocalParentChange?: (current: Noode, prev: Noode) => any;
 }

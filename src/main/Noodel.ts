@@ -6,13 +6,13 @@ import Vue from 'vue';
 import NoodelView from '@/model/NoodelView';
 import Noode from './Noode';
 import { getActiveChild } from '@/util/getters';
-import { jumpToNoode, shiftFocalLevel, shiftFocalNoode } from '@/controllers/noodel-navigate';
-import { findNoodeByPath as _findNoodeByPath } from '@/controllers/noodel-traverse';
+import { doJumpNavigation, shiftFocalLevel, shiftFocalNoode } from '@/controllers/noodel-navigate';
+import { findNoodeByPath as _findNoodeByPath, traverseDescendents } from '@/controllers/noodel-traverse';
 import { findNoode } from '@/controllers/id-register';
 
 export default class Noodel {
 
-    store: NoodelView;
+    _v: NoodelView;
     vueRoot: Element = null;
     vueInstance: Vue = null;
 
@@ -37,15 +37,15 @@ export default class Noodel {
             options = {};
         }
 
-        this.store = setupNoodel(root, options);
+        this._v = setupNoodel(root, options);
     }
 
     mount(el: string | Element) {
         Vue.config.productionTip = false;
     
         this.vueInstance = new Vue({
-            render: h => h(NoodelTrunk, { props: { store: this.store }}),
-            data: this.store
+            render: h => h(NoodelTrunk, { props: { store: this._v }}),
+            data: this._v
         }).$mount(el);
 
         this.vueRoot = this.vueInstance.$el;
@@ -56,15 +56,26 @@ export default class Noodel {
         if (this.vueRoot) this.vueRoot.remove();
         this.vueInstance = null;
         this.vueRoot = null;
-        this.store.isFirstRenderDone = false;
+        this._v.isFirstRenderDone = false;
+        this._v.canvasEl = undefined;
+        this._v.trunkEl = undefined;
+        this._v.focalBranchEl = undefined;
+        traverseDescendents(this._v.root, (noode) => {
+            noode.childBranchEl = undefined;
+            noode.el = undefined;
+        }, true);
+    }
+
+    getEl(): HTMLDivElement {
+        return this._v.canvasEl as HTMLDivElement;
     }
 
     setOptions(options: NoodelOptions) {
-        parseAndApplyOptions(options, this.store);
+        parseAndApplyOptions(options, this._v);
     }
 
     getFocalLevel(): number {
-        return this.store.focalLevel;
+        return this._v.focalLevel;
     }
 
     setFocalLevel(level: number) {
@@ -73,12 +84,12 @@ export default class Noodel {
             return;
         }
 
-        shiftFocalLevel(this.store, level - this.store.focalLevel);
+        shiftFocalLevel(this._v, level - this._v.focalLevel);
     }
 
     getActiveTreeHeight(): number {
         let count = 0;
-        let currentParent = this.store.root;
+        let currentParent = this._v.root;
 
         while (currentParent.activeChildIndex !== null) {
             count++;
@@ -89,16 +100,16 @@ export default class Noodel {
     }
 
     getRoot(): Noode {
-        return new Noode(this.store.root, this.store);
+        return new Noode(this._v.root, this._v);
     }
 
     getFocalParent(): Noode {
-        return new Noode(this.store.focalParent, this.store);
+        return new Noode(this._v.focalParent, this._v);
     }
 
     getFocalNoode(): Noode {
-        let focalNoode = getActiveChild(this.store.focalParent);
-        return focalNoode ? new Noode(focalNoode, this.store) : null;
+        let focalNoode = getActiveChild(this._v.focalParent);
+        return focalNoode ? new Noode(focalNoode, this._v) : null;
     }
 
     findNoodeByPath(path: number[]): Noode {
@@ -107,9 +118,9 @@ export default class Noodel {
             return null;
         }
 
-        let target = _findNoodeByPath(this.store, path);
+        let target = _findNoodeByPath(this._v, path);
         
-        return target ? new Noode(target, this.store) : null;
+        return target ? new Noode(target, this._v) : null;
     }
 
     findNoodeById(id: string): Noode {
@@ -118,25 +129,25 @@ export default class Noodel {
             return null;
         }
 
-        let target = findNoode(this.store, id);
+        let target = findNoode(this._v, id);
         
-        return target ? new Noode(target, this.store) : null;
+        return target ? new Noode(target, this._v) : null;
     }
 
     moveIn(levelCount: number = 1) {
-        shiftFocalLevel(this.store, levelCount);
+        shiftFocalLevel(this._v, levelCount);
     }
 
     moveOut(levelCount: number = 1) {
-        shiftFocalLevel(this.store, -levelCount);
+        shiftFocalLevel(this._v, -levelCount);
     }
 
     moveForward(noodeCount: number = 1) {
-        shiftFocalNoode(this.store, noodeCount);
+        shiftFocalNoode(this._v, noodeCount);
     }
 
     moveBack(noodeCount: number = 1) {
-        shiftFocalNoode(this.store, -noodeCount);
+        shiftFocalNoode(this._v, -noodeCount);
     }
 
     jumpTo(noode: Noode) {
@@ -150,6 +161,6 @@ export default class Noodel {
             return;
         }
 
-        jumpToNoode(this.store, noode.view);
+        doJumpNavigation(this._v, noode._v);
     }
 }

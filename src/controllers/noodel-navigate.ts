@@ -1,11 +1,10 @@
-import { setActiveChild, setFocalParent, hideActiveSubtree, showActiveSubtree } from "@/controllers/noodel-mutate";
+import { setActiveChild, setFocalParent, hideActiveSubtree, showActiveSubtree, handleFocalNoodeChange } from "@/controllers/noodel-mutate";
 import { Axis } from '@/enums/Axis';
 import NoodeView from '@/model/NoodeView';
 import NoodelView from '@/model/NoodelView';
 import { getActiveChild, getFocalWidth, getFocalHeight } from '@/util/getters';
 import { alignTrunkToBranch, alignBranchToIndex } from './noodel-align';
 import { forceReflow } from '@/controllers/noodel-animate';
-import { syncHashToFocalNoode } from './noodel-routing';
 
 /**
  * Core function for panning the trunk to a specified position, changing the focal parent
@@ -64,8 +63,7 @@ function panTrunk(noodel: NoodelView, targetOffset: number) {
 
     if (targetFocalParent.id !== noodel.focalParent.id) {
         setFocalParent(noodel, targetFocalParent);
-        noodel.trunkOffsetAligned += alignedOffsetDiff; 
-        syncHashToFocalNoode(noodel);
+        noodel.trunkOffsetAligned += alignedOffsetDiff;
     }
 
     noodel.trunkOffsetForced = targetOffset;
@@ -131,7 +129,6 @@ function panFocalBranch(noodel: NoodelView, targetOffset: number) {
         setActiveChild(noodel, noodel.focalParent, targetIndex);
         showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
         noodel.focalParent.childBranchOffsetAligned += alignedOffsetDiff; 
-        syncHashToFocalNoode(noodel);
     }
 
     noodel.focalParent.childBranchOffsetForced = targetOffset;
@@ -163,12 +160,16 @@ export function startPan(noodel: NoodelView, ev: HammerInput) {
 
 export function updatePan(noodel: NoodelView, ev: HammerInput) {
 
+    let prevFocalNoode = getActiveChild(noodel.focalParent);
+
     if (noodel.panAxis === Axis.HORIZONTAL) {
         panTrunk(noodel, noodel.panOffsetOriginTrunk + (ev.deltaX * (1 - noodel.options.swipeFrictionTrunk)));     
     }
     else if (noodel.panAxis === Axis.VERTICAL) {
         panFocalBranch(noodel, noodel.panOffsetOriginFocalBranch + (ev.deltaY * (1 - noodel.options.swipeFrictionBranch)));
     }
+
+    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
 }
 
 export function releasePan(noodel: NoodelView, ev: HammerInput) {
@@ -218,17 +219,16 @@ export function unsetLimitIndicators(noodel: NoodelView) {
  */
 export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
 
+    let prevFocalNoode = getActiveChild(noodel.focalParent);
+
     // if panning, cancel it
     if (noodel.panAxis === Axis.HORIZONTAL) {
         cancelPan(noodel);
     }
 
     let newFocalParent = findNewFocalParent(noodel, levelDiff);
-    let focalParentWillChange = true;
 
     if (newFocalParent.id === noodel.focalParent.id) {
-        focalParentWillChange = false;
-
         // if unable to shift anymore in the target direction
         if (levelDiff < 0) {
             noodel.showLimits.left = true;
@@ -238,13 +238,11 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
         }
     }
 
-    if (focalParentWillChange) {
-        setFocalParent(noodel, newFocalParent);
-        syncHashToFocalNoode(noodel);
-    }
-
+    setFocalParent(noodel, newFocalParent);
     alignTrunkToBranch(noodel, newFocalParent);
     forceReflow();
+
+    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
 }
 
 /**
@@ -252,6 +250,8 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
  * is 0, will align the branch to the current active noode.
  */
 export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
+
+    let prevFocalNoode = getActiveChild(noodel.focalParent);
 
     // if panning, cancel it
     if (noodel.panAxis === Axis.VERTICAL) {
@@ -268,11 +268,7 @@ export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
         targetIndex = noodel.focalParent.children.length - 1;
     }
 
-    let focalNoodeWillChange = true;
-
     if (targetIndex === noodel.focalParent.activeChildIndex) {
-        focalNoodeWillChange = false;
-
         // if unable to shift anymore in the target direction
         if (indexDiff < 0) {
             noodel.showLimits.top = true;
@@ -282,22 +278,20 @@ export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
         }
     }
 
-    if (focalNoodeWillChange) {
-        hideActiveSubtree(noodel.focalParent);
-        setActiveChild(noodel, noodel.focalParent, targetIndex);
-        showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
-        syncHashToFocalNoode(noodel);
-    }
-
+    hideActiveSubtree(noodel.focalParent);
+    setActiveChild(noodel, noodel.focalParent, targetIndex);
+    showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
     alignBranchToIndex(noodel.focalParent, targetIndex);
     forceReflow();
+
+    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
 }
 
 /**
  * Jumps to a specific noode in the tree, realigning all affected branches and trunk
  * if necessary.
  */
-export function jumpToNoode(noodel: NoodelView, target: NoodeView) {
+export function alignNoodelOnJump(noodel: NoodelView, target: NoodeView) {
 
     // if panning, cancel it
     if (noodel.panAxis !== null) {
@@ -342,10 +336,17 @@ export function jumpToNoode(noodel: NoodelView, target: NoodeView) {
         setFocalParent(noodel, target.parent);
         alignTrunkToBranch(noodel, target.parent);
     }
-
-    syncHashToFocalNoode(noodel);
     
     forceReflow();
+}
+
+export function doJumpNavigation(noodel: NoodelView, target: NoodeView) {
+
+    let prevFocalNoode = getActiveChild(noodel.focalParent);
+
+    alignNoodelOnJump(noodel, target);
+
+    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
 }
 
 /**

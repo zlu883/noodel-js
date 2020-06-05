@@ -4,8 +4,8 @@ export default interface NoodeOptions {
 
     skipResizeDetection?: boolean;
     onMount?: (self: Noode) => any;
-    onEnterFocus?: (self: Noode, from: Noode) => any;
-    onExitFocus?: (self: Noode, to: Noode) => any;
-    onChildrenEnterFocus?:  (self: Noode, from: Noode) => any;
-    onChildrenExitFocus?:  (self: Noode, to: Noode) => any;
+    onEnterFocus?: (self: Noode, prev: Noode) => any;
+    onExitFocus?: (self: Noode, current: Noode) => any;
+    onChildrenEnterFocus?:  (self: Noode, prev: Noode) => any;
+    onChildrenExitFocus?:  (self: Noode, current: Noode) => any;
 } 
