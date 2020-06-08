@@ -181,10 +181,6 @@ export function parseAndApplyNoodeOptions(options: NoodeOptions, noode: NoodeVie
         noode.options.skipResizeDetection = options.skipResizeDetection;
     }
 
-    if (options.onMount === null || typeof options.onMount === "function") {
-        noode.options.onMount = options.onMount;
-    }
-
     if (options.onEnterFocus === null || typeof options.onEnterFocus === "function") {
         noode.options.onEnterFocus = options.onEnterFocus;
     }

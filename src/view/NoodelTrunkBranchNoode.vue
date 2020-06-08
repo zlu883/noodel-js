@@ -65,12 +65,6 @@
                 let rect = this.$el.getBoundingClientRect();
         
                 alignNoodelOnNoodeInsert(this.store, this.noode, rect.width, rect.height);
-
-                if (typeof this.noode.options.onMount === "function") {
-                    requestAnimationFrame(() => {
-                        this.noode.options.onMount(new Noode(this.noode, this.store));
-                    });
-                }
             });
             
             if (!this.noode.options.skipResizeDetection) {
