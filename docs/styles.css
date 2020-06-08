@@ -6,16 +6,8 @@ body {
 }
 
 #title {
-    display: inline-block;
-}
-
-#subtitle {
-    display: inline-block; 
-    margin-left: 0.5em;
-    background-color: #ff8000;
-    color: white;
-    padding: .1em .3em;
-    border-radius: .5em;
+    margin: auto;
+    text-align: center;
 }
 
 p {
@@ -33,6 +25,12 @@ pre, code {
     -moz-user-select: text;
     -ms-user-select: text;
     cursor: text;
+}
+
+.logo {
+    width: 100px;
+    display: block;
+    margin: auto;
 }
 
 .label {
