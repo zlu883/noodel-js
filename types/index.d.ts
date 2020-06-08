@@ -25,6 +25,10 @@ declare class Noodel {
      */
     setOptions(options: NoodelOptions);
     /**
+     * Gets the container element of this noodel (i.e. nd-canvas), if mounted.
+     */
+    getEl(): HTMLDivElement;
+    /**
      * Gets the current focal level (the level of the focal parent).
      */
     getFocalLevel(): number;
@@ -114,6 +118,20 @@ declare class Noode {
      * Useful if you want to perform your own operations on the content tree.
      */
     getDefinition(): NoodeDefinition;
+    /**
+     * Changes the options for this noode. Properties of the given object
+     * will be merged into the existing options.
+     */
+    setOptions(options: NoodeOptions);
+    /**
+     * Gets the container element of this noode (i.e. nd-noode-box), if mounted.
+     */
+    getEl(): HTMLDivElement;
+    /**
+     * Gets the container element of the branch containing this noode's children
+     * (i.e. nd-branch), if it has children and is mounted.
+     */
+    getChildBranchEl(): HTMLDivElement;
     /**
      * Gets the child at the given index. Returns null if does not exist.
      */
@@ -217,6 +235,10 @@ declare interface NoodeDefinition {
      * Content of this noode. Will be injected as innerHTML of the noode's container.
      */
     content?: string;
+    /**
+     * Options for this noode.
+     */
+    options?: NoodeOptions;
 }
 
 /**
@@ -259,5 +281,57 @@ declare interface NoodelOptions {
      * after the first render. Changes to the view model from here onward
      * will sync with the view and trigger animation effects.
      */
-    mounted?: () => any;
+    onMount?: () => any;
+    /**
+     * Handler called once after noodel creation, and whenever the focal noode
+     * has changed. 
+     * @param current the current focal noode
+     * @param prev the previous focal noode, null on initial call
+     */
+    onFocalNoodeChange?: (current: Noode, prev: Noode) => any;
+    /**
+     * Handler called once after noodel creation, and whenever the focal parent
+     * has changed.
+     * @param current the current focal parent
+     * @param prev the previous focal parent, null on initial call
+     */
+    onFocalParentChange?: (current: Noode, prev: Noode) => any;
+}
+
+/**
+ * Defines the options for a noode.
+ */
+declare interface NoodeOptions {
+    /**
+     * If true, will not attach resize detectors on this noode, which may give 
+     * a slight performance boost. Set this if you know that
+     * the size of this noode will never change after creation. Defaults to false.
+     */
+    skipResizeDetection?: boolean;
+    /**
+     * Handler called whenever this noode entered focus. Will be called once after noodel creation
+     * if this is the focal noode.
+     * @param self the current focal noode (i.e. this noode)
+     * @param prev the previous focal noode, null on initial call
+     */
+    onEnterFocus?: (self: Noode, prev: Noode) => any;
+    /**
+     * Handler called whenever this noode exited focus.
+     * @param self the previous focal noode (i.e. this noode)
+     * @param current the current focal noode
+     */
+    onExitFocus?: (self: Noode, current: Noode) => any;
+    /**
+     * Handler called whenever this noode's child branch entered focus. Will be called once after noodel creation
+     * if this is the focal parent.
+     * @param self the current focal parent (i.e. this noode)
+     * @param prev the previous focal parent, null on initial call
+     */
+    onChildrenEnterFocus?:  (self: Noode, prev: Noode) => any;
+    /**
+     * Handler called whenever this noode's child branch exited focus.
+     * @param self the previous focal parent (i.e. this noode)
+     * @param current the current focal parent
+     */
+    onChildrenExitFocus?:  (self: Noode, current: Noode) => any;
 }
