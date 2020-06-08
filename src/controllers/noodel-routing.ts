@@ -27,9 +27,12 @@ export function syncHashToFocalNoode(noodel: NoodelView) {
 
     let focalNoode = getActiveChild(noodel.focalParent);
 
-    if (!focalNoode) return;
-
-    replaceHash(focalNoode.id);
+    if (focalNoode) {
+        replaceHash('#' + focalNoode.id);
+    }
+    else {
+        replaceHash('');
+    }
 }
 
 export function unsetRouting(noodel: NoodelView) {
@@ -45,5 +48,5 @@ export function unsetRouting(noodel: NoodelView) {
  */
 function replaceHash(newHash: string) {
 
-    window.history.replaceState(null, '', window.location.href.split("#")[0] + '#' + newHash);
+    window.history.replaceState(null, '', window.location.href.split("#")[0] + newHash);
 }

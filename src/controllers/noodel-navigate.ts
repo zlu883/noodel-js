@@ -162,6 +162,8 @@ export function updatePan(noodel: NoodelView, ev: HammerInput) {
 
     let prevFocalNoode = getActiveChild(noodel.focalParent);
 
+    if (!prevFocalNoode) return;
+
     if (noodel.panAxis === Axis.HORIZONTAL) {
         panTrunk(noodel, noodel.panOffsetOriginTrunk + (ev.deltaX * (1 - noodel.options.swipeFrictionTrunk)));     
     }
@@ -221,6 +223,8 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
 
     let prevFocalNoode = getActiveChild(noodel.focalParent);
 
+    if (!prevFocalNoode) return;
+
     // if panning, cancel it
     if (noodel.panAxis === Axis.HORIZONTAL) {
         cancelPan(noodel);
@@ -252,6 +256,8 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
 export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
 
     let prevFocalNoode = getActiveChild(noodel.focalParent);
+
+    if (!prevFocalNoode) return;
 
     // if panning, cancel it
     if (noodel.panAxis === Axis.VERTICAL) {
@@ -343,6 +349,8 @@ export function alignNoodelOnJump(noodel: NoodelView, target: NoodeView) {
 export function doJumpNavigation(noodel: NoodelView, target: NoodeView) {
 
     let prevFocalNoode = getActiveChild(noodel.focalParent);
+
+    if (!prevFocalNoode) return;
 
     alignNoodelOnJump(noodel, target);
 

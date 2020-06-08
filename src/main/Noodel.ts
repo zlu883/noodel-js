@@ -9,6 +9,7 @@ import { getActiveChild } from '@/util/getters';
 import { doJumpNavigation, shiftFocalLevel, shiftFocalNoode } from '@/controllers/noodel-navigate';
 import { findNoodeByPath as _findNoodeByPath, traverseDescendents } from '@/controllers/noodel-traverse';
 import { findNoode } from '@/controllers/id-register';
+import { handleFocalNoodeChange } from '@/controllers/noodel-mutate';
 
 export default class Noodel {
 
@@ -38,6 +39,8 @@ export default class Noodel {
         }
 
         this._v = setupNoodel(root, options);
+
+        handleFocalNoodeChange(this._v, null, getActiveChild(this._v.focalParent));
     }
 
     mount(el: string | Element) {

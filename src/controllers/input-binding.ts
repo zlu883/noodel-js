@@ -4,8 +4,6 @@ import NoodelView from '@/model/NoodelView';
 
 function onKeyDown(noodel: NoodelView, event: KeyboardEvent) {    
 
-    if (noodel.focalParent.children.length === 0) return;
-
     if (event.key === "ArrowDown") {
         shiftFocalNoode(noodel, 1);
     }
@@ -25,8 +23,6 @@ function onKeyUp(noodel: NoodelView, event: KeyboardEvent) {
 }
 
 function onWheel(noodel: NoodelView, ev: WheelEvent) {
-
-    if (noodel.focalParent.children.length === 0) return;
 
     if (Math.abs(ev.deltaY) > Math.abs(ev.deltaX)) {
         if (noodel.hasPress) {
@@ -78,7 +74,6 @@ function onPanStart(noodel: NoodelView, ev: HammerInput) {
     noodel.hasPress = false;
 
     if (noodel.doInnerScroll) return;
-    if (noodel.focalParent.children.length === 0) return;
 
     startPan(noodel, ev);
 }

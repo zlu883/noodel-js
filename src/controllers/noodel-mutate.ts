@@ -177,37 +177,44 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
  */
 export function handleFocalNoodeChange(noodel: NoodelView, prev: NoodeView, current: NoodeView) {
 
-    if (prev.id === current.id) return;
+    if (!prev && !current) return;
+    if (prev && current && prev.id === current.id) return;
 
     syncHashToFocalNoode(noodel);
 
-    if (typeof prev.options.onExitFocus === 'function') {
-        prev.options.onExitFocus(new Noode(prev, noodel), new Noode(current, noodel));
+    let prevNoode = prev ? new Noode(prev, noodel) : null;
+    let currentNoode = current ? new Noode(current, noodel) : null;
+
+    if (prev && typeof prev.options.onExitFocus === 'function') {
+        prev.options.onExitFocus(prevNoode, currentNoode);
     }
 
-    if (typeof current.options.onEnterFocus === 'function') {
-        current.options.onEnterFocus(new Noode(current, noodel), new Noode(prev, noodel));
+    if (current && typeof current.options.onEnterFocus === 'function') {
+        current.options.onEnterFocus(currentNoode, prevNoode);
     }
 
     if (typeof noodel.options.onFocalNoodeChange === 'function') {
-        noodel.options.onFocalNoodeChange(new Noode(current, noodel), new Noode(prev, noodel));
+        noodel.options.onFocalNoodeChange(currentNoode, prevNoode);
     }
 
-    let prevParent = prev.parent;
-    let currentParent = current.parent;
+    let prevParent = prev ? prev.parent : null;
+    let currentParent = current ? current.parent : null;
 
-    if (prevParent.id !== currentParent.id) {
+    if (!prevParent && !currentParent) return;
+    if (prevParent && currentParent && prevParent.id === currentParent.id) return;
 
-        if (typeof prevParent.options.onChildrenExitFocus === 'function') {
-            prevParent.options.onChildrenExitFocus(new Noode(prevParent, noodel), new Noode(currentParent, noodel));
-        }
-    
-        if (typeof currentParent.options.onChildrenEnterFocus === 'function') {
-            currentParent.options.onChildrenEnterFocus(new Noode(currentParent, noodel), new Noode(prevParent, noodel));
-        }
-    
-        if (typeof noodel.options.onFocalParentChange === 'function') {
-            noodel.options.onFocalParentChange(new Noode(currentParent, noodel), new Noode(prevParent, noodel));
-        }
+    let prevParentNoode = prevParent ? new Noode(prevParent, noodel) : null;
+    let currentParentNoode = currentParent ? new Noode(currentParent, noodel) : null;
+
+    if (prevParent && typeof prevParent.options.onChildrenExitFocus === 'function') {
+        prevParent.options.onChildrenExitFocus(prevParentNoode, currentParentNoode);
+    }
+
+    if (currentParent && typeof currentParent.options.onChildrenEnterFocus === 'function') {
+        currentParent.options.onChildrenEnterFocus(currentParentNoode, prevParentNoode);
+    }
+
+    if (typeof noodel.options.onFocalParentChange === 'function') {
+        noodel.options.onFocalParentChange(currentParentNoode, prevParentNoode);
     }
 }
