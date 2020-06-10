@@ -35,7 +35,7 @@ pre, code {
 
 .label {
     margin: 0 0.5em;
-    background-color: #ff8000;
+    background-color: #4aaf36;
     color: white;
     padding: .1em .3em;
     border-radius: .5em;
@@ -43,11 +43,11 @@ pre, code {
 }
 
 .nd-canvas {
-    background-color: #ffa64d;
+    background-color: #e0ae69;
 }
 
 .nd-noode {
-    background-color: #ffe5cc;
+    background-color: #f9ead4;
 }
 
 .nd-noode-active {
@@ -55,11 +55,15 @@ pre, code {
 }
 
 .nd-child-indicator {
-    fill: #ffe5cc;
+    fill: #f9ead4;
 }
 
 .nd-child-indicator-active {
     fill: white;
+}
+
+.nd-limit {
+    background-color: #9e7d4b;
 }
 
 @media (max-width: 800px) {
