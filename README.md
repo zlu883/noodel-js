@@ -19,6 +19,15 @@ Well, as the ultimate proof of concept, Noodel uses itself to create and present
 
 ### [See here for the documentation](https://zlu883.github.io/noodel/) (and hence live demo).
 
+## Other examples
+
+Some examples with code on CodePen:
+
+- [Example 1 - Basic example](https://codepen.io/zlu883/pen/pogbYWV)
+- [Example 2 - More advanced styling](https://codepen.io/zlu883/pen/BajLdLr)
+- [Example 3 - Full page carousel](https://codepen.io/zlu883/pen/XWXjVbL)
+- [Example 4 - Dynamic operations using API](https://codepen.io/zlu883/pen/QWyGWag)
+
 ## Browser support
 
 To be confirmed.
