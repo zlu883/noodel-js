@@ -1,4 +1,4 @@
-# Contributing
+# Contribution Guide
 
 Hello there! First and foremost, thank you for your interest in Noodel. If you are also considering to contribute to this project, you are very much welcome! 
 
@@ -12,6 +12,16 @@ This also means there are many things you can contribute to. Including but not l
 - Maintaining documentation
 - Creating example sites
 - Spreading the word
+
+## Roadmap
+
+Some planned features/enhancements for the future include, but not limited to:
+- Adding proper testing to the project
+- Integration with Vue and possibly other frameworks like React
+- Addressing certain UX issues in mobile browsers
+- Fine-tuning navigation experience and performance
+- Support for adding custom classes/styles to individual noodes
+- More options related to layout and positioning 
 
 ## Bug reports
 Please use Github issues for bug reports. As a general rule, please provide:
