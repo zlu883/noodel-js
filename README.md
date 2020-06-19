@@ -1,4 +1,6 @@
-# Noodel
+# Noodel.js
+
+<img alt="Noodel logo" src="docs/logo_256x256.png" width="90">
 
 Noodel is a user interface for presenting beautiful, dynamic content trees. Based on an innovative swipe-based design that is simple and intuitive.
 
@@ -18,6 +20,10 @@ So, how does it actually work?
 Well, as the ultimate proof of concept, Noodel uses itself to create and present its own docs ;)
 
 ### [See here for the documentation](https://zlu883.github.io/Noodel/) (and hence live demo).
+
+## Why the name?
+
+It's a mix of *node* and *model*.
 
 ## Other examples
 
