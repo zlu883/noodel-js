@@ -39,9 +39,9 @@
     import { setupContainer } from '@/controllers/noodel-setup';
     import { setupNoodelInputBindings } from '@/controllers/input-binding';
     import { traverseDescendents } from '../controllers/noodel-traverse';
-    import NoodelView from '@/model/NoodelView';
+    import NoodelView from '@/types/NoodelView';
     import { alignBranchToIndex, alignTrunkToBranch } from '../controllers/noodel-align';
-    import NoodeView from '@/model/NoodeView';
+    import NoodeView from '@/types/NoodeView';
     import Vue, { PropType } from 'vue';
 
     export default Vue.extend({

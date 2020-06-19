@@ -26,7 +26,7 @@
     import Vue, { PropType } from 'vue';
 
     import AnimationFade from './AnimationFade.vue';
-    import NoodelView from '../model/NoodelView';
+    import NoodelView from '@/types/NoodelView';
 
     export default Vue.extend({
 

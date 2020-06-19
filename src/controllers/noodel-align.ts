@@ -1,5 +1,5 @@
-import NoodeView from '@/model/NoodeView';
-import NoodelView from '@/model/NoodelView';
+import NoodeView from '@/types/NoodeView';
+import NoodelView from '@/types/NoodelView';
 import { traverseDescendents } from './noodel-traverse';
 import { getFocalHeight, getFocalWidth } from '@/util/getters';
 import { Axis } from '@/enums/Axis';

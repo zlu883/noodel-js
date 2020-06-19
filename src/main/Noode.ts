@@ -1,13 +1,13 @@
-import NoodeView from '@/model/NoodeView';
-import NoodeDefinition from '@/model/NoodeDefinition';
+import NoodeView from '@/types/NoodeView';
+import NoodeDefinition from '@/types/NoodeDefinition';
 import { setActiveChild as _setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
 import { buildNoodeView, extractNoodeDefinition, parseAndApplyNoodeOptions } from '@/controllers/noodel-setup';
 import { getPath as _getPath } from '@/util/getters';
 import { alignBranchToIndex } from '@/controllers/noodel-align';
 import { shiftFocalNoode, alignNoodelOnJump } from '@/controllers/noodel-navigate';
-import NoodelView from '@/model/NoodelView';
+import NoodelView from '@/types/NoodelView';
 import { registerNoode, unregisterNoode } from '@/controllers/id-register';
-import NoodeOptions from '@/model/NoodeOptions';
+import NoodeOptions from '@/types/NoodeOptions';
 
 export default class Noode {
 

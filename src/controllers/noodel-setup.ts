@@ -1,11 +1,11 @@
-import NoodeDefinition from '../model/NoodeDefinition';
-import NoodelOptions from '../model/NoodelOptions';
-import NoodeView from '../model/NoodeView';
-import NoodelView from '@/model/NoodelView';
+import NoodeDefinition from '../types/NoodeDefinition';
+import NoodelOptions from '../types/NoodelOptions';
+import NoodeView from '../types/NoodeView';
+import NoodelView from '@/types/NoodelView';
 import { ResizeSensor } from 'css-element-queries';
 import { showActiveSubtree } from './noodel-mutate';
 import { setupRouting, unsetRouting } from './noodel-routing';
-import NoodeOptions from '@/model/NoodeOptions';
+import NoodeOptions from '@/types/NoodeOptions';
 import { generateNoodeId, registerNoode, findNoode } from './id-register';
 import { alignNoodelOnJump } from './noodel-navigate';
 

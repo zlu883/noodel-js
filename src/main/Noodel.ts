@@ -1,9 +1,9 @@
-import NoodeDefinition from '@/model/NoodeDefinition';
-import NoodelOptions from '@/model/NoodelOptions';
+import NoodeDefinition from '@/types/NoodeDefinition';
+import NoodelOptions from '@/types/NoodelOptions';
 import { setupNoodel, parseHTMLToNoode, parseAndApplyOptions } from '@/controllers/noodel-setup';
 import NoodelTrunk from '@/view/NoodelTrunk.vue';
 import Vue from 'vue';
-import NoodelView from '@/model/NoodelView';
+import NoodelView from '@/types/NoodelView';
 import Noode from './Noode';
 import { getActiveChild } from '@/util/getters';
 import { doJumpNavigation, shiftFocalLevel, shiftFocalNoode } from '@/controllers/noodel-navigate';

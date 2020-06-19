@@ -1,4 +1,4 @@
-import NoodelView from '@/model/NoodelView';
+import NoodelView from '@/types/NoodelView';
 import { doJumpNavigation } from './noodel-navigate';
 import { findNoode } from './id-register';
 import { getActiveChild } from '@/util/getters';

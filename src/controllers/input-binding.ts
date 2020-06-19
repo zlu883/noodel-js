@@ -1,6 +1,6 @@
 import { startPan, updatePan, releasePan, unsetLimitIndicators, doJumpNavigation, shiftFocalNoode, shiftFocalLevel } from './noodel-navigate';
 import Hammer from 'hammerjs';
-import NoodelView from '@/model/NoodelView';
+import NoodelView from '@/types/NoodelView';
 
 function onKeyDown(noodel: NoodelView, event: KeyboardEvent) {    
 

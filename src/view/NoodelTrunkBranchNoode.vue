@@ -39,9 +39,9 @@
 
     import AnimationFade from './AnimationFade.vue';
 
-    import NoodeView from "@/model/NoodeView";
+    import NoodeView from "@/types/NoodeView";
     import { alignNoodelOnNoodeResize, alignNoodelOnNoodeInsert } from "@/controllers/noodel-align";
-    import NoodelView from '../model/NoodelView';
+    import NoodelView from '@/types/NoodelView';
     import { traverseAncestors } from '../controllers/noodel-traverse';
     import { getPath } from '../util/getters';
     import Vue, { PropType } from 'vue';

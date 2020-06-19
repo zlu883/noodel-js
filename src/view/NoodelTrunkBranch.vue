@@ -37,8 +37,8 @@
     import AnimationFade from './AnimationFade.vue';
 
     import { getFocalHeight } from '@/util/getters';
-    import NoodeView from '@/model/NoodeView';
-    import NoodelView from '@/model/NoodelView';
+    import NoodeView from '@/types/NoodeView';
+    import NoodelView from '@/types/NoodelView';
     import { Axis } from '@/enums/Axis';
     import Vue, { PropType } from 'vue';
 

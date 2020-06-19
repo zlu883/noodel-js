@@ -1,7 +1,7 @@
-import NoodeView from '@/model/NoodeView';
+import NoodeView from '@/types/NoodeView';
 import { traverseActiveDescendents } from './noodel-traverse';
 import { getActiveChild, isRoot } from '@/util/getters';
-import NoodelView from '@/model/NoodelView';
+import NoodelView from '@/types/NoodelView';
 import { alignTrunkToBranch, alignBranchBeforeNoodeDelete } from './noodel-align';
 import { forceReflow } from './noodel-animate';
 import { Axis } from '@/enums/Axis';

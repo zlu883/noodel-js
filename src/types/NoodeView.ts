@@ -1,4 +1,3 @@
-import Vector2D from './Vector2D';
 import { ResizeSensor } from 'css-element-queries';
 import NoodeOptions from './NoodeOptions';
 
