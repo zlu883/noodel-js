@@ -1,6 +1,6 @@
 # Noodel
 
-Noodel is a UI framework for presenting beautiful, dynamic content trees. Based on an innovative swipe-based design that is simple and intuitive.
+Noodel is a user interface for presenting beautiful, dynamic content trees. Based on an innovative swipe-based design that is simple and intuitive.
 
 Currently available as a javascript library. Powered by [Vue.js](https://vuejs.org/).
 
