@@ -33,6 +33,27 @@ pre, code {
     margin: auto;
 }
 
+.link-container {
+    display: flex;
+    justify-content: center;
+}
+
+.link {
+    display: flex;
+    background: #f2f2f2;
+    padding: .5em 1em;
+    border-radius: 1em;
+    margin: 0 .5em;
+    align-items: center;
+    cursor: pointer;
+    color: black;
+    text-decoration: none;
+}
+
+.link-icon {
+    margin-right: .5em;
+}
+
 .label {
     margin: 0 0.5em;
     background-color: #4aaf36;
