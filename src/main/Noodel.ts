@@ -59,14 +59,6 @@ export default class Noodel {
         if (this.vueRoot) this.vueRoot.remove();
         this.vueInstance = null;
         this.vueRoot = null;
-        this._v.isFirstRenderDone = false;
-        this._v.canvasEl = undefined;
-        this._v.trunkEl = undefined;
-        this._v.focalBranchEl = undefined;
-        traverseDescendents(this._v.root, (noode) => {
-            noode.childBranchEl = undefined;
-            noode.el = undefined;
-        }, true);
     }
 
     getEl(): HTMLDivElement {

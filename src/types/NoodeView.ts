@@ -11,8 +11,15 @@ export default interface NoodeView {
     content: string;
 
     parent: NoodeView;
-
+    /**
+     * Toggles visibility of children via display: none.
+     */
     isChildrenVisible: boolean;
+    /**
+     * If true, will hide children with opacity: 0 instead of display: none.
+     * Used temporarily for setting up resize sensors.
+     */
+    isChildrenTransparent: boolean;
     isFocalParent: boolean;
     isActive: boolean;
 

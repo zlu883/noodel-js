@@ -8,6 +8,7 @@
     >
         <AnimationFade>
             <div 
+                v-show="parent.isChildrenVisible || parent.isChildrenTransparent"
                 class="nd-branch" 
                 ref="branch"
                 :class="branchClass"
@@ -86,8 +87,8 @@
 
             branchClass(): {} {
                 return {
-                    'nd-branch-hidden': !this.parent.isChildrenVisible,
-                    'nd-branch-enter': !this.store.isFirstRenderDone
+                    'nd-branch-hidden': !this.parent.isChildrenVisible || !this.store.isFirstRenderDone,
+                    'nd-branch-focal': this.parent.isFocalParent
                 }
             }
         },
@@ -118,16 +119,17 @@
         transition-property: opacity, transform;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
         transition-duration: .5s; 
+        opacity: .75;
+    }
+
+    .nd-branch-focal {
         opacity: 1;
     }
 
-    .nd-branch-enter {
-        transition-property: opacity;
-    }
-
     .nd-branch-hidden {
+        transition-property: opacity;
         opacity: 0;
-        pointer-events: none;       
+        pointer-events: none;
     }
 
     .noodes-enter, .noodes-leave-to {

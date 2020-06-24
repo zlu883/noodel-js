@@ -63,15 +63,18 @@
             
             this.$nextTick(() => {
                 let rect = this.$el.getBoundingClientRect();
-        
+
                 alignNoodelOnNoodeInsert(this.store, this.noode, rect.width, rect.height);
+
+                if (!this.noode.options.skipResizeDetection) {
+                    this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
+                        this.updateRenderedSize();
+                    });
+                }
+
+                // allows parent branch to fall back to display: none after resize sensor setup
+                this.noode.parent.isChildrenTransparent = false;
             });
-            
-            if (!this.noode.options.skipResizeDetection) {
-                this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
-                    this.updateRenderedSize();
-                });
-            }
             
             this.applyPreventNav();
         },
@@ -85,8 +88,10 @@
         methods: {
 
             updateRenderedSize() {
+                if (!this.noode.parent.isChildrenVisible) return;
+
                 let rect = this.$el.getBoundingClientRect();
-            
+
                 alignNoodelOnNoodeResize(this.store, this.noode, rect.width, rect.height);
             },
 
@@ -177,14 +182,9 @@
 
         computed: {
 
-            isFocalActive(): {} {
-                return this.noode.parent.isFocalParent && this.noode.isActive;
-            },
-
             noodeClass(): {} {
                 return {
                     'nd-noode-active': this.noode.isActive,
-                    'nd-noode-focal': this.noode.parent.isFocalParent
                 }
             },
 
@@ -201,7 +201,6 @@
             childIndicatorClass(): {} {
                 return {
                     'nd-child-indicator-active': this.noode.isActive,
-                    'nd-child-indicator-focal': this.noode.parent.isFocalParent
                 }
             }
         }
@@ -235,21 +234,16 @@
         padding: 1.0em;
         border-radius: 0.4em;
         background-color: #e6e6e6;
-        transition-property: background-color, opacity;
+        transition-property: background-color;
         transition-duration: .5s;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
         line-height: 1.5;
-        opacity: 0.75;
         max-height: 100vh;
         max-width: 100vw;
     }
 
     .nd-noode-active {
         background-color: #ffffff;
-    }
-
-    .nd-noode-focal {
-        opacity: 1;
     }
 
     .nd-noode > *:first-child {
@@ -274,15 +268,12 @@
 
     .nd-child-indicator {
         fill: #e6e6e6;
-        opacity: 0.75;
+        opacity: 1;
     }
 
     .nd-child-indicator-active {
         fill: #ffffff;
     }
 
-    .nd-child-indicator-focal {
-        opacity: 1;
-    }
 
 </style>

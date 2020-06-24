@@ -124,26 +124,7 @@ export default class Noode {
             index = this._v.children.length;
         }
 
-        let children = childDefs.map((def, pos) => {
-            let child = buildNoodeView(
-                this._nv,
-                def,
-                this._v.level + 1,
-                index + pos,
-                this._v
-            )
-
-            child.trunkRelativeOffset = this._v.trunkRelativeOffset + this._v.branchSize;
-            child.branchRelativeOffset = index > 0 ? 
-                this._v.children[index - 1].branchRelativeOffset + this._v.children[index - 1].size :
-                0;
-
-            return child;
-        });
-
-        insertChildren(this._nv, this._v, index, children);
-
-        return children.map(c => new Noode(c, this._nv));
+        return insertChildren(this._nv, this._v, index, childDefs).map(c => new Noode(c, this._nv));
     }
 
     removeChild(index: number): NoodeDefinition {

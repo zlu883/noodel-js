@@ -71,11 +71,35 @@
                 requestAnimationFrame(() => {
                     this.store.isFirstRenderDone = true;
 
-                    if (typeof this.store.options.onMount === 'function') {
-                        this.store.options.onMount();
-                    };           
+                    this.$nextTick(() => {
+                        if (typeof this.store.options.onMount === 'function') {
+                            this.store.options.onMount();
+                        }; 
+                    });           
                 });
             });   
+        },
+
+        destroyed: function() {
+            console.log("destroyed")
+            this.store.isFirstRenderDone = false;
+            this.store.trunkOffset = 0;
+            this.store.trunkOffsetAligned = 0;
+            delete this.store.canvasEl;
+            delete this.store.trunkEl;
+            delete this.store.focalBranchEl;
+            traverseDescendents(this.store.root, (noode) => {
+                noode.trunkRelativeOffset = 0;
+                noode.branchRelativeOffset = 0;
+                noode.isChildrenTransparent = true;
+                noode.size = 0;
+                noode.branchSize = 0;
+                noode.childBranchOffset = 0;
+                noode.childBranchOffsetAligned = 0;
+                delete noode.childBranchEl;
+                delete noode.el;
+                delete noode.resizeSensor;
+            }, true);
         },
 
         computed: {

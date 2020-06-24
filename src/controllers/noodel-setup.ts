@@ -204,6 +204,7 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, level: 
         index: index,
         level: level,
         isChildrenVisible: false,
+        isChildrenTransparent: true,
         isFocalParent: false,
         isActive: false,
         size: 0,

@@ -9,6 +9,8 @@ import { cancelPan } from './noodel-navigate';
 import { syncHashToFocalNoode } from './noodel-routing';
 import Noode from '@/main/Noode';
 import { unregisterNoode } from './id-register';
+import NoodeDefinition from '@/types/NoodeDefinition';
+import { buildNoodeView } from './noodel-setup';
 
 /**
  * Changes the focal parent of the noodel, and toggles the visibility of the active tree.
@@ -57,7 +59,7 @@ export function hideActiveSubtree(origin: NoodeView, depth?: number) {
  * Insert children to a parent at a particular index, adjusting the indices of siblings,
  * and the parent's active child if necessary.
  */
-export function insertChildren(noodel: NoodelView, parent: NoodeView, index: number, children: NoodeView[]) {
+export function insertChildren(noodel: NoodelView, parent: NoodeView, index: number, childDefs: NoodeDefinition[]): NoodeView[] {
 
     let prevFocalNoode = getActiveChild(noodel.focalParent);
 
@@ -66,11 +68,28 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
         cancelPan(noodel);
     }
 
-    parent.children.splice(index, 0, ...children);
-
     if (parent.activeChildIndex !== null && index <= parent.activeChildIndex) {
-        parent.activeChildIndex += children.length;
+        parent.activeChildIndex += childDefs.length;
     }
+
+    let children = childDefs.map((def, pos) => {
+        let child = buildNoodeView(
+            noodel,
+            def,
+            parent.level + 1,
+            index + pos,
+            parent
+        );
+
+        child.trunkRelativeOffset = parent.trunkRelativeOffset + parent.branchSize;
+        child.branchRelativeOffset = index > 0 ? 
+            parent.children[index - 1].branchRelativeOffset + parent.children[index - 1].size :
+            0;
+
+        return child;
+    });
+
+    parent.children.splice(index, 0, ...children);
 
     for (let i = index + children.length; i < parent.children.length; i++) {
         parent.children[i].index += children.length;
@@ -85,6 +104,12 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
     }
 
     handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
+
+    // Allows resize sensors to be attached properly, preventing possible performance issue.
+    // Will be toggled back off at noode mount.
+    parent.isChildrenTransparent = true;
+
+    return children;
 }
 
 /**
