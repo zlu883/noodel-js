@@ -80,27 +80,39 @@ function onPanStart(noodel: NoodelView, ev: HammerInput) {
 
 function onPan(noodel: NoodelView, ev: HammerInput) {
 
-    if (noodel.doInnerScroll) {
-        noodel.pointerDownSrcNoodeEl.scrollLeft = noodel.innerScrollOriginLeft - ev.deltaX;
-        noodel.pointerDownSrcNoodeEl.scrollTop = noodel.innerScrollOriginTop - ev.deltaY;
-    }
-    else {
-        updatePan(noodel, ev);
-    }
+    if (noodel.nextPanRafId) cancelAnimationFrame(noodel.nextPanRafId);
+
+    noodel.nextPanRafId = requestAnimationFrame(() => {
+        if (noodel.doInnerScroll) {
+            noodel.pointerDownSrcNoodeEl.scrollLeft = noodel.innerScrollOriginLeft - ev.deltaX;
+            noodel.pointerDownSrcNoodeEl.scrollTop = noodel.innerScrollOriginTop - ev.deltaY;
+        }
+        else {
+            updatePan(noodel, ev);
+        }
+
+        noodel.nextPanRafId = undefined;
+    });
 }
 
 function onPanEnd(noodel: NoodelView, ev: HammerInput) {
 
-    if (noodel.doInnerScroll) {
-        noodel.doInnerScroll = false;
-        noodel.innerScrollOriginTop = 0;
-        noodel.innerScrollOriginLeft = 0;
-        noodel.pointerDownSrcNoodeEl = null;
-        noodel.pointerDownSrcNoode = null;
-    }  
-    else {
-        releasePan(noodel, ev); 
-    }
+    if (noodel.nextPanRafId) cancelAnimationFrame(noodel.nextPanRafId);
+
+    noodel.nextPanRafId = requestAnimationFrame(() => {
+        if (noodel.doInnerScroll) {
+            noodel.doInnerScroll = false;
+            noodel.innerScrollOriginTop = 0;
+            noodel.innerScrollOriginLeft = 0;
+            noodel.pointerDownSrcNoodeEl = null;
+            noodel.pointerDownSrcNoode = null;
+        }  
+        else {
+            releasePan(noodel, ev); 
+        }
+
+        noodel.nextPanRafId = undefined;
+    });
 }
 
 function onPress(noodel: NoodelView, ev: HammerInput) {

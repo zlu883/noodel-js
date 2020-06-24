@@ -54,6 +54,11 @@ export default interface NoodelView {
     innerScrollOriginLeft?: number;
     innerScrollOriginTop?: number;
 
+    /**
+     * Used for debouncing pan input.
+     */
+    nextPanRafId?: number;
+
     // references to DOM elements mainly for calculating positions
     canvasEl?: Element;
     trunkEl?: Element;
