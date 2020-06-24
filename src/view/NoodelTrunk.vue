@@ -81,7 +81,6 @@
         },
 
         destroyed: function() {
-            console.log("destroyed")
             this.store.isFirstRenderDone = false;
             this.store.trunkOffset = 0;
             this.store.trunkOffsetAligned = 0;
