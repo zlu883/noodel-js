@@ -236,6 +236,16 @@ declare interface NoodeDefinition {
      */
     content?: string;
     /**
+     * Custom class(es) for this noode. Either a string of class names delimited by spaces
+     * or an array of class names.
+     */
+    className?: string | string[];
+    /**
+     * Custom styles for this noode. Either a style string in inline style format
+     * or a style object in {"property": "value"} format.
+     */
+    style?: string | object;
+    /**
      * Options for this noode.
      */
     options?: NoodeOptions;

@@ -728,38 +728,35 @@
                 <div class="noode">
                     <h3>Summary</h3>
                     <p>
-                        You can control most aspects of Noodel's appearance using plain CSS, by overriding
-                        Noodel's CSS classes.
+                        You can control most aspects of Noodel's appearance using plain CSS, by extend/overriding
+                        Noodel's CSS classes, or by providing custom class/styles for individual noodes.
                     </p>
                     <p>
                         In addition, you have complete freedom in styling the content inside your noodes
                         since they are just plain HTML. You can combine both approaches for more intensive
-                        style customization.
+                        style customizations.
                     </p>       
                 </div>
                 <div class="noode">
-                    <h3>Customizing look-and-feel</h3>
+                    <h3>Styling via Noodel's CSS classes</h3>
                     <p>
                         Noodel comes with a simple grayscale theme by default.
-                        You can override these CSS classes to customize basic aspects of the look-and-feel,
+                        You can extend/override most of Noodel's CSS classes (see child) to customize basic aspects of the look-and-feel,
                         such as color, background, border and padding.
                     </p>
                     <p>
-                        In general, however, you should NOT override properties that relate to element positioning and sizing, e.g.
-                        height, width, position, box-sizing, margin and transform, as they may interfere with how Noodel layout and
+                        In general, however, you should avoid setting properties that relate to element positioning, e.g.
+                        position, box-sizing, margin and transform, as they may interfere with how Noodel layout and
                         moves its elements. 
-                    </p>
-                    <p>
-                        For customizing noode sizes and movement animations, see the sections below.
                     </p>
                     <div class="noode">
                         <ul>
                             <li><code class="language-css">nd-canvas</code> the overall container</li>
                             <li><code class="language-css">nd-branch</code> the branch container</li>
+                            <li><code class="language-css">nd-branch-focal</code> applied to the focal branch container</li>
                             <li><code class="language-css">nd-noode-box</code> the logical noode container (including the "gap" around noodes)</li>
                             <li><code class="language-css">nd-noode</code> the noode container (immediate parent of your content)</li>
                             <li><code class="language-css">nd-noode-active</code> applied to active noodes</li>
-                            <li><code class="language-css">nd-noode-focal</code> applied to noodes in the focal branch</li>
                             <li>
                                 <code class="language-css">nd-child-indicator-box</code>,
                                 <code class="language-css">nd-child-indicator</code>, 
@@ -777,6 +774,37 @@
                     </div>
                 </div>
                 <div class="noode">
+                    <h3>Styling via custom class/styles</h3>
+                    <p>
+                        You can specify custom class/styles for each noode that will be applied to the
+                        <code class="language-css">nd-noode</code> element. This is useful when you need
+                        to have different types of noodes (e.g large and small) in the same tree.
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            const noodel = new Noodel({
+                                children: [
+                                    {
+                                        content: "A large, green noode with bold text",
+                                        className: "your-class-large your-class-green"
+                                        style: "font-weight: bold"
+                                    }
+                                ]
+                            });
+                        </code>
+                    </pre>
+                    <p>
+                        Or via <code class="language-markup">data-class</code> and <code class="language-markup">data-style</code> attributes in templates:
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-markup">
+                            &lt;div class="noode" data-class="your-class-small" data-style="background-color: blue; font-weight: bold"&gt;
+                                &lt;p&gt;A small, blue noode with bold text&lt;/p&gt;
+                            &lt;/div&gt;
+                        </code>
+                    </pre>
+                </div>
+                <div class="noode">
                     <h3>Controlling noode size</h3>
                     <p>
                         The size of noodes are actually determined in a very simple way - they are placed in a
@@ -786,7 +814,8 @@
                     <p>
                         This means you can fully control the size of noodes by setting the height, width, max-height,
                         max-width, min-height and min-width properties on the <code class="language-css">nd-noode</code>
-                        class. You can have either fixed size noodes (by setting a specific width/height) or
+                        class (or on custom class/styles you provide for the noodes). You can have either fixed size noodes 
+                        (by setting a specific width/height) or
                         flexible size noodes (by not setting a specific width/height), and well as using max/min sizes
                         to adapt to a range of situations. In addition, you can set the size of your content element
                         inside a specific noode and let that determine the size of the noode container.
@@ -1196,6 +1225,20 @@
                     <b><code class="language-ts">content?: string</code></b>
                     <p>
                         Content of this noode. Will be injected as innerHTML of the noode's container.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">className?: string | string[]</code></b>
+                    <p>
+                        Custom class(es) for this noode. Either a string of class names delimited by spaces
+                        or an array of class names.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">style?: string | object</code></b>
+                    <p>
+                        Custom styles for this noode. Either a style string in inline style format
+                        or a style object in {"property": "value"} format.
                     </p>
                 </div>
                 <div class="noode">
