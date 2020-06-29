@@ -15,18 +15,17 @@
             @pointerdown="onNoodePointerDown"
         >
         </div>   
-        <AnimationFade>   
-            <svg 
-                v-if="showChildIndicator" 
+        <AnimationFade>
+            <div
+                v-if="showChildIndicator"
                 class="nd-child-indicator-box"
-                viewBox="0 0 100 100"
             >
-                <polygon
+                <div 
                     class="nd-child-indicator"
                     :class="childIndicatorClass"
-                    :points="childIndicatorPath" 
-                />
-            </svg>
+                >
+                </div>
+            </div>  
         </AnimationFade>
     </div>
 
@@ -200,12 +199,6 @@
                 return this.noode.children.length > 0;
             },
 
-            childIndicatorPath(): {} {
-                return this.noode.isActive && this.noode.isChildrenVisible
-                    ? "0 15 60 15 100 50 60 85 0 85"
-                    : "0 15 40 15 40 85 0 85";
-            },
-
             childIndicatorClass(): {} {
                 return {
                     'nd-child-indicator-active': this.noode.isActive,
@@ -264,23 +257,35 @@
 
     .nd-child-indicator-box {
         position: absolute;
-        height: 1.2em;
-        width: 1.2em;
+        height: 1em;
+        width: 1.3em;
         right: -0.6em;
         top: 50%;
         transform: translateY(-50%);
-        transition-property: opacity;
-        transition-duration: 0.5s;
-        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
 
     .nd-child-indicator {
-        fill: #e6e6e6;
-        opacity: 1;
+        width: .6em;
+        height: 100%;
+        background-color: #e6e6e6;
+        position: relative;
     }
 
     .nd-child-indicator-active {
-        fill: #ffffff;
+        background-color: #ffffff;
+        width: .8em;
+    }
+
+    .nd-child-indicator-active::after {
+        content: "";
+        position: absolute;
+        left: .8em;
+        bottom: 0;
+        width: 0;
+        height: 0;
+        border-left: .5em solid white;
+        border-top: .5em solid transparent;
+        border-bottom: .5em solid transparent;
     }
 
 
