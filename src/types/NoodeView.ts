@@ -9,6 +9,8 @@ export default interface NoodeView {
     children: NoodeView[];
     activeChildIndex: number;
     content: string;
+    className: string[];
+    style: object;
 
     parent: NoodeView;
     /**

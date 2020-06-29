@@ -10,6 +10,7 @@
             ref="noode"
             v-html="noode.content"
             :class="noodeClass"
+            :style="noodeStyle"
             @wheel="onNoodeWheel"
             @pointerdown="onNoodePointerDown"
         >
@@ -182,10 +183,17 @@
 
         computed: {
 
-            noodeClass(): {} {
-                return {
-                    'nd-noode-active': this.noode.isActive,
-                }
+            noodeClass(): any[] {
+                return [
+                    {
+                        'nd-noode-active': this.noode.isActive,
+                    },
+                    ...this.noode.className
+                ]
+            },
+
+            noodeStyle(): {} {
+                return this.noode.style;
             },
 
             showChildIndicator(): {} {

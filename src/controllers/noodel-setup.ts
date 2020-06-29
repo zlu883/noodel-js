@@ -81,6 +81,8 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
 export function parseHTMLToNoode(el: Element): NoodeDefinition {
 
     let id = el.getAttribute('data-id');
+    let className = el.getAttribute('data-class');
+    let style = el.getAttribute('data-style');
     let activeChildIndex = 0;
     let content = '';
     let noodeCount = 0;
@@ -112,7 +114,9 @@ export function parseHTMLToNoode(el: Element): NoodeDefinition {
         id: id,
         content: content,
         activeChildIndex: children.length > 0 ? activeChildIndex : null,
-        children: children
+        children: children,
+        className: className,
+        style: style
     };
 }
 
@@ -218,6 +222,8 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, level: 
         id: typeof def.id === 'string' ? def.id : generateNoodeId(noodel),
         children: [],
         content: def.content || null,
+        className: parseClassName(def.className),
+        style: parseStyle(def.style),
         activeChildIndex: null,
         options: {
             skipResizeDetection: false
@@ -262,6 +268,30 @@ export function extractNoodeDefinition(noode: NoodeView): NoodeDefinition {
         id: noode.id,
         content: noode.content,
         activeChildIndex: noode.activeChildIndex,
-        children: noode.children.map(c => extractNoodeDefinition(c))
+        children: noode.children.map(c => extractNoodeDefinition(c)),
+        className: noode.className,
+        style: noode.style
     };
+}
+
+function parseClassName(className: string | string[]): string[] {
+    if (Array.isArray(className)) return className;
+    if (className && typeof className === 'string') return className.split(' ');
+    return [];
+}
+
+function parseStyle(style: string | object): object {
+    if (style && typeof style === 'object') return style;
+    if (style && typeof style === 'string') {
+        let styles = style.split(';').map(s => s.split(':').map(t => t.trim())).filter(s => s.length === 2);
+        let styleObj = {};
+
+        styles.forEach(s => {
+            styleObj[s[0]] = s[1];
+        });
+
+        return styleObj;
+    } 
+
+    return {};
 }
