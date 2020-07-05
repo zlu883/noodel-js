@@ -274,13 +274,13 @@ export function extractNoodeDefinition(noode: NoodeView): NoodeDefinition {
     };
 }
 
-function parseClassName(className: string | string[]): string[] {
+export function parseClassName(className: string | string[]): string[] {
     if (Array.isArray(className)) return className;
     if (className && typeof className === 'string') return className.split(' ');
     return [];
 }
 
-function parseStyle(style: string | object): object {
+export function parseStyle(style: string | object): object {
     if (style && typeof style === 'object') return style;
     if (style && typeof style === 'string') {
         let styles = style.split(';').map(s => s.split(':').map(t => t.trim())).filter(s => s.length === 2);

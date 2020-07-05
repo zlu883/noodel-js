@@ -119,11 +119,6 @@ declare class Noode {
      */
     getDefinition(): NoodeDefinition;
     /**
-     * Changes the options for this noode. Properties of the given object
-     * will be merged into the existing options.
-     */
-    setOptions(options: NoodeOptions);
-    /**
      * Gets the container element of this noode (i.e. nd-noode-box), if mounted.
      */
     getEl(): HTMLDivElement;
@@ -153,6 +148,14 @@ declare class Noode {
      */
     getContent(): string;
     /**
+     * Gets the custom class names for this noode.
+     */
+    getClass(): string[];
+    /**
+     * Gets the custom styles for this noode.
+     */
+    getStyle(): object;
+    /**
      * Gets the 0-based index (position among siblings) of this noode.
      */
     getIndex(): number;
@@ -173,6 +176,20 @@ declare class Noode {
      * remove the old content from the DOM.
      */
     setContent(content: string);
+    /**
+     * Replaces the custom class names for this noode. Can be an array or a space-delimited string.
+     */
+    setClass(className: string | string[]);
+    /**
+     * Replaces the custom inline styles for this noode. Can be a string or an object of property-value
+     * pairs.
+     */
+    setStyle(style: string | object);
+    /**
+     * Changes the options for this noode. Properties of the given object
+     * will be merged into the existing options.
+     */
+    setOptions(options: NoodeOptions);
     /**
      * Changes the active child of this noode. If doing so will toggle
      * the visibility of the focal branch (i.e this noode is an ancestor

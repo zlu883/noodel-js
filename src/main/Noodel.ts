@@ -43,6 +43,8 @@ export default class Noodel {
         handleFocalNoodeChange(this._v, null, getActiveChild(this._v.focalParent));
     }
 
+    // LIFECYCLE
+
     mount(el: string | Element) {
         Vue.config.productionTip = false;
     
@@ -61,25 +63,14 @@ export default class Noodel {
         this.vueRoot = null;
     }
 
+    // GETTERS
+
     getEl(): HTMLDivElement {
         return this._v.canvasEl as HTMLDivElement;
     }
 
-    setOptions(options: NoodelOptions) {
-        parseAndApplyOptions(options, this._v);
-    }
-
     getFocalLevel(): number {
         return this._v.focalLevel;
-    }
-
-    setFocalLevel(level: number) {
-        if (typeof level !== 'number' || level < 1 || level > this.getActiveTreeHeight()) {
-            console.warn("Cannot set focal level: invalid level");
-            return;
-        }
-
-        shiftFocalLevel(this._v, level - this._v.focalLevel);
     }
 
     getActiveTreeHeight(): number {
@@ -127,6 +118,21 @@ export default class Noodel {
         let target = findNoode(this._v, id);
         
         return target ? new Noode(target, this._v) : null;
+    }
+
+    // MUTATERS
+
+    setOptions(options: NoodelOptions) {
+        parseAndApplyOptions(options, this._v);
+    }
+    
+    setFocalLevel(level: number) {
+        if (typeof level !== 'number' || level < 1 || level > this.getActiveTreeHeight()) {
+            console.warn("Cannot set focal level: invalid level");
+            return;
+        }
+
+        shiftFocalLevel(this._v, level - this._v.focalLevel);
     }
 
     moveIn(levelCount: number = 1) {

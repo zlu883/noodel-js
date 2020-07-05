@@ -1,7 +1,7 @@
 import NoodeView from '@/types/NoodeView';
 import NoodeDefinition from '@/types/NoodeDefinition';
 import { setActiveChild as _setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
-import { buildNoodeView, extractNoodeDefinition, parseAndApplyNoodeOptions } from '@/controllers/noodel-setup';
+import { extractNoodeDefinition, parseAndApplyNoodeOptions, parseClassName, parseStyle } from '@/controllers/noodel-setup';
 import { getPath as _getPath } from '@/util/getters';
 import { alignBranchToIndex } from '@/controllers/noodel-align';
 import { shiftFocalNoode, alignNoodelOnJump } from '@/controllers/noodel-navigate';
@@ -18,6 +18,8 @@ export default class Noode {
         this._v = view;
         this._nv = noodelView;
     }
+
+    // GETTERS
 
     getParent(): Noode {
         if (!this._v.parent) return null;
@@ -56,23 +58,16 @@ export default class Noode {
         return this._v.id;
     }
 
-    setId(id: string) {
-        if (id === this._v.id) return;
-        unregisterNoode(this._nv, this._v.id);
-        this._v.id = id;
-        registerNoode(this._nv, id, this._v);
-    }
-
     getContent(): string {
         return this._v.content;
     }
 
-    setContent(content: string) {
-        this._v.content = content;
+    getClass(): string[] {
+        return this._v.className;
     }
 
-    setOptions(options: NoodeOptions) {
-        parseAndApplyNoodeOptions(options, this._v);
+    getStyle(): object {
+        return this._v.style;
     }
 
     getIndex(): number {
@@ -90,6 +85,31 @@ export default class Noode {
     getActiveChild(): Noode {
         if (this._v.activeChildIndex === null) return null;
         return new Noode(this._v.children[this._v.activeChildIndex], this._nv);
+    }
+
+    // MUTATERS
+
+    setId(id: string) {
+        if (id === this._v.id) return;
+        unregisterNoode(this._nv, this._v.id);
+        this._v.id = id;
+        registerNoode(this._nv, id, this._v);
+    }
+
+    setContent(content: string) {
+        this._v.content = content;
+    }
+
+    setClass(className: string | string[]) {
+        this._v.className = parseClassName(className);
+    }
+
+    setStyle(style: string | object) {
+        this._v.style = parseStyle(style);
+    }
+
+    setOptions(options: NoodeOptions) {
+        parseAndApplyNoodeOptions(options, this._v);
     }
 
     setActiveChild(index: number) {

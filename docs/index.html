@@ -1111,6 +1111,18 @@
                     </p>
                 </div>
                 <div class="noode">
+                    <b><code class="language-ts">getClass(): string[]</code></b>
+                    <p>
+                        Gets the custom class names for this noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getStyle(): object</code></b>
+                    <p>
+                        Gets the custom styles for this noode.
+                    </p>
+                </div>
+                <div class="noode">
                     <b><code class="language-ts">getIndex(): number</code></b>
                     <p>
                         Gets the 0-based index (position among siblings) of this noode.
@@ -1139,6 +1151,19 @@
                     <p>
                         Replaces the content of this noode. This will
                         remove the old content from the DOM.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setClass(className: string | string[])</code></b>
+                    <p>
+                        Replaces the custom class names for this noode. Can be an array or a space-delimited string.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setStyle(style: string | object)</code></b>
+                    <p>
+                        Replaces the custom inline styles for this noode. Can be a string or an object of property-value
+                        pairs.
                     </p>
                 </div>
                 <div class="noode">
