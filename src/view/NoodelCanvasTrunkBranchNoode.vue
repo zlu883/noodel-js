@@ -6,27 +6,23 @@
         class="nd-noode-box"
     >
         <div
-            class="nd-noode"
             ref="noode"
-            v-html="noode.content"
+            class="nd-noode"
             :class="noodeClass"
             :style="noodeStyle"
+            v-html="noode.content"
             @wheel="onNoodeWheel"
             @pointerdown="onNoodePointerDown"
         >
         </div>   
-        <AnimationFade>
+        <transition name="nd-child-indicator">
             <div
                 v-if="showChildIndicator"
-                class="nd-child-indicator-box"
+                class="nd-child-indicator"
+                :class="childIndicatorClass"
             >
-                <div 
-                    class="nd-child-indicator"
-                    :class="childIndicatorClass"
-                >
-                </div>
             </div>  
-        </AnimationFade>
+        </transition>
     </div>
 
 </template>
@@ -201,7 +197,7 @@
 
             childIndicatorClass(): {} {
                 return {
-                    'nd-child-indicator-active': this.noode.isActive,
+                    'nd-child-indicator-active': this.noode.isActive
                 }
             }
         }
@@ -215,77 +211,80 @@
 
     .nd-noode-box {
         box-sizing: border-box !important;
+        margin: 0 !important; /* Must have no margin for size tracking to work properly */
         position: relative;
-        padding: 0.2em 0.6em;
-        text-align: start;
-        margin: 0 !important;
-        transform: translateY(0);
-        transition-property: opacity, transform;
-        transition-duration: .5s;
-        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+        display: flex !important; /* Prevents margin collapse */
+        flex-direction: column !important;
     }
 
     .nd-noode {
-        position: relative;
-        overflow: auto;
-        touch-action: none !important; /* Important as hammerjs will break on mobile without this */
-        outline: none;
-        overflow-wrap: break-word;
+        margin: .2em .6em;
+        padding: 1em;
+        max-height: 100vh;
+        max-width: 100vw;
         box-sizing: border-box;
-        padding: 1.0em;
-        border-radius: 0.4em;
+        touch-action: none !important; /* Important as hammerjs will break on mobile without this */
+        overflow: auto;
         background-color: #e6e6e6;
         transition-property: background-color;
         transition-duration: .5s;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-        line-height: 1.5;
-        max-height: 100vh;
-        max-width: 100vw;
     }
 
     .nd-noode-active {
         background-color: #ffffff;
     }
 
-    .nd-noode > *:first-child {
-        margin-top: 0;
+    .nd-noode-enter, .nd-noode-leave-active {
+        opacity: 0;
     }
 
-    .nd-noode > *:last-child {
-        margin-bottom: 0;
+    .nd-noode-enter-active, .nd-noode-leave-active {
+        transition-property: opacity;
+        transition-duration: .5s;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
 
-    .nd-child-indicator-box {
-        position: absolute;
-        height: 1em;
-        width: 1.3em;
-        right: -0.6em;
-        top: 50%;
-        transform: translateY(-50%);
+    .nd-noode-move {
+        transition-property: opacity, transform;
+        transition-duration: .5s;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
 
     .nd-child-indicator {
+        position: absolute;
+        height: 1em;
         width: .6em;
-        height: 100%;
+        right: 0;
+        top: 50%;
+        transform: translateY(-50%);
         background-color: #e6e6e6;
-        position: relative;
     }
 
     .nd-child-indicator-active {
         background-color: #ffffff;
-        width: .8em;
     }
 
     .nd-child-indicator-active::after {
         content: "";
         position: absolute;
-        left: .8em;
+        left: .6em;
         bottom: 0;
         width: 0;
         height: 0;
-        border-left: .5em solid white;
+        border-left: .5em solid #ffffff;
         border-top: .5em solid transparent;
         border-bottom: .5em solid transparent;
+    }
+
+    .nd-child-indicator-enter, .nd-child-indicator-leave-active {
+        opacity: 0;
+    }
+
+    .nd-child-indicator-enter-active, .nd-child-indicator-leave-active {
+        transition-property: opacity;
+        transition-duration: .5s;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
 
 </style>

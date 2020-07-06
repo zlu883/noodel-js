@@ -20,8 +20,8 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         
         trunkOffset: 0,
         trunkOffsetAligned: 0,
-        trunkOffsetForced: null,
-    
+        applyTrunkMove: false,
+
         showLimits: {
             top: false,
             bottom: false,
@@ -32,7 +32,6 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         panOffsetOriginFocalBranch: null,
         panAxis: null,
         hasPress: false,
-        isFirstRenderDone: false,
 
         containerSize: {
             x: 0,
@@ -215,7 +214,7 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, level: 
         trunkRelativeOffset: 0,
         childBranchOffset: 0,
         childBranchOffsetAligned: 0,
-        childBranchOffsetForced: null,
+        applyBranchMove: false,
         branchRelativeOffset: 0,
         branchSize: 0,
         parent: parent,

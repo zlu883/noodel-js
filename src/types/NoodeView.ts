@@ -31,10 +31,7 @@ export default interface NoodeView {
      * This is the expected offset if a branch is aligned to its active index.
      */
     childBranchOffsetAligned: number;
-    /**
-     * Takes precedence over the normal child branch offset. Used to override transition effects.
-     */
-    childBranchOffsetForced: number;
+    applyBranchMove: boolean;
 
     branchRelativeOffset: number;
 

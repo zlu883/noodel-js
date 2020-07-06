@@ -8,16 +8,26 @@
         tabindex="0"
         @dragstart.prevent
     >
-        <NoodelLimits 
-            :store="store"
-        />
+        <transition name="nd-limit">
+            <div class="nd-limit nd-limit-left" v-show="store.showLimits.left"/>
+        </transition>
+        <transition name="nd-limit">
+            <div class="nd-limit nd-limit-right" v-show="store.showLimits.right"/>
+        </transition>
+        <transition name="nd-limit">
+            <div class="nd-limit nd-limit-top" v-show="store.showLimits.top"/>
+        </transition>
+        <transition name="nd-limit">
+            <div class="nd-limit nd-limit-bottom" v-show="store.showLimits.bottom"/>
+        </transition>
         <div
+            ref="trunk"
             class="nd-trunk"
             :class="trunkClass"
-            ref="trunk"
             :style="trunkStyle"
+            @transitionend="onTransitionEnd"
         >
-            <NoodelTrunkBranch
+            <NoodelCanvasTrunkBranch
                 v-for="parent in allBranchParents"
                 :key="parent.id"                  
                 :parent="parent"
@@ -32,8 +42,7 @@
 
 <script lang="ts">
 
-    import NoodelLimits from '@/view/NoodelLimits.vue';
-    import NoodelTrunkBranch from "@/view/NoodelTrunkBranch.vue";
+    import NoodelCanvasTrunkBranch from "@/view/NoodelCanvasTrunkBranch.vue";
 
     import { getFocalWidth } from '@/util/getters';
     import { setupContainer } from '@/controllers/noodel-setup';
@@ -47,8 +56,7 @@
     export default Vue.extend({
         
         components: {
-            NoodelLimits,
-            NoodelTrunkBranch
+            NoodelCanvasTrunkBranch
         },
 
         props: {
@@ -69,8 +77,6 @@
                 alignTrunkToBranch(this.store, this.store.focalParent);
                 
                 requestAnimationFrame(() => {
-                    this.store.isFirstRenderDone = true;
-
                     this.$nextTick(() => {
                         if (typeof this.store.options.onMount === 'function') {
                             this.store.options.onMount();
@@ -81,7 +87,6 @@
         },
 
         destroyed: function() {
-            this.store.isFirstRenderDone = false;
             this.store.trunkOffset = 0;
             this.store.trunkOffsetAligned = 0;
             delete this.store.canvasEl;
@@ -104,22 +109,14 @@
         computed: {
 
             trunkStyle(): {} {
-                if (this.store.trunkOffsetForced !== null) {
-                    return {
-                        transform: 'translateX(' + (this.store.trunkOffsetForced + getFocalWidth(this.store)) + 'px)',
-                        "transition-property": "none"
-                    };
-                }
-                else {
-                    return {
-                        transform: 'translateX(' + (this.store.trunkOffset + getFocalWidth(this.store)) + 'px)'
-                    };
-                }
+                return {
+                    transform: 'translateX(' + (this.store.trunkOffset + getFocalWidth(this.store)) + 'px)'
+                };
             },
 
             trunkClass(): {} {
                 return {
-                    'nd-trunk-enter': !this.store.isFirstRenderDone
+                    'nd-trunk-move': this.store.applyTrunkMove
                 };
             },
 
@@ -134,6 +131,16 @@
 
                 return allBranchParents;
             }
+        },
+
+        methods: {
+
+            onTransitionEnd(ev: TransitionEvent) {
+                if (ev.propertyName === "transform") {
+                    ev.stopPropagation();
+                    this.store.applyTrunkMove = false;
+                }
+            }
         }
 
     });
@@ -145,12 +152,9 @@
 <style>
 
 	.nd-canvas {
-        font-family: 'Segoe UI', 'Roboto', Arial, sans-serif;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
+        position: relative;
         width: 100%;
         height: 100%;
-        cursor: grab;
         overflow: hidden;
         -webkit-touch-callout: none;
         -webkit-user-select: none;
@@ -158,20 +162,64 @@
         -moz-user-select: none;
         -ms-user-select: none;
         user-select: none;
+        cursor: grab;
         background-color: #a6a6a6;
-	}
+    }
+
+    .nd-limit {
+        position: absolute;
+        z-index: 9999;
+        border: solid 0px;
+        background-color: #595959;
+    }
+
+    .nd-limit-enter, .nd-limit-leave-active {
+        opacity: 0;
+    }
+
+    .nd-limit-enter-active, .nd-limit-leave-active {
+        transition-property: opacity;
+        transition-duration: 0.5s;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    }
+
+    .nd-limit-left {   
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 1em;
+    }
+
+    .nd-limit-right {
+        top: 0;
+        right: 0;
+        height: 100%;
+        width: 1em;
+    }
+
+    .nd-limit-top {
+        top: 0;
+        left: 0;
+        height: 1em;
+        width: 100%;
+    }
+
+    .nd-limit-bottom {
+        bottom: 0;
+        left: 0;
+        height: 1em;
+        width: 100%;
+    }
 
     .nd-trunk {
         position: relative;
-        width: 100%;
-        opacity: 1;
+        width: 999999999px !important;
+    }
+
+    .nd-trunk-move {
         transition-property: transform;
         transition-duration: .5s; 
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
-    }
-
-    .nd-trunk-enter {
-        transition-property: none;
     }
     
 </style>

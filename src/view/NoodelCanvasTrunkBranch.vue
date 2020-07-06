@@ -2,29 +2,25 @@
 
 <template>
 
-    <div
-        class="nd-branch-box"
-        :style="branchBoxStyle"
-    >
-        <AnimationFade>
-            <div 
-                v-show="parent.isChildrenVisible || parent.isChildrenTransparent"
-                class="nd-branch" 
-                ref="branch"
-                :class="branchClass"
-                :style="branchStyle"
-            >  
-                <transition-group name="noodes">
-                    <NoodelTrunkBranchNoode
-                        v-for="child in parent.children"
-                        :key="child.id"
-                        :noode="child" 
-                        :store="store"
-                    />
-                </transition-group>
-            </div>
-        </AnimationFade>
-    </div> 
+    <transition name="nd-branch">
+        <div 
+            v-show="parent.isChildrenVisible || parent.isChildrenTransparent"
+            class="nd-branch" 
+            ref="branch"
+            :class="branchClass"
+            :style="branchStyle"
+            @transitionend="onTransitionEnd"
+        >  
+            <transition-group name="nd-noode">
+                <NoodelCanvasTrunkBranchNoode
+                    v-for="child in parent.children"
+                    :key="child.id"
+                    :noode="child" 
+                    :store="store"
+                />
+            </transition-group>
+        </div>
+    </transition>
     
 </template>
 
@@ -34,7 +30,7 @@
 
     import { ResizeSensor } from 'css-element-queries';
 
-    import NoodelTrunkBranchNoode from '@/view/NoodelTrunkBranchNoode.vue';
+    import NoodelCanvasTrunkBranchNoode from '@/view/NoodelCanvasTrunkBranchNoode.vue';
     import AnimationFade from './AnimationFade.vue';
 
     import { getFocalHeight } from '@/util/getters';
@@ -46,7 +42,7 @@
     export default Vue.extend({
         
         components: {
-            NoodelTrunkBranchNoode,
+            NoodelCanvasTrunkBranchNoode,
             AnimationFade
         },
 
@@ -66,28 +62,16 @@
         computed: {
 
             branchStyle(): {} {
-                if (this.parent.childBranchOffsetForced !== null) {
-                    return {
-                        transform: 'translateY(' + (this.parent.childBranchOffsetForced + getFocalHeight(this.store)) + 'px)',
-                        "transition-property": "opacity"
-                    };
-                }
-                else {
-                    return {
-                        transform: 'translateY(' + (this.parent.childBranchOffset + getFocalHeight(this.store)) + 'px)'
-                    };
-                }
-            },
-
-            branchBoxStyle(): {} {
                 return {
-                    transform: "translateX(" + this.parent.trunkRelativeOffset + 'px)'
-                }
+                    left: `${this.parent.trunkRelativeOffset}px`,
+                    transform: `translateY(${this.parent.childBranchOffset + getFocalHeight(this.store)}px)`
+                };
             },
 
             branchClass(): {} {
                 return {
-                    'nd-branch-hidden': !this.parent.isChildrenVisible || !this.store.isFirstRenderDone,
+                    'nd-branch-move': this.parent.applyBranchMove,
+                    'nd-branch-hidden': !this.parent.isChildrenVisible && this.parent.isChildrenTransparent,
                     'nd-branch-focal': this.parent.isFocalParent
                 }
             }
@@ -99,6 +83,16 @@
                     this.store.focalBranchEl = this.$refs.branch as Element;
                 }
             }
+        },
+
+        methods: {
+
+            onTransitionEnd(ev: TransitionEvent) {
+                if (ev.propertyName === "transform") {
+                    ev.stopPropagation();
+                    this.parent.applyBranchMove = false;
+                }
+            }
         }
         
     });
@@ -108,26 +102,30 @@
 <!---------------------------- STYLES ------------------------------>
 
 <style>
-    
-    .nd-branch-box {
-        position: absolute;
-        width: 100%;
-    }
 
     .nd-branch {
         position: absolute;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .nd-branch-enter, .nd-branch-leave-active {
+        opacity: 0;
+    }
+
+    .nd-branch-enter-active, .nd-branch-leave-active {
+        transition-property: opacity;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
+        transition-duration: .5s; 
+    }
+
+    .nd-branch-move {
         transition-property: opacity, transform;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
         transition-duration: .5s; 
-        opacity: .75;
-    }
-
-    .nd-branch-focal {
-        opacity: 1;
     }
 
     .nd-branch-hidden {
-        transition-property: opacity;
         opacity: 0;
         pointer-events: none;
     }

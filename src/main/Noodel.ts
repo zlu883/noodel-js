@@ -1,7 +1,7 @@
 import NoodeDefinition from '@/types/NoodeDefinition';
 import NoodelOptions from '@/types/NoodelOptions';
 import { setupNoodel, parseHTMLToNoode, parseAndApplyOptions } from '@/controllers/noodel-setup';
-import NoodelTrunk from '@/view/NoodelTrunk.vue';
+import NoodelCanvas from '@/view/NoodelCanvas.vue';
 import Vue from 'vue';
 import NoodelView from '@/types/NoodelView';
 import Noode from './Noode';
@@ -49,7 +49,7 @@ export default class Noodel {
         Vue.config.productionTip = false;
     
         this.vueInstance = new Vue({
-            render: h => h(NoodelTrunk, { props: { store: this._v }}),
+            render: h => h(NoodelCanvas, { props: { store: this._v }}),
             data: this._v
         }).$mount(el);
 
