@@ -78,6 +78,8 @@
                 
                 requestAnimationFrame(() => {
                     this.$nextTick(() => {
+                        this.store.isFirstRenderDone = true;
+
                         if (typeof this.store.options.onMount === 'function') {
                             this.store.options.onMount();
                         }; 
@@ -92,6 +94,7 @@
             delete this.store.canvasEl;
             delete this.store.trunkEl;
             delete this.store.focalBranchEl;
+            delete this.store.isFirstRenderDone;
             traverseDescendents(this.store.root, (noode) => {
                 noode.trunkRelativeOffset = 0;
                 noode.branchRelativeOffset = 0;

@@ -136,6 +136,8 @@ function panFocalBranch(noodel: NoodelView, targetOffset: number) {
 
 export function startPan(noodel: NoodelView, ev: HammerInput) {
 
+    clearTimeout(noodel.limitIndicatorTimeout);
+
     if (ev.direction === Hammer.DIRECTION_LEFT || ev.direction === Hammer.DIRECTION_RIGHT) {
         noodel.panAxis = Axis.HORIZONTAL;
 
@@ -205,6 +207,7 @@ export function cancelPan(noodel: NoodelView) {
 }
 
 export function unsetLimitIndicators(noodel: NoodelView) {
+    forceReflow();
     noodel.showLimits.top = false;
     noodel.showLimits.bottom = false;
     noodel.showLimits.left = false;
@@ -216,6 +219,8 @@ export function unsetLimitIndicators(noodel: NoodelView) {
  * will align trunk to the current focal level.
  */
 export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
+
+    clearTimeout(noodel.limitIndicatorTimeout);
 
     let prevFocalNoode = getActiveChild(noodel.focalParent);
 
@@ -238,6 +243,8 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
         }
     }
 
+    noodel.limitIndicatorTimeout = setTimeout(() => unsetLimitIndicators(noodel), 300);
+
     setFocalParent(noodel, newFocalParent);
     alignTrunkToBranch(noodel, newFocalParent);
     forceReflow();
@@ -250,6 +257,8 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
  * is 0, will align the branch to the current active noode.
  */
 export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
+    
+    clearTimeout(noodel.limitIndicatorTimeout);
 
     let prevFocalNoode = getActiveChild(noodel.focalParent);
 
@@ -279,6 +288,8 @@ export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
             noodel.showLimits.bottom = true;
         }
     }
+
+    noodel.limitIndicatorTimeout = setTimeout(() => unsetLimitIndicators(noodel), 300);
 
     hideActiveSubtree(noodel.focalParent);
     setActiveChild(noodel, noodel.focalParent, targetIndex);
@@ -343,6 +354,8 @@ export function alignNoodelOnJump(noodel: NoodelView, target: NoodeView) {
 }
 
 export function doJumpNavigation(noodel: NoodelView, target: NoodeView) {
+
+    clearTimeout(noodel.limitIndicatorTimeout);
 
     let prevFocalNoode = getActiveChild(noodel.focalParent);
 

@@ -63,4 +63,6 @@ export default interface NoodelView {
     options: NoodelOptions;
 
     onHashChanged?: () => any;
+
+    isFirstRenderDone?: boolean;
 }

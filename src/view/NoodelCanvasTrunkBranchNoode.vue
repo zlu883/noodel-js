@@ -33,10 +33,8 @@
 
     import { ResizeSensor } from "css-element-queries";
 
-    import AnimationFade from './AnimationFade.vue';
-
     import NoodeView from "@/types/NoodeView";
-    import { alignNoodelOnNoodeResize, alignNoodelOnNoodeInsert } from "@/controllers/noodel-align";
+    import { alignNoodelOnNoodeInsert, alignBranchOnNoodeResize } from "@/controllers/noodel-align";
     import NoodelView from '@/types/NoodelView';
     import { traverseAncestors } from '../controllers/noodel-traverse';
     import { getPath } from '../util/getters';
@@ -45,33 +43,30 @@
 
     export default Vue.extend({
 
-        components: {
-            AnimationFade,
-        },
-
         props: {
             noode: Object as PropType<NoodeView>,
             store: Object as PropType<NoodelView>
         },
 
-        mounted() {
+        mounted() {         
             this.noode.el = this.$el;
-            
-            this.$nextTick(() => {
+
+            Vue.nextTick(() => {
+                // do initial size capture
                 let rect = this.$el.getBoundingClientRect();
 
-                alignNoodelOnNoodeInsert(this.store, this.noode, rect.width, rect.height);
+                alignBranchOnNoodeResize(this.store, this.noode, rect.height, true);
 
-                if (!this.noode.options.skipResizeDetection) {
-                    this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
-                        this.updateRenderedSize();
-                    });
-                }
+                // allows parent branch to fall back to display: none after first size update,
+                // using nextTick to wait for parent branch size capture to finish first
+                Vue.nextTick(() => this.noode.parent.isChildrenTransparent = false);
 
-                // allows parent branch to fall back to display: none after resize sensor setup
-                this.noode.parent.isChildrenTransparent = false;
-            });
-            
+                // setup resize sensor, first callback will run after Vue.nextTick
+                this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
+                    this.updateRenderedSize();
+                });
+            })            
+
             this.applyPreventNav();
         },
 
@@ -84,11 +79,9 @@
         methods: {
 
             updateRenderedSize() {
-                if (!this.noode.parent.isChildrenVisible) return;
-
                 let rect = this.$el.getBoundingClientRect();
 
-                alignNoodelOnNoodeResize(this.store, this.noode, rect.width, rect.height);
+                alignBranchOnNoodeResize(this.store, this.noode, rect.height);
             },
 
             applyPreventNav() {
@@ -170,7 +163,10 @@
         watch: {
             "noode.content": function() {
                 this.$nextTick(() => {
-                    this.updateRenderedSize();
+                    if (this.noode.parent.isChildrenVisible) {
+                        this.updateRenderedSize();
+                    }
+
                     this.applyPreventNav();
                 });
             }
@@ -239,9 +235,14 @@
         opacity: 0;
     }
 
+    .nd-noode-leave-active {
+        position: absolute;
+        width: 100%;
+    }
+
     .nd-noode-enter-active, .nd-noode-leave-active {
         transition-property: opacity;
-        transition-duration: .5s;
+        transition-duration: 5s;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
 

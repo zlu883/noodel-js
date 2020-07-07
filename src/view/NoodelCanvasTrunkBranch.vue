@@ -31,19 +31,18 @@
     import { ResizeSensor } from 'css-element-queries';
 
     import NoodelCanvasTrunkBranchNoode from '@/view/NoodelCanvasTrunkBranchNoode.vue';
-    import AnimationFade from './AnimationFade.vue';
 
     import { getFocalHeight } from '@/util/getters';
     import NoodeView from '@/types/NoodeView';
     import NoodelView from '@/types/NoodelView';
     import { Axis } from '@/enums/Axis';
     import Vue, { PropType } from 'vue';
+    import { alignTrunkOnBranchResize } from '../controllers/noodel-align';
 
     export default Vue.extend({
         
         components: {
             NoodelCanvasTrunkBranchNoode,
-            AnimationFade
         },
 
         props: {
@@ -51,12 +50,24 @@
             store: Object as PropType<NoodelView>
         },
 
-        mounted: function() {
+        mounted() {
             if (this.parent.isFocalParent) {
                 this.store.focalBranchEl = this.$refs.branch as Element;
             }
 
             this.parent.childBranchEl = this.$refs.branch as Element;
+
+            let rect = (this.$refs.branch as Element).getBoundingClientRect();
+
+            alignTrunkOnBranchResize(this.store, this.parent, rect.width, true);
+
+            this.parent.branchResizeSensor = new ResizeSensor(this.$refs.branch as Element, () => {
+                this.updateRenderedSize();
+            });
+        },
+
+        beforeDestroy() {
+            if (this.parent.branchResizeSensor) this.parent.branchResizeSensor.detach();
         },
 
         computed: {
@@ -87,6 +98,12 @@
 
         methods: {
 
+            updateRenderedSize() {
+                let rect = (this.$refs.branch as Element).getBoundingClientRect();
+
+                alignTrunkOnBranchResize(this.store, this.parent, rect.width);
+            },
+
             onTransitionEnd(ev: TransitionEvent) {
                 if (ev.propertyName === "transform") {
                     ev.stopPropagation();
@@ -106,7 +123,7 @@
     .nd-branch {
         position: absolute;
         display: flex;
-        flex-direction: column;
+        flex-direction: column; 
     }
 
     .nd-branch-enter, .nd-branch-leave-active {

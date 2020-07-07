@@ -7,19 +7,18 @@ function onKeyDown(noodel: NoodelView, event: KeyboardEvent) {
     if (event.key === "ArrowDown") {
         shiftFocalNoode(noodel, 1);
     }
-    else if (event.key === "ArrowUp") {
+    
+    if (event.key === "ArrowUp") {
         shiftFocalNoode(noodel, -1);
     }
-    else if (event.key === "ArrowLeft") {
+    
+    if (event.key === "ArrowLeft") {
         shiftFocalLevel(noodel, -1);
     }
-    else if (event.key === "ArrowRight") {
+    
+    if (event.key === "ArrowRight") {
         shiftFocalLevel(noodel, 1);
     }
-}
-
-function onKeyUp(noodel: NoodelView, event: KeyboardEvent) {
-    unsetLimitIndicators(noodel);
 }
 
 function onWheel(noodel: NoodelView, ev: WheelEvent) {
@@ -50,9 +49,6 @@ function onWheel(noodel: NoodelView, ev: WheelEvent) {
             shiftFocalLevel(noodel, -1);
         }
     }
-
-    clearTimeout(noodel.limitIndicatorTimeout);
-    noodel.limitIndicatorTimeout = setTimeout(() => unsetLimitIndicators(noodel), 300);
 }
 
 function onPanStart(noodel: NoodelView, ev: HammerInput) {
@@ -140,7 +136,6 @@ function onTap(noodel: NoodelView, ev: HammerInput) {
 export function setupNoodelInputBindings(el: Element, noodel: NoodelView) {
 
     el.addEventListener('keydown', (ev: KeyboardEvent) => onKeyDown(noodel, ev));
-    el.addEventListener('keyup', (ev: KeyboardEvent) => onKeyUp(noodel, ev));
     el.addEventListener('wheel', (ev: WheelEvent) => {
         onWheel(noodel, ev);
         ev.preventDefault();
