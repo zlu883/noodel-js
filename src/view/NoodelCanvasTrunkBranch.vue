@@ -11,14 +11,10 @@
             :style="branchStyle"
             @transitionend="onTransitionEnd"
         >  
-            <transition-group name="nd-noode">
-                <NoodelCanvasTrunkBranchNoode
-                    v-for="child in parent.children"
-                    :key="child.id"
-                    :noode="child" 
-                    :store="store"
-                />
-            </transition-group>
+            <NoodeTransitionGroup
+                :store="store"
+                :parent="parent"
+            />
         </div>
     </transition>
     
@@ -30,7 +26,7 @@
 
     import { ResizeSensor } from 'css-element-queries';
 
-    import NoodelCanvasTrunkBranchNoode from '@/view/NoodelCanvasTrunkBranchNoode.vue';
+    import NoodeTransitionGroup from '@/view/NoodeTransitionGroup.vue';
 
     import { getFocalHeight } from '@/util/getters';
     import NoodeView from '@/types/NoodeView';
@@ -42,7 +38,7 @@
     export default Vue.extend({
         
         components: {
-            NoodelCanvasTrunkBranchNoode,
+            NoodeTransitionGroup
         },
 
         props: {
@@ -109,7 +105,7 @@
                     ev.stopPropagation();
                     this.parent.applyBranchMove = false;
                 }
-            }
+            },
         }
         
     });
@@ -145,15 +141,6 @@
     .nd-branch-hidden {
         opacity: 0;
         pointer-events: none;
-    }
-
-    .noodes-enter, .noodes-leave-to {
-        opacity: 0;
-    }
-
-    .noodes-leave-active {
-        position: absolute;
-        width: 100%;
-    }        
+    }  
 
 </style>

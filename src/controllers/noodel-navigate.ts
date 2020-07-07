@@ -182,14 +182,15 @@ export function releasePan(noodel: NoodelView, ev: HammerInput) {
 
     if (noodel.panAxis === Axis.HORIZONTAL) {
         noodel.panOffsetOriginTrunk = null;
+        noodel.panAxis = null; // before shiftFocalLevel to prevent extra cancelPan check
         shiftFocalLevel(noodel, computeSnapCount(ev.velocityX, noodel.options.swipeWeightTrunk));
     }
     else if (noodel.panAxis === Axis.VERTICAL) {
         noodel.panOffsetOriginFocalBranch = null;
+        noodel.panAxis = null; // before shiftFocalNoode to prevent extra cancelPan check
         shiftFocalNoode(noodel, computeSnapCount(ev.velocityY, noodel.options.swipeWeightBranch));
     }
 
-    noodel.panAxis = null;
     unsetLimitIndicators(noodel);
 }
 
@@ -197,12 +198,15 @@ export function cancelPan(noodel: NoodelView) {
 
     if (noodel.panAxis === Axis.HORIZONTAL) {
         noodel.panOffsetOriginTrunk = null;
+        noodel.panAxis = null;
+        shiftFocalLevel(noodel, 0);
     }
     else if (noodel.panAxis === Axis.VERTICAL) {
         noodel.panOffsetOriginFocalBranch = null;
+        noodel.panAxis = null;
+        shiftFocalNoode(noodel, 0);
     }
 
-    noodel.panAxis = null;
     unsetLimitIndicators(noodel);
 }
 

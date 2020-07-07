@@ -64,6 +64,7 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
     let prevFocalNoode = getActiveChild(noodel.focalParent);
 
     // if panning focal branch, cancel it
+    // unfortunately it's too difficult to align pan offsets at the moment
     if (parent.isFocalParent && noodel.panAxis === Axis.VERTICAL) {
         cancelPan(noodel);
     }
@@ -121,6 +122,7 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
     let prevFocalNoode = getActiveChild(noodel.focalParent);
 
     // if panning focal branch, cancel it
+    // unfortunately it's too difficult to align pan offsets at the moment
     if (parent.isFocalParent && noodel.panAxis === Axis.VERTICAL) {
         cancelPan(noodel);
     }

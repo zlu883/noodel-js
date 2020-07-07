@@ -34,7 +34,7 @@
     import { ResizeSensor } from "css-element-queries";
 
     import NoodeView from "@/types/NoodeView";
-    import { alignNoodelOnNoodeInsert, alignBranchOnNoodeResize } from "@/controllers/noodel-align";
+    import { alignBranchOnNoodeResize } from "@/controllers/noodel-align";
     import NoodelView from '@/types/NoodelView';
     import { traverseAncestors } from '../controllers/noodel-traverse';
     import { getPath } from '../util/getters';
@@ -242,7 +242,7 @@
 
     .nd-noode-enter-active, .nd-noode-leave-active {
         transition-property: opacity;
-        transition-duration: 5s;
+        transition-duration: .5s;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
     }
 
