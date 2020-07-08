@@ -6,6 +6,22 @@
         class="nd-noode-box"
     >
         <div
+            v-if="useComponentContent"
+            ref="noode"
+            class="nd-noode"
+            :class="noodeClass"
+            :style="noodeStyle"
+            @wheel="onNoodeWheel"
+            @pointerdown="onNoodePointerDown"
+        >
+            <component 
+                :is="noode.content.component" 
+                v-bind="noode.content.props"
+                v-on="noode.content.eventListeners"
+            />
+        </div>   
+        <div
+            v-else
             ref="noode"
             class="nd-noode"
             :class="noodeClass"
@@ -14,7 +30,7 @@
             @wheel="onNoodeWheel"
             @pointerdown="onNoodePointerDown"
         >
-        </div>   
+        </div>
         <transition name="nd-child-indicator">
             <div
                 v-if="showChildIndicator"
@@ -51,6 +67,7 @@
         mounted() {         
             this.noode.el = this.$el;
 
+            // nextTick is required for vue's v-move effect to work
             Vue.nextTick(() => {
                 // do initial size capture
                 let rect = this.$el.getBoundingClientRect();
@@ -174,6 +191,10 @@
 
         computed: {
 
+            useComponentContent(): boolean {
+                return this.noode.content && (typeof this.noode.content === 'object');
+            },
+
             noodeClass(): any[] {
                 return [
                     {
@@ -210,7 +231,7 @@
         margin: 0 !important; /* Must have no margin for size tracking to work properly */
         position: relative;
         display: flex !important; /* Prevents margin collapse */
-        flex-direction: column !important;
+        flex-direction: column;
     }
 
     .nd-noode {

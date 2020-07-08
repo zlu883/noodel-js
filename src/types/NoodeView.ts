@@ -1,5 +1,6 @@
 import { ResizeSensor } from 'css-element-queries';
 import NoodeOptions from './NoodeOptions';
+import ComponentContent from './ComponentContent';
 
 export default interface NoodeView {
 
@@ -8,7 +9,7 @@ export default interface NoodeView {
     level: number;
     children: NoodeView[];
     activeChildIndex: number;
-    content: string;
+    content: string | ComponentContent;
     className: string[];
     style: object;
 

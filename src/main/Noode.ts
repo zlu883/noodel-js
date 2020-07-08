@@ -8,6 +8,7 @@ import { shiftFocalNoode, alignNoodelOnJump } from '@/controllers/noodel-navigat
 import NoodelView from '@/types/NoodelView';
 import { registerNoode, unregisterNoode } from '@/controllers/id-register';
 import NoodeOptions from '@/types/NoodeOptions';
+import ComponentContent from '@/types/ComponentContent';
 
 export default class Noode {
 
@@ -58,7 +59,7 @@ export default class Noode {
         return this._v.id;
     }
 
-    getContent(): string {
+    getContent(): string | ComponentContent {
         return this._v.content;
     }
 
@@ -96,7 +97,7 @@ export default class Noode {
         registerNoode(this._nv, id, this._v);
     }
 
-    setContent(content: string) {
+    setContent(content: string | ComponentContent) {
         this._v.content = content;
     }
 
