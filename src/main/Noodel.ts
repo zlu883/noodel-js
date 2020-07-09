@@ -13,9 +13,16 @@ import { handleFocalNoodeChange } from '@/controllers/noodel-mutate';
 
 export default class Noodel {
 
+    static VueComponent = Vue.extend({
+        props: ['noodel'],
+        render: function(h) {
+            return h(NoodelCanvas, { props: { store: this.noodel._v }})
+        }
+    });
+
     _v: NoodelView;
-    vueRoot: Element = null;
-    vueInstance: Vue = null;
+    vueRoot: Element;
+    vueInstance: Vue;
 
     constructor(root?: NoodeDefinition | Element | string, options?: NoodelOptions) {
         if (!root) {
@@ -59,8 +66,8 @@ export default class Noodel {
     unmount() {
         if (this.vueInstance) this.vueInstance.$destroy();
         if (this.vueRoot) this.vueRoot.remove();
-        this.vueInstance = null;
-        this.vueRoot = null;
+        delete this.vueInstance;
+        delete this.vueRoot;
     }
 
     // GETTERS

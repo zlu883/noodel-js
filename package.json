@@ -4,7 +4,9 @@
   "license": "MIT",
   "scripts": {
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build --target lib --inline-vue --name noodel src/main/Noodel.ts",
+    "build-base": "vue-cli-service build --target lib --name noodel src/main/Noodel.ts",
+    "build-full": "vue-cli-service build --target lib --inline-vue --name noodel-full --formats umd,umd-min --no-clean src/main/Noodel.ts",
+    "build": "npm run build-base && npm run build-full",
     "lint": "vue-cli-service lint"
   },
   "main": "dist/noodel.common.js",

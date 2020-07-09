@@ -6,6 +6,13 @@ export = Noodel;
  * Represents the view model of a noodel. Has 2-way binding with the view.
  */
 declare class Noodel {
+
+    /**
+     * A Vue wrapper component (in constructor form) for Noodel ready to be used in a Vue project.
+     * Takes a single prop, 'noodel', which should be a Noodel instance registered as
+     * data in your Vue instance. 
+     */
+    static VueComponent: Function;
     /**
      * Creates the view model of a noodel based on the given content tree.
      */
