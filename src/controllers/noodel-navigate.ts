@@ -5,6 +5,7 @@ import NoodelView from '@/types/NoodelView';
 import { getActiveChild, getFocalWidth, getFocalHeight } from '@/util/getters';
 import { alignTrunkToBranch, alignBranchToIndex } from './noodel-align';
 import { forceReflow } from '@/controllers/noodel-animate';
+import { exitInspectMode } from './inspect-mode';
 
 /**
  * Core function for panning the trunk to a specified position, changing the focal parent
@@ -230,6 +231,10 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
 
     if (!prevFocalNoode) return;
 
+    if (noodel.isInInspectMode) {
+        exitInspectMode(noodel);
+    }
+
     // if panning, cancel it
     if (noodel.panAxis === Axis.HORIZONTAL) {
         cancelPan(noodel);
@@ -267,6 +272,10 @@ export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
     let prevFocalNoode = getActiveChild(noodel.focalParent);
 
     if (!prevFocalNoode) return;
+
+    if (noodel.isInInspectMode) {
+        exitInspectMode(noodel);
+    }
 
     // if panning, cancel it
     if (noodel.panAxis === Axis.VERTICAL) {
@@ -306,7 +315,7 @@ export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
 
 /**
  * Jumps to a specific noode in the tree, realigning all affected branches and trunk
- * if necessary.
+ * if necessary. Should not expose to input handlers/API methods, use doJumpNavigation instead.
  */
 export function alignNoodelOnJump(noodel: NoodelView, target: NoodeView) {
 
@@ -357,6 +366,10 @@ export function alignNoodelOnJump(noodel: NoodelView, target: NoodeView) {
     forceReflow();
 }
 
+/**
+ * Jump navigation wrapper for use by input handlers/API methods, taking 
+ * care of side effects.
+ */
 export function doJumpNavigation(noodel: NoodelView, target: NoodeView) {
 
     clearTimeout(noodel.limitIndicatorTimeout);
@@ -365,8 +378,11 @@ export function doJumpNavigation(noodel: NoodelView, target: NoodeView) {
 
     if (!prevFocalNoode) return;
 
-    alignNoodelOnJump(noodel, target);
+    if (noodel.isInInspectMode) {
+        exitInspectMode(noodel);
+    }
 
+    alignNoodelOnJump(noodel, target);
     handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
 }
 

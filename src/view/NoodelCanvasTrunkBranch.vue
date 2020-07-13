@@ -119,7 +119,12 @@
     .nd-branch {
         position: absolute;
         display: flex;
-        flex-direction: column; 
+        flex-direction: column;
+        z-index: 1; 
+    }
+
+    .nd-branch-focal {
+        z-index: 10;
     }
 
     .nd-branch-enter, .nd-branch-leave-active {

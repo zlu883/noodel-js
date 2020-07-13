@@ -33,21 +33,9 @@ export default interface NoodelView {
     panOffsetOriginFocalBranch: number;
     panAxis: Axis;
 
-    hasPress: boolean;
+    isShiftKeyPressed?: boolean;
 
-    /**
-     *  The DOM element of the noode where pointerdown events originated.
-     *  Used to check the presence of inner scrolling.
-     */
-    pointerDownSrcNoodeEl?: Element;
-    /**
-     * The noode where pointerdown events originated.
-     * Used to determine the target for jump navigation.
-     */
-    pointerDownSrcNoode?: NoodeView;
-    doInnerScroll?: boolean;
-    innerScrollOriginLeft?: number;
-    innerScrollOriginTop?: number;
+    isInInspectMode: boolean;
 
     /**
      * Used for debouncing pan input.
@@ -58,6 +46,7 @@ export default interface NoodelView {
     canvasEl?: Element;
     trunkEl?: Element;
     focalBranchEl?: Element;
+    hammerJsInstance?: HammerManager;
 
     containerSize: Vector2D;
     options: NoodelOptions;

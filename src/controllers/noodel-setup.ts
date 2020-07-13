@@ -31,7 +31,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         panOffsetOriginTrunk: null,
         panOffsetOriginFocalBranch: null,
         panAxis: null,
-        hasPress: false,
+        isInInspectMode: false,
 
         containerSize: {
             x: 0,
@@ -215,6 +215,7 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, level: 
         childBranchOffset: 0,
         childBranchOffsetAligned: 0,
         applyBranchMove: false,
+        isInInspectMode: false,
         branchRelativeOffset: 0,
         branchSize: 0,
         parent: parent,

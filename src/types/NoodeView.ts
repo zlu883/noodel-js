@@ -34,6 +34,12 @@ export default interface NoodeView {
     childBranchOffsetAligned: number;
     applyBranchMove: boolean;
 
+    /**
+     * Extra variable to prevent Vue from needing to patch every single noode on change,
+     * as a performance hack.
+     */
+    isInInspectMode: boolean;
+
     branchRelativeOffset: number;
 
     size: number;

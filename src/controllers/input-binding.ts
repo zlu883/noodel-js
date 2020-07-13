@@ -1,30 +1,51 @@
-import { startPan, updatePan, releasePan, unsetLimitIndicators, doJumpNavigation, shiftFocalNoode, shiftFocalLevel } from './noodel-navigate';
+import { startPan, updatePan, releasePan, doJumpNavigation, shiftFocalNoode, shiftFocalLevel } from './noodel-navigate';
 import Hammer from 'hammerjs';
 import NoodelView from '@/types/NoodelView';
+import NoodeView from '@/types/NoodeView';
+import { exitInspectMode, enterInspectMode } from './inspect-mode';
 
 function onKeyDown(noodel: NoodelView, event: KeyboardEvent) {    
+
+    if (event.key === "Shift") {
+        noodel.isShiftKeyPressed = true;
+    }
+    else if (event.key === "Enter") {
+        if (noodel.isInInspectMode) {
+            exitInspectMode(noodel);
+        }
+        else {
+            enterInspectMode(noodel);
+        }
+    }
+
+    if (noodel.isInInspectMode) return;
 
     if (event.key === "ArrowDown") {
         shiftFocalNoode(noodel, 1);
     }
-    
-    if (event.key === "ArrowUp") {
+    else if (event.key === "ArrowUp") {
         shiftFocalNoode(noodel, -1);
     }
-    
-    if (event.key === "ArrowLeft") {
+    else if (event.key === "ArrowLeft") {
         shiftFocalLevel(noodel, -1);
     }
-    
-    if (event.key === "ArrowRight") {
+    else if (event.key === "ArrowRight") {
         shiftFocalLevel(noodel, 1);
+    }
+}
+
+function onKeyUp(noodel: NoodelView, event: KeyboardEvent) {
+    if (event.key === "Shift") {
+        noodel.isShiftKeyPressed = false;
     }
 }
 
 function onWheel(noodel: NoodelView, ev: WheelEvent) {
 
+    if (noodel.isInInspectMode) return;
+
     if (Math.abs(ev.deltaY) > Math.abs(ev.deltaX)) {
-        if (noodel.hasPress) {
+        if (noodel.isShiftKeyPressed) {
             if (ev.deltaY > 0) {
                 shiftFocalLevel(noodel, 1);
             }
@@ -42,34 +63,27 @@ function onWheel(noodel: NoodelView, ev: WheelEvent) {
         }      
     }
     else if (Math.abs(ev.deltaX) > Math.abs(ev.deltaY)) {
-        if (ev.deltaX > 0) {
-            shiftFocalLevel(noodel, 1);
+        if (noodel.isShiftKeyPressed) {
+            if (ev.deltaY > 0) {
+                shiftFocalNoode(noodel, 1);
+            }
+            else if (ev.deltaY < 0) {
+                shiftFocalNoode(noodel, -1);
+            }
         }
-        else if (ev.deltaX < 0) {
-            shiftFocalLevel(noodel, -1);
-        }
+        else {
+            if (ev.deltaX > 0) {
+                shiftFocalLevel(noodel, 1);
+            }
+            else if (ev.deltaX < 0) {
+                shiftFocalLevel(noodel, -1);
+            }
+        }      
     }
 }
 
 function onPanStart(noodel: NoodelView, ev: HammerInput) {
-    
-    const src = noodel.pointerDownSrcNoodeEl;
-
-    // known issue: using scrollLeft does not account for rtl direction
-    if (src) {
-        if ((ev.direction === Hammer.DIRECTION_RIGHT && src.scrollLeft !== 0) ||
-        (ev.direction === Hammer.DIRECTION_LEFT && Math.abs((src.scrollWidth - src.scrollLeft) - src.clientWidth) > 2) ||
-        (ev.direction === Hammer.DIRECTION_UP && Math.abs((src.scrollHeight - src.scrollTop) - src.clientHeight) > 2) ||
-        (ev.direction === Hammer.DIRECTION_DOWN && src.scrollTop !== 0)) {
-            noodel.doInnerScroll = true;
-            noodel.innerScrollOriginTop = src.scrollTop;
-            noodel.innerScrollOriginLeft = src.scrollLeft;
-        }
-    }
-    
-    noodel.hasPress = false;
-
-    if (noodel.doInnerScroll) return;
+    if (noodel.isInInspectMode) return;
 
     startPan(noodel, ev);
 }
@@ -77,83 +91,68 @@ function onPanStart(noodel: NoodelView, ev: HammerInput) {
 function onPan(noodel: NoodelView, ev: HammerInput) {
 
     if (noodel.nextPanRafId) cancelAnimationFrame(noodel.nextPanRafId);
+    if (noodel.panAxis === null) return;
 
     noodel.nextPanRafId = requestAnimationFrame(() => {
-        if (noodel.doInnerScroll) {
-            noodel.pointerDownSrcNoodeEl.scrollLeft = noodel.innerScrollOriginLeft - ev.deltaX;
-            noodel.pointerDownSrcNoodeEl.scrollTop = noodel.innerScrollOriginTop - ev.deltaY;
-        }
-        else {
-            updatePan(noodel, ev);
-        }
-
+        updatePan(noodel, ev);
         noodel.nextPanRafId = undefined;
     });
 }
 
 function onPanEnd(noodel: NoodelView, ev: HammerInput) {
-
     if (noodel.nextPanRafId) cancelAnimationFrame(noodel.nextPanRafId);
+    if (noodel.panAxis === null) return;
 
     noodel.nextPanRafId = requestAnimationFrame(() => {
-        if (noodel.doInnerScroll) {
-            noodel.doInnerScroll = false;
-            noodel.innerScrollOriginTop = 0;
-            noodel.innerScrollOriginLeft = 0;
-            noodel.pointerDownSrcNoodeEl = null;
-            noodel.pointerDownSrcNoode = null;
-        }  
-        else {
-            releasePan(noodel, ev); 
-        }
-
+        releasePan(noodel, ev); 
         noodel.nextPanRafId = undefined;
     });
 }
 
-function onPress(noodel: NoodelView, ev: HammerInput) {
-    noodel.hasPress = true;
-}
+function onCanvasDoubleTap(noodel: NoodelView, ev: HammerInput) {
+    if (noodel.panAxis !== null) return;
 
-function onPressUp(noodel: NoodelView, ev: HammerInput) {
-    noodel.pointerDownSrcNoodeEl = null;
-    noodel.pointerDownSrcNoode = null;
-    noodel.hasPress = false;
-}
-
-function onTap(noodel: NoodelView, ev: HammerInput) {
-    noodel.hasPress = false;
-        
-    if (noodel.pointerDownSrcNoode) {
-        let target = noodel.pointerDownSrcNoode;
-        
-        noodel.pointerDownSrcNoodeEl = null;
-        noodel.pointerDownSrcNoode = null;
-        doJumpNavigation(noodel, target);
+    if (noodel.isInInspectMode) {
+        exitInspectMode(noodel);
+    }
+    else {
+        enterInspectMode(noodel);
     }
 }
 
-export function setupNoodelInputBindings(el: Element, noodel: NoodelView) {
+function onNoodeTap(noodel: NoodelView, noode: NoodeView, ev: HammerInput) {
+    
+    if (noodel.isInInspectMode) return;
+
+    doJumpNavigation(noodel, noode);
+}
+
+export function setupCanvasInput(el: HTMLDivElement, noodel: NoodelView) {
 
     el.addEventListener('keydown', (ev: KeyboardEvent) => onKeyDown(noodel, ev));
-    el.addEventListener('wheel', (ev: WheelEvent) => {
-        onWheel(noodel, ev);
-        ev.preventDefault();
-    });
+    el.addEventListener('keyup', (ev: KeyboardEvent) => onKeyUp(noodel, ev));
+    el.addEventListener('wheel', (ev: WheelEvent) => onWheel(noodel, ev));
 
     const manager = new Hammer.Manager(el);
 
     manager.add(new Hammer.Swipe({direction: Hammer.DIRECTION_ALL}));
-    manager.add(new Hammer.Pan({threshold: 3, direction: Hammer.DIRECTION_ALL}));
-    manager.add(new Hammer.Tap());
-    manager.add(new Hammer.Press({time: 0}));
+    manager.add(new Hammer.Pan({threshold: 10, direction: Hammer.DIRECTION_ALL}));
+    manager.add(new Hammer.Tap({taps: 2}));
 
-    manager.get('swipe').recognizeWith('pan').recognizeWith('press');
+    manager.get('swipe').recognizeWith('pan');
 
     manager.on("panstart", (ev) => onPanStart(noodel, ev));
     manager.on("pan", (ev) => onPan(noodel, ev));
     manager.on("panend", (ev) => onPanEnd(noodel, ev));
-    manager.on("press", (ev) => onPress(noodel, ev));
-    manager.on("pressup", (ev) => onPressUp(noodel, ev));
-    manager.on('tap', (ev) => onTap(noodel, ev));
+    manager.on('tap', (ev) => onCanvasDoubleTap(noodel, ev));
+
+    noodel.hammerJsInstance = manager;
+}
+
+export function setupNoodeInput(el: HTMLDivElement, noode: NoodeView, noodel: NoodelView) {
+
+    const manager = new Hammer.Manager(el);
+
+    manager.add(new Hammer.Tap());
+    manager.on('tap', (ev) => onNoodeTap(noodel, noode, ev));
 }

@@ -4,15 +4,22 @@
 
     <div 
         class="nd-noode-box"
+        :class="noodeBoxClass"
     >
+        <transition name="nd-child-indicator">
+            <div
+                class="nd-inspect-backdrop"
+                :style="backdropStyle"
+                v-if="noode.isInInspectMode"
+            >
+            </div>
+        </transition>
         <div
             v-if="useComponentContent"
             ref="noode"
             class="nd-noode"
             :class="noodeClass"
             :style="noodeStyle"
-            @wheel="onNoodeWheel"
-            @pointerdown="onNoodePointerDown"
         >
             <component 
                 :is="noode.content.component" 
@@ -27,8 +34,6 @@
             :class="noodeClass"
             :style="noodeStyle"
             v-html="noode.content"
-            @wheel="onNoodeWheel"
-            @pointerdown="onNoodePointerDown"
         >
         </div>
         <transition name="nd-child-indicator">
@@ -53,9 +58,10 @@
     import { alignBranchOnNoodeResize } from "@/controllers/noodel-align";
     import NoodelView from '@/types/NoodelView';
     import { traverseAncestors } from '../controllers/noodel-traverse';
-    import { getPath } from '../util/getters';
+    import { getPath, getFocalHeight, getFocalWidth } from '../util/getters';
     import Vue, { PropType } from 'vue';
     import Noode from '../main/Noode';
+    import { setupNoodeInput } from '../controllers/input-binding';
 
     export default Vue.extend({
 
@@ -66,6 +72,8 @@
 
         mounted() {         
             this.noode.el = this.$el;
+
+            setupNoodeInput(this.$el as HTMLDivElement, this.noode, this.store);
 
             // nextTick is required for vue's v-move effect to work
             Vue.nextTick(() => {
@@ -102,79 +110,21 @@
             },
 
             applyPreventNav() {
-                let prevNavListener = (ev: Event) => {
-                    if (this.noode.isActive && this.noode.parent.isFocalParent) {
-                        ev.stopPropagation();
-                    }
-                }
+                let preventInput = (ev: Event) => ev.stopPropagation();
 
-                this.$el.querySelectorAll("[data-prevent-nav-key]").forEach(el => {
-                    el.addEventListener("keydown", prevNavListener);
+                this.$el.querySelectorAll("[data-prevent-key]").forEach(el => {
+                    el.addEventListener("keydown", preventInput);
                 });
-                this.$el.querySelectorAll("[data-prevent-nav-swipe]").forEach(el => {
-                    el.addEventListener("pointerdown", prevNavListener);
+                this.$el.querySelectorAll("[data-prevent-swipe]").forEach(el => {
+                    el.addEventListener("pointerdown", preventInput);
                 });
-                this.$el.querySelectorAll("[data-prevent-nav-wheel]").forEach(el => {
-                    el.addEventListener("wheel", prevNavListener);
+                this.$el.querySelectorAll("[data-prevent-wheel]").forEach(el => {
+                    el.addEventListener("wheel", preventInput);
                 });
-                this.$el.querySelectorAll("[data-prevent-nav-all]").forEach(el => {
-                    el.addEventListener("keydown", prevNavListener);
-                    el.addEventListener("pointerdown", prevNavListener);
-                    el.addEventListener("wheel", prevNavListener);
+                this.$el.querySelectorAll("[data-prevent-tap]").forEach(el => {
+                    el.addEventListener("pointerdown", preventInput);
                 });
             },
-
-            onNoodeWheel(ev: WheelEvent) {
-
-                let el = this.$refs.noode as HTMLDivElement;
-
-                if (!(this.noode.isActive && this.noode.parent.isFocalParent)) {
-                    return;
-                }
-
-                if (Math.abs(ev.deltaY) > Math.abs(ev.deltaX)) {
-                    if (ev.deltaY > 0) {
-                        if (Math.abs((el.scrollHeight - el.scrollTop) - el.clientHeight) > 1) {
-                            ev.stopPropagation();
-                        }
-                    }
-                    else {
-                        if (el.scrollTop !== 0) {
-                            ev.stopPropagation();
-                        }
-                    }
-                }
-                else {
-                    if (ev.deltaX > 0) {
-                        if (Math.abs((el.scrollWidth - el.scrollLeft) - el.clientWidth) > 1) {
-                            ev.stopPropagation();
-                        }
-                    }
-                    else {
-                        if (el.scrollLeft !== 0) {
-                            ev.stopPropagation();
-                        }
-                    }
-                }
-            },
-
-            onNoodePointerDown(ev: PointerEvent) {
-
-                let el = this.$refs.noode as HTMLDivElement;
-
-                // detect click on scrollbar
-                if (ev.clientX > el.getBoundingClientRect().left + el.clientWidth ||
-                ev.clientY > el.getBoundingClientRect().top + el.clientHeight) {
-                    ev.stopPropagation();
-                    return;
-                }
-
-                if (this.noode.isActive && this.noode.parent.isFocalParent) {
-                    this.store.pointerDownSrcNoodeEl = el;
-                }
-
-                this.store.pointerDownSrcNoode = this.noode;
-            }
         },
 
         watch: {
@@ -195,10 +145,27 @@
                 return this.noode.content && (typeof this.noode.content === 'object');
             },
 
+            noodeBoxClass(): {} {
+                return {
+                    'nd-noode-box-active': this.noode.isActive
+                }
+            },
+
+            backdropStyle(): {} {
+                return {
+                    left: '50%',
+                    top: '50%',
+                    width: `${this.store.containerSize.x + 10}px`,
+                    height: `${this.store.containerSize.y + 10}px`,
+                    transform: `translate(${-getFocalWidth(this.store) - 5}px, ${-getFocalHeight(this.store) - 5}px)`
+                }
+            },
+
             noodeClass(): any[] {
                 return [
                     {
                         'nd-noode-active': this.noode.isActive,
+                        'nd-noode-inspect': this.noode.isInInspectMode
                     },
                     ...this.noode.className
                 ]
@@ -232,6 +199,18 @@
         position: relative;
         display: flex !important; /* Prevents margin collapse */
         flex-direction: column;
+        z-index: 1;
+    }
+
+    .nd-noode-box-active {
+        z-index: 10;
+    }
+
+    .nd-inspect-backdrop {
+        position: absolute;
+        z-index: 1;
+        background-color: rgba(0, 0, 0, 0.4);
+        cursor: auto;
     }
 
     .nd-noode {
@@ -240,16 +219,29 @@
         max-height: 100vh;
         max-width: 100vw;
         box-sizing: border-box;
-        touch-action: none !important; /* Important as hammerjs will break on mobile without this */
-        overflow: auto;
+        touch-action: none; /* Important as hammerjs will break on mobile without this */
+        overflow: hidden;
         background-color: #e6e6e6;
         transition-property: background-color;
         transition-duration: .5s;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+        z-index: 10;
     }
 
     .nd-noode-active {
         background-color: #ffffff;
+    }
+
+    .nd-noode-inspect {
+        overflow: auto; 
+        user-select: text;
+        -webkit-user-select: text;
+        -khtml-user-select: text;
+        -moz-user-select: text;
+        -ms-user-select: text;
+        cursor: auto;
+        touch-action: auto;
+        overscroll-behavior: none;
     }
 
     .nd-noode-enter, .nd-noode-leave-active {
@@ -281,6 +273,7 @@
         top: 50%;
         transform: translateY(-50%);
         background-color: #e6e6e6;
+        z-index: 2;
     }
 
     .nd-child-indicator-active {

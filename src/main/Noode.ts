@@ -4,7 +4,7 @@ import { setActiveChild as _setActiveChild, deleteChildren, insertChildren } fro
 import { extractNoodeDefinition, parseAndApplyNoodeOptions, parseClassName, parseStyle } from '@/controllers/noodel-setup';
 import { getPath as _getPath } from '@/util/getters';
 import { alignBranchToIndex } from '@/controllers/noodel-align';
-import { shiftFocalNoode, alignNoodelOnJump } from '@/controllers/noodel-navigate';
+import { shiftFocalNoode, doJumpNavigation } from '@/controllers/noodel-navigate';
 import NoodelView from '@/types/NoodelView';
 import { registerNoode, unregisterNoode } from '@/controllers/id-register';
 import NoodeOptions from '@/types/NoodeOptions';
@@ -123,7 +123,7 @@ export default class Noode {
             shiftFocalNoode(this._nv, index - this._v.activeChildIndex);
         }
         else if (this._v.isChildrenVisible && this._v.level < this._nv.focalLevel) {
-            alignNoodelOnJump(this._nv, this._v.children[index]);
+            doJumpNavigation(this._nv, this._v.children[index]);
         }
         else {
             _setActiveChild(this._nv, this._v, index);

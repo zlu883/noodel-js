@@ -46,7 +46,7 @@
 
     import { getFocalWidth } from '@/util/getters';
     import { setupContainer } from '@/controllers/noodel-setup';
-    import { setupNoodelInputBindings } from '@/controllers/input-binding';
+    import { setupCanvasInput } from '@/controllers/input-binding';
     import { traverseDescendents } from '../controllers/noodel-traverse';
     import NoodelView from '@/types/NoodelView';
     import { alignBranchToIndex, alignTrunkToBranch } from '../controllers/noodel-align';
@@ -65,7 +65,7 @@
 
         mounted: function() {
             setupContainer(this.$el, this.store);
-            setupNoodelInputBindings(this.$el, this.store);
+            setupCanvasInput(this.$el as HTMLDivElement, this.store);
             this.store.trunkEl = this.$refs.trunk as Element;
             this.store.canvasEl = this.$refs.canvas as Element;
             
@@ -167,6 +167,7 @@
         user-select: none;
         cursor: grab;
         background-color: #a6a6a6;
+        overscroll-behavior: none;
     }
 
     .nd-limit {
