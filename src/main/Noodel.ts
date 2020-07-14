@@ -10,6 +10,7 @@ import { doJumpNavigation, shiftFocalLevel, shiftFocalNoode } from '@/controller
 import { findNoodeByPath as _findNoodeByPath, traverseDescendents } from '@/controllers/noodel-traverse';
 import { findNoode } from '@/controllers/id-register';
 import { handleFocalNoodeChange } from '@/controllers/noodel-mutate';
+import { enterInspectMode, exitInspectMode } from '@/controllers/inspect-mode';
 
 export default class Noodel {
 
@@ -170,5 +171,14 @@ export default class Noodel {
         }
 
         doJumpNavigation(this._v, noode._v);
+    }
+
+    toggleInspectMode(enable: boolean) {
+        if (enable) {
+            enterInspectMode(this._v);
+        }
+        else {
+            exitInspectMode(this._v);
+        }
     }
 }

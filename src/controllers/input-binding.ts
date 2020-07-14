@@ -11,6 +11,7 @@ function onKeyDown(noodel: NoodelView, ev: KeyboardEvent) {
         noodel.isShiftKeyPressed = true;
     }
     else if (ev.key === "Enter") {
+        if (!noodel.options.useInspectModeKey) return;
         if (noodel.isInInspectMode) {
             exitInspectMode(noodel);
         }
@@ -19,6 +20,7 @@ function onKeyDown(noodel: NoodelView, ev: KeyboardEvent) {
         }
     }
 
+    if (!noodel.options.useKeyNavigation) return;
     if (noodel.isInInspectMode) return;
 
     if (ev.key === "ArrowDown") {
@@ -33,6 +35,46 @@ function onKeyDown(noodel: NoodelView, ev: KeyboardEvent) {
     else if (ev.key === "ArrowRight") {
         shiftFocalLevel(noodel, 1);
     }
+    else if (ev.key === " " || ev.key === "Spacebar") {
+        if (noodel.isShiftKeyPressed) {
+            shiftFocalNoode(noodel, -3);
+        }
+        else {
+            shiftFocalNoode(noodel, 3);
+        }
+    }
+    else if (ev.key === "PageDown") {
+        if (noodel.isShiftKeyPressed) {
+            shiftFocalLevel(noodel, 3);
+        }
+        else {
+            shiftFocalNoode(noodel, 3);
+        }
+    }
+    else if (ev.key === "PageUp") {
+        if (noodel.isShiftKeyPressed) {
+            shiftFocalLevel(noodel, -3);
+        }
+        else {
+            shiftFocalNoode(noodel, -3);
+        }
+    }
+    else if (ev.key === "Home") {
+        if (noodel.isShiftKeyPressed) {
+            shiftFocalLevel(noodel, Number.MIN_SAFE_INTEGER);
+        }
+        else {
+            shiftFocalNoode(noodel, Number.MIN_SAFE_INTEGER);
+        }
+    }
+    else if (ev.key === "End") {
+        if (noodel.isShiftKeyPressed) {
+            shiftFocalLevel(noodel, Number.MAX_SAFE_INTEGER);
+        }
+        else {
+            shiftFocalNoode(noodel, Number.MAX_SAFE_INTEGER);
+        }
+    }
 }
 
 function onKeyUp(noodel: NoodelView, event: KeyboardEvent) {
@@ -43,6 +85,7 @@ function onKeyUp(noodel: NoodelView, event: KeyboardEvent) {
 
 function onWheel(noodel: NoodelView, ev: WheelEvent) {
 
+    if (!noodel.options.useWheelNavigation) return;
     if (noodel.isInInspectMode) return;
     if (checkInputPreventClass(noodel, ev, 'nd-prevent-wheel')) return;
 
@@ -86,6 +129,7 @@ function onWheel(noodel: NoodelView, ev: WheelEvent) {
 
 function onPanStart(noodel: NoodelView, ev: HammerInput) {
 
+    if (!noodel.options.useSwipeNavigation) return;
     if (noodel.isInInspectMode) return;
     if (checkInputPreventClass(noodel, ev.srcEvent, 'nd-prevent-swipe')) return;
 
@@ -120,12 +164,14 @@ function onTap(noodel: NoodelView, ev: HammerInput) {
     if (checkInputPreventClass(noodel, ev.srcEvent, 'nd-prevent-tap')) return;
 
     if ((ev as any).tapCount === 1) {
+        if (!noodel.options.useTapNavigation) return;
         if (noodel.isInInspectMode) return;        
         if (noodel.pointerUpSrcNoode) {
             doJumpNavigation(noodel, noodel.pointerUpSrcNoode);
         }
     }
     else if ((ev as any).tapCount === 2) {
+        if (!noodel.options.useInspectModeDoubleTap) return;
         if (noodel.isInInspectMode) {
             exitInspectMode(noodel);
         }

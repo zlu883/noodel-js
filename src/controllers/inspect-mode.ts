@@ -1,20 +1,32 @@
 import NoodelView from '@/types/NoodelView';
 import { getActiveChild } from '@/util/getters';
+import Noode from '@/main/Noode';
 
 export function enterInspectMode(noodel: NoodelView) {
-    noodel.isInInspectMode = true;
+    
+    if (noodel.isInInspectMode) return;
+    
     // touch-action: auto on focal noode under inspect mode
     // interferes with Hammer's recognizers, so they must be disabled first
     noodel.hammerJsInstance.get('pan').set({enable: false});
     noodel.hammerJsInstance.get('swipe').set({enable: false});
-    getActiveChild(noodel.focalParent).isInInspectMode = true;
+    
+    let focalNoode = getActiveChild(noodel.focalParent);
+    
+    focalNoode.isInInspectMode = true;
+    noodel.isInInspectMode = true;
+
+    if (typeof noodel.options.onEnterInspectMode === 'function') {
+        noodel.options.onEnterInspectMode(new Noode(focalNoode, noodel));
+    }
 }
 
 export function exitInspectMode(noodel: NoodelView) {
-    noodel.isInInspectMode = false;
+
+    if (!noodel.isInInspectMode) return;
+
     noodel.hammerJsInstance.get('pan').set({enable: true});
     noodel.hammerJsInstance.get('swipe').set({enable: true});
-    getActiveChild(noodel.focalParent).isInInspectMode = false;
 
     // unset selection
     const sel = window.getSelection ? window.getSelection() : document.getSelection();
@@ -26,5 +38,14 @@ export function exitInspectMode(noodel: NoodelView) {
         else if (sel.empty) {
             sel.empty();
         }
+    }
+
+    let focalNoode = getActiveChild(noodel.focalParent);
+    
+    focalNoode.isInInspectMode = false;
+    noodel.isInInspectMode = false;
+
+    if (typeof noodel.options.onExitInspectMode === 'function') {
+        noodel.options.onExitInspectMode(new Noode(focalNoode, noodel));
     }
 }

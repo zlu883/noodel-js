@@ -6,7 +6,7 @@
         class="nd-canvas"
         ref="canvas"
         tabindex="0"
-        @dragstart.prevent
+        @dragstart="onDragStart"
     >
         <transition name="nd-limit">
             <div class="nd-limit nd-limit-left" v-show="store.showLimits.left"/>
@@ -143,6 +143,11 @@
                     ev.stopPropagation();
                     this.store.applyTrunkMove = false;
                 }
+            },
+
+            onDragStart(ev: DragEvent) {
+                if (this.store.isInInspectMode) return;
+                ev.preventDefault();
             }
         }
 
@@ -225,5 +230,5 @@
         transition-duration: .5s; 
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
     }
-    
+
 </style>

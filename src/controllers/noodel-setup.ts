@@ -44,7 +44,13 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             swipeFrictionTrunk: 0.2,
             swipeWeightBranch: 100,
             swipeWeightTrunk: 100,
-            useRouting: true
+            useRouting: true,
+            useKeyNavigation: true,
+            useWheelNavigation: true,
+            useSwipeNavigation: true,
+            useTapNavigation: true,
+            useInspectModeKey: true,
+            useInspectModeDoubleTap: true
         }
     }
 
@@ -158,6 +164,30 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView)
         noodel.options.useRouting = options.useRouting;
     }
 
+    if (typeof options.useKeyNavigation === "boolean") {
+        noodel.options.useKeyNavigation = options.useKeyNavigation;
+    }
+
+    if (typeof options.useWheelNavigation === "boolean") {
+        noodel.options.useWheelNavigation = options.useWheelNavigation;
+    }
+
+    if (typeof options.useSwipeNavigation === "boolean") {
+        noodel.options.useSwipeNavigation = options.useSwipeNavigation;
+    }
+
+    if (typeof options.useTapNavigation === "boolean") {
+        noodel.options.useTapNavigation = options.useTapNavigation;
+    }
+
+    if (typeof options.useInspectModeKey === "boolean") {
+        noodel.options.useInspectModeKey = options.useInspectModeKey;
+    }
+
+    if (typeof options.useInspectModeDoubleTap === "boolean") {
+        noodel.options.useInspectModeDoubleTap = options.useInspectModeDoubleTap;
+    }
+
     if (options.onMount === null || typeof options.onMount === "function") {
         noodel.options.onMount = options.onMount;
     }
@@ -168,6 +198,14 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView)
 
     if (options.onFocalParentChange === null || typeof options.onFocalParentChange === "function") {
         noodel.options.onFocalParentChange = options.onFocalParentChange;
+    }
+
+    if (options.onEnterInspectMode === null || typeof options.onEnterInspectMode === "function") {
+        noodel.options.onEnterInspectMode = options.onEnterInspectMode;
+    }
+
+    if (options.onExitInspectMode === null || typeof options.onExitInspectMode === "function") {
+        noodel.options.onExitInspectMode = options.onExitInspectMode;
     }
 
     if (noodel.options.useRouting) {
