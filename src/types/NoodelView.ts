@@ -8,6 +8,7 @@ export default interface NoodelView {
 
     idCount: number;
     idMap: Map<string, NoodeView>;
+    throttleMap: Map<string, boolean>;
 
     root: NoodeView;
     focalParent: NoodeView;
@@ -19,6 +20,7 @@ export default interface NoodelView {
      */
     trunkOffsetAligned: number;
     applyTrunkMove: boolean;
+    ignoreTransitionEnd?: boolean;
 
     showLimits: Compass;
     limitIndicatorTimeout?: number;

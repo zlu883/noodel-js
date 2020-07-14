@@ -2,6 +2,7 @@ import { startPan, updatePan, releasePan, doJumpNavigation, shiftFocalNoode, shi
 import Hammer from 'hammerjs';
 import NoodelView from '@/types/NoodelView';
 import { exitInspectMode, enterInspectMode } from './inspect-mode';
+import { throttle } from './throttle';
 
 function onKeyDown(noodel: NoodelView, ev: KeyboardEvent) {   
     
@@ -204,9 +205,9 @@ function checkInputPreventClass(noodel: NoodelView, ev: Event, className: string
 
 export function setupCanvasInput(el: HTMLDivElement, noodel: NoodelView) {
 
-    el.addEventListener('keydown', (ev: KeyboardEvent) => onKeyDown(noodel, ev));
+    el.addEventListener('keydown', (ev: KeyboardEvent) => throttle(noodel, 'keydown', () => onKeyDown(noodel, ev), 60));
     el.addEventListener('keyup', (ev: KeyboardEvent) => onKeyUp(noodel, ev));
-    el.addEventListener('wheel', (ev: WheelEvent) => onWheel(noodel, ev));
+    el.addEventListener('wheel', (ev: WheelEvent) => throttle(noodel, 'wheel', () => onWheel(noodel, ev), 80));
 
     const manager = new Hammer.Manager(el);
 

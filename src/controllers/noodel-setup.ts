@@ -14,6 +14,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
     let noodel: NoodelView = {
         idCount: -1,
         idMap: new Map([]),
+        throttleMap: new Map([]),
         root: null,
         focalParent: null,
         focalLevel: 1,
