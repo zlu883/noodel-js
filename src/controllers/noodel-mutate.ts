@@ -45,13 +45,19 @@ export function setActiveChild(noodel: NoodelView, parent: NoodeView, index: num
 
 export function showActiveSubtree(origin: NoodeView, depth?: number) {
     traverseActiveDescendents(origin, desc => {
-        desc.isChildrenVisible = true;
+        // check necessary to reduce Vue node patching
+        if (!desc.isChildrenVisible) {
+            desc.isChildrenVisible = true;
+        }
     }, true, false, depth);
 }
 
 export function hideActiveSubtree(origin: NoodeView, depth?: number) {
     traverseActiveDescendents(origin, desc => {
-        desc.isChildrenVisible = false;
+        // check necessary to reduce Vue node patching
+        if (desc.isChildrenVisible) {
+            desc.isChildrenVisible = false;
+        }
     }, true, false, depth);
 }
 

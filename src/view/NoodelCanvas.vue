@@ -140,8 +140,8 @@
         methods: {
 
             onTransitionEnd(ev: TransitionEvent) {
-                if (ev.propertyName === "transform") {
-                    ev.stopPropagation();
+                if (ev.propertyName === "transform" && ev.target === this.$refs.trunk) {
+                    if (this.store.ignoreTransitionEnd) return;
                     this.store.applyTrunkMove = false;
                 }
             },

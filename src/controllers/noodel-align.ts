@@ -154,6 +154,8 @@ export function alignTrunkToBranch(noodel: NoodelView, branchParent: NoodeView) 
     // only apply transition effect if there's actual movement
     if (Math.abs(noodel.trunkOffset - targetOffset) >= 1) { 
         noodel.applyTrunkMove = true;
+        noodel.ignoreTransitionEnd = true;
+        requestAnimationFrame(() => noodel.ignoreTransitionEnd = false);
     }
 
     noodel.trunkOffset = targetOffset;
@@ -170,6 +172,8 @@ export function alignBranchToIndex(parent: NoodeView, index: number) {
     // only apply transition effect if there's actual movement
     if (Math.abs(parent.childBranchOffset - targetOffset) >= 1) { 
         parent.applyBranchMove = true;
+        parent.ignoreTransitionEnd = true;
+        requestAnimationFrame(() => parent.ignoreTransitionEnd = false);
     }
 
     parent.childBranchOffset = targetOffset;

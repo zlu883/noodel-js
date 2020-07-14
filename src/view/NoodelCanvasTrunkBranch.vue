@@ -102,8 +102,8 @@
             },
 
             onTransitionEnd(ev: TransitionEvent) {
-                if (ev.propertyName === "transform") {
-                    ev.stopPropagation();
+                if (ev.propertyName === "transform" && ev.target === this.$refs.branch) {
+                    if (this.parent.ignoreTransitionEnd) return;
                     this.parent.applyBranchMove = false;
                 }
             },
