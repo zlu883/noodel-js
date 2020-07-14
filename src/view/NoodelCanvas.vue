@@ -106,6 +106,7 @@
                 delete noode.childBranchEl;
                 delete noode.el;
                 delete noode.resizeSensor;
+                delete noode.branchResizeSensor;
             }, true);
         },
 

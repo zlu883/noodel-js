@@ -90,10 +90,11 @@
                 Vue.nextTick(() => this.noode.parent.isChildrenTransparent = false);
 
                 // setup resize sensor, first callback will run after Vue.nextTick
+                if (this.noode.options.skipResizeDetection || this.store.options.skipResizeDetection) return;
                 this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
                     this.updateRenderedSize();
                 });
-            })            
+            });            
 
             this.applyPreventNav();
         },

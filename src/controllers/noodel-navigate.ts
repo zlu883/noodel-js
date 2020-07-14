@@ -170,10 +170,10 @@ export function updatePan(noodel: NoodelView, ev: HammerInput) {
     if (!prevFocalNoode) return;
 
     if (noodel.panAxis === Axis.HORIZONTAL) {
-        panTrunk(noodel, noodel.panOffsetOriginTrunk + (ev.deltaX * (1 - noodel.options.swipeFrictionTrunk)));     
+        panTrunk(noodel, noodel.panOffsetOriginTrunk + (ev.deltaX * noodel.options.swipeMultiplierTrunk));     
     }
     else if (noodel.panAxis === Axis.VERTICAL) {
-        panFocalBranch(noodel, noodel.panOffsetOriginFocalBranch + (ev.deltaY * (1 - noodel.options.swipeFrictionBranch)));
+        panFocalBranch(noodel, noodel.panOffsetOriginFocalBranch + (ev.deltaY * noodel.options.swipeMultiplierBranch));
     }
 
     handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
@@ -184,12 +184,12 @@ export function releasePan(noodel: NoodelView, ev: HammerInput) {
     if (noodel.panAxis === Axis.HORIZONTAL) {
         noodel.panOffsetOriginTrunk = null;
         noodel.panAxis = null; // before shiftFocalLevel to prevent extra cancelPan check
-        shiftFocalLevel(noodel, computeSnapCount(ev.velocityX, noodel.options.swipeWeightTrunk));
+        shiftFocalLevel(noodel, computeSnapCount(ev.velocityX, noodel.options.snapMultiplierTrunk));
     }
     else if (noodel.panAxis === Axis.VERTICAL) {
         noodel.panOffsetOriginFocalBranch = null;
         noodel.panAxis = null; // before shiftFocalNoode to prevent extra cancelPan check
-        shiftFocalNoode(noodel, computeSnapCount(ev.velocityY, noodel.options.swipeWeightBranch));
+        shiftFocalNoode(noodel, computeSnapCount(ev.velocityY, noodel.options.snapMultiplierBranch));
     }
 
     unsetLimitIndicators(noodel);
@@ -423,9 +423,9 @@ function findNewFocalParent(noodel: NoodelView, levelDiff: number): NoodeView {
  * Algorithm for computing how many noodes to snap across depending on swipe velocity.
  * Currently just a rough formula, can be further adjusted if necessary. 
  */
-function computeSnapCount(velocity: number, weight: number) {
+function computeSnapCount(velocity: number, snapMultiplier: number) {
     if (Math.abs(velocity) < 0.1) return 0;
-    let count = Math.max(0, Math.round(Math.log(Math.abs(velocity) + Math.E)) * (100 / weight));
+    let count = Math.max(0, Math.round(Math.log(Math.abs(velocity) + Math.E)) * snapMultiplier);
 
     return (velocity > 0) ? -count : count;
 }

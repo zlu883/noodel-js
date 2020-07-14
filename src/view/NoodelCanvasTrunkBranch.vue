@@ -57,6 +57,7 @@
 
             alignTrunkOnBranchResize(this.store, this.parent, rect.width, true);
 
+            if (this.store.options.skipResizeDetection) return;
             this.parent.branchResizeSensor = new ResizeSensor(this.$refs.branch as Element, () => {
                 this.updateRenderedSize();
             });

@@ -7,7 +7,7 @@ import NoodelView from '@/types/NoodelView';
 import Noode from './Noode';
 import { getActiveChild } from '@/util/getters';
 import { doJumpNavigation, shiftFocalLevel, shiftFocalNoode } from '@/controllers/noodel-navigate';
-import { findNoodeByPath as _findNoodeByPath, traverseDescendents } from '@/controllers/noodel-traverse';
+import { findNoodeByPath as _findNoodeByPath } from '@/controllers/noodel-traverse';
 import { findNoode } from '@/controllers/id-register';
 import { handleFocalNoodeChange } from '@/controllers/noodel-mutate';
 import { enterInspectMode, exitInspectMode } from '@/controllers/inspect-mode';

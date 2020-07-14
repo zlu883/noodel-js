@@ -40,17 +40,18 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         
         options: {
             visibleSubtreeDepth: 1,
-            swipeFrictionBranch: 0.7,
-            swipeFrictionTrunk: 0.2,
-            swipeWeightBranch: 100,
-            swipeWeightTrunk: 100,
+            swipeMultiplierBranch: 1,
+            swipeMultiplierTrunk: 1,
+            snapMultiplierBranch: 1,
+            snapMultiplierTrunk: 1,
             useRouting: true,
             useKeyNavigation: true,
             useWheelNavigation: true,
             useSwipeNavigation: true,
             useTapNavigation: true,
             useInspectModeKey: true,
-            useInspectModeDoubleTap: true
+            useInspectModeDoubleTap: true,
+            skipResizeDetection: false
         }
     }
 
@@ -144,20 +145,20 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView)
         noodel.options.visibleSubtreeDepth = options.visibleSubtreeDepth;
     }
 
-    if (typeof options.swipeWeightBranch === "number") {
-        noodel.options.swipeWeightBranch = options.swipeWeightBranch;
+    if (typeof options.snapMultiplierBranch === "number") {
+        noodel.options.snapMultiplierBranch = options.snapMultiplierBranch;
     }
 
-    if (typeof options.swipeWeightTrunk === "number") {
-        noodel.options.swipeWeightTrunk = options.swipeWeightTrunk;
+    if (typeof options.snapMultiplierTrunk === "number") {
+        noodel.options.snapMultiplierTrunk = options.snapMultiplierTrunk;
     }
 
-    if (typeof options.swipeFrictionBranch === "number") {
-        noodel.options.swipeFrictionBranch = options.swipeFrictionBranch;
+    if (typeof options.swipeMultiplierBranch === "number") {
+        noodel.options.swipeMultiplierBranch = options.swipeMultiplierBranch;
     }
 
-    if (typeof options.swipeFrictionTrunk === "number") {
-        noodel.options.swipeFrictionTrunk = options.swipeFrictionTrunk;
+    if (typeof options.swipeMultiplierTrunk === "number") {
+        noodel.options.swipeMultiplierTrunk = options.swipeMultiplierTrunk;
     }
 
     if (typeof options.useRouting === "boolean") {
@@ -186,6 +187,10 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView)
 
     if (typeof options.useInspectModeDoubleTap === "boolean") {
         noodel.options.useInspectModeDoubleTap = options.useInspectModeDoubleTap;
+    }
+
+    if (typeof options.skipResizeDetection === "boolean") {
+        noodel.options.skipResizeDetection = options.skipResizeDetection;
     }
 
     if (options.onMount === null || typeof options.onMount === "function") {

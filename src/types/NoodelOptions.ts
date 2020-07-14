@@ -3,10 +3,10 @@ import Noode from '@/main/Noode';
 export default interface NoodelOptions {
 
     visibleSubtreeDepth?: number;
-    swipeFrictionBranch?: number;
-    swipeFrictionTrunk?: number;
-    swipeWeightBranch?: number;
-    swipeWeightTrunk?: number;
+    swipeMultiplierBranch?: number;
+    swipeMultiplierTrunk?: number;
+    snapMultiplierBranch?: number;
+    snapMultiplierTrunk?: number;
     useRouting?: boolean;
     useKeyNavigation?: boolean;
     useWheelNavigation?: boolean;
@@ -14,6 +14,7 @@ export default interface NoodelOptions {
     useTapNavigation?: boolean;
     useInspectModeKey?: boolean;
     useInspectModeDoubleTap?: boolean;
+    skipResizeDetection?: boolean;
     onMount?: () => any;
     onFocalNoodeChange?: (current: Noode, prev: Noode) => any;
     onFocalParentChange?: (current: Noode, prev: Noode) => any;
