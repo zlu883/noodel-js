@@ -20,6 +20,9 @@
             class="nd-noode"
             :class="noodeClass"
             :style="noodeStyle"
+            @pointerup="onPointerUp"
+            @mouseup="onPointerUp"
+            @touchend="onPointerUp"
         >
             <component 
                 :is="noode.content.component" 
@@ -34,6 +37,9 @@
             :class="noodeClass"
             :style="noodeStyle"
             v-html="noode.content"
+            @pointerup="onPointerUp"
+            @mouseup="onPointerUp"
+            @touchend="onPointerUp"
         >
         </div>
         <transition name="nd-child-indicator">
@@ -61,7 +67,6 @@
     import { getPath, getFocalHeight, getFocalWidth } from '../util/getters';
     import Vue, { PropType } from 'vue';
     import Noode from '../main/Noode';
-    import { setupNoodeInput } from '../controllers/input-binding';
 
     export default Vue.extend({
 
@@ -72,8 +77,6 @@
 
         mounted() {         
             this.noode.el = this.$el;
-
-            setupNoodeInput(this.$el as HTMLDivElement, this.noode, this.store);
 
             // nextTick is required for vue's v-move effect to work
             Vue.nextTick(() => {
@@ -102,6 +105,12 @@
         },
 
         methods: {
+
+            onPointerUp() {
+                if (this.store.pointerUpSrcNoode) return;
+                this.store.pointerUpSrcNoode = this.noode;
+                requestAnimationFrame(() => this.store.pointerUpSrcNoode = null);
+            },
 
             updateRenderedSize() {
                 let rect = this.$el.getBoundingClientRect();

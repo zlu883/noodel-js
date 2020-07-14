@@ -34,6 +34,11 @@ export default interface NoodelView {
     panAxis: Axis;
 
     isShiftKeyPressed?: boolean;
+    /**
+     * Transient holder for the noode that registered a pointerup event, removed after one frame.
+     * Used by HammerJS handlers to determine the origin of tap input.
+     */
+    pointerUpSrcNoode?: NoodeView;
 
     isInInspectMode: boolean;
 
