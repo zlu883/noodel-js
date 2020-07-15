@@ -1,0 +1,1352 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
+
+    <link rel="icon" href="logo_256x256.png">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel@1.3.0/dist/noodel.css">
+    <script src="https://cdn.jsdelivr.net/npm/noodel@1.3.0/dist/noodel.umd.min.js"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/prism.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/components/prism-typescript.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/plugins/normalize-whitespace/prism-normalize-whitespace.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/themes/prism.css" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="styles.css">
+
+    <title>Noodel.js</title>
+</head>
+
+<body>
+    <noscript>
+        <strong>We're sorry but this site doesn't work properly without JavaScript enabled. Please enable it to
+            continue.</strong>
+    </noscript>
+    
+    <div id="root" style="display: none;">
+        <div class="noode">
+            <img src="logo_256x256.png" class="logo"/>
+            <h1 id="title">Noodel.js</h1>
+            <hr>
+                <div class="link-container">
+                    <a class="link" href="https://github.com/zlu883/Noodel" target="_blank"><img src="github.svg" class="link-icon"/> GitHub</a>
+                    <a class="link" href="https://codepen.io/collection/DopkMm" target="_blank"><img src="codepen.svg" class="link-icon"/> Examples</a>
+                </div>
+            <hr>
+            <p>
+                <b>-- Controls --</b><br>
+                <b>[Mouse]:</b> Hold click + drag (← ↑ → ↓)<br>
+                <b>[Scroll wheel]:</b> Scroll (↑ ↓) / Hold click + scroll (← →)<br>
+                <b>[Keyboard]:</b> Arrow keys (← ↑ → ↓)<br>
+                <b>[Touch]:</b> Swipe (← ↑ → ↓)<br>
+                <b>[Mouse/Touch]:</b> Tap on target<br>
+            </p>
+        </div>
+        <div class="noode">
+            <h2>Overview</h2>
+            <div class="noode">
+                <h3>Summary</h3>
+                <p>
+                    Noodel is a user interface for presenting beautiful, dynamic content trees. 
+                    Based on an innovative swipe-based design that is simple and intuitive.
+                </p>
+                <p>
+                    Currently available as a javascript library. Powered by <a target="_blank" href="https://vuejs.org/">Vue.js</a>.
+                </p>
+            </div>
+            <div class="noode">
+                <h3>What can I use it for?</h3>
+                <p>
+                    At the maximum, Noodel offers a <i>completely new way</i> to structure and present your website
+                    that is intuitive and interactive. As most types of content can be organized into trees, you can use it for virtually anything - from static blogs and wikis, to dynamic sites with complex structure and flow.
+                </p>
+                <p>
+                    At the minimum, Noodel is a component you can plug in to an existing web page for a touch-responsive carousel of flexible containers, or a full-page slideshow.
+                </p>
+            </div>
+            <div class="noode">
+                <h3>How it works</h3>
+                <p>
+                    Noodel presents your content tree on an infinite canvas that you can navigate just by
+                    moving up, down, left and right.
+                </p>
+                <p>
+                    Blocks of content will show or hide as you move through the tree, keeping only the relevant
+                    subtree visible.
+                </p>
+                <p>
+                    It's like an infinite cascade of drop-down menus - only much more elegant and useful.
+                </p>
+            </div>
+            <div class="noode">
+                <h3>Why Noodel?</h3>
+                <p>
+                    Much of the content we encounter everyday naturally comes in tree structures.
+                    Trees, however, are difficult to present on a viewing surface. Conventional
+                    UI schemes tend to "flatten" trees into linear layouts - the most common offender being
+                    lengthy vertical documents divided into many sections and subsections.
+                    Trying to find the section you want can be an exercise.
+                </p>
+                <p>
+                    This is sometimes helped by table of contents and navigation menus. But
+                    such components occupy precious screen space (especially on mobile devices) and does not
+                    scale well.
+                </p>
+                <p>
+                    Noodel is a system design from the ground up for presenting content in a <i>better</i>
+                    way - by directly integrating content with the navigation mechanism itself. This makes it much
+                    easier to find and navigate to the piece of content you want. The whole experience is highly
+                    intuitive and human-friendly as it invokes the spatial memory of the viewer.
+                </p>
+            </div>
+            <div class="noode">
+                <h3>...and other good things</h3>
+                <ul>
+                    <li>Flexible containers that grow or shrink to fit your content</li>
+                    <li>Dynamic content insert/replace/delete that syncs with the view</li>
+                    <li>Responsive design that behaves similarly regardless of screen size</li>
+                    <li>Routing integration</li>
+                    <li>Fully customizable look-and-feel via plain CSS</li>
+                    <li>All animations based on CSS transitions as fast as your browser can optimize them</li>
+                </ul>
+            </div>
+            <div class="noode">
+                <h3>Why the name?</h3>
+                <p>It's a mix of <i>node</i> and <i>model</i>.</p>
+            </div>
+        </div>
+        <div class="noode">
+            <h2>Concepts</h2>
+            <div class="noode">
+                <h3>Noode</h3>
+                <p>
+                    The basic unit of content in Noodel is called a <i>noode</i> - just like the one you're looking
+                    at right now.
+                </p>
+                <p>
+                    Noodes are equivalent to <i>nodes</i> in a content tree.
+                    Each noode contains a block of content. It can also have multiple ordered child noodes
+                    that have their own blocks of sub-content. This can recurse infinitely to form a tree of any size.
+                </p>
+                <div class="noode">
+                    <p>
+                        The basic principle of Noodel is breaking down long form content into individual noodes.
+                        A noode should never exceed the size of the viewport - a precondition for noode-based navigation.
+                    </p>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>Noodel</h3>
+                <p>
+                    A <i>noodel</i> (lower case) refers to a whole content tree formed by noodes.
+                </p>
+            </div>
+            <div class="noode">
+                <h3>Active child noode</h3>
+                <p>
+                    If a noode has children, it must have exactly 1 child that's <i>active</i>.
+                    The descendents of the active child will be shown while the others hidden.
+                </p>
+            </div>
+            <div class="noode">
+                <h3>Active tree</h3>
+                <p>
+                    This means that, at any given time, only the children of noodes on the hierarchy 
+                    of active noodes starting from the root are shown. This tree of visible
+                    content is called the <i>active tree</i>.
+                </p>
+            </div>
+            <div class="noode">
+                <h3>Branch</h3>
+                <p>
+                    The container for a list of sibling noodes is called a <i>branch</i>.
+                </p>
+            </div>
+            <div class="noode">
+                <h3>Branch axis</h3>
+                <p>
+                    The axis on which noodes are ordered in branches is called the <i>branch axis</i>.
+                    It is vertical (top to bottom) by default.
+                </p>
+                <div class="noode">
+                    <p>
+                        So when you swipe up and down, you are moving in the branch axis.
+                    </p>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>Trunk</h3>
+                <p>
+                    The container for the list of branches in the active tree, ordered from ancestor
+                    to descendents, is called the <i>trunk</i>.
+                </p>
+            </div>
+            <div class="noode">
+                <h3>Trunk axis</h3>
+                <p>
+                    The axis on which branches are ordered in the trunk is called the <i>trunk axis</i>.
+                    It is horizontal (left to right) by default.
+                </p>
+                <div class="noode">
+                    <p>
+                        So when you swipe left and right, you are moving in the trunk axis.
+                    </p>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>Focal branch</h3>
+                <p>
+                    The branch that the view is currently focusing on is the <i>focal branch</i>.                 
+                </p>
+                <p>
+                    Moving in the trunk axis changes the focal branch.
+                </p>
+            </div>
+            <div class="noode">
+                <h3>Focal noode</h3>
+                <p>
+                    The active noode inside the focal branch is the <i>focal noode</i>.                 
+                </p>
+                <p>
+                    The focal noode is the noode the view is centred on, and represents the noode
+                    that is currently interacting with the user.
+                </p>
+            </div>
+        </div>
+        <div class="noode">
+            <h2>Guide</h2>
+            <div class="noode">
+                <h3>Installation</h3>
+                <div class="noode">
+                    <h3>Direct <code class="language-html">&lt;script&gt;</code> embed</h3>
+                    <p>You can use Noodel by directly embedding its script and CSS from a CDN into your HTML:</p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-html">
+                            // You should specify the version number (e.g noodel@1.3.0) in production
+                            &lt;script src="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.umd.min.js"&gt;&lt;/script&gt;
+                            &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.css"&gt;
+                        </code>
+                    </pre>
+                </div>
+                <div class="noode">
+                    <h3>NPM</h3>
+                    <p>For more advanced projects with bundlers, install from npm:</p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-shell">
+                            npm install noodel
+                        </code>
+                    </pre>
+                    <p>And import into your code:</p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            import Noodel from 'noodel'
+
+                            // Don't forget to also include the CSS somewhere in your project, e.g.
+                            // import '../node_modules/noodel/dist/noodel.css' 
+                        </code>
+                    </pre>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>Basic usage</h3>
+                <div class="noode">
+                    <h3>Creating a noodel</h3>
+                    <p>The basic syntax for creating a noodel and mounting it on the page is:</p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            new Noodel(root).mount("#target");
+                        </code>
+                    </pre>
+                    <p>
+                        where <i>root</i> is an element selector or object that specifies the root
+                        of the content tree, and <i>#target</i> is the target element for mounting the noodel.
+                    </p>
+                    <div class="noode">
+                        <p>
+                            Mounting will <i>replace</i> the target element with
+                            the noodel's DOM tree. By default, the noodel will expand to
+                            100% width and 100% height of its container, so you should specify
+                            the size of the parent element to control the noodel's size, e.g.
+                        </p>
+                        <pre data-prevent-nav-swipe>
+                            <code class="language-html">
+                                &lt;div id="container" style="width: 800px; height: 800px"&gt;
+                                    &lt;div id="noodel"&gt;&lt;/div&gt;
+                                &lt;/div&gt;
+                            </code>
+                        </pre>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>Defining content tree via HTML</h3>
+                    <p>
+                        There are two ways to define the content tree that will be used by a noodel.
+                        For sites driven by static HTML templates, you can define the tree via HTML and
+                        give its root element to the constructor:
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-html">
+                            &lt;div id="root" style="display: none;"&gt;
+                                &lt;div class="noode"&gt;
+                                    &lt;p&gt;My first noode&lt;/p&gt;
+                                &lt;/div&gt;
+                                &lt;div class="noode"&gt;
+                                    &lt;p&gt;My second noode&lt;/p&gt;
+                                    &lt;div class="noode"&gt;
+                                        &lt;p&gt;First child of my second noode&lt;/p&gt;
+                                    &lt;/div&gt;
+                                    &lt;div class="noode"&gt;
+                                        &lt;p&gt;Second child of my second noode&lt;/p&gt;
+                                    &lt;/div&gt;
+                                &lt;/div&gt;
+                            &lt;/div&gt;
+
+                            &lt;script&gt;new Noodel("#root").mount("#root")&lt;/script&gt;
+                        </code>
+                    </pre>
+                    <div class="noode">
+                        <h3>The specifics</h3>
+                        <p>
+                            Noodel will traverse the descendents of the root element and convert
+                            all <code class="language-html">&lt;div&gt;</code>s with 
+                            <code class="language-html">class="noode"</code> into
+                            noodes of the tree, keeping all parent-child relationships. Any text or
+                            elements inside a noode that are not child noodes will be treated as the
+                            <i>content</i> of that noode, concatenated in the order they appear.
+                        </p>
+                        <p>
+                            This contatenation preserves the markup of content elements
+                            so you have complete freedom in structuring and styling the content 
+                            of each noode. Note this does not apply
+                            to the <code class="language-html">&lt;div&gt;</code>s that serve as
+                            indicators for noodes, as they will be removed from the final DOM.
+                        </p>
+                    </div>
+                    <div class="noode">
+                        <h3>Noodel creates its own DOM tree</h3>
+                        <p>
+                            Also note that the original DOM nodes will not be used in the noodel, as a
+                            new DOM subtree will be created for it.
+                            This means any side effects such as event listeners attached to the original
+                            nodes will not be preserved.
+                        </p>
+                        <p>
+                            By mounting a noodel on the root of the original DOM tree (as in the example),
+                            the original tree will be destroyed and replaced by that of the noodel. This is usually
+                            the behavior you want.
+                        </p>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>Defining content tree via object</h3>
+                    <p>
+                        Alternatively, for dynamic sites driven by javascript, you can specify 
+                        the content tree as a tree of objects:
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            let root = {
+                                children: [
+                                    {
+                                        content: "&lt;p&gt;My first noode&lt;/p&gt;"
+                                    },
+                                    {
+                                        content: "&lt;p&gt;My second noode&lt;/p&gt;"
+                                        children: [
+                                            {
+                                                content: "&lt;p&gt;First child of my second noode&lt;/p&gt;"
+                                            },
+                                            {
+                                                content: "&lt;p&gt;Second child of my second noode&lt;/p&gt;"
+                                            },
+                                        ]
+                                    }
+                                ]
+                            }
+
+                            new Noodel(root).mount("#target");
+                        </code>
+                    </pre>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>Configuring noodel</h3>
+                <div class="noode">
+                    <h3>Options</h3>
+                    <p>
+                        To configure global options for a noodel, add an options object to the constructor: 
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            const options = {
+                                visibleSubtreeDepth: 10,
+                                swipeFrictionBranch: 0.1
+                            };
+
+                            new Noodel(root, options).mount("#target");
+                        </code>
+                    </pre>
+                </div>
+                <div class="noode">
+                    <h3>Changing options dynamically</h3>
+                    <p>
+                        You can set options on-the-fly at any time and they will be merged into
+                        the existing options: 
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            const noodel = new Noodel(root);
+                            
+                            noodel.mount("#target");
+                            
+                            // after some time
+
+                            const newOps = {
+                                swipeFrictionBranch: 0.3
+                            };
+
+                            noodel.setOptions(newOps);
+                        </code>
+                    </pre>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>Configuring noodes</h3>
+                <div class="noode">
+                    <h3>Specifying noode ID</h3>
+                    <p>
+                        By default, a unique ID will be generated for each noode in a noodel, which will
+                        be used for various purposes. You can provide your own ID for noodes using a data attribute:
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-html">
+                            &lt;div class="noode" data-id="myCustomId"&gt;
+                                ...
+                            &lt;/div&gt;
+                        </code>
+                    </pre>
+                    <p>or in object syntax:</p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            let noodeWithCustomId = {
+                                id: "myCustomId",
+                                content: "A special noode"
+                            }
+                        </code>
+                    </pre>
+                    <div class="noode">
+                        <p>
+                            Your custom ID must be unique and should not start with "_" as it may conflict
+                            with Noodel's default IDs.
+                        </p>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>Specifying initial active child</h3>
+                    <p>
+                        By default, the initial active child for each noode is at index 0 (the first child).
+                        You can specify another child to be initially active by using:
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-html">
+                            &lt;div class="noode" data-active&gt;
+                                ...
+                            &lt;/div&gt;
+                        </code>
+                    </pre>
+                    <p>or in object syntax:</p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            let noodeWith4thChildActive = {
+                                activeChildIndex: "3",
+                                content: "A special noode"
+                            }
+                        </code>
+                    </pre>
+                </div>
+                <div class="noode">
+                    <h3>Preventing navigation events</h3>
+                    <p>
+                        By default, a noodel responds to three types of user input for navigation:
+                        swipe (mouse drag), scroll wheel, and arrow keys. Navigation will occur even
+                        when such input originates from content elements inside noodes.
+                    </p>
+                    <p>
+                        There are situations where such behavior is not ideal, for example when you have
+                        a selectable textarea inside a noode. To prevent navigation behavior from an element,
+                        apply <code class="language-html">data-prevent-nav-swipe</code>, 
+                        <code class="language-html">data-prevent-nav-wheel</code>,
+                        <code class="language-html">data-prevent-nav-key</code> attributes to 
+                        prevent swipe, wheel, and keyboard events accordingly, or 
+                        <code class="language-html">data-prevent-nav-all</code> for all three.
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-html">
+                            &lt;div class="noode"&gt;
+                                &lt;textarea data-prevent-nav-swipe data-prevent-nav-key&gt;&lt;/textarea&gt;
+                            &lt;/div&gt;
+                        </code>
+                    </pre>
+                    <div class="noode">
+                        <p>
+                            Note this only takes effect when the element is inside the focal
+                            noode (i.e events outside the focal noode will always trigger).
+                        </p>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>Setting noode options</h3>
+                    <p>
+                        You can set options and event handlers on individual noodes by passing in an
+                        options object:
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            // set options at noodel creation
+                            const noodel = new Noodel({
+                                children: [
+                                    {
+                                        id: "1",
+                                        content: "something cool",
+                                        options: {
+                                            onEnterFocus: () => console.log("entered a cool noode")
+                                        }
+                                    }
+                                ]
+                            });
+                            
+                            // set options dynamically
+                            noodel.findNoodeById("1").setOptions({
+                                onExitFocus: () => console.log("exited a cool noode")
+                            });
+                        </code>
+                    </pre>
+                    <div class="noode">
+                        <p>
+                            Setting options on individual noodes is currently available only
+                            via Javascript. If your noodel is defined by an HTML template you can
+                            set the options programmatically after noodel creation and before mount.
+                        </p>
+                    </div>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>Changing the view dynamically</h3>
+                <div class="noode">
+                    <h3>The view model</h3>
+                    <p>
+                        The object you get when you create a noodel is its view model. It has 2-way binding
+                        with the view, and you can perform operations on it to change the view dynamically.
+                    </p>
+                    <p>
+                        Use functions such as <code class="language-js">noodel.getFocalNoode()</code>, 
+                        <code class="language-js">noodel.findNoodeById()</code> to get the view model
+                        for individual noodes. See the <a href="#noodelClass">API</a> for details.
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            // view model of whole noodel
+                            const noodel = new Noodel(root);
+
+                            // view model of individual noode
+                            const titleNoode = noodel.getFocalNoode();
+                        </code>
+                    </pre>                 
+                </div>
+                <div class="noode">
+                    <h3>Programmatic navigation</h3>
+                    <p>
+                        Use functions such as <code class="language-js">noodel.setFocalLevel()</code>, 
+                        <code class="language-js">noodel.moveForward()</code> to change the focal noode.
+                        See the <a href="#noodelClass">API</a> for details.
+                    </p>
+                </div>
+                <div class="noode">
+                    <h3>Replacing noode content</h3>
+                    <p>
+                        You can replace the content of a noode at any time:
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            const noodel = new Noodel({
+                                children: [
+                                    {
+                                        content: "old"
+                                    }
+                                ]
+                            });
+
+                            noodel.getRoot().getChild(0).setContent("new");
+                        </code>
+                    </pre>
+                    <div class="noode">
+                        <p>
+                            Note this replaces the original content by setting the innerHTML of the noode.
+                            The original content elements will be removed.
+                        </p>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>Noode insertion and deletion</h3>
+                    <p>
+                        Use <code class="language-js">noode.addChild()</code> or
+                        <code class="language-js">noode.addChildren()</code> to insert child noodes to
+                        a parent noode.
+                    </p>
+                    <p>
+                        Use <code class="language-js">noode.removeChild()</code> or
+                        <code class="language-js">noode.removeChildren()</code> to delete child noodes from
+                        a parent noode.
+                    </p>
+                    <pre data-prevent-nav-swipe>
+                        <code class="language-js">
+                            const rootNoode = new Noodel({}).getRoot();
+
+                            // inserts a noode
+                            rootNoode.addChild({
+                                content: "Hello!"
+                            });
+
+                            // deletes the noode just added
+                            rootNoode.removeChild(0);
+                        </code>
+                    </pre>
+                    <div class="noode">
+                        <p>
+                            Noode insertions and deletions inside the active tree will affect the view,
+                            while those outside the active tree will not.
+                        </p>
+                    </div>
+                    <div class="noode">
+                        <p>
+                            Noodel will always try to preserve the current focal noode during
+                            insertion and deletion, if possible. This means
+                            that if the current focal noode is at index 3, and you insert a noode at index 1,
+                            the focal noode becomes the noode at index 4, and no navigation will occur.
+                        </p>
+                        <p>
+                            Navigation happens only when a deletion includes the focal noode. In that case the
+                            focus will go to an adjacent noode, as appropriate.
+                        </p>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>Mounting and unmounting</h3>
+                    <p>
+                        You render the view model on the page by mounting it on the DOM using
+                        <code class="language-js">mount()</code>. On the other hand, you can remove the view
+                        from the DOM using <code class="language-js">unmount()</code>, while keeping
+                        the view model's state.
+                    </p>
+                    <div class="noode">
+                        <h3>Changing noodel state before mount</h3>
+                        <p>
+                            You can use navigation and mutation functions on the noodel before mounting it
+                            to dynamically construct the content tree or set the initial noode to focus on, e.g.
+                        </p>
+                        <pre data-prevent-nav-swipe>
+                            <code class="language-js">
+                                const noodel = new Noodel({});
+    
+                                noodel.getRoot().addChild({
+                                    content: "first child of root",
+                                    children: [
+                                        {
+                                            id: "grandChild",
+                                            content: "first child of first child of root"
+                                        }
+                                    ]
+                                });
+    
+                                noodel.jumpTo(noodel.findNoodeById("grandChild"));
+    
+                                // the view will focus on the "grandChild" noode initially
+                                noodel.mount("target");
+                            </code>
+                        </pre>
+                    </div>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>Routing</h3>
+                <div class="noode">
+                    <h3>Summary</h3>
+                    <p>
+                        By default, routing is enabled for your noodel. This allows Noodel to control
+                        the hash of your URL to sync with the location of the current focal noode.
+                        It will use the ID of the focal noode as the fragment identifier.
+                    </p>
+                    <p>
+                        This allows you to use the browser's history navigation to jump between noodes, as well
+                        as create URL links that target specific noodes in a noodel.
+                    </p>
+                    <div class="noode">
+                        <p>
+                            If routing is enabled at a noodel's creation, it will check the URL to focus on
+                            an initial target noode, if applicable.
+                        </p>
+                    </div>
+                    <div class="noode">
+                        <p>
+                            The syncing between the focal noode and the URL hash happens regardless whether the
+                            noodel is in view, i.e. syncing will happen even if you programmatically navigate a noodel
+                            while it's unmounted.
+                        </p>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>History push behavior</h3>
+                    <p>
+                        Currently, only explicit changes to the URL will cause a new entry to be pushed to
+                        the browser history. Noodel uses 
+                        <a href=https://developer.mozilla.org/en-US/docs/Web/API/History/replaceState target="_blank">history.replaceState()</a>
+                        to replace the URL hash as you navigate around the noodel normally to prevent creating
+                        too many unnecessary entries. This includes the use of Noodel's programmatic navigation functions.
+                    </p>
+                    <div class="noode">
+                        <p>
+                            If you need to do a programmatic navigation that pushes to the history stack, you
+                            should manually change the URL hash to point to the target noode instead of using
+                            Noodel's navigation functions.
+                        </p>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>Caveat</h3>
+                    <p>
+                        You should use routing on only one noodel per page (ideally, when you use a single noodel
+                        to control a site). Routing behaviour for multiple
+                        noodels on the same page is not well defined.
+                    </p>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>Styling</h3>
+                <div class="noode">
+                    <h3>Summary</h3>
+                    <p>
+                        You can control most aspects of Noodel's appearance using plain CSS, by extend/overriding
+                        Noodel's CSS classes.
+                    </p>
+                    <p>
+                        In addition, you have complete freedom in styling the content inside your noodes
+                        since they are just plain HTML. You can combine both approaches for more intensive
+                        style customizations.
+                    </p>       
+                </div>
+                <div class="noode">
+                    <h3>Styling via Noodel's CSS classes</h3>
+                    <p>
+                        Noodel comes with a simple grayscale theme by default.
+                        You can extend/override most of Noodel's CSS classes (see child) to customize basic aspects of the look-and-feel,
+                        such as color, background, border and padding.
+                    </p>
+                    <p>
+                        In general, however, you should avoid setting properties that relate to element positioning, e.g.
+                        position, box-sizing, margin and transform, as they may interfere with how Noodel layout and
+                        moves its elements. 
+                    </p>
+                    <div class="noode">
+                        <ul>
+                            <li><code class="language-css">nd-canvas</code> the overall container</li>
+                            <li><code class="language-css">nd-branch</code> the branch container</li>
+                            <li><code class="language-css">nd-branch-focal</code> applied to the focal branch container</li>
+                            <li><code class="language-css">nd-noode-box</code> the logical noode container (including the "gap" around noodes)</li>
+                            <li><code class="language-css">nd-noode</code> the noode container (immediate parent of your content)</li>
+                            <li><code class="language-css">nd-noode-active</code> applied to active noodes</li>
+                            <li>
+                                <code class="language-css">nd-child-indicator-box</code>,
+                                <code class="language-css">nd-child-indicator</code>, 
+                                <code class="language-css">nd-child-indicator-active</code>,
+                                <code class="language-css">nd-child-indicator-focal</code> classes for child indicators ("breadcrumb" arrows)
+                            </li>
+                            <li>
+                                <code class="language-css">nd-limit</code>,
+                                <code class="language-css">nd-limit-top</code>, 
+                                <code class="language-css">nd-limit-left</code>, 
+                                <code class="language-css">nd-limit-bottom</code>, 
+                                <code class="language-css">nd-limit-right</code> classes for the limit indicators
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="noode">
+                    <h3>Controlling noode size</h3>
+                    <p>
+                        The size of noodes are actually determined in a very simple way - they are placed in a
+                        block context, so will grow or shrink to fit their content while conforming to the
+                        size of siblings, with respect to any CSS height and width properties.
+                    </p>
+                    <p>
+                        This means you can fully control the size of noodes by setting the height, width, max-height,
+                        max-width, min-height and min-width properties on the <code class="language-css">nd-noode</code>
+                        class. You can have either fixed size noodes 
+                        (by setting a specific width/height) or
+                        flexible size noodes (by not setting a specific width/height), and well as using max/min sizes
+                        to adapt to a range of situations. In addition, you can set the size of your content element
+                        inside a specific noode and let that determine the size of the noode container.
+                    </p>
+                    <p>
+                        And whenever the size of a noode changes, Noodel will align everything properly so your
+                        focal noode is always centered at the right position!
+                    </p>
+                    <p>
+                        By default, Noodel comes with flexible size noodes with <code class="language-css">max-height: 100vh</code>
+                        and <code class="language-css">max-width: 100vw</code>.
+                    </p>
+                    <div class="noode">
+                        <h3>Example: full-page carousel</h3>
+                        <p>
+                            As an example, it's actually very easy to use Noodel to create the typical full-page
+                            carousel site experience, with some simple CSS overrides:
+                        </p>
+                        <pre data-prevent-nav-swipe>
+                            <code class="language-css">
+                                .nd-noode {
+                                    height: 100vh;
+                                    width: 100vw;
+                                }
+
+                                .nd-noode-box {
+                                    padding: 0; /* Removes the "gap" between noodes */
+                                }
+
+                                .nd-child-indicator-box {
+                                    display: none; /* Hides the child indicator arrows */
+                                }
+                            </code>
+                        </pre>
+                    </div>        
+                </div>
+                <div class="noode">
+                    <h3>Controlling animations</h3>
+                    <p>
+                        All animations are done using CSS transitions. This means you can control
+                        the duration and timing functions of all animations via CSS overrides of the following
+                        classes:
+                    </p>
+                    <ul>
+                        <li><code class="language-css">nd-trunk</code> controls movement in the trunk axis</li>
+                        <li><code class="language-css">nd-branch</code> controls movement in the branch axis, and branch show/hide</li>
+                        <li><code class="language-css">nd-noode-box</code> controls noode movement during insert/delete</li>
+                        <li>any other classes that have transition effects</li>
+                    </ul>
+                    <div class="noode">
+                        <p>
+                            Animation effects during noode insert/delete depend on transitioning the branch
+                            and noodes simultaneously. This means they should have identical duration and timing
+                            functions - otherwise it will cause an odd "jump" in the animations.
+                        </p>
+                    </div>  
+                </div>  
+            </div>
+            <div class="noode">
+                <h3>Tips and caveats</h3>
+                <div class="noode">
+                    <h3>Focal change events</h3>
+                    <p>
+                        You can attach handlers that listen to focal noode/parent change in the noodel,
+                        either caused by user interaction or programmatic operations, by setting them in
+                        the noodel or noode options. This is useful for triggering various effects as noodes
+                        enter/leave focus, for example syncing your own UI elements that indicate focal noode position.
+                    </p>
+                    <p>
+                        Note, however, these handlers are called synchronously if triggered by programmatic operations.
+                        This means if you call <code class="language-css">moveForward()</code> 3 times in a row
+                        to move 3 noodes ahead, focal change handlers will be called 3 times, even though the view
+                        only seem to change once. Use <code class="language-css">moveForward(3)</code> or 
+                        <code class="language-css">jumpTo()</code> to trigger these events just once.
+                    </p>
+                </div> 
+                <div class="noode">
+                    <h3>Scrolling inside noodes</h3>
+                    <p>
+                        The core principle of Noodel is breaking down content into noodes. Because
+                        each noode has a limited space, as a general rule, you should try to break down
+                        long form content into bite-sized pieces that can fit into individual noodes.
+                        You should also style your content so they do not exeeed their noode containers
+                        for your target screen size.
+                    </p>
+                    <p>
+                        There are situations, however, where this is not practical. As such, noodes by default
+                        have <code class="language-css">overflow: auto</code>, which means each noode can be
+                        a scrollable area by itself. This unfortunately conflicts with Noodel's navigation mechanism,
+                        so certain tricks have been applied to make them play nice as much as possible. 
+                    </p>
+                    <p>
+                        This adjusted scrolling behavior comes with some pitfalls, and may not be consistent across browsers and
+                        environments. As such, you should avoid overflow content within noodes unless
+                        really necessary. If you do have overflow content, you must
+                        use the noode container's scrolling context instead of an internal element's to get the adjusted
+                        scroll behavior. 
+                    </p>
+                </div>
+                <div class="noode">
+                    <h3>Uniform noode width</h3>
+                    <p>
+                        Currently, all noodes in the same branch must have uniform width 
+                        (or trunk-axis size) in order for alignment to work properly.
+                        This limitation may be resolved in a future release.
+                    </p>
+                </div>    
+            </div>
+        </div>
+        <div class="noode">
+            <h2>API</h2>
+            <div class="noode" data-id="noodelClass">
+                <h3>Noodel<span class="label">class</span></h3>
+                <p>Represents the view model of a noodel. Has 2-way binding with the view.</p>
+                <div class="noode">
+                    <b><code class="language-ts">constructor(root: NoodeDefinition | Element | string, options?: NoodelOptions)</code></b>
+                    <p>Creates the view model of a noodel based on the given content tree.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">mount(el: string | Element)</code></b>
+                    <p>Mounts the noodel's view at the target element, replacing it.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">unmount()</code></b>
+                    <p>Destroys the noodel's view and removes it from the DOM, but keeping the current state of the view model.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setOptions(options: NoodelOptions)</code></b>
+                    <p>Changes the options of the noodel. Properties of the given object will be merged into the current options.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getEl(): HTMLDivElement</code></b>
+                    <p>Gets the container element of this noodel (i.e. nd-canvas), if mounted.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getFocalLevel(): number</code></b>
+                    <p>Gets the current focal level (the level of the focal parent).</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getActiveTreeHeight(): number</code></b>
+                    <p>Gets the height (total number of levels) in the current active tree.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getRoot(): Noode</code></b>
+                    <p>Gets the root noode. The root is an invisible noode that serves as the parent of the topmost branch, and always exists.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getFocalParent(): Noode</code></b>
+                    <p>Gets the parent noode of the current focal branch.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getFocalNoode(): Noode</code></b>
+                    <p>Gets the current focal noode.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">findNoodeByPath(path: number[]): Noode</code></b>
+                    <p>
+                        Gets the noode at the given path, an array of 0-based indices
+                        starting from the root (e.g [0, 2] gets the 3rd child of the first child
+                        of the root). Returns null if no noode exists on that path.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">findNoodeById(id: string): Noode</code></b>
+                    <p>Gets the noode with the given ID. Returns null if does not exist.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setFocalLevel(level: number)</code></b>
+                    <p>
+                        Navigates the noodel to focus on the branch at the given level of
+                        the current active tree. If the level is greater or smaller than
+                        the possible limits, will navigate to the furthest level in that direction.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">moveIn(levelCount?: number)</code></b>
+                    <p>
+                        Navigates towards the child branches of the current focal noode.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">levelCount</code> number of levels to move, defaults to 1</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">moveOut(levelCount?: number)</code></b>
+                    <p>
+                        Navigates towards the parent branches of the current focal noode.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">levelCount</code> number of levels to move, defaults to 1</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">moveForward(noodeCount?: number)</code></b>
+                    <p>
+                        Navigates towards the next siblings of the current focal noode.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">noodeCount</code> number of noodes to move, defaults to 1</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">moveBack(noodeCount?: number)</code></b>
+                    <p>
+                        Navigates towards the previous siblings of the current focal noode.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">noodeCount</code> number of noodes to move, defaults to 1</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">jumpTo(noode: Noode)</code></b>
+                    <p>
+                        Performs a navigational jump to focus on the given noode.
+                        Cannot jump to the root.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">noode</code> the noode to jump to, must be a Noode instance obtained from the noodel</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>Noode<span class="label">class</span></h3>
+                <p>Represents the view model of a noode. Has 2-way binding with the view.</p>
+                <div class="noode">
+                    <b><code class="language-ts">getParent(): Noode</code></b>
+                    <p>
+                        Gets the parent of this noode. All noodes should have a parent
+                        except the root, which will return null.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getPath(): number[]</code></b>
+                    <p>
+                        Gets the path (an array of zero-based indices counting from the root) of this noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getDefinition(): NoodeDefinition</code></b>
+                    <p>
+                        Extracts the definition tree of this noode (including its descendents).
+                        Useful if you want to perform your own operations on the content tree.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setOptions(options: NoodeOptions)</code></b>
+                    <p>
+                        Changes the options for this noode. Properties of the given object
+                        will be merged into the existing options.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getEl(): HTMLDivElement</code></b>
+                    <p>
+                        Gets the container element of this noode (i.e. nd-noode-box), if mounted.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getChildBranchEl(): HTMLDivElement</code></b>
+                    <p>
+                        Gets the container element of the branch containing this noode's children
+                        (i.e. nd-branch), if it has children and is mounted.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getChild(index: number): Noode</code></b>
+                    <p>
+                        Gets the child at the given index. Returns null if does not exist.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getActiveChild(): Noode</code></b>
+                    <p>
+                        Gets the current active child. Returns null if does not exist.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getChildren(): Noode[]</code></b>
+                    <p>
+                        Gets a mapped array of this noode's list of children.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getId(): string</code></b>
+                    <p>
+                        Gets the ID of this noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getContent(): string</code></b>
+                    <p>
+                        Gets the content (innerHTML) of this noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getIndex(): number</code></b>
+                    <p>
+                        Gets the 0-based index (position among siblings) of this noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getLevel(): number</code></b>
+                    <p>
+                        Gets the level of this noode. The root has level 1.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getActiveChildIndex(): number</code></b>
+                    <p>
+                        Gets the active child index. Returns null if there's no active child.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setId(id: string)</code></b>
+                    <p>
+                        Sets the ID of this noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setContent(content: string)</code></b>
+                    <p>
+                        Replaces the content of this noode. This will
+                        remove the old content from the DOM.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setActiveChild(index: number)</code></b>
+                    <p>
+                        Changes the active child of this noode. If doing so will toggle
+                        the visibility of the focal branch (i.e this noode is an ancestor
+                        of the focal branch), a jump to the new active child will be triggered.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">addChild(childDef: NoodeDefinition, index?: number): Noode</code></b>
+                    <p>
+                        Inserts a child noode (and its descendents) at the given index.
+                        Will always preserve the current active child. Returns the inserted
+                        child.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">childDef</code> definition tree of the child</li>
+                        <li><code class="language-ts">index</code> if not provided, will append to the end of the children</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">addChildren(childDefs: NoodeDefinition[], index?: number): Noode</code></b>
+                    <p>
+                        Inserts a list of child noodes (and their descendents) at the given index.
+                        Will always preserve the current active child. Returns the inserted
+                        children.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">childDefs</code> definition trees of the children</li>
+                        <li><code class="language-ts">index</code> if not provided, will append to the end of the children</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">removeChild(index: number): NoodeDefinition</code></b>
+                    <p>
+                        Removes a child noode (and its descendents) at the given index.
+                        If the active child is removed, will set the next child active,
+                        unless the child is the last in the list, where the previous child
+                        will be set active. If the focal branch is deleted, will jump
+                        to the nearest ancestor branch. Returns the definition of the deleted noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">removeChildren(index: number, count: number): NoodeDefinition[]</code></b>
+                    <p>
+                        Removes children noodes (and their descendents) at the given index.
+                        If the active child is removed, will set the next child active,
+                        unless the child is the last in the list, where the previous child
+                        will be set active. If the focal branch is deleted, will jump
+                        to the nearest ancestor branch. Returns the definitions of the deleted noodes.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">count</code> number of children to remove</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>NoodeDefinition<span class="label">interface</span></h3>
+                <p>
+                    Defines the template for a noode. Used for noode creation and insertion.
+                </p>
+                <div class="noode">
+                    <b><code class="language-ts">id?: string</code></b>
+                    <p>
+                        ID of this noode. If provided, must be unique and should NOT start with "_" .
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">children?: NoodeDefinition[]</code></b>
+                    <p>
+                        Children noodes of this noode. Defaults to an empty array.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">activeChildIndex?: number</code></b>
+                    <p>
+                        The index of the initial active child of this noode. Defaults to 0 (the first child),
+                        or null if the noode has no children.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">content?: string</code></b>
+                    <p>
+                        Content of this noode. Will be injected as innerHTML of the noode's container.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">options?: NoodeOptions</code></b>
+                    <p>
+                        Options for this noode.
+                    </p>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>NoodelOptions<span class="label">interface</span></h3>
+                <p>Defines the options for a noodel.</p>
+                <div class="noode">
+                    <b><code class="language-ts">visibleSubtreeDepth?: number</code></b>
+                    <p>
+                        The number of levels of descendent branches to show
+                        after the current focal branch. Defaults to 1.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">swipeFrictionBranch?: number</code></b>
+                    <p>
+                        A number between 0 and 1 that affects the amount of movement when swiping in the branch axis.
+                        For every pixel swiped, the movement will be (1 - friction) pixels. Defaults to 0.7.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">swipeFrictionTrunk?: number</code></b>
+                    <p>
+                        A number between 0 and 1 that affects the amount of movement when swiping in the trunk axis.
+                        For every pixel swiped, the movement will be (1 - friction) pixels. Defaults to 0.2.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">swipeWeightBranch?: number</code></b>
+                    <p>
+                        A positive non-zero number that affects how many noodes to snap across after a swipe is released
+                        in the branch axis. The final number is calculated as a function of the swipe velocity
+                        multiplied by (100 / weight). Defaults to 100.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">swipeWeightTrunk?: number</code></b>
+                    <p>
+                        A positive non-zero number that affects how many levels to snap across after a swipe is released
+                        in the trunk axis. The final number is calculated as a function of the swipe velocity
+                        multiplied by (100 / weight). Defaults to 100.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">useRouting?: boolean</code></b>
+                    <p>
+                        Determines whether routing should be enabled for this noodel. Defaults to true.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">onMount?: () => any</code></b>
+                    <p>
+                        Callback after the view has been mounted and properly aligned
+                        after the first render. Changes to the view model from here onward
+                        will sync with the view and trigger animation effects.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">onFocalNoodeChange?: (current: Noode, prev: Noode) => any</code></b>
+                    <p>
+                        Handler called once after noodel creation, and whenever the focal noode
+                        has changed.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">current</code> the current focal noode</li>
+                        <li><code class="language-ts">prev</code> the previous focal noode, null on initial call</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">onFocalParentChange?: (current: Noode, prev: Noode) => any</code></b>
+                    <p>
+                        Handler called once after noodel creation, and whenever the focal parent
+                        has changed.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">current</code> the current focal parent</li>
+                        <li><code class="language-ts">prev</code> the previous focal parent, null on initial call</li>
+                    </ul>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>NoodeOptions<span class="label">interface</span></h3>
+                <p>Defines the options for a noode.</p>
+                <div class="noode">
+                    <b><code class="language-ts">skipResizeDetection?: boolean</code></b>
+                    <p>
+                        If true, will not attach resize detectors on this noode, which may give 
+                        a slight performance boost. Set this if you know that
+                        the size of this noode will never change after creation. Defaults to false.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">onEnterFocus?: (self: Noode, prev: Noode) => any</code></b>
+                    <p>
+                        Handler called whenever this noode entered focus. Will be called once after noodel creation
+                        if this is the focal noode.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">self</code> the current focal noode (i.e. this noode)</li>
+                        <li><code class="language-ts">prev</code> the previous focal noode, null on initial call</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">onExitFocus?: (self: Noode, current: Noode) => any</code></b>
+                    <p>
+                        Handler called whenever this noode exited focus.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">self</code> the previous focal noode (i.e. this noode)</li>
+                        <li><code class="language-ts">current</code> the current focal noode</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">onChildrenEnterFocus?:  (self: Noode, prev: Noode) => any</code></b>
+                    <p>
+                        Handler called whenever this noode's child branch entered focus. Will be called once after noodel creation
+                        if this is the focal parent.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">self</code> the current focal parent (i.e. this noode)</li>
+                        <li><code class="language-ts">prev</code> the previous focal parent, null on initial call</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">onChildrenExitFocus?:  (self: Noode, current: Noode) => any</code></b>
+                    <p>
+                        Handler called whenever this noode's child branch exited focus.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">self</code> the previous focal parent (i.e. this noode)</li>
+                        <li><code class="language-ts">prev</code> the current focal parent</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="noode">
+            <p>
+                MIT License<br>
+                © 2019-2020 Zuohao (Jonny) Lu
+            </p>
+        </div>
+    </div>
+    <script>
+        requestAnimationFrame(() => {
+            new Noodel("#root").mount("#root");
+        });
+    </script>
+</body>
+
+</html>
