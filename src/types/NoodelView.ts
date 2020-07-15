@@ -9,6 +9,7 @@ export default interface NoodelView {
     idCount: number;
     idMap: Map<string, NoodeView>;
     throttleMap: Map<string, boolean>;
+    debounceMap: Map<string, number>;
 
     root: NoodeView;
     focalParent: NoodeView;

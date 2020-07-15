@@ -79,7 +79,8 @@
             branchClass(): {} {
                 return {
                     'nd-branch-move': this.parent.applyBranchMove,
-                    'nd-branch-hidden': !this.parent.isChildrenVisible && this.parent.isChildrenTransparent,
+                    'nd-branch-hidden': !this.parent.isChildrenVisible,
+                    'nd-branch-transparent': !this.parent.isChildrenVisible && this.parent.isChildrenTransparent,
                     'nd-branch-focal': this.parent.isFocalParent
                 }
             }
@@ -145,8 +146,11 @@
     }
 
     .nd-branch-hidden {
-        opacity: 0;
         pointer-events: none;
-    }  
+    } 
+
+    .nd-branch-transparent {
+        opacity: 0;
+    }
 
 </style>

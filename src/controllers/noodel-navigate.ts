@@ -126,9 +126,9 @@ function panFocalBranch(noodel: NoodelView, targetOffset: number) {
     }
 
     if (targetIndex !== noodel.focalParent.activeChildIndex) {
-        hideActiveSubtree(noodel.focalParent);
+        hideActiveSubtree(getActiveChild(noodel.focalParent));
         setActiveChild(noodel, noodel.focalParent, targetIndex);
-        showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
+        showActiveSubtree(noodel, noodel.focalParent, noodel.options.visibleSubtreeDepth, noodel.options.subtreeDebounceInterval);
         noodel.focalParent.childBranchOffsetAligned += alignedOffsetDiff; 
     }
 
@@ -254,7 +254,10 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
 
     noodel.limitIndicatorTimeout = setTimeout(() => unsetLimitIndicators(noodel), 300);
 
-    setFocalParent(noodel, newFocalParent);
+    if (newFocalParent.id !== noodel.focalParent.id) {
+        setFocalParent(noodel, newFocalParent);
+    }
+    
     alignTrunkToBranch(noodel, newFocalParent);
     forceReflow();
 
@@ -304,9 +307,12 @@ export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
 
     noodel.limitIndicatorTimeout = setTimeout(() => unsetLimitIndicators(noodel), 300);
 
-    hideActiveSubtree(noodel.focalParent);
-    setActiveChild(noodel, noodel.focalParent, targetIndex);
-    showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
+    if (targetIndex !== noodel.focalParent.activeChildIndex) {
+        hideActiveSubtree(getActiveChild(noodel.focalParent));
+        setActiveChild(noodel, noodel.focalParent, targetIndex);
+        showActiveSubtree(noodel, noodel.focalParent, noodel.options.visibleSubtreeDepth, noodel.options.subtreeDebounceInterval);
+    }
+    
     alignBranchToIndex(noodel.focalParent, targetIndex);
     forceReflow();
 
@@ -356,7 +362,7 @@ export function alignNoodelOnJump(noodel: NoodelView, target: NoodeView) {
         nextParent = nextParent.parent;
     }
 
-    showActiveSubtree(nearestVisibleBranchParent, (target.level - 1 - nearestVisibleBranchParent.level) + noodel.options.visibleSubtreeDepth);
+    showActiveSubtree(noodel, nearestVisibleBranchParent, (target.level - 1 - nearestVisibleBranchParent.level) + noodel.options.visibleSubtreeDepth);
 
     if (target.parent.id !== noodel.focalParent.id) {
         setFocalParent(noodel, target.parent);

@@ -11,6 +11,7 @@ import Noode from '@/main/Noode';
 import { unregisterNoode } from './id-register';
 import NoodeDefinition from '@/types/NoodeDefinition';
 import { buildNoodeView } from './noodel-setup';
+import { debounce } from './throttle';
 
 /**
  * Changes the focal parent of the noodel, and toggles the visibility of the active tree.
@@ -19,12 +20,24 @@ import { buildNoodeView } from './noodel-setup';
 export function setFocalParent(noodel: NoodelView, newFocalParent: NoodeView) {
 
     noodel.focalParent.isFocalParent = false;
-    hideActiveSubtree(noodel.root);  
+
+    let hideFrom = getActiveChild(newFocalParent);
+
+    if (hideFrom) {
+        for (let i = 0; i < noodel.options.visibleSubtreeDepth; i++) {
+            let next = getActiveChild(hideFrom);
+
+            if (!next) break;
+            hideFrom = next;
+        }
+    
+        hideActiveSubtree(hideFrom);  
+    }
 
     newFocalParent.isFocalParent = true;
     noodel.focalParent = newFocalParent;
     noodel.focalLevel = newFocalParent.level;
-    showActiveSubtree(noodel.root, newFocalParent.level - 1 + noodel.options.visibleSubtreeDepth);
+    showActiveSubtree(noodel, noodel.root, newFocalParent.level - 1 + noodel.options.visibleSubtreeDepth, 0);
 }
 
 /**
@@ -43,13 +56,15 @@ export function setActiveChild(noodel: NoodelView, parent: NoodeView, index: num
     }
 }
 
-export function showActiveSubtree(origin: NoodeView, depth?: number) {
-    traverseActiveDescendents(origin, desc => {
-        // check necessary to reduce Vue node patching
-        if (!desc.isChildrenVisible) {
-            desc.isChildrenVisible = true;
-        }
-    }, true, false, depth);
+export function showActiveSubtree(noodel: NoodelView, origin: NoodeView, depth?: number, debounceInterval = 0) {
+    debounce(noodel, 'showActiveSubtree', () => {
+        traverseActiveDescendents(origin, desc => {
+            // check necessary to reduce Vue node patching
+            if (!desc.isChildrenVisible) {
+                desc.isChildrenVisible = true;
+            }
+        }, true, false, depth);
+    }, debounceInterval)
 }
 
 export function hideActiveSubtree(origin: NoodeView, depth?: number) {
@@ -107,7 +122,7 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
     }
 
     if (parent.isActive && (isRoot(parent) || parent.parent.isChildrenVisible)) {
-        showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
+        showActiveSubtree(noodel, noodel.focalParent, noodel.options.visibleSubtreeDepth);
     }
 
     handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
@@ -172,13 +187,13 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
         }
         else if (index + deleteCount < parent.children.length) { // siblings exist after the deleted children
             setActiveChild(noodel, parent, index + deleteCount); // set next sibling active
-            showActiveSubtree(parent, noodel.options.visibleSubtreeDepth);            
+            showActiveSubtree(noodel, parent, noodel.options.visibleSubtreeDepth);            
             parent.childBranchOffset -= getActiveChild(parent).size / 2;
             parent.childBranchOffsetAligned -= getActiveChild(parent).size / 2;
         }
         else { // no siblings exist after deleted children
             setActiveChild(noodel, parent, index - 1); // set prev sibling active
-            showActiveSubtree(parent, noodel.options.visibleSubtreeDepth);
+            showActiveSubtree(noodel, parent, noodel.options.visibleSubtreeDepth);
             parent.childBranchOffset += getActiveChild(parent).size / 2;
             parent.childBranchOffsetAligned += getActiveChild(parent).size / 2;
         }

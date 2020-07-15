@@ -7,6 +7,7 @@ export default interface NoodelOptions {
     swipeMultiplierTrunk?: number;
     snapMultiplierBranch?: number;
     snapMultiplierTrunk?: number;
+    subtreeDebounceInterval?: number;
     useRouting?: boolean;
     useKeyNavigation?: boolean;
     useWheelNavigation?: boolean;

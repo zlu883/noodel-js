@@ -15,6 +15,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         idCount: -1,
         idMap: new Map([]),
         throttleMap: new Map([]),
+        debounceMap: new Map([]),
         root: null,
         focalParent: null,
         focalLevel: 1,
@@ -45,6 +46,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             swipeMultiplierTrunk: 1,
             snapMultiplierBranch: 1,
             snapMultiplierTrunk: 1,
+            subtreeDebounceInterval: 360,
             useRouting: true,
             useKeyNavigation: true,
             useWheelNavigation: true,
@@ -65,7 +67,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
 
     parseAndApplyOptions(options, noodel);
     
-    showActiveSubtree(rootNoode, noodel.options.visibleSubtreeDepth);
+    showActiveSubtree(noodel, rootNoode, noodel.options.visibleSubtreeDepth);
 
     if (noodel.options.useRouting) {
         let hash = window.location.hash;
@@ -192,6 +194,10 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView)
 
     if (typeof options.skipResizeDetection === "boolean") {
         noodel.options.skipResizeDetection = options.skipResizeDetection;
+    }
+
+    if (typeof options.subtreeDebounceInterval === "number") {
+        noodel.options.subtreeDebounceInterval = options.subtreeDebounceInterval;
     }
 
     if (options.onMount === null || typeof options.onMount === "function") {
