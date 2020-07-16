@@ -226,8 +226,8 @@
     .nd-noode {
         margin: .2em .6em;
         padding: 1em;
-        max-height: 100vh;
-        max-width: 100vw;
+        max-height: 600px;
+        max-width: 800px;
         box-sizing: border-box;
         touch-action: none; /* Important as hammerjs will break on mobile without this */
         overflow: hidden;

@@ -4,6 +4,8 @@
 
     <transition-group 
         name="nd-noode"
+        class="nd-noode-group"
+        tag="div"
     >
         <NoodelCanvasTrunkBranchNoode
             v-for="child in parent.children"
@@ -46,4 +48,9 @@
 
 <style>
     
+    .nd-noode-group {
+        display: flex;
+        flex-direction: column;
+    }
+
 </style>

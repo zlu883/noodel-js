@@ -40,7 +40,7 @@ export default class Noode {
     }
 
     getChildBranchEl(): HTMLDivElement {
-        return this._v.childBranchEl as HTMLDivElement;
+        return this._v.branchBoxEl as HTMLDivElement;
     }
 
     getChild(index: number): Noode {

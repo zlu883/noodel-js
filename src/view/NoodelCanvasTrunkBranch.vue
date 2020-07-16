@@ -3,18 +3,24 @@
 <template>
 
     <transition name="nd-branch">
-        <div 
+        <div
+            class="nd-branch-box"
+            :class="branchBoxClass"
+            :style="branchBoxStyle"
             v-show="parent.isChildrenVisible || parent.isChildrenTransparent"
-            class="nd-branch" 
-            ref="branch"
-            :class="branchClass"
-            :style="branchStyle"
-            @transitionend="onTransitionEnd"
-        >  
-            <NoodeTransitionGroup
-                :store="store"
-                :parent="parent"
-            />
+        >
+            <div 
+                class="nd-branch" 
+                ref="branch"
+                :class="branchClass"
+                :style="branchStyle"
+                @transitionend="onTransitionEnd"
+            >  
+                <NoodeTransitionGroup
+                    :store="store"
+                    :parent="parent"
+                />
+            </div>
         </div>
     </transition>
     
@@ -51,14 +57,15 @@
                 this.store.focalBranchEl = this.$refs.branch as Element;
             }
 
-            this.parent.childBranchEl = this.$refs.branch as Element;
+            this.parent.branchBoxEl = this.$el as HTMLDivElement;
+            this.parent.branchEl = this.$refs.branch as HTMLDivElement;
 
             let rect = (this.$refs.branch as Element).getBoundingClientRect();
 
             alignTrunkOnBranchResize(this.store, this.parent, rect.width, true);
 
             if (this.store.options.skipResizeDetection) return;
-            this.parent.branchResizeSensor = new ResizeSensor(this.$refs.branch as Element, () => {
+            this.parent.branchResizeSensor = new ResizeSensor(this.parent.branchBoxEl, () => {
                 this.updateRenderedSize();
             });
         },
@@ -69,18 +76,29 @@
 
         computed: {
 
-            branchStyle(): {} {
+            branchBoxStyle(): {} {
                 return {
                     left: `${this.parent.trunkRelativeOffset}px`,
+                };
+            },
+
+            branchStyle(): {} {
+                return {
                     transform: `translateY(${this.parent.childBranchOffset + getFocalHeight(this.store)}px)`
                 };
+            },
+
+            branchBoxClass(): {} {
+                return {
+                    'nd-branch-box-focal': this.parent.isFocalParent,
+                    'nd-branch-box-hidden': !this.parent.isChildrenVisible,
+                    'nd-branch-box-transparent': !this.parent.isChildrenVisible && this.parent.isChildrenTransparent,
+                }
             },
 
             branchClass(): {} {
                 return {
                     'nd-branch-move': this.parent.applyBranchMove,
-                    'nd-branch-hidden': !this.parent.isChildrenVisible,
-                    'nd-branch-transparent': !this.parent.isChildrenVisible && this.parent.isChildrenTransparent,
                     'nd-branch-focal': this.parent.isFocalParent
                 }
             }
@@ -97,7 +115,7 @@
         methods: {
 
             updateRenderedSize() {
-                let rect = (this.$refs.branch as Element).getBoundingClientRect();
+                let rect = this.parent.branchBoxEl.getBoundingClientRect();
 
                 alignTrunkOnBranchResize(this.store, this.parent, rect.width);
             },
@@ -118,10 +136,14 @@
 
 <style>
 
-    .nd-branch {
+    .nd-branch-box {
         position: absolute;
-        display: flex;
-        flex-direction: column;
+        height: 100%;
+        box-sizing: border-box !important;
+    }
+
+    .nd-branch {
+        position: relative;
         z-index: 1; 
     }
 
@@ -145,11 +167,11 @@
         transition-duration: .5s; 
     }
 
-    .nd-branch-hidden {
+    .nd-branch-box-hidden {
         pointer-events: none;
     } 
 
-    .nd-branch-transparent {
+    .nd-branch-box-transparent {
         opacity: 0;
     }
 

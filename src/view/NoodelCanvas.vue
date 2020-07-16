@@ -103,7 +103,8 @@
                 noode.branchSize = 0;
                 noode.childBranchOffset = 0;
                 noode.childBranchOffsetAligned = 0;
-                delete noode.childBranchEl;
+                delete noode.branchEl;
+                delete noode.branchBoxEl;
                 delete noode.el;
                 delete noode.resizeSensor;
                 delete noode.branchResizeSensor;
@@ -162,8 +163,8 @@
 
 	.nd-canvas {
         position: relative;
-        width: 100%;
-        height: 100%;
+        width: 800px;
+        height: 600px;
         overflow: hidden;
         -webkit-touch-callout: none;
         -webkit-user-select: none;
@@ -223,6 +224,7 @@
 
     .nd-trunk {
         position: relative;
+        height: 100%;
         width: 999999999px !important;
     }
 
