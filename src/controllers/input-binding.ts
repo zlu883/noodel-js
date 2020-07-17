@@ -3,6 +3,7 @@ import Hammer from 'hammerjs';
 import NoodelView from '@/types/NoodelView';
 import { exitInspectMode, enterInspectMode } from './inspect-mode';
 import { throttle } from './throttle';
+import { getActiveChild } from '@/util/getters';
 
 function onKeyDown(noodel: NoodelView, ev: KeyboardEvent) {   
     
@@ -168,7 +169,24 @@ function onTap(noodel: NoodelView, ev: HammerInput) {
         if (!noodel.options.useTapNavigation) return;
         if (noodel.isInInspectMode) return;        
         if (noodel.pointerUpSrcNoode) {
-            doJumpNavigation(noodel, noodel.pointerUpSrcNoode);
+            let target = noodel.pointerUpSrcNoode;
+
+            if (noodel.options.retainDepthOnTapNavigation && !target.isChildrenVisible) {
+                let levelDiff = getActiveChild(noodel.focalParent).level - target.level;
+
+                for (let i = 0; i < levelDiff; i++) {
+                    let next = getActiveChild(target);
+                    
+                    if (next) {
+                        target = next;
+                    }
+                    else {
+                        break;
+                    }
+                }
+            }
+                
+            doJumpNavigation(noodel, target);
         }
     }
     else if ((ev as any).tapCount === 2) {

@@ -3,6 +3,7 @@ import Noode from '@/main/Noode';
 export default interface NoodelOptions {
 
     visibleSubtreeDepth?: number;
+    retainDepthOnTapNavigation?: boolean;
     swipeMultiplierBranch?: number;
     swipeMultiplierTrunk?: number;
     snapMultiplierBranch?: number;

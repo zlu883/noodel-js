@@ -42,6 +42,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         
         options: {
             visibleSubtreeDepth: 1,
+            retainDepthOnTapNavigation: false,
             swipeMultiplierBranch: 1,
             swipeMultiplierTrunk: 1,
             snapMultiplierBranch: 1,
@@ -146,6 +147,10 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView)
 
     if (typeof options.visibleSubtreeDepth === "number") {
         noodel.options.visibleSubtreeDepth = options.visibleSubtreeDepth;
+    }
+
+    if (typeof options.retainDepthOnTapNavigation === "boolean") {
+        noodel.options.retainDepthOnTapNavigation = options.retainDepthOnTapNavigation;
     }
 
     if (typeof options.snapMultiplierBranch === "number") {
