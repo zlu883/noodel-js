@@ -8,8 +8,8 @@
 
     <link rel="icon" href="logo_256x256.png">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel@1.3.0/dist/noodel.css">
-    <script src="https://cdn.jsdelivr.net/npm/noodel@1.3.0/dist/noodel.umd.min.js"></script>
+    <link rel="stylesheet" href="../dist/noodel.css">
+    <script src="../dist/noodel-full.umd.min.js"></script>
     
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/prism.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/components/prism-typescript.min.js"></script>
@@ -22,55 +22,84 @@
 
 <body>
     <noscript>
-        <strong>We're sorry but this site doesn't work properly without JavaScript enabled. Please enable it to
+        <strong>We're sorry but Noodel doesn't work properly without JavaScript enabled. Please enable it to
             continue.</strong>
     </noscript>
-    
+
+    <script>
+        window.addEventListener("load", () => {
+            document.body.style.width = window.innerWidth + 'px'; 
+            document.body.style.height  = window.innerHeight + 'px';
+            requestAnimationFrame(() => {
+                new Noodel("#root", {
+                    retainDepthOnTapNavigation: true
+                }).mount("#root");
+            });
+        });
+        window.addEventListener("resize", () => {
+            document.body.style.width = window.innerWidth + 'px'; 
+            document.body.style.height  = window.innerHeight + 'px';
+        });
+    </script>
+
     <div id="root" style="display: none;">
-        <div class="noode">
+        <div class="noode" data-class="menu-item">
             <img src="logo_256x256.png" class="logo"/>
-            <h1 id="title">Noodel.js</h1>
-            <hr>
-                <div class="link-container">
-                    <a class="link" href="https://github.com/zlu883/Noodel" target="_blank"><img src="github.svg" class="link-icon"/> GitHub</a>
-                    <a class="link" href="https://codepen.io/collection/DopkMm" target="_blank"><img src="codepen.svg" class="link-icon"/> Examples</a>
-                </div>
-            <hr>
+            <h1 class="title">Noodel.js</h1>
+            <p class="version">v2.0.0</p>
+            <div class="link-container">
+                <a class="link" href="https://github.com/zlu883/Noodel" target="_blank"><img src="github.svg" class="link-icon"/> GitHub</a>
+                <a class="link" href="https://codepen.io/collection/DopkMm" target="_blank"><img src="codepen.svg" class="link-icon"/> Examples</a>
+            </div>
+        </div>
+        <div class="noode" data-class="menu-item">
             <p>
-                <b>-- Controls --</b><br>
+                <b>-- How To Navigate --</b><br>
                 <b>[Mouse]:</b> Hold click + drag (← ↑ → ↓)<br>
-                <b>[Scroll wheel]:</b> Scroll (↑ ↓) / Hold click + scroll (← →)<br>
+                <b>[Scroll wheel]:</b> Scroll (↑ ↓) / Hold Shift + scroll (← →)<br>
                 <b>[Keyboard]:</b> Arrow keys (← ↑ → ↓)<br>
                 <b>[Touch]:</b> Swipe (← ↑ → ↓)<br>
                 <b>[Mouse/Touch]:</b> Tap on target<br>
             </p>
         </div>
-        <div class="noode">
+        <div class="noode" data-class="menu-item">
+            <p>
+                <b>-- Toggle Inspect Mode --</b><br>
+                <b>[Mouse/Touch]:</b> Double tap<br>
+                <b>[Keyboard]:</b> Enter<br>
+                (Use inspect mode to view overflow content or select text)<br>
+            </p>
+        </div>
+        <div class="noode" data-class="menu-item">
             <h2>Overview</h2>
             <div class="noode">
                 <h3>Summary</h3>
                 <p>
-                    Noodel is a user interface for presenting beautiful, dynamic content trees. 
-                    Based on an innovative swipe-based design that is simple and intuitive.
+                    Noodel, short for <i>node model</i>, is a UI framework for structuring and presenting content in the modern age.
+                    It is based on an interaction scheme that is simple, intuitive, and adaptable.
                 </p>
                 <p>
-                    Currently available as a javascript library. Powered by <a target="_blank" href="https://vuejs.org/">Vue.js</a>.
+                    Currently available as Noodel.js, a javascript library. Powered by the reactive view engine of<a target="_blank" href="https://vuejs.org/"> Vue.js</a>.
                 </p>
             </div>
             <div class="noode">
                 <h3>What can I use it for?</h3>
                 <p>
-                    At the maximum, Noodel offers a <i>completely new way</i> to structure and present your website
-                    that is intuitive and interactive. As most types of content can be organized into trees, you can use it for virtually anything - from static blogs and wikis, to dynamic sites with complex structure and flow.
+                    At the maximum, Noodel offers a <i>whole new way</i> to structure and present your website or web app
+                    that is intuitive and engaging. You can use it for virtually anything - from static blogs and wikis, to dynamic apps with complex control flow.
                 </p>
                 <p>
-                    At the minimum, Noodel is a component you can plug in to an existing web page for a touch-responsive carousel of flexible containers, or a full-page slideshow.
+                    At the minimum, Noodel is a component you can plug in to an existing web page for an interactive carousel of flexible containers.
                 </p>
             </div>
             <div class="noode">
                 <h3>How it works</h3>
                 <p>
-                    Noodel presents your content tree on an infinite canvas that you can navigate just by
+                    Noodel requires you to arrange your content into a tree of nodes, where each node contains a distinct
+                    chunk of content.
+                </p>
+                <p>
+                    Your content tree will be presented on an infinite canvas that you can navigate just by
                     moving up, down, left and right.
                 </p>
                 <p>
@@ -87,61 +116,73 @@
                     Much of the content we encounter everyday naturally comes in tree structures.
                     Trees, however, are difficult to present on a viewing surface. Conventional
                     UI schemes tend to "flatten" trees into linear layouts - the most common offender being
-                    lengthy vertical documents divided into many sections and subsections.
+                    long texts with many sections and subsections squashed into a single vertical column.
                     Trying to find the section you want can be an exercise.
                 </p>
                 <p>
-                    This is sometimes helped by table of contents and navigation menus. But
-                    such components occupy precious screen space (especially on mobile devices) and does not
+                    This is sometimes helped by tables of contents and navigation menus. But
+                    such components become hard to use on smaller screens and does not
                     scale well.
                 </p>
                 <p>
-                    Noodel is a system design from the ground up for presenting content in a <i>better</i>
-                    way - by directly integrating content with the navigation mechanism itself. This makes it much
-                    easier to find and navigate to the piece of content you want. The whole experience is highly
-                    intuitive and human-friendly as it invokes the spatial memory of the viewer.
+                    Noodel is a system designed from the ground up that aims to present content in a <i>better</i>
+                    way - by providing a user interface that is optimized for content trees, with a lot of
+                    considerations thrown in for usability. The result is an intuitive layout that 
+                    leverages the spatial memory of the viewer, with an awesome user experience.
                 </p>
             </div>
             <div class="noode">
-                <h3>...and other good things</h3>
+                <h3>What's so good about it?</h3>
                 <ul>
-                    <li>Flexible containers that grow or shrink to fit your content</li>
-                    <li>Dynamic content insert/replace/delete that syncs with the view</li>
-                    <li>Responsive design that behaves similarly regardless of screen size</li>
-                    <li>Routing integration</li>
-                    <li>Fully customizable look-and-feel via plain CSS</li>
-                    <li>All animations based on CSS transitions as fast as your browser can optimize them</li>
+                    <li>
+                        <b>Noodel is device-agnostic.</b> The core mechanism and layout remains identical,
+                        regardless of screen size and input method.
+                    </li>
+                    <li>
+                        <b>Noodel is accessible.</b> The core mechanism consists only of moving in 4 directions
+                        that can be easily adapted to limited-control contexts. In fact, it is possible to build a Noodel site that
+                        operates entirely on 4-direction movements.
+                    </li>
+                    <li>
+                        <b>Noodel is flexible.</b> You can apply its chunking and tree recursion principles for as little or far as you wish.
+                        It doesn't care what you put into each node. The look-and-feel is fully customizable via plain CSS. 
+                    </li>
+                    <li>
+                        <b>Noodel is dynamic.</b> It is more than just a static content viewer, although you can certainly use it that way.
+                        You can add, update or delete nodes at any time to deal with asynchronous data or manage control flow. 
+                    </li>
                 </ul>
             </div>
             <div class="noode">
-                <h3>Why the name?</h3>
-                <p>It's a mix of <i>node</i> and <i>model</i>.</p>
+                <h3>TypeScript support</h3>
+                <p>
+                    Noodel is completely written in TypeScript, with typing support for its API out-of-the-box :)
+                </p>
             </div>
         </div>
-        <div class="noode">
+        <div class="noode" data-class="menu-item">
             <h2>Concepts</h2>
             <div class="noode">
                 <h3>Noode</h3>
                 <p>
-                    The basic unit of content in Noodel is called a <i>noode</i> - just like the one you're looking
-                    at right now.
+                    The container for a content node in Noodel is called a <i>noode</i> - just like the one you're looking
+                    at right now. Noodes are the basic building blocks for your content tree.
                 </p>
                 <p>
-                    Noodes are equivalent to <i>nodes</i> in a content tree.
-                    Each noode contains a block of content. It can also have multiple ordered child noodes
-                    that have their own blocks of sub-content. This can recurse infinitely to form a tree of any size.
+                    Each noode contains a unit of content. It can also have multiple ordered child noodes
+                    that have their own unit of sub-content. This can recurse infinitely to form a tree of any size.
                 </p>
                 <div class="noode">
                     <p>
-                        The basic principle of Noodel is breaking down long form content into individual noodes.
-                        A noode should never exceed the size of the viewport - a precondition for noode-based navigation.
+                        Noodel's core principle is breaking down large streams of content into bite-sized units.
+                        A noode should never exceed the size of the viewport - a precondition for node-based navigation.
                     </p>
                 </div>
             </div>
             <div class="noode">
                 <h3>Noodel</h3>
                 <p>
-                    A <i>noodel</i> (lower case) refers to a whole content tree formed by noodes.
+                    A <i>noodel</i> (i.e. node model) refers to the whole content tree formed by noodes (nodes).
                 </p>
             </div>
             <div class="noode">
@@ -162,7 +203,7 @@
             <div class="noode">
                 <h3>Branch</h3>
                 <p>
-                    The container for a list of sibling noodes is called a <i>branch</i>.
+                    The container (carousel) for a list of sibling noodes is called a <i>branch</i>.
                 </p>
             </div>
             <div class="noode">
@@ -180,7 +221,7 @@
             <div class="noode">
                 <h3>Trunk</h3>
                 <p>
-                    The container for the list of branches in the active tree, ordered from ancestor
+                    The container (carousel) for the list of branches in the active tree, ordered from ancestor
                     to descendents, is called the <i>trunk</i>.
                 </p>
             </div>
@@ -216,31 +257,46 @@
                 </p>
             </div>
         </div>
-        <div class="noode">
+        <div class="noode" data-class="menu-item">
             <h2>Guide</h2>
             <div class="noode">
                 <h3>Installation</h3>
                 <div class="noode">
                     <h3>Direct <code class="language-html">&lt;script&gt;</code> embed</h3>
-                    <p>You can use Noodel by directly embedding its script and CSS from a CDN into your HTML:</p>
-                    <pre data-prevent-nav-swipe>
+                    <p>You can use Noodel by directly embedding its script and CSS into your HTML:</p>
+                    <pre>
                         <code class="language-html">
-                            // You should specify the version number (e.g noodel@1.3.0) in production
-                            &lt;script src="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.umd.min.js"&gt;&lt;/script&gt;
+                            // You should specify the version number (e.g noodel@2.0.0) in production
+                            &lt;script src="https://cdn.jsdelivr.net/npm/noodel/dist/noodel-full.umd.min.js"&gt;&lt;/script&gt;
                             &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.css"&gt;
                         </code>
                     </pre>
+                    <p>Noodel is available via jsDelivr and unpkg.</p>
+                    <div class="noode">
+                        <h3>A note on builds</h3>
+                        <p>
+                            Noodel comes in two versions, noodel-full.umd.js and noodel.umd.js. The difference is that the
+                            full version comes bundled with Vue.js and the base version doesn't.
+                        </p>
+                        <p>
+                            If you use the base version you need to also include Vue.js dependencies for Noodel to work.
+                            This prevents including Vue twice if you use Noodel in a Vue project. See Usage with Vue for more details.
+                        </p>
+                        <p>
+                            For most other use cases you should use the full version as a standalone library.
+                        </p>
+                    </div>
                 </div>
                 <div class="noode">
                     <h3>NPM</h3>
-                    <p>For more advanced projects with bundlers, install from npm:</p>
-                    <pre data-prevent-nav-swipe>
+                    <p>For more advanced projects that use bundlers, install from npm:</p>
+                    <pre>
                         <code class="language-shell">
                             npm install noodel
                         </code>
                     </pre>
                     <p>And import into your code:</p>
-                    <pre data-prevent-nav-swipe>
+                    <pre>
                         <code class="language-js">
                             import Noodel from 'noodel'
 
@@ -254,30 +310,25 @@
                 <h3>Basic usage</h3>
                 <div class="noode">
                     <h3>Creating a noodel</h3>
-                    <p>The basic syntax for creating a noodel and mounting it on the page is:</p>
-                    <pre data-prevent-nav-swipe>
+                    <p>Creating a noodel is very simple. The basic syntax is:</p>
+                    <pre>
                         <code class="language-js">
-                            new Noodel(root).mount("#target");
+                            // Creates a view model based on the given content tree
+                            const noodel = new Noodel(root);
+                            
+                            // Renders the view onto the page
+                            noodel.mount("#target");
                         </code>
                     </pre>
                     <p>
-                        where <i>root</i> is an element selector or object that specifies the root
-                        of the content tree, and <i>#target</i> is the target element for mounting the noodel.
+                        The <i>root</i> parameter is an element selector or object that specifies the root
+                        of the content tree, and <i>#target</i> is the target element for placing the noodel.
                     </p>
                     <div class="noode">
                         <p>
                             Mounting will <i>replace</i> the target element with
-                            the noodel's DOM tree. By default, the noodel will expand to
-                            100% width and 100% height of its container, so you should specify
-                            the size of the parent element to control the noodel's size, e.g.
+                            the noodel's DOM elements.
                         </p>
-                        <pre data-prevent-nav-swipe>
-                            <code class="language-html">
-                                &lt;div id="container" style="width: 800px; height: 800px"&gt;
-                                    &lt;div id="noodel"&gt;&lt;/div&gt;
-                                &lt;/div&gt;
-                            </code>
-                        </pre>
                     </div>
                 </div>
                 <div class="noode">
@@ -287,7 +338,7 @@
                         For sites driven by static HTML templates, you can define the tree via HTML and
                         give its root element to the constructor:
                     </p>
-                    <pre data-prevent-nav-swipe>
+                    <pre>
                         <code class="language-html">
                             &lt;div id="root" style="display: none;"&gt;
                                 &lt;div class="noode"&gt;
@@ -298,13 +349,13 @@
                                     &lt;div class="noode"&gt;
                                         &lt;p&gt;First child of my second noode&lt;/p&gt;
                                     &lt;/div&gt;
-                                    &lt;div class="noode"&gt;
-                                        &lt;p&gt;Second child of my second noode&lt;/p&gt;
-                                    &lt;/div&gt;
                                 &lt;/div&gt;
                             &lt;/div&gt;
 
-                            &lt;script&gt;new Noodel("#root").mount("#root")&lt;/script&gt;
+                            &lt;script&gt;
+                                const noodel = new Noodel("#root");
+                                noodel.mount("#root");
+                            &lt;/script&gt;
                         </code>
                     </pre>
                     <div class="noode">
@@ -313,7 +364,7 @@
                             Noodel will traverse the descendents of the root element and convert
                             all <code class="language-html">&lt;div&gt;</code>s with 
                             <code class="language-html">class="noode"</code> into
-                            noodes of the tree, keeping all parent-child relationships. Any text or
+                            noodes of the noodel, keeping all parent-child relationships. Any text or
                             elements inside a noode that are not child noodes will be treated as the
                             <i>content</i> of that noode, concatenated in the order they appear.
                         </p>
@@ -322,11 +373,11 @@
                             so you have complete freedom in structuring and styling the content 
                             of each noode. Note this does not apply
                             to the <code class="language-html">&lt;div&gt;</code>s that serve as
-                            indicators for noodes, as they will be removed from the final DOM.
+                            placeholders for noodes, as they are not inserted into the final DOM.
                         </p>
                     </div>
                     <div class="noode">
-                        <h3>Noodel creates its own DOM tree</h3>
+                        <h3>Noodel creates its own DOM subtree</h3>
                         <p>
                             Also note that the original DOM nodes will not be used in the noodel, as a
                             new DOM subtree will be created for it.
@@ -343,10 +394,10 @@
                 <div class="noode">
                     <h3>Defining content tree via object</h3>
                     <p>
-                        Alternatively, for dynamic sites driven by javascript, you can specify 
+                        Alternatively, for dynamic sites/apps driven by JavaScript, you can specify 
                         the content tree as a tree of objects:
                     </p>
-                    <pre data-prevent-nav-swipe>
+                    <pre>
                         <code class="language-js">
                             let root = {
                                 children: [
@@ -358,78 +409,87 @@
                                         children: [
                                             {
                                                 content: "&lt;p&gt;First child of my second noode&lt;/p&gt;"
-                                            },
-                                            {
-                                                content: "&lt;p&gt;Second child of my second noode&lt;/p&gt;"
-                                            },
+                                            }
                                         ]
                                     }
                                 ]
-                            }
-
-                            new Noodel(root).mount("#target");
-                        </code>
-                    </pre>
-                </div>
-            </div>
-            <div class="noode">
-                <h3>Configuring noodel</h3>
-                <div class="noode">
-                    <h3>Options</h3>
-                    <p>
-                        To configure global options for a noodel, add an options object to the constructor: 
-                    </p>
-                    <pre data-prevent-nav-swipe>
-                        <code class="language-js">
-                            const options = {
-                                visibleSubtreeDepth: 10,
-                                swipeFrictionBranch: 0.1
                             };
 
-                            new Noodel(root, options).mount("#target");
-                        </code>
-                    </pre>
-                </div>
-                <div class="noode">
-                    <h3>Changing options dynamically</h3>
-                    <p>
-                        You can set options on-the-fly at any time and they will be merged into
-                        the existing options: 
-                    </p>
-                    <pre data-prevent-nav-swipe>
-                        <code class="language-js">
                             const noodel = new Noodel(root);
-                            
                             noodel.mount("#target");
-                            
-                            // after some time
-
-                            const newOps = {
-                                swipeFrictionBranch: 0.3
-                            };
-
-                            noodel.setOptions(newOps);
                         </code>
                     </pre>
+                    <div class="noode">
+                        <p>
+                            Note you need to start with the root noode (an empty invisible noode that serves as the parent of the first level).
+                        </p>
+                    </div>
                 </div>
             </div>
             <div class="noode">
-                <h3>Configuring noodes</h3>
+                <h3>Configuring your noodel</h3>
+                <div class="noode">
+                    <h3>Options for the noodel</h3>
+                    <pre>
+                        <code class="language-js">
+                            // Set noodel options on init
+                            const noodel = new Noodel(root, {
+                                visibleSubtreeDepth: 10,
+                                swipeMultiplierTrunk: 0.9
+                            });
+
+                            // Change options dynamically on-the-fly
+                            noodel.setOptions({
+                                visibleSubtreeDepth: 5
+                            });
+                        </code>
+                    </pre>
+                </div>
+                <div class="noode">
+                    <h3>Options for individual noodes</h3>
+                    <pre>
+                        <code class="language-js">
+                            // Set options at content tree creation
+                            const noodel = new Noodel({
+                                children: [
+                                    {
+                                        content: "something cool",
+                                        options: {
+                                            onEnterFocus: () => console.log("entered a cool noode")
+                                        }
+                                    }
+                                ]
+                            });
+                            
+                            // Set options dynamically
+                            noodel.getRoot().getChild(0).setOptions({
+                                onExitFocus: () => console.log("exited a cool noode")
+                            });
+                        </code>
+                    </pre>
+                    <div class="noode">
+                        <p>
+                            Setting options on individual noodes is available only
+                            via JavaScript. If your noodel is defined by an HTML template you need to
+                            set your options programmatically before mount.
+                        </p>
+                    </div>
+                </div>
                 <div class="noode">
                     <h3>Specifying noode ID</h3>
                     <p>
-                        By default, a unique ID will be generated for each noode in a noodel, which will
+                        By default, a unique ID will be generated for each noode, which will
                         be used for various purposes. You can provide your own ID for noodes using a data attribute:
                     </p>
-                    <pre data-prevent-nav-swipe>
+                    <pre>
                         <code class="language-html">
                             &lt;div class="noode" data-id="myCustomId"&gt;
                                 ...
                             &lt;/div&gt;
                         </code>
                     </pre>
-                    <p>or in object syntax:</p>
-                    <pre data-prevent-nav-swipe>
+                    <p>or in JavaScript:</p>
+                    <pre>
                         <code class="language-js">
                             let noodeWithCustomId = {
                                 id: "myCustomId",
@@ -450,15 +510,15 @@
                         By default, the initial active child for each noode is at index 0 (the first child).
                         You can specify another child to be initially active by using:
                     </p>
-                    <pre data-prevent-nav-swipe>
+                    <pre>
                         <code class="language-html">
                             &lt;div class="noode" data-active&gt;
                                 ...
                             &lt;/div&gt;
                         </code>
                     </pre>
-                    <p>or in object syntax:</p>
-                    <pre data-prevent-nav-swipe>
+                    <p>or in JavaScript:</p>
+                    <pre>
                         <code class="language-js">
                             let noodeWith4thChildActive = {
                                 activeChildIndex: "3",
@@ -468,67 +528,141 @@
                     </pre>
                 </div>
                 <div class="noode">
-                    <h3>Preventing navigation events</h3>
+                    <h3>Specifying custom class/styles</h3>
                     <p>
-                        By default, a noodel responds to three types of user input for navigation:
-                        swipe (mouse drag), scroll wheel, and arrow keys. Navigation will occur even
-                        when such input originates from content elements inside noodes.
+                        You can specify custom class/styles on individual noodes that will be applied
+                        to their container elements. See Styling your noodel for more information.
                     </p>
-                    <p>
-                        There are situations where such behavior is not ideal, for example when you have
-                        a selectable textarea inside a noode. To prevent navigation behavior from an element,
-                        apply <code class="language-html">data-prevent-nav-swipe</code>, 
-                        <code class="language-html">data-prevent-nav-wheel</code>,
-                        <code class="language-html">data-prevent-nav-key</code> attributes to 
-                        prevent swipe, wheel, and keyboard events accordingly, or 
-                        <code class="language-html">data-prevent-nav-all</code> for all three.
-                    </p>
-                    <pre data-prevent-nav-swipe>
+                    <pre>
                         <code class="language-html">
-                            &lt;div class="noode"&gt;
-                                &lt;textarea data-prevent-nav-swipe data-prevent-nav-key&gt;&lt;/textarea&gt;
+                            &lt;div class="noode" data-class="myClassA myClassB" data-style="color: green; max-width: 900px;"&gt;
+                                ...
                             &lt;/div&gt;
                         </code>
                     </pre>
-                    <div class="noode">
-                        <p>
-                            Note this only takes effect when the element is inside the focal
-                            noode (i.e events outside the focal noode will always trigger).
-                        </p>
-                    </div>
-                </div>
-                <div class="noode">
-                    <h3>Setting noode options</h3>
-                    <p>
-                        You can set options and event handlers on individual noodes by passing in an
-                        options object:
-                    </p>
-                    <pre data-prevent-nav-swipe>
+                    <p>In JavaScript:</p>
+                    <pre>
                         <code class="language-js">
-                            // set options at noodel creation
-                            const noodel = new Noodel({
-                                children: [
-                                    {
-                                        id: "1",
-                                        content: "something cool",
-                                        options: {
-                                            onEnterFocus: () => console.log("entered a cool noode")
-                                        }
-                                    }
-                                ]
-                            });
-                            
-                            // set options dynamically
-                            noodel.findNoodeById("1").setOptions({
-                                onExitFocus: () => console.log("exited a cool noode")
-                            });
+                            let noodeWithCustomStyles = {
+                                style: {
+                                    color: "green",
+                                    "max-width": "900px" 
+                                },
+                                className: [
+                                    "myClassA",
+                                    "myClassB"
+                                ],
+                                content: "A fancy noode"
+                            }
                         </code>
                     </pre>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>Navigation prevention</h3>
+                <div class="noode">
+                    <h3>Preventing navigation</h3>
+                    <p>
+                        By default, a noodel responds to four types of user input for navigation:
+                        swipe/drag, keyboard, scroll wheel, and tap. Navigation will occur even
+                        when such input originates from content elements inside noodes.
+                    </p>
+                    <p>
+                        This behaviour can be undesirable in situations when you have UI elements that should
+                        capture those inputs and prevent them from causing navigation, for example a slider
+                        or a textbox.
+                    </p>
+                </div>
+                <div class="noode">
+                    <h3>Prevention classes</h3>
+                    <p>
+                        To address this issue, Noodel provides the following "prevention classes" that you can 
+                        selectively apply to individual elements in your content:
+                    </p>
+                    <ul>
+                        <li><code class="language-html">nd-prevent-swipe</code></li>
+                        <li><code class="language-html">nd-prevent-key</code></li>
+                        <li><code class="language-html">nd-prevent-wheel</code></li>
+                        <li><code class="language-html">nd-prevent-tap</code></li>
+                    </ul>
+                    <p>
+                        Noodel will ignore the input that originates from an element (or its descendents) with
+                        the corresponding prevention class and stops it from triggering any Noodel-specific behaviour. 
+                    </p>
+                    <pre>
+                        <code class="language-html">
+                            &lt;div class="noode"&gt;
+                                &lt;input type="text" class="nd-prevent-swipe nd-prevent-key"&gt;&lt;/input&gt;
+                                &lt;button class="nd-prevent-tap"&gt;Submit&lt;/button&gt;
+                            &lt;/div&gt;
+                        </code>
+                    </pre>
+                </div>
+                <div class="noode">
+                    <h3>Caveat</h3>
+                    <p>
+                        You should use prevention classes sparingly, on elements that really need them. Having large blocks
+                        of content with navigation prevention can impact usability, especially on smaller screens.
+                    </p>
+                    <p>
+                        For situations that require extensive navigation prevention, you should rely on the inspect mode
+                        instead. Alternatively, you can disable the corresponding input in Noodel's options and provide your
+                        own means of navigation via Noodel's API.
+                    </p>
+                </div>
+            </div>
+            <div class="noode">
+                <h3>Inspect mode</h3>
+                <div class="noode">
+                    <h3>Summary</h3>
+                    <p>
+                        For swipe-based interfaces such as Noodel, there is always an unresolvable conflict between the swipe
+                        mechanism and native conveniences that depend on the same motion, such as text selection.
+                    </p>
+                    <p>
+                        The <i>inspect mode</i> is the solution Noodel offers to address this issue. By default, text selection is
+                        disabled on a noodel and all input directed towards navigation. Once inspect mode is on, all navigation methods will
+                        be suspended and the user is free to select text or perform other conflicting interactions such as drag-and-drop
+                        on the focal noode.
+                    </p>
+                    <p>
+                        It is recommended that you rely on inspect mode, in addition to prevention classes, to deal with situations
+                        where UI elements in your content conflict with Noodel's mechanism.
+                    </p>
+                </div>
+                <div class="noode">
+                    <h3>Inspect mode trigger</h3>
+                    <p>
+                        The default trigger for inspect mode is the double tap (on any area of the noodel), or the Enter key on a keyboard.
+                    </p>
+                    <p>
+                        This trigger has be chosen for maximum convenience and device compatibility, but like anything else it does end up conflicting
+                        with interactions such as multiple clicks to select a word/line. If you wish to prevent the default trigger you can
+                        always disable it through Noodel's options and provide your own means of toggling inspect mode via Noodel's API 
+                        (e.g a custom button).
+                    </p>
+                </div>
+                <div class="noode">
+                    <h3>Noode content overflow</h3>
+                    <p>
+                        As of Noodel V2, support for scrolling inside noodes has been dropped in favor of using the inspect mode to handle
+                        content overflow, which provides a more streamlined viewing experience. 
+                        Scrolling inside noodes is disabled normally but enabled during inspect mode.
+                    </p>
+                    <p>
+                        This allows scrolling to be handled by the browser natively, which is a MUCH better idea. 
+                        ("Don't mess with scrolling!" is a well-known sentiment, after all.)
+                    </p>
                     <div class="noode">
                         <p>
-                            Setting options on individual noodes is currently available only
-                            via Javascript. If your noodel is defined by an HTML template you can
-                            set the options programmatically after noodel creation and before mount.
+                            Noodel's core principle is content chunking. Because
+                            each noode has a limited space, as a general rule, you should try to break down
+                            long content into bite-sized pieces that can fit into individual noodes, with responsive styling for
+                            different screen sizes.
+                        </p>
+                        <p>
+                            However, this can become impractical in some situations, so inspect mode is provided as a fallback
+                            for viewing overflow content.
                         </p>
                     </div>
                 </div>
@@ -925,7 +1059,7 @@
                 </div>    
             </div>
         </div>
-        <div class="noode">
+        <div class="noode" data-class="menu-item">
             <h2>API</h2>
             <div class="noode" data-id="noodelClass">
                 <h3>Noodel<span class="label">class</span></h3>
@@ -1405,18 +1539,13 @@
                 </div>
             </div>
         </div>
-        <div class="noode">
+        <div class="noode" data-class="menu-item">
             <p>
                 MIT License<br>
                 © 2019-2020 Zuohao (Jonny) Lu
             </p>
         </div>
     </div>
-    <script>
-        requestAnimationFrame(() => {
-            new Noodel("#root").mount("#root");
-        });
-    </script>
 </body>
 
 </html>
