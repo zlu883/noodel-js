@@ -2,7 +2,7 @@
 
 <template>
 
-    <transition name="nd-branch">
+    <transition name="nd-branch-box">
         <div
             class="nd-branch-box"
             :class="branchBoxClass"
@@ -151,18 +151,18 @@
         z-index: 10;
     }
 
-    .nd-branch-enter, .nd-branch-leave-active {
+    .nd-branch-box-enter, .nd-branch-box-leave-active {
         opacity: 0;
     }
 
-    .nd-branch-enter-active, .nd-branch-leave-active {
+    .nd-branch-box-enter-active, .nd-branch-box-leave-active {
         transition-property: opacity;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
         transition-duration: .5s; 
     }
 
     .nd-branch-move {
-        transition-property: opacity, transform;
+        transition-property: transform;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
         transition-duration: .5s; 
     }
