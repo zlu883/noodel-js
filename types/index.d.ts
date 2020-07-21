@@ -8,7 +8,7 @@ export = Noodel;
 declare class Noodel {
 
     /**
-     * A Vue wrapper component (in constructor form) for Noodel ready to be used in a Vue project.
+     * A Vue component (in constructor form) for Noodel ready to be used in a Vue project.
      * Takes a single prop, 'noodel', which should be a Noodel instance registered as
      * data in your Vue instance. 
      */
