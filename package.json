@@ -1,6 +1,6 @@
 {
   "name": "noodel",
-  "version": "1.3.0",
+  "version": "2.0.0",
   "license": "MIT",
   "scripts": {
     "serve": "vue-cli-service serve",
@@ -19,6 +19,7 @@
   "author": {
     "name": "Zuohao (Jonny) Lu"
   },
+  "description": "Intuitive, adaptable swipe-based user interface for content trees",
   "dependencies": {
     "core-js": "^3.6.4",
     "css-element-queries": "^1.2.3",
