@@ -135,21 +135,28 @@
                 <h3>What's so good about it?</h3>
                 <ul>
                     <li>
-                        <b>Noodel is device-agnostic.</b> The core mechanism and layout remains identical,
+                        <b>Noodel is simple.</b> Most people instinctively understand how it works. It reduces clutter and
+                        cognitive load by encouraging the removal of navigation bars and menus.
+                    </li>
+                    <li>
+                        <b>Noodel is device-agnostic.</b> The core mechanism and layout scheme remains identical,
                         regardless of screen size and input method.
                     </li>
                     <li>
-                        <b>Noodel is accessible.</b> The core mechanism consists only of moving in 4 directions
-                        that can be easily adapted to limited-control contexts. In fact, it is possible to build a Noodel site that
-                        operates entirely on 4-direction movements.
+                        <b>Noodel is accessible.</b> By reducing the essential controls to 4-direction movements,
+                        it can be easily adapted to contexts with limited controls. It is entirely possible to build a Noodel site that
+                        operates on just 4 arrow keys.
                     </li>
                     <li>
-                        <b>Noodel is flexible.</b> You can apply its chunking and tree recursion capabilities for as little or far as you wish.
+                        <b>Noodel is flexible.</b> You can apply its chunking and tree recursion rules for as little or far as you wish.
                         It doesn't care what you put into each node. The look-and-feel is fully customizable via plain CSS. 
                     </li>
                     <li>
                         <b>Noodel is dynamic.</b> It is more than just a static content viewer, although you can certainly use it that way.
                         You can add, update or delete nodes at any time to deal with asynchronous data or manage control flow. 
+                    </li>
+                    <li>
+                        <b>Noodel is interesting.</b> It is a fun and unique way of presenting your content that makes it stand out from others.
                     </li>
                 </ul>
             </div>
@@ -272,7 +279,7 @@
                         </code>
                     </pre>
                     <p>Noodel is available via jsDelivr and unpkg.</p>
-                    <div class="noode">
+                    <div class="noode" data-id="note-on-builds">
                         <h3>A note on builds</h3>
                         <p>
                             Noodel comes in two versions, noodel-full.umd.js and noodel.umd.js. The difference is that the
@@ -280,7 +287,7 @@
                         </p>
                         <p>
                             If you use the base version you need to also include Vue.js dependencies for Noodel to work.
-                            This prevents including Vue twice if you use Noodel in a Vue project. See Usage with Vue for more details.
+                            This prevents including Vue twice if you use Noodel in a Vue project. See <a href="#usage-vue-summary">Usage with Vue</a> for more details.
                         </p>
                         <p>
                             For most other use cases you should use the full version as a standalone library.
@@ -434,7 +441,7 @@
             </div>
             <div class="noode">
                 <h3>Usage with Vue</h3>
-                <div class="noode">
+                <div class="noode" data-id="usage-vue-summary">
                     <h3>Summary</h3>
                     <p>
                         Noodel uses Vue internally and therefore provides integration with Vue out-of-the-box.
@@ -446,7 +453,7 @@
                     <h3>Using the base build</h3>
                     <p>
                         If you are including Noodel and Vue's scripts directly in your
-                        HTML, it is recommended you use Noodel's base ("Vue-less") build,
+                        HTML, it is recommended you use Noodel's <a href="#note-on-builds">base ("Vue-less") build</a>,
                         alongside the Vue build used in your main project (Noodel requires Vue ^2.6.11). 
                         This prevents Vue from being included twice. 
                     </p>
@@ -497,7 +504,7 @@
                         <p>
                             <img src="alert-triangle.svg" class="link-icon"/> Do NOT call Noodel's <code class="language-js">mount()</code> 
                             or <code class="language-js">unmount()</code>  when using Noodel
-                            as a Vue component. Noodel will be mounted with your Vue instance!
+                            as a Vue component. Noodel is mounted with your Vue instance!
                         </p>
                     </div>
                 </div>
@@ -514,7 +521,7 @@
                                 children: [
                                     {
                                         content: {
-                                            component: YourVueComponent, // reference to your Vue component
+                                            component: YourVueComponent, // your Vue component object or name
                                             props: { // name-value pairs of props to pass to this component
                                                 "propA": "abc",
                                                 "propB": 20
@@ -1037,7 +1044,7 @@
                         calculates the size of its elements. 
                     </p>
                     <p>
-                        See CSS classes in the API section for the list of classes you can work with.
+                        See <a href="#nd-canvas">CSS classes</a> in the API section for the list of classes you can work with.
                     </p>
                 </div>
                 <div class="noode">
@@ -1106,13 +1113,12 @@
                         classes.
                     </p>
                     <p>
-                        See CSS classes in the API section for the list of classes you can work with.
+                        See <a href="#nd-canvas">CSS classes</a> in the API section for the list of classes you can work with.
                     </p>
-                    <div class="noode">
+                    <div class="noode" data-id="transition-classes">
                         <p>
-                            Animation effects during noode insert/delete depend on transitioning the branch
-                            and noodes simultaneously. This means they should have identical duration and timing
-                            functions - otherwise it will cause a "jump" in the animation.
+                            Enter/leave animations make use of the <a href="https://vuejs.org/v2/guide/transitions.html#Transition-Classes" target="_blank">transition classes</a> of Vue.js. 
+                            You can apply any combination of them according to your needs.
                         </p>
                     </div>  
                 </div>  
@@ -1120,9 +1126,9 @@
         </div>
         <div class="noode" data-class="menu-item">
             <h2>API</h2>
-            <div class="noode" data-id="noodelClass">
+            <div class="noode" data-class="menu-item">
                 <h3>Noodel<span class="label">class</span></h3>
-                <p>Represents the view model of a noodel. Has 2-way binding with the view.</p>
+                <p>The view model of a noodel. Has 2-way binding with the view.</p>
                 <div class="noode">
                     <b><code class="language-ts">constructor(root: NoodeDefinition | Element | string, options?: NoodelOptions)</code></b>
                     <p>Creates the view model of a noodel based on the given content tree.</p>
@@ -1229,10 +1235,16 @@
                         <li><code class="language-ts">noode</code> the noode to jump to, must be a Noode instance obtained from the noodel</li>
                     </ul>
                 </div>
+                <div class="noode">
+                    <b><code class="language-ts">toggleInspectMode(on: boolean)</code></b>
+                    <p>
+                        Turns inspect mode on/off.
+                    </p>
+                </div>
             </div>
-            <div class="noode">
+            <div class="noode" data-class="menu-item">
                 <h3>Noode<span class="label">class</span></h3>
-                <p>Represents the view model of a noode. Has 2-way binding with the view.</p>
+                <p>The view model of a noode. Has 2-way binding with the view.</p>
                 <div class="noode">
                     <b><code class="language-ts">getParent(): Noode</code></b>
                     <p>
@@ -1270,7 +1282,7 @@
                     <b><code class="language-ts">getChildBranchEl(): HTMLDivElement</code></b>
                     <p>
                         Gets the container element of the branch containing this noode's children
-                        (i.e. nd-branch), if it has children and is mounted.
+                        (i.e. nd-branch-box), if it has children and is mounted.
                     </p>
                 </div>
                 <div class="noode">
@@ -1415,10 +1427,10 @@
                     </ul>
                 </div>
             </div>
-            <div class="noode">
+            <div class="noode" data-class="menu-item">
                 <h3>NoodeDefinition<span class="label">interface</span></h3>
                 <p>
-                    Defines the template for a noode. Used for noode creation and insertion.
+                    Object template used for noode creation and insertion.
                 </p>
                 <div class="noode">
                     <b><code class="language-ts">id?: string</code></b>
@@ -1466,9 +1478,9 @@
                     </p>
                 </div>
             </div>
-            <div class="noode">
+            <div class="noode" data-class="menu-item">
                 <h3>NoodelOptions<span class="label">interface</span></h3>
-                <p>Defines the options for a noodel.</p>
+                <p>Global options for a noodel.</p>
                 <div class="noode">
                     <b><code class="language-ts">visibleSubtreeDepth?: number</code></b>
                     <p>
@@ -1477,33 +1489,89 @@
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">swipeFrictionBranch?: number</code></b>
+                    <b><code class="language-ts">retainDepthOnTapNavigation?: boolean</code></b>
                     <p>
-                        A number between 0 and 1 that affects the amount of movement when swiping in the branch axis.
-                        For every pixel swiped, the movement will be (1 - friction) pixels. Defaults to 0.7.
+                        If true, will keep the current branch depth (if possible) when
+                        tapping on the sibling of an ancestor. Useful to create an effect similar to conventional
+                        navigation menus. Defaults to false.
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">swipeFrictionTrunk?: number</code></b>
+                    <b><code class="language-ts">subtreeDebounceInterval?: number</code></b>
                     <p>
-                        A number between 0 and 1 that affects the amount of movement when swiping in the trunk axis.
-                        For every pixel swiped, the movement will be (1 - friction) pixels. Defaults to 0.2.
+                        Amount of time to wait in ms (until no more consecutive hits) before showing the 
+                        subtree of the focal noode, when moving the focal branch. Mainly a performance hack
+                        to prevent rapid toggling of subtree elements. Defaults to 360.
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">swipeWeightBranch?: number</code></b>
+                    <b><code class="language-ts">useKeyNavigation?: boolean</code></b>
                     <p>
-                        A positive non-zero number that affects how many noodes to snap across after a swipe is released
-                        in the branch axis. The final number is calculated as a function of the swipe velocity
-                        multiplied by (100 / weight). Defaults to 100.
+                        Whether to apply the default keyboard navigation. Defaults to true.
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">swipeWeightTrunk?: number</code></b>
+                    <b><code class="language-ts">useWheelNavigation?: boolean</code></b>
                     <p>
-                        A positive non-zero number that affects how many levels to snap across after a swipe is released
-                        in the trunk axis. The final number is calculated as a function of the swipe velocity
-                        multiplied by (100 / weight). Defaults to 100.
+                        Whether to apply the default wheel navigation. Defaults to true.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">useSwipeNavigation?: boolean</code></b>
+                    <p>
+                        Whether to apply the default swipe navigation. Defaults to true.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">useTapNavigation?: boolean</code></b>
+                    <p>
+                        Whether to apply the default tap navigation. Defaults to true.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">useInspectModeKey?: boolean</code></b>
+                    <p>
+                        Whether to allow toggling inspect mode via the Enter key. Defaults to true.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">useInspectModeDoubleTap?: boolean</code></b>
+                    <p>
+                        Whether to allow toggling inspect mode via the double tap. Defaults to true.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">skipResizeDetection?: boolean</code></b>
+                    <p>
+                        If true, will not attach resize detectors on ALL noodes, which may give 
+                        a slight performance boost. Set this if you know that
+                        the size of ALL noodes will never change after creation. Defaults to false.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">swipeMultiplierBranch?: number</code></b>
+                    <p>
+                        Number of pixels to move for every pixel swiped in the branch axis. Defaults to 1.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">swipeMultiplierTrunk?: number</code></b>
+                    <p>
+                        Number of pixels to move for every pixel swiped in the trunk axis. Defaults to 1.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">snapMultiplierBranch?: number</code></b>
+                    <p>
+                        Number of noodes (per unit of velocity) to snap across after a swipe is released.
+                        Defaults to 1.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">snapMultiplierTrunk?: number</code></b>
+                    <p>
+                        Number of levels (per unit of velocity) to snap across after a swipe is released.
+                        Defaults to 1.
                     </p>
                 </div>
                 <div class="noode">
@@ -1542,10 +1610,28 @@
                         <li><code class="language-ts">prev</code> the previous focal parent, null on initial call</li>
                     </ul>
                 </div>
+                <div class="noode">
+                    <b><code class="language-ts">onEnterInspectMode?: (noode: Noode) => any</code></b>
+                    <p>
+                        Handler called when entered inspect mode.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">noode</code> the current focal noode</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">onExitInspectMode?: (noode: Noode) => any</code></b>
+                    <p>
+                        Handler called when exited inspect mode.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">noode</code> the current focal noode</li>
+                    </ul>
+                </div>
             </div>
-            <div class="noode">
+            <div class="noode" data-class="menu-item">
                 <h3>NoodeOptions<span class="label">interface</span></h3>
-                <p>Defines the options for a noode.</p>
+                <p>Options for an individual noode.</p>
                 <div class="noode">
                     <b><code class="language-ts">skipResizeDetection?: boolean</code></b>
                     <p>
@@ -1595,6 +1681,155 @@
                         <li><code class="language-ts">self</code> the previous focal parent (i.e. this noode)</li>
                         <li><code class="language-ts">prev</code> the current focal parent</li>
                     </ul>
+                </div>
+            </div>
+            <div class="noode" data-class="menu-item">
+                <h3>CSS classes</h3>
+                <p>List of CSS classes you can use for styling.</p>
+                <div class="noode" data-id="nd-canvas">
+                    <b><code class="language-css">nd-canvas</code></b>
+                    <p>
+                        Outermost container of the noodel that processes all inputs.
+                        Use this to determine the canvas size and background.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-limit, nd-limit-left, nd-limit-right, nd-limit-top, nd-limit-bottom</code></b>
+                    <p>
+                        Classes applied to the limit indicators (the bars that come up when you reach the view limits).
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-limit-[transition class]</code></b>
+                    <p>
+                        <a href="#transition-classes">Transition classes</a> for enter/leave of limit indicators.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-trunk-move</code></b>
+                    <p>
+                        Class applied to the trunk element when moving in the trunk axis. Use this to control the timing and duration of the movement.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-branch-box</code></b>
+                    <p>
+                        Outermost container of a branch that occupies 100% height of the canvas. Useful for styling the 'column' of each branch.
+                        Avoid overriding the size and positioning of this element.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-branch-box-focal</code></b>
+                    <p>
+                        Applied to the focal <code class="language-css">nd-branch-box</code> element.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-branch-box-[transition class]</code></b>
+                    <p>
+                        <a href="#transition-classes">Transition classes</a> for enter/leave of branches.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-branch</code></b>
+                    <p>
+                        Immediate container of a branch responsible for its movement.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-branch-focal</code></b>
+                    <p>
+                        Applied to the focal <code class="language-css">nd-branch</code> element.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-branch-move</code></b>
+                    <p>
+                        Class applied to an <code class="language-css">nd-branch</code> element when moving in the branch axis. Use this to control the timing and duration of the movement.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-noode-box</code></b>
+                    <p>
+                        Outermost container of a noode.
+                        Avoid overriding the size and positioning of this element.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-noode-box-active</code></b>
+                    <p>
+                        Applied to an active <code class="language-css">nd-noode-box</code> element.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-noode</code></b>
+                    <p>
+                        Immediate container of your noode content. Use this class to control the size and aesthetics of your noodes.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-noode-active</code></b>
+                    <p>
+                        Applied to an active <code class="language-css">nd-noode</code> element.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-noode-inspect</code></b>
+                    <p>
+                        Applied to the focal noode during inspect mode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-inspect-backdrop</code></b>
+                    <p>
+                        The backdrop element that appears during inspect mode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-noode-[transition class]</code></b>
+                    <p>
+                        <a href="#transition-classes">Transition classes</a> for enter/leave of noodes
+                        during noode insert/delete.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-noode-move</code></b>
+                    <p>
+                        Applied to sibling noodes during noode insert/delete. Use this class
+                        to control the animation of siblings as they change position.
+                    </p>
+                    <div class="noode">
+                        <p>
+                            Sibling animation during noode insert/delete depend on transitioning the branch
+                            and noodes simultaneously. This means they should have identical duration and timing
+                            functions - otherwise it will cause a "jump" in the animation.
+                        </p>
+                    </div>
+                    <div class="noode">
+                        <p>
+                            This is effectively Vue's v-move class applied to the transition-group of noodes.
+                        </p>
+                    </div>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-child-indicator</code></b>
+                    <p>
+                        Class for the child indicator element (the "arrow" that indicates
+                        noodes with children).
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-child-indicator-active</code></b>
+                    <p>
+                        Applied to the <code class="language-css">nd-child-indicator</code> of an active noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-child-indicator-[transition class]</code></b>
+                    <p>
+                        <a href="#transition-classes">Transition classes</a> for enter/leave of child indicators
+                        during noode insert/delete.
+                    </p>
                 </div>
             </div>
         </div>

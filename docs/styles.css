@@ -78,9 +78,32 @@ code[class*="language-"] {
     height: 100%;
 }
 
+.nd-noode, .nd-child-indicator {
+    background-color: #f6dfbc;
+}
+
 .nd-noode {
-    background-color: #f9ead4;
     border-radius: .7em;
+}
+
+.nd-noode-active, .nd-child-indicator-active {
+    background-color: #fcf4e9;
+}
+
+.nd-child-indicator-active:after {
+    border-left-color: #fcf4e9;
+}
+
+.nd-branch-focal .nd-noode, .nd-branch-focal .nd-child-indicator {
+    background-color: #f9ead4;
+}
+
+.nd-branch-focal .nd-noode-active, .nd-branch-focal .nd-child-indicator-active {
+    background-color: white;
+}
+
+.nd-branch-focal .nd-child-indicator-active:after {
+    border-left-color: white;
 }
 
 @media (max-width: 800px) {
@@ -97,18 +120,18 @@ code[class*="language-"] {
 
 @media (min-width: 801px) {
     .nd-noode {
-        max-width: 700px;
+        max-width: 720px;
     }
 }
 
 @media (min-height: 801px) {
     .nd-noode {
-        max-height: 700px;
+        max-height: 720px;
     }
 }
 
 .menu-item {
-    max-width: 350px;
+    max-width: 325px;
 }
 
 .nd-noode > *:first-child {
@@ -119,18 +142,6 @@ code[class*="language-"] {
     margin-bottom: .2em;
 }
 
-.nd-noode-active {
-    background-color: white;
-}
-
-.nd-child-indicator {
-    background-color: #f9ead4;
-}
-
-.nd-child-indicator-active {
-    background-color: white;
-}
-
 .nd-limit {
-    background-color: #9e7d4b;
+    background-color: #317524;
 }

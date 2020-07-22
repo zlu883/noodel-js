@@ -102,6 +102,10 @@ declare class Noodel {
      * @param noode the noode to jump to, must be a Noode instance obtained from the noodel
      */
     jumpTo(noode: Noode);
+    /**
+     * Turns inspect mode on/off.
+     */
+    toggleInspectMode(on: boolean);
 }
 
 /**
@@ -131,7 +135,7 @@ declare class Noode {
     getEl(): HTMLDivElement;
     /**
      * Gets the container element of the branch containing this noode's children
-     * (i.e. nd-branch), if it has children and is mounted.
+     * (i.e. nd-branch-box), if it has children and is mounted.
      */
     getChildBranchEl(): HTMLDivElement;
     /**
@@ -285,27 +289,65 @@ declare interface NoodelOptions {
      */
     visibleSubtreeDepth?: number;
     /**
-     * A number between 0 and 1 that affects the amount of movement when swiping in the branch axis.
-     * For every pixel swiped, the movement will be (1 - friction) pixels. Defaults to 0.7.
+     * If true, will keep the current branch depth (if possible) when
+     * tapping on the sibling of an ancestor. Useful to create an effect similar to conventional
+     * navigation menus. Defaults to false.
      */
-    swipeFrictionBranch?: number;
+    retainDepthOnTapNavigation?: boolean;
     /**
-     * A number between 0 and 1 that affects the amount of movement when swiping in the trunk axis.
-     * For every pixel swiped, the movement will be (1 - friction) pixels. Defaults to 0.2.
+     * Amount of time to wait in ms (until no more consecutive hits) before showing the 
+     * subtree of the focal noode, when moving the focal branch. Mainly a performance hack
+     * to prevent rapid toggling of subtree elements. Defaults to 360.
      */
-    swipeFrictionTrunk?: number;
+    subtreeDebounceInterval?: number;
     /**
-     * A positive non-zero number that affects how many noodes to snap across after a swipe is released
-     * in the branch axis. The final number is calculated as a function of the swipe velocity
-     * multiplied by (100 / weight). Defaults to 100.
+     * Whether to apply the default keyboard navigation. Defaults to true.
      */
-    swipeWeightBranch?: number;
+    useKeyNavigation?: boolean;
     /**
-     * A positive non-zero number that affects how many levels to snap across after a swipe is released
-     * in the trunk axis. The final number is calculated as a function of the swipe velocity
-     * multiplied by (100 / weight). Defaults to 100.
+     * Whether to apply the default wheel navigation. Defaults to true.
      */
-    swipeWeightTrunk?: number;
+    useWheelNavigation?: boolean;
+    /**
+     * Whether to apply the default swipe navigation. Defaults to true.
+     */
+    useSwipeNavigation?: boolean;
+    /**
+     * Whether to apply the default tap navigation. Defaults to true.
+     */
+    useTapNavigation?: boolean;
+    /**
+     * Whether to allow toggling inspect mode via the Enter key. Defaults to true.
+     */
+    useInspectModeKey?: boolean;
+    /**
+     * Whether to allow toggling inspect mode via the double tap. Defaults to true.
+     */
+    useInspectModeDoubleTap?: boolean;
+    /**
+     * If true, will not attach resize detectors on ALL noodes, which may give 
+     * a slight performance boost. Set this if you know that
+     * the size of ALL noodes will never change after creation. Defaults to false.
+     */
+    skipResizeDetection?: boolean;
+    /**
+     * Number of pixels to move for every pixel swiped in the branch axis. Defaults to 1.
+     */
+    swipeMultiplierBranch?: number;
+    /**
+     * Number of pixels to move for every pixel swiped in the trunk axis. Defaults to 1.
+     */
+    swipeMultiplierTrunk?: number;
+    /**
+     * Number of noodes (per unit of velocity) to snap across after a swipe is released.
+     * Defaults to 1.
+     */
+    snapMultiplierBranch?: number;
+    /**
+     * Number of levels (per unit of velocity) to snap across after a swipe is released.
+     * Defaults to 1.
+     */
+    snapMultiplierTrunk?: number;
     /**
      * Determines whether routing should be enabled for this noodel. Defaults to true.
      */
@@ -330,6 +372,16 @@ declare interface NoodelOptions {
      * @param prev the previous focal parent, null on initial call
      */
     onFocalParentChange?: (current: Noode, prev: Noode) => any;
+    /**
+     * Handler called when entered inspect mode.
+     * @param noode the current focal noode
+     */
+    onEnterInspectMode?: (noode: Noode) => any;
+    /**
+     * Handler called when exited inspect mode.
+     * @param noode the current focal noode
+     */
+    onExitInspectMode?: (noode: Noode) => any;
 }
 
 /**

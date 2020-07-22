@@ -173,8 +173,8 @@ export default class Noodel {
         doJumpNavigation(this._v, noode._v);
     }
 
-    toggleInspectMode(enable: boolean) {
-        if (enable) {
+    toggleInspectMode(on: boolean) {
+        if (on) {
             enterInspectMode(this._v);
         }
         else {
