@@ -4,7 +4,7 @@ Hello there! First and foremost, thank you for your interest in Noodel. If you a
 
 ## How you can contribute
 
-At this stage, Noodel is a brand new project that has just started. Many aspects of it are still works in progress. As such, this guideline is just a basic draft, to be ironed out in the days to come. 
+At this stage, Noodel is a fresh new project that has just started. Many aspects of it are still works in progress. As such, this guideline is just a basic draft, to be ironed out in the days to come. 
 
 This also means there are many things you can contribute to. Including but not limited to:
 - Reporting bug and issues
@@ -17,10 +17,7 @@ This also means there are many things you can contribute to. Including but not l
 
 Some planned features/enhancements for the future include, but not limited to:
 - Adding proper testing to the project
-- Integration with Vue and possibly other frameworks like React
-- Addressing certain UX issues in mobile browsers
-- Fine-tuning navigation experience and performance
-- Support for adding custom classes/styles to individual noodes
+- Integration with other frameworks like React
 - More options related to layout and positioning 
 
 ## Bug reports
@@ -44,13 +41,13 @@ After you've downloaded the project, do `npm install` to install all dependencie
 
 You can then use either:
 - `npm run build` to build the js bundle
-- `npm run serve` to create a hot-reloading server that can serve your HTML pages for testing purposes. The built files will be automatically injected. Note that for this to work, you need to create an `index.html` page under a folder named `public` in the project root, as well as a `main.ts` file under the `src` folder where you can write your entry point to use the library. These files will be omitted from git.
+- `npm run serve` to create a hot-reloading server that can serve your HTML pages for testing purposes. The built files will be automatically injected. Note that for this to work, you need to create an `index.html` page under the `public` folder in the project root, as well as a `main.ts` file under the `src` folder where you can write your entry point to use the library. These files will be omitted from git.
 
 The project is scaffolded using [vue-cli](https://cli.vuejs.org/). Refer to its docs for more information.
 
 ## Pull requests
 If you are interested in making a pull request, it'll be much appreciated. Please:
-- Make your pull request against the `master` branch
+- Make your pull request against the `dev` branch
 - Provide a clear description of what you did
 - Make a reference to any Github issue(s) you are addressing
 
