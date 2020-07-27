@@ -283,7 +283,7 @@
         top: 50%;
         transform: translateY(-50%);
         background-color: #e6e6e6;
-        z-index: 2;
+        z-index: 100;
     }
 
     .nd-child-indicator-active {
