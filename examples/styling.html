@@ -9,62 +9,182 @@
     <link rel="stylesheet" href="../dist/noodel.css">
     <script src="../dist/noodel-full.umd.js"></script>
 
-    <title>Basic Example</title>
+    <title>Styling Example</title>
     <style>
         body {
             margin: 0;
+            background-image: url(https://images.unsplash.com/photo-1571478601279-7268c1f57439?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1949&q=80);
+            background-size: cover;
+            font-family: Georgia, serif;
+        }
+
+        h2, h3 {
+            color: #990000;
         }
 
         .nd-canvas {
             width: 100vw;
             height: 100vh;
+            background-color: rgba(255, 255, 255, 0.5);
+        }
+
+        .nd-limit {
+            background-color: transparent;
+            width: 0;
+            height: 0;
+        }
+
+        .nd-limit-left {
+            border-left: 2em solid rgba(153, 0, 0, 0.6);
+            border-top: 50vh solid transparent;
+            border-bottom: 50vh solid transparent;
+        }
+
+        .nd-limit-right {
+            border-right: 2em solid rgba(153, 0, 0, 0.6);
+            border-top: 50vh solid transparent;
+            border-bottom: 50vh solid transparent;
+        }
+
+        .nd-limit-top {
+            border-top: 2em solid rgba(153, 0, 0, 0.6);
+            border-left: 50vw solid transparent;
+            border-right: 50vw solid transparent;
+        }
+
+        .nd-limit-bottom {
+            border-bottom: 2em solid rgba(153, 0, 0, 0.6);
+            border-left: 50vw solid transparent;
+            border-right: 50vw solid transparent;
+        }
+
+        .nd-limit-enter, .nd-limit-leave-to {
+            transform: scale(1.5);
+        }
+
+        .nd-limit-enter-active, .nd-limit-leave-active {
+            transition-property: opacity, transform;
+        }
+
+        .nd-trunk-move {
+            transition-duration: .8s; 
+            transition-timing-function: cubic-bezier(0.250, 0.460, 0.450, 0.940); /* easeOutQuad from Penner equations */
+        }
+
+        .nd-branch-box {
+            transition-property: opacity, background-color, transform;
+            transition-duration: .8s; 
+            transition-timing-function: cubic-bezier(0.250, 0.460, 0.450, 0.940);
+        }
+
+        .nd-branch-box-enter, .nd-branch-box-leave-to {
+            transform: translateY(20px);
+        }
+
+        .nd-branch-box-focal {
+            background-color: rgba(153, 0, 0, 0.1);
+        }
+
+        .nd-branch-move {
+            transition-duration: .8s; 
+            transition-timing-function: cubic-bezier(0.250, 0.460, 0.450, 0.940);
         }
 
         .nd-noode {
+            background-color: rgba(255, 255, 255, 0.5);
             max-width: 30vw;
+            padding-right: 2em;
+        }
+
+        .nd-noode-active {
+            background-color: rgba(255, 255, 255, 1);
+            border-left: 5px solid #990000;
+        }
+
+        .nd-branch-focal .nd-noode-active h3 {
+            text-decoration: underline;
+        }
+
+        .nd-noode-inspect {
+            max-width: 60vw;
+            width: 60vw;
+            height: 60vh;
+        }
+
+        .nd-child-indicator {
+            background-image: url(https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/chevron-right.svg);
+            z-index: 100;
+            background-position: center;
+            background-repeat: no-repeat;
+            background-size: contain;
+            border-radius: 50%;
+            background-color: transparent;
+            width: 2em;
+            height: 2em;
+            right: .6em;
+        }
+
+        .nd-child-indicator-active {
+            background-image: url(https://cdn.jsdelivr.net/npm/feather-icons@4.28.0/dist/icons/chevrons-right.svg);
+            background-color: rgba(255, 255, 255, 1);
+            right: 0;
+        }
+
+        .nd-child-indicator-active::after {
+            display: none;
+        }
+
+        .title-branch {
+            max-width: 300px;
+        }
+
+        .specific-item {
+            padding-right: 1em;
+            border-top-right-radius: 4em;
+            border-bottom-right-radius: 4em;
         }
     </style>
 </head>
 
 <body>
     <div id="root" style="display: none;">
-        <div class="noode">
+        <div class="noode" data-class="title-branch" data-style="background-color: #990000; color: white; border-left-color: white">
             <h1>Types of Noodles</h1>
             <p>(Swipe, scroll, or tap on individual nodes!)
             <p>
         </div>
-        <div class="noode">
+        <div class="noode" data-class="title-branch">
             <h2>Wheat-based noodles</h2>
             <div class="noode">
                 <h3>Wheat noodles</h3>
                 <p>Noodles made from wheat. A broad category of noodles ranging from dry to fresh, most commonly seen in
                     Chinese cuisines.</p>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>Shanghai noodles</h3>
                     <p>A thick, chewy wheat-based noodle suitable for many different recipes. Comes in dried or fresh
                         variations.</p>
                 </div>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>La mian</h3>
                     <p>Meaning "pulled noodles", these are fresh noodles made from skilful twisting, stretching and
                         folding of the dough. Common in Northern Chinese cuisines.</p>
                 </div>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>Dao xiao mian</h3>
                     <p>Meaning "knife-sliced noodles", these are broad, flat noodle strips made from skilful cutting of
                         the dough. Common in Northern Chinese cuisines.</p>
                 </div>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>Udon</h3>
                     <p>A thick, chewy wheat-based noodle originated from Japan. Often used in hot soup or stir-fry
                         dishes. Usually comes in pre-cooked vacuum packs.</p>
                 </div>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>Somen</h3>
                     <p>Dry, thin wheat-based noodles used in Japan. Often served in cold dishes but also in hot broths.
                     </p>
                 </div>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>Jjolmyeon</h3>
                     <p>A very chewy noodle made from wheat flour and corn starch. Staple of the Korean cold noodle dish
                         served with sliced vegetables and sweet and spicy sauce.</p>
@@ -74,35 +194,35 @@
                 <h3>Egg noodles</h3>
                 <p>Wheat-based noodles with the addition of eggs or alkaline solutions. The higher pH level gives them a
                     yellow colour and firmer texture.</p>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>Hokkien noodles</h3>
                     <p>A yellow, thick, chewy noodle that comes in fresh packages. A staple ingredient in Singapore and
                         Malaysian street food.</p>
                 </div>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>Ramen</h3>
                     <p>Thin, long wheat noodles with a firm bite due to alkalization. A staple of Japanese noodle
                         dishes. Comes in either dry or fresh packages.</p>
                 </div>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>You mian</h3>
                     <p>Alkalized wheat noodles commonly used in Southern Chinese cuisines. They come in many variations
                         of thickness, in pre-cooked packages.</p>
                 </div>
             </div>
         </div>
-        <div class="noode">
+        <div class="noode" data-class="title-branch">
             <h2>Non-wheat noodles</h2>
             <div class="noode">
                 <h3>Buckwheat noodles</h3>
                 <p>Nutritious noodles made from buckwheat flour. Has a distinct nutty flavour, most commonly seen in
                     Korean and Japanese cuisines.</p>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>Soba</h3>
                     <p>Meaning "buckwheat" in Japanese, these are thin, brown noodles that can either be served hot or
                         cold. Usually comes in dry packs.</p>
                 </div>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>Naengmyeon</h3>
                     <p>Pale brown Korean noodles that are long and chewy. Made from a combination of buckwheat flour and
                         sweet potato starch. Commonly used in cold noodle soup.</p>
@@ -112,17 +232,17 @@
                 <h3>Rice noodles</h3>
                 <p>Noodles made from rice flour. Their soft texture and mild flavour made them useful across many
                     different types of dishes.</p>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>Rice vermicelli</h3>
                     <p>Very fine and thin rice noodles used in a variety of cuisines in Southeast Asia. Can be used in
                         soups, salads, stir-frys or as accompaniment to strong-flavoured dishes.</p>
                 </div>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>Rice stick noodles</h3>
                     <p>Thin but wide rice noodles that comes in dry packages. Their strong texture makes them suitable
                         for stir-frying, in dishes such as Pad Thai.</p>
                 </div>
-                <div class="noode">
+                <div class="noode" data-class="specific-item">
                     <h3>He fun</h3>
                     <p>Flat, wide rice noodles that comes in fresh packages. Commonly seen in Cantonese cuisine, these
                         can be used in stir-fry and soup dishes.</p>
