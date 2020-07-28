@@ -342,7 +342,7 @@ export function alignNoodelOnJump(noodel: NoodelView, target: NoodeView) {
         nearestVisibleBranchParent = nearestVisibleBranchParent.parent;
     }
 
-    hideActiveSubtree(nearestVisibleBranchParent);
+    hideActiveSubtree(getActiveChild(nearestVisibleBranchParent));
 
     // adjusts the active child of ancestors up to the nearest visible branch to point to target
     let nextParent = target.parent;
@@ -358,11 +358,15 @@ export function alignNoodelOnJump(noodel: NoodelView, target: NoodeView) {
             break;
         }
 
+        // shows the intermediate branch that was not visible, should happen after alignBranch
+        // to prevent triggering a transition that will be ignored by the browser
+        nextParent.isChildrenVisible = true;
+
         nextActiveChildIndex = nextParent.index;
         nextParent = nextParent.parent;
     }
 
-    showActiveSubtree(noodel, nearestVisibleBranchParent, (target.level - 1 - nearestVisibleBranchParent.level) + noodel.options.visibleSubtreeDepth);
+    showActiveSubtree(noodel, target.parent, noodel.options.visibleSubtreeDepth);
 
     if (target.parent.id !== noodel.focalParent.id) {
         setFocalParent(noodel, target.parent);

@@ -169,8 +169,8 @@ export function alignBranchToIndex(parent: NoodeView, index: number) {
 
     let targetOffset = (-parent.children[index].branchRelativeOffset) - (parent.children[index].size / 2);
 
-    // only apply transition effect if there's actual movement
-    if (Math.abs(parent.childBranchOffset - targetOffset) >= 1) { 
+    // only apply transition effect if there's actual movement and branch is visible
+    if (parent.isChildrenVisible && Math.abs(parent.childBranchOffset - targetOffset) >= 1) { 
         parent.applyBranchMove = true;
         parent.ignoreTransitionEnd = true;
         requestAnimationFrame(() => parent.ignoreTransitionEnd = false);

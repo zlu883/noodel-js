@@ -103,11 +103,6 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
             parent
         );
 
-        child.trunkRelativeOffset = parent.trunkRelativeOffset + parent.branchSize;
-        child.branchRelativeOffset = index > 0 ? 
-            parent.children[index - 1].branchRelativeOffset + parent.children[index - 1].size :
-            0;
-
         return child;
     });
 

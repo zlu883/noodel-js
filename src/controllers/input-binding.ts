@@ -139,25 +139,16 @@ function onPanStart(noodel: NoodelView, ev: HammerInput) {
 }
 
 function onPan(noodel: NoodelView, ev: HammerInput) {
-
-    if (noodel.nextPanRafId) cancelAnimationFrame(noodel.nextPanRafId);
+    if (ev.isFinal) return;
     if (noodel.panAxis === null) return;
 
-    noodel.nextPanRafId = requestAnimationFrame(() => {
-        updatePan(noodel, ev);
-        noodel.nextPanRafId = undefined;
-    });
+    updatePan(noodel, ev);
 }
 
 function onPanEnd(noodel: NoodelView, ev: HammerInput) {
-
-    if (noodel.nextPanRafId) cancelAnimationFrame(noodel.nextPanRafId);
     if (noodel.panAxis === null) return;
 
-    noodel.nextPanRafId = requestAnimationFrame(() => {
-        releasePan(noodel, ev); 
-        noodel.nextPanRafId = undefined;
-    });
+    releasePan(noodel, ev); 
 }
 
 function onTap(noodel: NoodelView, ev: HammerInput) {

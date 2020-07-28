@@ -266,12 +266,12 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, level: 
         isFocalParent: false,
         isActive: false,
         size: 0,
-        trunkRelativeOffset: 0,
+        trunkRelativeOffset: parent ? parent.trunkRelativeOffset + parent.branchSize : 0,
         childBranchOffset: 0,
         childBranchOffsetAligned: 0,
         applyBranchMove: false,
         isInInspectMode: false,
-        branchRelativeOffset: 0,
+        branchRelativeOffset: parent && index > 0 ? parent.children[index - 1].branchRelativeOffset + parent.children[index - 1].size : 0,
         branchSize: 0,
         parent: parent,
         id: typeof def.id === 'string' ? def.id : generateNoodeId(noodel),
@@ -311,7 +311,9 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, level: 
     }
 
     if (numOfChildren > 0) {
-        noodeView.children = def.children.map((n, i) => buildNoodeView(noodel, n, level + 1, i, noodeView));
+        for (let i = 0; i < def.children.length; i++) {
+            noodeView.children.push(buildNoodeView(noodel, def.children[i], level + 1, i, noodeView));
+        }
     }
 
     return noodeView;
