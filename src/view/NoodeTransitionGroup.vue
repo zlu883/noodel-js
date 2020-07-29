@@ -4,7 +4,6 @@
 
     <transition-group 
         name="nd-noode"
-        class="nd-noode-group"
         tag="div"
     >
         <NoodelCanvasTrunkBranchNoode
@@ -47,10 +46,5 @@
 <!---------------------------- STYLES ------------------------------>
 
 <style>
-    
-    .nd-noode-group {
-        display: flex;
-        flex-direction: column;
-    }
 
 </style>
