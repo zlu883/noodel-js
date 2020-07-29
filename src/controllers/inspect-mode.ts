@@ -1,11 +1,14 @@
 import NoodelView from '@/types/NoodelView';
 import { getActiveChild } from '@/util/getters';
 import Noode from '@/main/Noode';
+import { cancelPan } from './noodel-navigate';
 
 export function enterInspectMode(noodel: NoodelView) {
     
     if (noodel.isInInspectMode) return;
     
+    cancelPan(noodel);
+
     // touch-action: auto on focal noode under inspect mode
     // interferes with Hammer's recognizers, so they must be disabled first
     noodel.hammerJsInstance.get('pan').set({enable: false});

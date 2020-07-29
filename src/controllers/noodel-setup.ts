@@ -7,7 +7,7 @@ import { showActiveSubtree } from './noodel-mutate';
 import { setupRouting, unsetRouting } from './noodel-routing';
 import NoodeOptions from '@/types/NoodeOptions';
 import { generateNoodeId, registerNoode, findNoode } from './id-register';
-import { alignNoodelOnJump } from './noodel-navigate';
+import { alignNoodelOnJump, cancelPan } from './noodel-navigate';
 
 export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelView {
 
@@ -183,6 +183,7 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView)
 
     if (typeof options.useSwipeNavigation === "boolean") {
         noodel.options.useSwipeNavigation = options.useSwipeNavigation;
+        if (!options.useSwipeNavigation) cancelPan(noodel);
     }
 
     if (typeof options.useTapNavigation === "boolean") {
