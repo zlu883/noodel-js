@@ -20,16 +20,13 @@ So, how does it actually work?
 
 Well, as the ultimate proof of concept, Noodel uses itself to create and present its own docs ;)
 
-## [See here for the documentation](https://zlu883.github.io/Noodel/) (and hence live demo).
+[See here for the documentation](https://zlu883.github.io/Noodel/) (and hence live demo).
 
 ## Other examples
 
-Some examples with code on CodePen:
-
-- [Example 1 - Basic example](https://codepen.io/zlu883/pen/pogbYWV)
-- [Example 2 - More advanced styling](https://codepen.io/zlu883/pen/BajLdLr)
-- [Example 3 - Full page carousel](https://codepen.io/zlu883/pen/XWXjVbL)
-- [Example 4 - Dynamic operations using API](https://codepen.io/zlu883/pen/QWyGWag)
+- [Basic example](https://codepen.io/zlu883/pen/pogbYWV)
+- [Styling example](https://codepen.io/zlu883/pen/BajLdLr) - example with extensive styling
+- [The Noodle Shop](https://codepen.io/zlu883/pen/QWyGWag) - an example of how you would dynamically control a site/app using Noodel's API
 
 ## Browser support
 
