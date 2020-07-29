@@ -6,7 +6,7 @@
         class="nd-noode-box"
         :class="noodeBoxClass"
     >
-        <transition name="nd-child-indicator">
+        <transition name="nd-inspect-backdrop">
             <div
                 class="nd-inspect-backdrop"
                 :style="backdropStyle"
@@ -307,6 +307,16 @@
     }
 
     .nd-child-indicator-enter-active, .nd-child-indicator-leave-active {
+        transition-property: opacity;
+        transition-duration: .5s;
+        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+    }
+
+    .nd-inspect-backdrop-enter, .nd-inspect-backdrop-leave-active {
+        opacity: 0;
+    }
+
+    .nd-inspect-backdrop-enter-active, .nd-inspect-backdrop-leave-active {
         transition-property: opacity;
         transition-duration: .5s;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
