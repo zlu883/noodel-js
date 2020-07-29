@@ -36,8 +36,8 @@
             border-radius: 1em;
         }
 
-        .nd-noode-active {
-            box-shadow: 0 0 1em #333;
+        .nd-branch-focal .nd-noode-active {
+            box-shadow: 0 0 1em black;
         }
 
         .nd-child-indicator {
@@ -173,7 +173,8 @@
         const noodel = new Noodel("#root");
         const orderNowNoode = noodel.findNoodeById("orderNow");
         const orderSummaryNoode = noodel.findNoodeById("orderSummary");
-        const orderItems = [];
+        let orderItems = [];
+        let isOrderFinalized = false;
 
         function updateOrderItem(name, price, quantity, item) {
             if (name) item.name = name;
@@ -201,6 +202,7 @@
             `);
 
             updateOrderTotal();
+            refreshOrderItems();
         }
 
         function updateOrderTotal() {
@@ -210,15 +212,29 @@
                 total += orderItems[i].subtotal;
             }
 
+            if (isOrderFinalized) {
+                orderSummaryNoode.setContent(`
+                    <h3>Total: $${total}</h3>
+                    <p>Your order is confirmed!</p>
+                    <p>Move left to restart</p>
+                `);
+                return;
+            }
+
             if (total > 0) {
                 orderSummaryNoode.setContent(`
                     <h3>Total: $${total}</h3>
-                    <p>Move right to place order</p>
+                    <p>Move right to confirm order</p>
                 `);
 
                 if (orderSummaryNoode.getChildren().length === 0) {
                     orderSummaryNoode.addChild({
-                        content: `<h3>Place order</h3>`
+                        content: `<h2>Confirm Order</h2>`,
+                        options: {
+                            onEnterFocus: () => {
+                                confirmOrder();
+                            }
+                        }
                     });
                 }
             } else {
@@ -257,6 +273,46 @@
             }
         }
 
+        function confirmOrder() {
+            noodel.setOptions({
+                useKeyNavigation: false,
+                useSwipeNavigation: false,
+                useWheelNavigation: false,
+                useTapNavigation: false
+            });
+            orderSummaryNoode.getChild(0).setContent("<h2>Processing your order, please wait...</h2>");
+
+            setTimeout(() => {
+                noodel.setOptions({
+                    useKeyNavigation: true,
+                    useSwipeNavigation: true,
+                    useWheelNavigation: true,
+                    useTapNavigation: true
+                });
+                finalizeOrder();
+            }, 5000);
+        }
+
+        function finalizeOrder() {
+            isOrderFinalized = true;
+            orderSummaryNoode.removeChild(0);
+            updateOrderTotal();
+
+            for (let i = 0; i < orderItems.length; i++) {
+                orderItems[i].noode.removeChildren(0, 5);
+            }
+
+            orderNowNoode.removeChild(orderItems.length - 1);
+        }
+
+        function resetOrder() {
+            orderNowNoode.removeChildren(0, orderItems.length - 1);
+            orderItems = [];
+            updateOrderTotal();
+            createNewItemNoode();
+            orderNowNoode.setActiveChild(0);
+        }
+
         function createNewItemNoode() {
             const newOrderItem = {
                 name: "",
@@ -278,7 +334,8 @@
                             onEnterFocus: (self) => {
                                 updateOrderItem("Chicken Noodles", 15, null, newOrderItem);
                                 self.setActiveChild(5 - newOrderItem.quantity);
-                            }
+                            },
+                            skipResizeDetection: true
                         }
                     },
                     {
@@ -292,7 +349,8 @@
                             onEnterFocus: (self) => {
                                 updateOrderItem("Beef Noodles", 14, null, newOrderItem);
                                 self.setActiveChild(5 - newOrderItem.quantity);
-                            }
+                            },
+                            skipResizeDetection: true
                         }
                     },
                     {
@@ -306,7 +364,8 @@
                             onEnterFocus: (self) => {
                                 updateOrderItem("Seafood Noodles", 16, null, newOrderItem);
                                 self.setActiveChild(5 - newOrderItem.quantity);
-                            }
+                            },
+                            skipResizeDetection: true
                         }
                     },
                     {
@@ -320,7 +379,8 @@
                             onEnterFocus: (self) => {
                                 updateOrderItem("Vegetarian Noodles", 15, null, newOrderItem);
                                 self.setActiveChild(5 - newOrderItem.quantity);
-                            }
+                            },
+                            skipResizeDetection: true
                         }
                     },
                     {
@@ -328,7 +388,8 @@
                         options: {
                             onEnterFocus: () => {
                                 removeOrderItem(newOrderItem);
-                            }
+                            },
+                            skipResizeDetection: true
                         }
                     }
                 ]
@@ -346,9 +407,9 @@
                     content: `<p>x ${i}</p>`,
                     options: {
                         onEnterFocus: (self) => {
-                            console.log(self);
                             updateOrderItem(null, null, i, orderItem);
-                        }
+                        },
+                        skipResizeDetection: true
                     }
                 });
             }
@@ -359,6 +420,12 @@
         orderNowNoode.setOptions({
             onChildrenEnterFocus: () => {
                 refreshOrderItems();
+            },
+            onChildrenExitFocus: () => {
+                if (isOrderFinalized) {
+                    isOrderFinalized = false;
+                    resetOrder();
+                }
             }
         });
         createNewItemNoode();

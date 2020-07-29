@@ -1061,7 +1061,7 @@
                     <h3>Controlling noode size</h3>
                     <p>
                         The size of noodes are determined in a very simple way - they are placed in a
-                        basic flex container, so will grow or shrink to fit their content while conforming to the
+                        normal block context, so will grow or shrink to fit their content while conforming to the
                         size of siblings, with respect to any CSS height and width properties.
                     </p>
                     <p>
@@ -1085,7 +1085,7 @@
                     <div class="noode">
                         <h3>Example: full-page carousel</h3>
                         <p>
-                            As an example, it's actually very easy to use Noodel to create the typical full-page
+                            As an example, it's very easy to use Noodel to create the typical full-page
                             carousel site, with some simple CSS overrides:
                         </p>
                         <pre>
@@ -1309,9 +1309,9 @@
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">getContent(): string</code></b>
+                    <b><code class="language-ts">getContent(): string | ComponentContent</code></b>
                     <p>
-                        Gets the content (innerHTML) of this noode.
+                        Gets the content of this noode.
                     </p>
                 </div>
                 <div class="noode">
@@ -1351,10 +1351,9 @@
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">setContent(content: string)</code></b>
+                    <b><code class="language-ts">setContent(content: string | ComponentContent)</code></b>
                     <p>
-                        Replaces the content of this noode. This will
-                        remove the old content from the DOM.
+                        Replaces the content of this noode.
                     </p>
                 </div>
                 <div class="noode">
@@ -1451,9 +1450,9 @@
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">content?: string</code></b>
+                    <b><code class="language-ts">content?: string | ComponentContent</code></b>
                     <p>
-                        Content of this noode. Will be injected as innerHTML of the noode's container.
+                        Content of this noode.
                     </p>
                 </div>
                 <div class="noode">
@@ -1683,6 +1682,28 @@
                 </div>
             </div>
             <div class="noode" data-class="menu-item">
+                <h3>ComponentContent<span class="label">interface</span></h3>
+                <p>Object template used for passing a Vue component as noode content.</p>
+                <div class="noode">
+                    <b><code class="language-ts">component: string | object | Function</code></b>
+                    <p>
+                        Vue component to be rendered using Vue's &lt;component&gt; tag. Can be name or component reference.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">props?: object</code></b>
+                    <p>
+                        Name-value pairs of props to pass to this component.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">eventListeners?: object</code></b>
+                    <p>
+                        Name-value pairs of event listeners to pass to this component.
+                    </p>
+                </div>
+            </div>
+            <div class="noode" data-class="menu-item">
                 <h3>CSS classes</h3>
                 <p>List of CSS classes you can use for styling.</p>
                 <div class="noode" data-id="nd-canvas">
@@ -1773,18 +1794,6 @@
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-css">nd-noode-inspect</code></b>
-                    <p>
-                        Applied to the focal noode during inspect mode.
-                    </p>
-                </div>
-                <div class="noode">
-                    <b><code class="language-css">nd-inspect-backdrop</code></b>
-                    <p>
-                        The backdrop element that appears during inspect mode.
-                    </p>
-                </div>
-                <div class="noode">
                     <b><code class="language-css">nd-noode-[transition class]</code></b>
                     <p>
                         <a href="#transition-classes">Transition classes</a> for enter/leave of noodes
@@ -1809,6 +1818,24 @@
                             This is effectively Vue's v-move class applied to the transition-group of noodes.
                         </p>
                     </div>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-noode-inspect</code></b>
+                    <p>
+                        Applied to the focal noode during inspect mode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-inspect-backdrop</code></b>
+                    <p>
+                        The backdrop element that appears during inspect mode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-inspect-backdrop-[transition class]</code></b>
+                    <p>
+                        <a href="#transition-classes">Transition classes</a> for enter/leave of the backdrop.
+                    </p>
                 </div>
                 <div class="noode">
                     <b><code class="language-css">nd-child-indicator</code></b>
