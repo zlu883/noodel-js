@@ -3,10 +3,9 @@ export as namespace Noodel;
 export = Noodel;
 
 /**
- * Represents the view model of a noodel. Has 2-way binding with the view.
+ * The view model of a noodel. Has 2-way binding with the view.
  */
 declare class Noodel {
-
     /**
      * A Vue component (in constructor form) for Noodel ready to be used in a Vue project.
      * Takes a single prop, 'noodel', which should be a Noodel instance registered as
@@ -109,7 +108,7 @@ declare class Noodel {
 }
 
 /**
- * Represents the view model of a noode. Has 2-way binding with the view.
+ * The view model of a noode. Has 2-way binding with the view.
  */
 declare class Noode {
 
@@ -155,9 +154,9 @@ declare class Noode {
      */
     getId(): string;
     /**
-     * Gets the content (innerHTML) of this noode.
+     * Gets the content of this noode.
      */
-    getContent(): string;
+    getContent(): string | ComponentContent;
     /**
      * Gets the custom class names for this noode.
      */
@@ -183,10 +182,9 @@ declare class Noode {
      */
     setId(id: string);
     /**
-     * Replaces the content of this noode. This will
-     * remove the old content from the DOM.
+     * Replaces the content of this noode.
      */
-    setContent(content: string);
+    setContent(content: string | ComponentContent);
     /**
      * Replaces the custom class names for this noode. Can be an array or a space-delimited string.
      */
@@ -243,7 +241,7 @@ declare class Noode {
 }
 
 /**
- * Defines the template for a noode. Used for noode creation and insertion.
+ * Object template used for noode creation and insertion.
  */
 declare interface NoodeDefinition {
     /**
@@ -260,9 +258,9 @@ declare interface NoodeDefinition {
      */
     activeChildIndex?: number;
     /**
-     * Content of this noode. Will be injected as innerHTML of the noode's container.
+     * Content of this noode.
      */
-    content?: string;
+    content?: string | ComponentContent;
     /**
      * Custom class(es) for this noode. Either a string of class names delimited by spaces
      * or an array of class names.
@@ -280,7 +278,7 @@ declare interface NoodeDefinition {
 }
 
 /**
- * Defines the options for a noodel.
+ * Global options for a noodel.
  */
 declare interface NoodelOptions {
     /**
@@ -385,7 +383,7 @@ declare interface NoodelOptions {
 }
 
 /**
- * Defines the options for a noode.
+ * Options for an individual noode.
  */
 declare interface NoodeOptions {
     /**
@@ -420,4 +418,22 @@ declare interface NoodeOptions {
      * @param current the current focal parent
      */
     onChildrenExitFocus?:  (self: Noode, current: Noode) => any;
+}
+
+/**
+ * Object template used for passing a Vue component as noode content.
+ */
+declare interface ComponentContent {
+    /**
+     * Vue component to be rendered using Vue's <component> tag. Can be name or component reference.
+     */
+    component: string | object | Function;
+    /**
+     * Name-value pairs of props to pass to this component.
+     */
+    props?: object;
+    /**
+     * Name-value pairs of event listeners to pass to this component.
+     */
+    eventListeners?: object;
 }
