@@ -61,7 +61,7 @@
     import { ResizeSensor } from "css-element-queries";
 
     import NoodeView from "@/types/NoodeView";
-    import { alignBranchOnNoodeResize } from "@/controllers/noodel-align";
+    import { updateNoodeSize } from "@/controllers/noodel-align";
     import NoodelView from '@/types/NoodelView';
     import { traverseAncestors } from '../controllers/noodel-traverse';
     import { getPath, getFocalHeight, getFocalWidth } from '../util/getters';
@@ -81,9 +81,7 @@
             // nextTick is required for vue's v-move effect to work
             Vue.nextTick(() => {
                 // do initial size capture
-                let rect = this.$el.getBoundingClientRect();
-
-                alignBranchOnNoodeResize(this.store, this.noode, rect.height, true);
+                updateNoodeSize(this.store, this.noode);
 
                 // allows parent branch to fall back to display: none after first size update,
                 // using nextTick to wait for parent branch size capture to finish first
@@ -92,11 +90,9 @@
                 // setup resize sensor, first callback will run after Vue.nextTick
                 if (this.noode.options.skipResizeDetection || this.store.options.skipResizeDetection) return;
                 this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
-                    this.updateRenderedSize();
+                    updateNoodeSize(this.store, this.noode);
                 });
             });            
-
-            this.applyPreventNav();
         },
 
         beforeDestroy() {
@@ -112,41 +108,6 @@
                 this.store.pointerUpSrcNoode = this.noode;
                 requestAnimationFrame(() => this.store.pointerUpSrcNoode = null);
             },
-
-            updateRenderedSize() {
-                let rect = this.$el.getBoundingClientRect();
-
-                alignBranchOnNoodeResize(this.store, this.noode, rect.height);
-            },
-
-            applyPreventNav() {
-                let preventInput = (ev: Event) => ev.stopPropagation();
-
-                this.$el.querySelectorAll("[data-prevent-key]").forEach(el => {
-                    el.addEventListener("keydown", preventInput);
-                });
-                this.$el.querySelectorAll("[data-prevent-swipe]").forEach(el => {
-                    el.addEventListener("pointerdown", preventInput);
-                });
-                this.$el.querySelectorAll("[data-prevent-wheel]").forEach(el => {
-                    el.addEventListener("wheel", preventInput);
-                });
-                this.$el.querySelectorAll("[data-prevent-tap]").forEach(el => {
-                    el.addEventListener("pointerdown", preventInput);
-                });
-            },
-        },
-
-        watch: {
-            "noode.content": function() {
-                this.$nextTick(() => {
-                    if (this.noode.parent.isChildrenVisible) {
-                        this.updateRenderedSize();
-                    }
-
-                    this.applyPreventNav();
-                });
-            }
         },
 
         computed: {

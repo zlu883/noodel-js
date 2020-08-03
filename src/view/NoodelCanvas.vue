@@ -93,7 +93,6 @@
             this.store.trunkOffsetAligned = 0;
             delete this.store.canvasEl;
             delete this.store.trunkEl;
-            delete this.store.focalBranchEl;
             delete this.store.isFirstRenderDone;
             traverseDescendents(this.store.root, (noode) => {
                 noode.trunkRelativeOffset = 0;

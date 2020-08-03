@@ -39,7 +39,7 @@
     import NoodelView from '@/types/NoodelView';
     import { Axis } from '@/enums/Axis';
     import Vue, { PropType } from 'vue';
-    import { alignTrunkOnBranchResize } from '../controllers/noodel-align';
+    import { updateBranchSize } from '../controllers/noodel-align';
 
     export default Vue.extend({
         
@@ -53,20 +53,14 @@
         },
 
         mounted() {
-            if (this.parent.isFocalParent) {
-                this.store.focalBranchEl = this.$refs.branch as Element;
-            }
-
             this.parent.branchBoxEl = this.$el as HTMLDivElement;
             this.parent.branchEl = this.$refs.branch as HTMLDivElement;
 
-            let rect = (this.$refs.branch as Element).getBoundingClientRect();
-
-            alignTrunkOnBranchResize(this.store, this.parent, rect.width, true);
+            updateBranchSize(this.store, this.parent);
 
             if (this.store.options.skipResizeDetection) return;
             this.parent.branchResizeSensor = new ResizeSensor(this.parent.branchBoxEl, () => {
-                this.updateRenderedSize();
+                updateBranchSize(this.store, this.parent);
             });
         },
 
@@ -104,21 +98,7 @@
             }
         },
 
-        watch: {
-            "parent.isFocalParent": function (newVal: boolean, oldVal: boolean) {
-                if (newVal === true) {
-                    this.store.focalBranchEl = this.$refs.branch as Element;
-                }
-            }
-        },
-
         methods: {
-
-            updateRenderedSize() {
-                let rect = this.parent.branchBoxEl.getBoundingClientRect();
-
-                alignTrunkOnBranchResize(this.store, this.parent, rect.width);
-            },
 
             onTransitionEnd(ev: TransitionEvent) {
                 if (ev.propertyName === "transform" && ev.target === this.$refs.branch) {

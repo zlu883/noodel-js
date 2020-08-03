@@ -3,12 +3,13 @@ import NoodeDefinition from '@/types/NoodeDefinition';
 import { setActiveChild as _setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
 import { extractNoodeDefinition, parseAndApplyNoodeOptions, parseClassName, parseStyle } from '@/controllers/noodel-setup';
 import { getPath as _getPath } from '@/util/getters';
-import { alignBranchToIndex } from '@/controllers/noodel-align';
+import { alignBranchToIndex, updateNoodeSize, updateBranchSize } from '@/controllers/noodel-align';
 import { shiftFocalNoode, doJumpNavigation } from '@/controllers/noodel-navigate';
 import NoodelView from '@/types/NoodelView';
 import { registerNoode, unregisterNoode } from '@/controllers/id-register';
 import NoodeOptions from '@/types/NoodeOptions';
 import ComponentContent from '@/types/ComponentContent';
+import Vue from 'vue';
 
 export default class Noode {
 
@@ -98,18 +99,33 @@ export default class Noode {
     }
 
     setContent(content: string | ComponentContent) {
+        if (!this._v.parent) return; // should not set content on root
+
         this._v.content = content;
+        
+        Vue.nextTick(() => {
+            if (this._v.parent.isChildrenVisible) {
+                updateNoodeSize(this._nv, this._v);
+                updateBranchSize(this._nv, this._v.parent);
+            }
+        });
     }
 
     setClass(className: string | string[]) {
+        if (!this._v.parent) return; // should not set class on root
+
         this._v.className = parseClassName(className);
     }
 
     setStyle(style: string | object) {
+        if (!this._v.parent) return; // should not set style on root
+
         this._v.style = parseStyle(style);
     }
 
     setOptions(options: NoodeOptions) {
+        if (!this._v.parent) return; // should not set options on root
+
         parseAndApplyNoodeOptions(options, this._v);
     }
 

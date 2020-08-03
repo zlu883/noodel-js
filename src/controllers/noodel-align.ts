@@ -6,8 +6,16 @@ import Vue from 'vue';
 import { forceReflow } from './noodel-animate';
 import { getFocalWidth, getFocalHeight } from '@/util/getters';
 
-export function alignTrunkOnBranchResize(noodel: NoodelView, parent: NoodeView, newSize: number, isInsert = false) {
+export function updateNoodeSize(noodel: NoodelView, noode: NoodeView) {
+    alignBranchOnNoodeResize(noodel, noode, noode.el.getBoundingClientRect().height);
+}
 
+export function updateBranchSize(noodel: NoodelView, parent: NoodeView) {
+    alignTrunkOnBranchResize(noodel, parent, parent.branchBoxEl.getBoundingClientRect().width);
+}
+
+export function alignTrunkOnBranchResize(noodel: NoodelView, parent: NoodeView, newSize: number, isInsert = false) {
+    
     let diff = newSize - parent.branchSize;
     
     parent.branchSize = newSize;
