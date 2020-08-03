@@ -440,7 +440,7 @@ function findNewFocalParent(noodel: NoodelView, levelDiff: number): NoodeView {
  */
 function computeSnapCount(velocity: number, snapMultiplier: number) {
     if (Math.abs(velocity) < 0.1) return 0;
-    let count = Math.max(0, Math.round(Math.log(Math.abs(velocity) + Math.E)) * snapMultiplier);
+    let count = Math.max(0, Math.round(Math.log(Math.abs(velocity) + Math.E) * snapMultiplier));
 
     return (velocity > 0) ? -count : count;
 }
