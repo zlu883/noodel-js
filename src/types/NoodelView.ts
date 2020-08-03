@@ -42,13 +42,17 @@ export default interface NoodelView {
      * Used by HammerJS handlers to determine the origin of tap input.
      */
     pointerUpSrcNoode?: NoodeView;
+    /**
+     * The focal noode when a pan started. Used for triggering focal change events on pan end.
+     */
+    panStartFocalNoode?: NoodeView;
 
     isInInspectMode: boolean;
 
     // references to DOM elements mainly for calculating positions
     canvasEl?: Element;
     trunkEl?: Element;
-    focalBranchEl?: Element;
+    
     hammerJsInstance?: HammerManager;
 
     containerSize: Vector2D;

@@ -139,6 +139,11 @@ export function startPan(noodel: NoodelView, ev: HammerInput) {
 
     clearTimeout(noodel.limitIndicatorTimeout);
 
+    let currentFocalNoode = getActiveChild(noodel.focalParent);
+
+    if (!currentFocalNoode) return;
+    noodel.panStartFocalNoode = currentFocalNoode;
+
     if (ev.direction === Hammer.DIRECTION_LEFT || ev.direction === Hammer.DIRECTION_RIGHT) {
         noodel.panAxis = Axis.HORIZONTAL;
 
@@ -155,7 +160,7 @@ export function startPan(noodel: NoodelView, ev: HammerInput) {
 
         // finds the current focal branch offset with getBoundingClientRect, even if branch is in transition,
         // taking into account the canvas's position as it may not be full page
-        let currentFocalBranchOffset = noodel.focalBranchEl.getBoundingClientRect().top - noodel.canvasEl.getBoundingClientRect().top - getFocalHeight(noodel);
+        let currentFocalBranchOffset = noodel.focalParent.branchEl.getBoundingClientRect().top - noodel.canvasEl.getBoundingClientRect().top - getFocalHeight(noodel);
 
         noodel.focalParent.applyBranchMove = false;
         noodel.focalParent.childBranchOffset = currentFocalBranchOffset;
@@ -165,18 +170,12 @@ export function startPan(noodel: NoodelView, ev: HammerInput) {
 
 export function updatePan(noodel: NoodelView, ev: HammerInput) {
 
-    let prevFocalNoode = getActiveChild(noodel.focalParent);
-
-    if (!prevFocalNoode) return;
-
     if (noodel.panAxis === Axis.HORIZONTAL) {
         panTrunk(noodel, noodel.panOffsetOriginTrunk + (ev.deltaX * noodel.options.swipeMultiplierTrunk));     
     }
     else if (noodel.panAxis === Axis.VERTICAL) {
         panFocalBranch(noodel, noodel.panOffsetOriginFocalBranch + (ev.deltaY * noodel.options.swipeMultiplierBranch));
     }
-
-    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
 }
 
 export function releasePan(noodel: NoodelView, ev: HammerInput) {
@@ -196,6 +195,8 @@ export function releasePan(noodel: NoodelView, ev: HammerInput) {
 }
 
 export function cancelPan(noodel: NoodelView) {
+
+    if (noodel.panAxis === null) return;
 
     if (noodel.panAxis === Axis.HORIZONTAL) {
         noodel.panOffsetOriginTrunk = null;
@@ -227,7 +228,9 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
 
     clearTimeout(noodel.limitIndicatorTimeout);
 
-    let prevFocalNoode = getActiveChild(noodel.focalParent);
+    let prevFocalNoode = noodel.panStartFocalNoode || getActiveChild(noodel.focalParent);
+    
+    noodel.panStartFocalNoode = null;
 
     if (!prevFocalNoode) return;
 
@@ -272,7 +275,9 @@ export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
     
     clearTimeout(noodel.limitIndicatorTimeout);
 
-    let prevFocalNoode = getActiveChild(noodel.focalParent);
+    let prevFocalNoode = noodel.panStartFocalNoode || getActiveChild(noodel.focalParent);
+    
+    noodel.panStartFocalNoode = null;
 
     if (!prevFocalNoode) return;
 
