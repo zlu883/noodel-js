@@ -179,6 +179,7 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
 
         if (parent.children.length === deleteCount) { // all children deleted
             setActiveChild(noodel, parent, null);
+            parent.isChildrenVisible = false;
         }
         else if (index + deleteCount < parent.children.length) { // siblings exist after the deleted children
             setActiveChild(noodel, parent, index + deleteCount); // set next sibling active
