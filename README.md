@@ -2,8 +2,7 @@
 
 <img alt="Noodel logo" src="docs/logo_256x256.png" width="90">
 
-Noodel, short for *node model*, is a UI framework for structuring and presenting content in the modern age.
-It is based on an interaction scheme that is simple, intuitive, and adaptable.
+Noodel, short for *node model*, is a user interface that you can navigate with just 4 arrow keys (or 4 direction swipes). It offers a new way to present content in the modern web that is intuitive, responsive and accessible.
 
 ## [Demo / documentation](https://zlu883.github.io/Noodel/)
 
