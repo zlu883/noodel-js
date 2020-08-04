@@ -5,11 +5,12 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
+    <meta name="description" content="JavaScript library for presenting beautiful, dynamic content trees. Based on a swipe-based user interface that is intuitive, accessible and adaptable.">
 
     <link rel="icon" href="logo_256x256.png">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel@2.0.2/dist/noodel.css">
-    <script src="https://cdn.jsdelivr.net/npm/noodel@2.0.2/dist/noodel-full.umd.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel@2.0.3/dist/noodel.css">
+    <script src="https://cdn.jsdelivr.net/npm/noodel@2.0.3/dist/noodel-full.umd.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/prism.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/components/prism-typescript.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/plugins/normalize-whitespace/prism-normalize-whitespace.min.js"></script>
@@ -26,16 +27,19 @@
     </noscript>
 
     <script>
-        window.addEventListener("load", () => {
+        window.addEventListener("load", function() {
             document.body.style.width = window.innerWidth + 'px'; 
             document.body.style.height  = window.innerHeight + 'px';
-            requestAnimationFrame(() => {
+            requestAnimationFrame(function() {
                 new Noodel("#root", {
-                    retainDepthOnTapNavigation: true
+                    retainDepthOnTapNavigation: true,
+                    swipeMultiplierTrunk: 0.9,
+                    swipeMultiplierBranch: 0.7,
+                    snapMultiplierTrunk: 0.8,
                 }).mount("#root");
             });
         });
-        window.addEventListener("resize", () => {
+        window.addEventListener("resize", function() {
             document.body.style.width = window.innerWidth + 'px'; 
             document.body.style.height  = window.innerHeight + 'px';
         });
@@ -45,7 +49,7 @@
         <div class="noode" data-class="menu-item">
             <img src="logo_256x256.png" class="logo"/>
             <h1 class="title">Noodel.js</h1>
-            <p class="version">v2.0.2</p>
+            <p class="version">v2.0.3</p>
             <div class="link-container">
                 <a class="link" href="https://github.com/zlu883/Noodel" target="_blank"><img src="github.svg" class="link-icon"/> GitHub</a>
                 <a class="link" href="https://codepen.io/collection/DopkMm" target="_blank"><img src="codepen.svg" class="link-icon"/> Examples</a>
@@ -272,7 +276,7 @@
                     <p>You can use Noodel by directly embedding its script and CSS into your HTML:</p>
                     <pre>
                         <code class="language-html">
-                            // You should specify the version number (e.g noodel@2.0.2) in production
+                            // You should specify the version number (e.g noodel@2.0.3) in production
                             &lt;script src="https://cdn.jsdelivr.net/npm/noodel/dist/noodel-full.umd.min.js"&gt;&lt;/script&gt;
                             &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.css"&gt;
                         </code>
@@ -1120,6 +1124,14 @@
                             You can apply any combination of them according to your needs.
                         </p>
                     </div>  
+                    <div class="noode">
+                        <p>
+                            <img src="alert-triangle.svg" class="link-icon"/> Noodel's view mechanism depends on CSS transitions of opacity and transform.
+                            Because CSS declarations for transitions are non-stackable, if you specify custom transitions for another property (e.g background-color)
+                            on an element that fades or moves,
+                            you need to also supply the corresponding opacity/transform transitions because the default transitions will be overriden.
+                        </p>
+                    </div> 
                 </div>  
             </div>
         </div>
