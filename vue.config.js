@@ -6,5 +6,8 @@ module.exports = {
             libraryExport: 'default'
         }
     },
+    devServer: {
+        contentBase: './'
+    },
     productionSourceMap: false
 }
