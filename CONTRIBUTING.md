@@ -1,9 +1,7 @@
 # Contribution Guide
-
 Hello there! First and foremost, thank you for your interest in Noodel. If you are also considering to contribute to this project, you are very much welcome! 
 
 ## How you can contribute
-
 At this stage, Noodel is a fresh new project that has just started. Many aspects of it are still works in progress. As such, this guideline is just a basic draft, to be ironed out in the days to come. 
 
 This also means there are many things you can contribute to. Including but not limited to:
@@ -14,11 +12,11 @@ This also means there are many things you can contribute to. Including but not l
 - Spreading the word
 
 ## Roadmap
-
 Some planned features/enhancements for the future include, but not limited to:
-- Adding proper testing to the project
+- Add more tests
 - Integration with other frameworks like React
-- More options related to layout and positioning 
+- Options for layout orientation
+- Options for focal position
 
 ## Bug reports
 Please use Github issues for bug reports. As a general rule, please provide:
@@ -37,13 +35,13 @@ Please use Github issues for submitting feature/enhancement requests. This can a
 Help is especially wanted for making example sites that use Noodel! It'll be great for showcasing the framework (and learning about its possibilities and limitations). These sites can be about any topic and in any structure. If you have an idea for such a site, or you have built a site using Noodel that you want the project to link to, please make your proposal as a feature request :)
 
 ## Building the project
+The project is scaffolded using [vue-cli](https://cli.vuejs.org/). Refer to its docs for more information.
+
 After you've downloaded the project, do `npm install` to install all dependencies. 
 
 You can then use either:
 - `npm run build` to build the js bundle
-- `npm run serve` to create a hot-reloading server that can serve your HTML pages for testing purposes. The built files will be automatically injected. Note that for this to work, you need to create an `index.html` page under the `public` folder in the project root, as well as a `main.ts` file under the `src` folder where you can write your entry point to use the library. These files will be omitted from git.
-
-The project is scaffolded using [vue-cli](https://cli.vuejs.org/). Refer to its docs for more information.
+- `npm run test` to run a server with live reloading that serves the test html files to run in the browser (which is setup by adapting 'vue-cli-service serve')
 
 ## Pull requests
 If you are interested in making a pull request, it'll be much appreciated. Please:

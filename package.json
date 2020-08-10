@@ -19,7 +19,7 @@
   "author": {
     "name": "Zuohao (Jonny) Lu"
   },
-  "description": "Intuitive, adaptable swipe-based user interface for content trees",
+  "description": "Intuitive, adaptable user interface for dynamic content trees",
   "dependencies": {
     "core-js": "^3.6.4",
     "css-element-queries": "^1.2.3",

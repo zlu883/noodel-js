@@ -2,7 +2,7 @@
 
 <img alt="Noodel logo" src="docs/logo_256x256.png" width="90">
 
-Noodel, short for *node model*, is a user interface that you can navigate with just 4 arrow keys (or 4 direction swipes). It offers a new way to present content on the modern web that is intuitive, responsive and accessible.
+Noodel, short for *node model*, is a user interface for dynamic content trees that you can navigate by just moving up, down, left and right. It offers a new way to present content on the modern web that is intuitive, responsive and accessible.
 
 ## [Demo / documentation](https://zlu883.github.io/Noodel/)
 
