@@ -3,10 +3,10 @@
   "version": "2.0.3",
   "license": "MIT",
   "scripts": {
-    "serve": "vue-cli-service serve",
+    "test": "vue-cli-service serve",
     "build-base": "vue-cli-service build --target lib --name noodel src/main/Noodel.ts",
     "build-full": "vue-cli-service build --target lib --inline-vue --name noodel-full --formats umd,umd-min --no-clean src/main/Noodel.ts",
-    "build": "npm run build-base && npm run build-full",
+    "build": "npm run build-base && npm run build-full && rimraf dist/demo.html dist/noodel-full.css",
     "lint": "vue-cli-service lint"
   },
   "main": "dist/noodel.common.js",
@@ -41,6 +41,7 @@
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
     "mocha": "^8.1.1",
+    "rimraf": "^3.0.2",
     "typescript": "~3.7.5",
     "vue-template-compiler": "^2.6.11"
   }

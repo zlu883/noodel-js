@@ -1,6 +1,5 @@
 .DS_Store
 node_modules
-/dist
 
 # local env files
 .env.local
@@ -19,7 +18,3 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw?
-
-# Entry points for vue-cli-service serve
-public/index.html
-src/main.ts
