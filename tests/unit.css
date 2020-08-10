@@ -11,6 +11,10 @@ body {
     overflow: auto;
 }
 
+#mocha .test pre {
+    overflow: auto;
+}
+
 .nd-canvas {
     width: 100%;
     height: 100%;

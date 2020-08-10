@@ -34,8 +34,8 @@ export default class Noodel {
             root = document.querySelector(root);
         }
 
-        if (typeof root !== "object") {
-            throw new Error("Cannot render noodel: invalid root object or element");
+        if (!root || typeof root !== "object") {
+            throw new Error("Cannot create noodel: invalid root param");
         }
 
         if (root instanceof Element) {
