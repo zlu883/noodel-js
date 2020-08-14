@@ -54,8 +54,16 @@ export default class Noodel {
     // LIFECYCLE
 
     mount(el: string | Element) {
+        if (typeof el === "string") {
+            el = document.querySelector(el);
+        }
+
+        if (!(el instanceof Element)) {
+            throw new Error("Cannot mount noodel: invalid target element");
+        }
+
         Vue.config.productionTip = false;
-    
+
         this.vueInstance = new Vue({
             render: h => h(NoodelCanvas, { props: { store: this._v }}),
             data: this._v
