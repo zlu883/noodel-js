@@ -1,5 +1,5 @@
 import Noodel from "@/main/Noodel";
 
-new Noodel("#root").mount("#root");
+new Noodel("#template").mount("#noodel");
 
 
