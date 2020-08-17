@@ -8,6 +8,7 @@ import { setupRouting, unsetRouting } from './noodel-routing';
 import NoodeOptions from '@/types/NoodeOptions';
 import { generateNoodeId, registerNoode, findNoode } from './id-register';
 import { alignNoodelOnJump, cancelPan } from './noodel-navigate';
+import { traverseDescendents } from './noodel-traverse';
 
 export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelView {
 
@@ -259,65 +260,78 @@ export function parseAndApplyNoodeOptions(options: NoodeOptions, noode: NoodeVie
 
 export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, level: number, index: number, parent: NoodeView): NoodeView {
     
-    let noodeView: NoodeView = {
-        index: index,
-        level: level,
-        isChildrenVisible: false,
-        isChildrenTransparent: true,
-        isFocalParent: false,
-        isActive: false,
-        size: 0,
-        trunkRelativeOffset: parent ? parent.trunkRelativeOffset + parent.branchSize : 0,
-        childBranchOffset: 0,
-        childBranchOffsetAligned: 0,
-        applyBranchMove: false,
-        isInInspectMode: false,
-        branchRelativeOffset: parent && index > 0 ? parent.children[index - 1].branchRelativeOffset + parent.children[index - 1].size : 0,
-        branchSize: 0,
-        parent: parent,
-        id: typeof def.id === 'string' ? def.id : generateNoodeId(noodel),
-        children: [],
-        content: def.content || null,
-        className: parseClassName(def.className),
-        style: parseStyle(def.style),
-        activeChildIndex: null,
-        options: {
-            skipResizeDetection: false
+    function parseNoodeDef(noodel: NoodelView, def: NoodeDefinition, level: number, index: number, parent: NoodeView) {
+
+        let noodeView: NoodeView = {
+            index: index,
+            level: level,
+            isChildrenVisible: false,
+            isChildrenTransparent: true,
+            isFocalParent: false,
+            isActive: false,
+            size: 0,
+            trunkRelativeOffset: parent ? parent.trunkRelativeOffset + parent.branchSize : 0,
+            childBranchOffset: 0,
+            childBranchOffsetAligned: 0,
+            applyBranchMove: false,
+            isInInspectMode: false,
+            branchRelativeOffset: parent && index > 0 ? parent.children[index - 1].branchRelativeOffset + parent.children[index - 1].size : 0,
+            branchSize: 0,
+            parent: parent,
+            id: typeof def.id === 'string' ? def.id : generateNoodeId(noodel),
+            children: [],
+            content: def.content || null,
+            className: parseClassName(def.className),
+            style: parseStyle(def.style),
+            activeChildIndex: null,
+            options: {
+                skipResizeDetection: false
+            }
         }
-    }
-
-    registerNoode(noodel, noodeView.id, noodeView);
-
-    if (def.options && typeof def.options === "object") {
-        parseAndApplyNoodeOptions(def.options, noodeView);
-    }
-
-    let numOfChildren = Array.isArray(def.children) ? def.children.length : 0;
-
-    if (typeof def.activeChildIndex !== 'number') {
-        noodeView.activeChildIndex = numOfChildren > 0 ? 0 : null;
-    }
-    else {
-        if (def.activeChildIndex < 0 || def.activeChildIndex >= numOfChildren) {
-            console.warn("Invalid initial active child index for noode ID " + noodeView.id);
+    
+        registerNoode(noodel, noodeView.id, noodeView);
+    
+        if (def.options && typeof def.options === "object") {
+            parseAndApplyNoodeOptions(def.options, noodeView);
+        }
+    
+        let numOfChildren = Array.isArray(def.children) ? def.children.length : 0;
+    
+        if (typeof def.activeChildIndex !== 'number') {
             noodeView.activeChildIndex = numOfChildren > 0 ? 0 : null;
         }
         else {
-            noodeView.activeChildIndex = def.activeChildIndex;
+            if (def.activeChildIndex < 0 || def.activeChildIndex >= numOfChildren) {
+                console.warn("Invalid initial active child index for noode ID " + noodeView.id);
+                noodeView.activeChildIndex = numOfChildren > 0 ? 0 : null;
+            }
+            else {
+                noodeView.activeChildIndex = def.activeChildIndex;
+            }
         }
-    }
-
-    if (parent && index === parent.activeChildIndex) {
-        noodeView.isActive = true;
-    }
-
-    if (numOfChildren > 0) {
-        for (let i = 0; i < def.children.length; i++) {
-            noodeView.children.push(buildNoodeView(noodel, def.children[i], level + 1, i, noodeView));
+    
+        if (parent && def.isActive) {
+            parent.activeChildIndex = index;
         }
+    
+        if (numOfChildren > 0) {
+            for (let i = 0; i < def.children.length; i++) {
+                noodeView.children.push(parseNoodeDef(noodel, def.children[i], level + 1, i, noodeView));
+            }
+        }
+    
+        return noodeView;
     }
 
-    return noodeView;
+    let defRoot = parseNoodeDef(noodel, def, level, index, parent);
+
+    traverseDescendents(defRoot, (noode) => {
+        if (noode.activeChildIndex !== null) {
+            noode.children[noode.activeChildIndex].isActive = true;
+        }
+    }, true);
+
+    return defRoot;
 }
 
 export function extractNoodeDefinition(noode: NoodeView): NoodeDefinition {

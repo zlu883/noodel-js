@@ -5,6 +5,7 @@ export default interface NoodeDefinition {
 
     id?: string;
     children?: NoodeDefinition[];
+    isActive?: boolean;
     activeChildIndex?: number;
     content?: string | ComponentContent;
     className?: string | string[];
