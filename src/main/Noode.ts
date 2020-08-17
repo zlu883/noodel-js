@@ -24,7 +24,7 @@ export default class Noode {
     // GETTERS
 
     getParent(): Noode {
-        if (!this._v.parent) return null;
+        if (this.isRoot()) return null;
         return new Noode(this._v.parent, this._nv);
     }
 
@@ -54,6 +54,10 @@ export default class Noode {
 
     getChildren(): Noode[] {
         return this._v.children.map(c => new Noode(c, this._nv));
+    }
+
+    getChildCount(): number {
+        return this._v.children.length;
     }
 
     getId(): string {
@@ -89,6 +93,27 @@ export default class Noode {
         return new Noode(this._v.children[this._v.activeChildIndex], this._nv);
     }
 
+    isRoot(): boolean {
+        return this._v.parent === null;
+    }
+
+    isActive(): boolean {
+        return this._v.isActive;
+    }
+
+    isInFocalBranch(): boolean {
+        if (this.isRoot()) return false;
+        return this._v.parent.isFocalParent;
+    }
+
+    isFocalParent(): boolean {
+        return this._v.isFocalParent;
+    }
+
+    isFocalNoode(): boolean {
+        return this.isActive() && this.isInFocalBranch();
+    }
+
     // MUTATERS
 
     setId(id: string) {
@@ -99,7 +124,7 @@ export default class Noode {
     }
 
     setContent(content: string | ComponentContent) {
-        if (!this._v.parent) return; // should not set content on root
+        if (this.isRoot()) return; // should not set content on root
 
         this._v.content = content;
         
@@ -112,19 +137,19 @@ export default class Noode {
     }
 
     setClass(className: string | string[]) {
-        if (!this._v.parent) return; // should not set class on root
+        if (this.isRoot()) return; // should not set class on root
 
         this._v.className = parseClassName(className);
     }
 
     setStyle(style: string | object) {
-        if (!this._v.parent) return; // should not set style on root
+        if (this.isRoot()) return; // should not set style on root
 
         this._v.style = parseStyle(style);
     }
 
     setOptions(options: NoodeOptions) {
-        if (!this._v.parent) return; // should not set options on root
+        if (this.isRoot()) return; // should not set options on root
 
         parseAndApplyNoodeOptions(options, this._v);
     }
@@ -145,6 +170,42 @@ export default class Noode {
             _setActiveChild(this._nv, this._v, index);
             alignBranchToIndex(this._v, index);
         }
+    }
+
+    addNoodeBefore(def: NoodeDefinition): Noode {
+        if (this.isRoot()) {
+            console.warn("Cannot add sibling noode before root");
+            return null;
+        }
+
+        return this.getParent().addChild(def, this.getIndex());
+    }
+
+    addNoodesBefore(defs: NoodeDefinition[]): Noode[] {
+        if (this.isRoot()) {
+            console.warn("Cannot add sibling noodes before root");
+            return [];
+        }
+
+        return this.getParent().addChildren(defs, this.getIndex());
+    }
+
+    addNoodeAfter(def: NoodeDefinition): Noode {
+        if (this.isRoot()) {
+            console.warn("Cannot add sibling noode after root");
+            return null;
+        }
+
+        return this.getParent().addChild(def, this.getIndex() + 1);
+    }
+
+    addNoodesAfter(defs: NoodeDefinition[]): Noode[] {
+        if (this.isRoot()) {
+            console.warn("Cannot add sibling noodes after root");
+            return [];
+        }
+
+        return this.getParent().addChildren(defs, this.getIndex() + 1);
     }
 
     addChild(childDef: NoodeDefinition, index?: number): Noode {
