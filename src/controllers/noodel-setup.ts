@@ -56,7 +56,15 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             useTapNavigation: true,
             useInspectModeKey: true,
             useInspectModeDoubleTap: true,
-            skipResizeDetection: false
+            skipResizeDetection: false,
+            showLimitIndicators: true,
+            showBranchColumns: false,
+            showChildIndicators: true,
+            onMount: null,
+            onEnterInspectMode: null,
+            onExitInspectMode: null,
+            onFocalNoodeChange: null,
+            onFocalParentChange: null
         }
     }
 
@@ -146,86 +154,12 @@ export function setupContainer(el: Element, noodel: NoodelView) {
 
 export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView) {
 
-    if (typeof options.visibleSubtreeDepth === "number") {
-        noodel.options.visibleSubtreeDepth = options.visibleSubtreeDepth;
+    noodel.options = {
+        ...noodel.options,
+        ...options
     }
 
-    if (typeof options.retainDepthOnTapNavigation === "boolean") {
-        noodel.options.retainDepthOnTapNavigation = options.retainDepthOnTapNavigation;
-    }
-
-    if (typeof options.snapMultiplierBranch === "number") {
-        noodel.options.snapMultiplierBranch = options.snapMultiplierBranch;
-    }
-
-    if (typeof options.snapMultiplierTrunk === "number") {
-        noodel.options.snapMultiplierTrunk = options.snapMultiplierTrunk;
-    }
-
-    if (typeof options.swipeMultiplierBranch === "number") {
-        noodel.options.swipeMultiplierBranch = options.swipeMultiplierBranch;
-    }
-
-    if (typeof options.swipeMultiplierTrunk === "number") {
-        noodel.options.swipeMultiplierTrunk = options.swipeMultiplierTrunk;
-    }
-
-    if (typeof options.useRouting === "boolean") {
-        noodel.options.useRouting = options.useRouting;
-    }
-
-    if (typeof options.useKeyNavigation === "boolean") {
-        noodel.options.useKeyNavigation = options.useKeyNavigation;
-    }
-
-    if (typeof options.useWheelNavigation === "boolean") {
-        noodel.options.useWheelNavigation = options.useWheelNavigation;
-    }
-
-    if (typeof options.useSwipeNavigation === "boolean") {
-        noodel.options.useSwipeNavigation = options.useSwipeNavigation;
-        if (!options.useSwipeNavigation) cancelPan(noodel);
-    }
-
-    if (typeof options.useTapNavigation === "boolean") {
-        noodel.options.useTapNavigation = options.useTapNavigation;
-    }
-
-    if (typeof options.useInspectModeKey === "boolean") {
-        noodel.options.useInspectModeKey = options.useInspectModeKey;
-    }
-
-    if (typeof options.useInspectModeDoubleTap === "boolean") {
-        noodel.options.useInspectModeDoubleTap = options.useInspectModeDoubleTap;
-    }
-
-    if (typeof options.skipResizeDetection === "boolean") {
-        noodel.options.skipResizeDetection = options.skipResizeDetection;
-    }
-
-    if (typeof options.subtreeDebounceInterval === "number") {
-        noodel.options.subtreeDebounceInterval = options.subtreeDebounceInterval;
-    }
-
-    if (options.onMount === null || typeof options.onMount === "function") {
-        noodel.options.onMount = options.onMount;
-    }
-
-    if (options.onFocalNoodeChange === null || typeof options.onFocalNoodeChange === "function") {
-        noodel.options.onFocalNoodeChange = options.onFocalNoodeChange;
-    }
-
-    if (options.onFocalParentChange === null || typeof options.onFocalParentChange === "function") {
-        noodel.options.onFocalParentChange = options.onFocalParentChange;
-    }
-
-    if (options.onEnterInspectMode === null || typeof options.onEnterInspectMode === "function") {
-        noodel.options.onEnterInspectMode = options.onEnterInspectMode;
-    }
-
-    if (options.onExitInspectMode === null || typeof options.onExitInspectMode === "function") {
-        noodel.options.onExitInspectMode = options.onExitInspectMode;
-    }
+    if (!options.useSwipeNavigation) cancelPan(noodel);
 
     if (noodel.options.useRouting) {
         setupRouting(noodel);
@@ -237,24 +171,9 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView)
 
 export function parseAndApplyNoodeOptions(options: NoodeOptions, noode: NoodeView) {
 
-    if (typeof options.skipResizeDetection === "boolean") {
-        noode.options.skipResizeDetection = options.skipResizeDetection;
-    }
-
-    if (options.onEnterFocus === null || typeof options.onEnterFocus === "function") {
-        noode.options.onEnterFocus = options.onEnterFocus;
-    }
-
-    if (options.onExitFocus === null || typeof options.onExitFocus === "function") {
-        noode.options.onExitFocus = options.onExitFocus;
-    }
-
-    if (options.onChildrenEnterFocus === null || typeof options.onChildrenEnterFocus === "function") {
-        noode.options.onChildrenEnterFocus = options.onChildrenEnterFocus;
-    }
-
-    if (options.onChildrenExitFocus === null || typeof options.onChildrenExitFocus === "function") {
-        noode.options.onChildrenExitFocus = options.onChildrenExitFocus;
+    noode.options = {
+        ...noode.options,
+        ...options
     }
 }
 
@@ -285,7 +204,13 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, level: 
             style: parseStyle(def.style),
             activeChildIndex: null,
             options: {
-                skipResizeDetection: false
+                skipResizeDetection: null,
+                showBranchColumn: null,
+                showChildIndicator: null,
+                onChildrenEnterFocus: null,
+                onChildrenExitFocus: null,
+                onEnterFocus: null,
+                onExitFocus: null,
             }
         }
     

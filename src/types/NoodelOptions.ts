@@ -17,9 +17,12 @@ export default interface NoodelOptions {
     useInspectModeKey?: boolean;
     useInspectModeDoubleTap?: boolean;
     skipResizeDetection?: boolean;
-    onMount?: () => any;
-    onFocalNoodeChange?: (current: Noode, prev: Noode) => any;
-    onFocalParentChange?: (current: Noode, prev: Noode) => any;
-    onEnterInspectMode?: (noode: Noode) => any;
-    onExitInspectMode?: (noode: Noode) => any;
+    showLimitIndicators?: boolean;
+    showChildIndicators?: boolean;
+    showBranchColumns?: boolean;
+    onMount?: () => any | null;
+    onFocalNoodeChange?: (current: Noode, prev: Noode) => any | null;
+    onFocalParentChange?: (current: Noode, prev: Noode) => any | null;
+    onEnterInspectMode?: (noode: Noode) => any | null;
+    onExitInspectMode?: (noode: Noode) => any | null;
 }

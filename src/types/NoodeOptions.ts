@@ -2,9 +2,11 @@ import Noode from '@/main/Noode';
 
 export default interface NoodeOptions {
 
-    skipResizeDetection?: boolean;
-    onEnterFocus?: (self: Noode, prev: Noode) => any;
-    onExitFocus?: (self: Noode, current: Noode) => any;
-    onChildrenEnterFocus?:  (self: Noode, prev: Noode) => any;
-    onChildrenExitFocus?:  (self: Noode, current: Noode) => any;
+    skipResizeDetection?: boolean | null;
+    showChildIndicator?: boolean | null;
+    showBranchColumn?: boolean | null;
+    onEnterFocus?: (self: Noode, prev: Noode) => any | null;
+    onExitFocus?: (self: Noode, current: Noode) => any | null;
+    onChildrenEnterFocus?:  (self: Noode, prev: Noode) => any | null;
+    onChildrenExitFocus?:  (self: Noode, current: Noode) => any | null;
 } 
