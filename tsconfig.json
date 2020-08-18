@@ -1,7 +1,7 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "module": "esnext",
+    "target": "es5",
+    "module": "CommonJS",
     "strict": false,
     "noImplicitThis": true,
     "jsx": "preserve",
@@ -11,8 +11,6 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "sourceMap": true,
-    "declaration": true,
-    "declarationDir": "dist/types",
     "baseUrl": ".",
     "types": [
       "webpack-env",

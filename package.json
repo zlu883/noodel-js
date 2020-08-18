@@ -4,9 +4,10 @@
   "license": "MIT",
   "scripts": {
     "test": "vue-cli-service serve",
-    "build-base": "vue-cli-service build --target lib --name noodel src/main/Noodel.ts",
-    "build-full": "vue-cli-service build --target lib --inline-vue --name noodel-full --formats umd,umd-min --no-clean src/main/Noodel.ts",
-    "build": "npm run build-base && npm run build-full && rimraf dist/demo.html dist/noodel-full.css",
+    "clean": "rimraf dist",
+    "build:base": "webpack --env.base --env.css --env.umd --env.min && webpack --env.base --env.css --env.umd && webpack --env.base",
+    "build:full": "webpack --env.full --env.umd --env.min && webpack --env.full --env.umd",
+    "build": "npm run clean && npm run build:base && npm run build:full",
     "lint": "vue-cli-service lint"
   },
   "main": "dist/noodel.common.js",
@@ -19,6 +20,7 @@
   "author": {
     "name": "Zuohao (Jonny) Lu"
   },
+  "homepage": "https://zlu883.github.io/Noodel",
   "description": "Intuitive, adaptable user interface for dynamic content trees",
   "dependencies": {
     "core-js": "^3.6.4",
@@ -40,9 +42,17 @@
     "chai": "^4.2.0",
     "eslint": "^6.7.2",
     "eslint-plugin-vue": "^6.1.2",
+    "mini-css-extract-plugin": "^0.10.0",
     "mocha": "^8.1.1",
+    "null-loader": "^4.0.0",
+    "optimize-css-assets-webpack-plugin": "^5.0.3",
     "rimraf": "^3.0.2",
+    "terser-webpack-plugin": "^4.1.0",
+    "ts-loader": "^8.0.2",
     "typescript": "~3.7.5",
-    "vue-template-compiler": "^2.6.11"
+    "vue-loader": "^15.9.3",
+    "vue-template-compiler": "^2.6.11",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12"
   }
 }

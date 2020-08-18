@@ -3,7 +3,7 @@ module.exports = {
     configureWebpack: {
         output: {
             library: 'Noodel',
-            libraryExport: 'default'
+            libraryExport: 'default',
         }
     },
     devServer: {
