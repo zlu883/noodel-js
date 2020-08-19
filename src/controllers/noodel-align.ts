@@ -1,10 +1,10 @@
-import NoodeView from '@/types/NoodeView';
-import NoodelView from '@/types/NoodelView';
+import NoodeView from '../types/NoodeView';
+import NoodelView from '../types/NoodelView';
 import { traverseDescendents } from './noodel-traverse';
-import { Axis } from '@/enums/Axis';
+import { Axis } from '../enums/Axis';
 import Vue from 'vue';
 import { forceReflow } from './noodel-animate';
-import { getFocalWidth, getFocalHeight } from '@/util/getters';
+import { getFocalWidth, getFocalHeight } from '../util/getters';
 
 export function updateNoodeSize(noodel: NoodelView, noode: NoodeView) {
     alignBranchOnNoodeResize(noodel, noode, noode.el.getBoundingClientRect().height);

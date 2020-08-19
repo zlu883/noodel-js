@@ -10,33 +10,20 @@ const banner = 'Noodel.js - v' + PACKAGE.version + '\n' +
     '(c) 2019-' + new Date().getFullYear() + ' ' + PACKAGE.author.name + '\n' +
     PACKAGE.license + ' License' + '\n' + PACKAGE.homepage;
 
-module.exports = env => {
-
-    if (!env) env = {};
-
-    let outputFileName = 'noodel';
-    if (env.full) outputFileName += '-full';
-    outputFileName += env.umd ? '.umd' : '.common';
-    if (env.min) outputFileName += '.min';
-    outputFileName += '.js';
-
+function baseConfig() {
     return {
         mode: 'production',
         entry: './src/main/Noodel.ts',
         resolve: {
             extensions: ['.ts', '.js', '.vue', '.json'],
-            alias: {
-                '@': path.resolve(__dirname, 'src')
-            }
         },
-        externals: env.full ? undefined : {
-            'vue': env.umd ? {
+        externals: {
+            'vue': {
                 commonjs: 'vue',
                 commonjs2: 'vue',
                 amd: 'vue',
                 root: 'Vue'
-            } 
-            : "commonjs2 vue"
+            }
         },
         module: {
             rules: [
@@ -46,12 +33,7 @@ module.exports = env => {
                 },
                 {
                     test: /\.css$/,
-                    use: env.css ? [
-                        process.env.NODE_ENV !== 'production'
-                            ? 'vue-style-loader'
-                            : MiniCssExtractPlugin.loader,
-                        'css-loader'
-                    ] : [
+                    use: [
                         'null-loader'
                     ]
                 },
@@ -67,23 +49,96 @@ module.exports = env => {
         },
         plugins: [
             new VueLoaderPlugin(),
-            new MiniCssExtractPlugin({
-                filename: env.min ? 'noodel.min.css' : 'noodel.css'
-            }),
             new webpack.BannerPlugin(banner)
         ],
         output: {
             path: path.resolve(__dirname, 'dist'),
-            filename: outputFileName,
             library: 'Noodel',
             libraryExport: 'default',
-            libraryTarget: env.umd ? 'umd' : 'commonjs'
-        },
-        optimization: {
-            minimize: !!env.min,
-            minimizer: [new TerserJSPlugin({
-                extractComments: false
-            }), new OptimizeCSSAssetsPlugin({})]
-        },
+            libraryTarget: 'umd'
+        }, 
     }
 }
+
+function baseUmdMinConfig() {
+    let config = baseConfig();
+
+    config.module.rules[1].use = [
+        MiniCssExtractPlugin.loader,
+        'css-loader'
+    ];
+    config.plugins.splice(1, 0, new MiniCssExtractPlugin({
+        filename: 'noodel.min.css'
+    }));
+    config.output.filename = 'noodel.umd.min.js';
+    config.optimization = {
+        minimize: true,
+        minimizer: [new TerserJSPlugin({
+            extractComments: false
+        }), new OptimizeCSSAssetsPlugin({})]
+    };
+
+    return config;
+}
+
+function baseUmdConfig() {
+    let config = baseConfig();
+
+    config.module.rules[1].use = [
+        MiniCssExtractPlugin.loader,
+        'css-loader'
+    ];
+    config.plugins.splice(1, 0, new MiniCssExtractPlugin({
+        filename: 'noodel.css'
+    }));
+    config.output.filename = 'noodel.umd.js';
+    config.optimization = {
+        minimize: false,
+    };
+
+    return config;
+}
+
+function baseCommonJsConfig() {
+    let config = baseConfig();
+
+    config.externals = {
+        'vue': 'commonjs2 vue'
+    };
+    config.output.filename = 'noodel.common.js';
+    config.output.libraryTarget = 'commonjs'
+    config.optimization = {
+        minimize: false,
+    };
+
+    return config;
+}
+
+function fullUmdMinConfig() {
+    let config = baseConfig();
+
+    config.externals = undefined;
+    config.output.filename = 'noodel-full.umd.min.js';
+
+    return config;
+}
+
+function fullUmdConfig() {
+    let config = baseConfig();
+
+    config.externals = undefined;
+    config.output.filename = 'noodel-full.umd.js';
+    config.optimization = {
+        minimize: false,
+    };
+
+    return config;
+}
+
+module.exports = [
+    baseUmdMinConfig(),
+    baseUmdConfig(),
+    baseCommonJsConfig(),
+    fullUmdMinConfig(),
+    fullUmdConfig(),
+];

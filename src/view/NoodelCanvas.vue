@@ -42,15 +42,15 @@
 
 <script lang="ts">
 
-    import NoodelCanvasTrunkBranch from "@/view/NoodelCanvasTrunkBranch.vue";
+    import NoodelCanvasTrunkBranch from "./NoodelCanvasTrunkBranch.vue";
 
-    import { getFocalWidth } from '@/util/getters';
-    import { setupContainer } from '@/controllers/noodel-setup';
-    import { setupCanvasInput } from '@/controllers/input-binding';
+    import { getFocalWidth } from '../util/getters';
+    import { setupContainer } from '../controllers/noodel-setup';
+    import { setupCanvasInput } from '../controllers/input-binding';
     import { traverseDescendents } from '../controllers/noodel-traverse';
-    import NoodelView from '@/types/NoodelView';
+    import NoodelView from '../types/NoodelView';
     import { alignBranchToIndex, alignTrunkToBranch } from '../controllers/noodel-align';
-    import NoodeView from '@/types/NoodeView';
+    import NoodeView from '../types/NoodeView';
     import Vue, { PropType } from 'vue';
 
     export default Vue.extend({

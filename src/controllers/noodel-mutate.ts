@@ -1,15 +1,15 @@
-import NoodeView from '@/types/NoodeView';
+import NoodeView from '../types/NoodeView';
 import { traverseActiveDescendents } from './noodel-traverse';
-import { getActiveChild, isRoot } from '@/util/getters';
-import NoodelView from '@/types/NoodelView';
+import { getActiveChild, isRoot } from '../util/getters';
+import NoodelView from '../types/NoodelView';
 import { alignTrunkToBranch, alignBranchBeforeNoodeDelete } from './noodel-align';
 import { forceReflow } from './noodel-animate';
-import { Axis } from '@/enums/Axis';
+import { Axis } from '../enums/Axis';
 import { cancelPan } from './noodel-navigate';
 import { syncHashToFocalNoode } from './noodel-routing';
-import Noode from '@/main/Noode';
+import Noode from '../main/Noode';
 import { unregisterNoode } from './id-register';
-import NoodeDefinition from '@/types/NoodeDefinition';
+import NoodeDefinition from '../types/NoodeDefinition';
 import { buildNoodeView } from './noodel-setup';
 import { debounce } from './throttle';
 

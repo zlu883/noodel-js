@@ -1,7 +1,7 @@
-import NoodelView from '@/types/NoodelView';
+import NoodelView from '../types/NoodelView';
 import { doJumpNavigation } from './noodel-navigate';
 import { findNoode } from './id-register';
-import { getActiveChild } from '@/util/getters';
+import { getActiveChild } from '../util/getters';
 
 export function setupRouting(noodel: NoodelView) {
 

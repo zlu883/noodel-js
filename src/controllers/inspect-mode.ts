@@ -1,6 +1,6 @@
-import NoodelView from '@/types/NoodelView';
-import { getActiveChild } from '@/util/getters';
-import Noode from '@/main/Noode';
+import NoodelView from '../types/NoodelView';
+import { getActiveChild } from '../util/getters';
+import Noode from '../main/Noode';
 import { cancelPan } from './noodel-navigate';
 
 export function enterInspectMode(noodel: NoodelView) {

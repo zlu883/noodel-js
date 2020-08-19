@@ -1,6 +1,6 @@
-import NoodeView from '@/types/NoodeView';
-import { isRoot, getActiveChild } from '@/util/getters';
-import NoodelView from '@/types/NoodelView';
+import NoodeView from '../types/NoodeView';
+import { isRoot, getActiveChild } from '../util/getters';
+import NoodelView from '../types/NoodelView';
 
 export function traverseAncestors(origin: NoodeView, task: (noode: NoodeView) => any, includeOrigin: boolean, includeRoot: boolean) {
 

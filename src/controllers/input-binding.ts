@@ -1,9 +1,9 @@
 import { startPan, updatePan, releasePan, doJumpNavigation, shiftFocalNoode, shiftFocalLevel } from './noodel-navigate';
 import Hammer from 'hammerjs';
-import NoodelView from '@/types/NoodelView';
+import NoodelView from '../types/NoodelView';
 import { exitInspectMode, enterInspectMode } from './inspect-mode';
 import { throttle } from './throttle';
-import { getActiveChild } from '@/util/getters';
+import { getActiveChild } from '../util/getters';
 
 function onKeyDown(noodel: NoodelView, ev: KeyboardEvent) {   
     

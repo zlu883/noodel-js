@@ -1,4 +1,4 @@
-import Noodel from "@/main/Noodel";
+import Noodel from "../src/main/Noodel";
 
 new Noodel("#template").mount("#noodel");
 

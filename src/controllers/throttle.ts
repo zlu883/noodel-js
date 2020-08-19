@@ -1,4 +1,4 @@
-import NoodelView from '@/types/NoodelView';
+import NoodelView from '../types/NoodelView';
 
 export function throttle(noodel: NoodelView, key: string, func: () => any, interval: number) {
     if (noodel.throttleMap.get(key)) return;

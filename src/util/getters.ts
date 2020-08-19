@@ -1,6 +1,6 @@
-import NoodeView from '@/types/NoodeView';
-import NoodelView from '@/types/NoodelView';
-import { traverseAncestors } from '@/controllers/noodel-traverse';
+import NoodeView from '../types/NoodeView';
+import NoodelView from '../types/NoodelView';
+import { traverseAncestors } from '../controllers/noodel-traverse';
 
 export function getFocalHeight(noodel: NoodelView) {
     return noodel.containerSize.y / 2;

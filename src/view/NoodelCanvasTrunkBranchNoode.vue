@@ -60,9 +60,9 @@
 
     import { ResizeSensor } from "css-element-queries";
 
-    import NoodeView from "@/types/NoodeView";
-    import { updateNoodeSize } from "@/controllers/noodel-align";
-    import NoodelView from '@/types/NoodelView';
+    import NoodeView from "../types/NoodeView";
+    import { updateNoodeSize } from "../controllers/noodel-align";
+    import NoodelView from '../types/NoodelView';
     import { traverseAncestors } from '../controllers/noodel-traverse';
     import { getPath, getFocalHeight, getFocalWidth } from '../util/getters';
     import Vue, { PropType } from 'vue';

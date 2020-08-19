@@ -1,5 +1,5 @@
-import NoodelView from '@/types/NoodelView';
-import NoodeView from '@/types/NoodeView';
+import NoodelView from '../types/NoodelView';
+import NoodeView from '../types/NoodeView';
 
 export function generateNoodeId(noodel: NoodelView) {
     noodel.idCount++;

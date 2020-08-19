@@ -32,12 +32,12 @@
 
     import { ResizeSensor } from 'css-element-queries';
 
-    import NoodeTransitionGroup from '@/view/NoodeTransitionGroup.vue';
+    import NoodeTransitionGroup from './NoodeTransitionGroup.vue';
 
-    import { getFocalHeight } from '@/util/getters';
-    import NoodeView from '@/types/NoodeView';
-    import NoodelView from '@/types/NoodelView';
-    import { Axis } from '@/enums/Axis';
+    import { getFocalHeight } from '../util/getters';
+    import NoodeView from '../types/NoodeView';
+    import NoodelView from '../types/NoodelView';
+    import { Axis } from '../enums/Axis';
     import Vue, { PropType } from 'vue';
     import { updateBranchSize } from '../controllers/noodel-align';
 

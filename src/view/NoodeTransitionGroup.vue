@@ -20,10 +20,10 @@
 
 <script lang="ts">
 
-    import NoodelCanvasTrunkBranchNoode from "@/view/NoodelCanvasTrunkBranchNoode.vue";
+    import NoodelCanvasTrunkBranchNoode from "./NoodelCanvasTrunkBranchNoode.vue";
 
-    import NoodelView from '@/types/NoodelView';
-    import NoodeView from '@/types/NoodeView';
+    import NoodelView from '../types/NoodelView';
+    import NoodeView from '../types/NoodeView';
     import Vue, { PropType } from 'vue';
 
     // By extracting the transition-group into its own component addresses the issue

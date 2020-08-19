@@ -1,10 +1,10 @@
-import { setActiveChild, setFocalParent, hideActiveSubtree, showActiveSubtree, handleFocalNoodeChange } from "@/controllers/noodel-mutate";
-import { Axis } from '@/enums/Axis';
-import NoodeView from '@/types/NoodeView';
-import NoodelView from '@/types/NoodelView';
-import { getActiveChild, getFocalWidth, getFocalHeight } from '@/util/getters';
+import { setActiveChild, setFocalParent, hideActiveSubtree, showActiveSubtree, handleFocalNoodeChange } from "../controllers/noodel-mutate";
+import { Axis } from '../enums/Axis';
+import NoodeView from '../types/NoodeView';
+import NoodelView from '../types/NoodelView';
+import { getActiveChild, getFocalWidth, getFocalHeight } from '../util/getters';
 import { alignTrunkToBranch, alignBranchToIndex } from './noodel-align';
-import { forceReflow } from '@/controllers/noodel-animate';
+import { forceReflow } from '../controllers/noodel-animate';
 import { exitInspectMode } from './inspect-mode';
 
 /**
