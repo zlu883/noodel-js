@@ -10,7 +10,7 @@ const banner = 'Noodel.js - v' + PACKAGE.version + '\n' +
     '(c) 2019-' + new Date().getFullYear() + ' ' + PACKAGE.author.name + '\n' +
     PACKAGE.license + ' License' + '\n' + PACKAGE.homepage;
 
-function baseConfig() {
+function prodConfig() {
     return {
         mode: 'production',
         entry: './src/main/Noodel.ts',
@@ -42,6 +42,7 @@ function baseConfig() {
                     loader: 'ts-loader',
                     exclude: /node_modules/,
                     options: {
+                        configFile: 'tsconfig.prod.json',
                         appendTsSuffixTo: [/\.vue$/],
                     }
                 },
@@ -60,8 +61,101 @@ function baseConfig() {
     }
 }
 
+function devUnitTestConfig() {
+    return {
+        mode: 'development',
+        devServer: {
+            contentBase: './',
+            stats: 'minimal'
+        },
+        devtool: 'eval-source-map',
+        entry: './tests/unit.ts',
+        resolve: {
+            extensions: ['.ts', '.js', '.vue', '.json'],
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.vue$/,
+                    loader: 'vue-loader'
+                },
+                {
+                    test: /\.css$/,
+                    use: [
+                        'style-loader',
+                        'css-loader'
+                    ]
+                },
+                {
+                    test: /\.tsx?$/,
+                    loader: 'ts-loader',
+                    exclude: /node_modules/,
+                    options: {
+                        appendTsSuffixTo: [/\.vue$/],
+                    }
+                },
+            ],
+        },
+        plugins: [
+            new VueLoaderPlugin(),
+        ],
+        output: {
+            filename: 'unit-tests.js',
+            path: path.resolve(__dirname, 'dist'),
+        }, 
+    }
+}
+
+function devLibConfig() {
+    return {
+        mode: 'development',
+        devServer: {
+            contentBase: './',
+            stats: 'minimal'
+        },
+        devtool: 'eval-source-map',
+        entry: './src/main/Noodel.ts',
+        resolve: {
+            extensions: ['.ts', '.js', '.vue', '.json'],
+        },
+        module: {
+            rules: [
+                {
+                    test: /\.vue$/,
+                    loader: 'vue-loader'
+                },
+                {
+                    test: /\.css$/,
+                    use: [
+                        'style-loader',
+                        'css-loader'
+                    ]
+                },
+                {
+                    test: /\.tsx?$/,
+                    loader: 'ts-loader',
+                    exclude: /node_modules/,
+                    options: {
+                        appendTsSuffixTo: [/\.vue$/],
+                    }
+                },
+            ],
+        },
+        plugins: [
+            new VueLoaderPlugin(),
+        ],
+        output: {
+            filename: 'noodel.js',
+            path: path.resolve(__dirname, 'dist'),
+            library: 'Noodel',
+            libraryExport: 'default',
+            libraryTarget: 'umd'
+        }, 
+    }
+}
+
 function baseUmdMinConfig() {
-    let config = baseConfig();
+    let config = prodConfig();
 
     config.module.rules[1].use = [
         MiniCssExtractPlugin.loader,
@@ -82,7 +176,7 @@ function baseUmdMinConfig() {
 }
 
 function baseUmdConfig() {
-    let config = baseConfig();
+    let config = prodConfig();
 
     config.module.rules[1].use = [
         MiniCssExtractPlugin.loader,
@@ -100,7 +194,7 @@ function baseUmdConfig() {
 }
 
 function baseCommonJsConfig() {
-    let config = baseConfig();
+    let config = prodConfig();
 
     config.externals = {
         'vue': 'commonjs2 vue'
@@ -115,7 +209,7 @@ function baseCommonJsConfig() {
 }
 
 function fullUmdMinConfig() {
-    let config = baseConfig();
+    let config = prodConfig();
 
     config.externals = undefined;
     config.output.filename = 'noodel-full.umd.min.js';
@@ -124,7 +218,7 @@ function fullUmdMinConfig() {
 }
 
 function fullUmdConfig() {
-    let config = baseConfig();
+    let config = prodConfig();
 
     config.externals = undefined;
     config.output.filename = 'noodel-full.umd.js';
@@ -135,10 +229,15 @@ function fullUmdConfig() {
     return config;
 }
 
-module.exports = [
-    baseUmdMinConfig(),
-    baseUmdConfig(),
-    baseCommonJsConfig(),
-    fullUmdMinConfig(),
-    fullUmdConfig(),
-];
+module.exports = env => {
+    return env.dev ? [
+        devLibConfig(),
+        devUnitTestConfig()
+    ] : [
+        baseUmdMinConfig(),
+        baseUmdConfig(),
+        baseCommonJsConfig(),
+        fullUmdMinConfig(),
+        fullUmdConfig(),
+    ];
+}

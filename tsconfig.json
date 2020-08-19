@@ -4,17 +4,13 @@
         "module": "CommonJS",
         "strict": false,
         "noImplicitThis": true,
-        "jsx": "preserve",
         "importHelpers": true,
         "moduleResolution": "node",
-        "experimentalDecorators": true,
         "esModuleInterop": true,
         "allowSyntheticDefaultImports": true,
-        "declaration": true,
-        "declarationDir": "typings",
+        "sourceMap": true,
         "baseUrl": ".",
         "types": [
-            "webpack-env",
             "mocha",
             "chai"
         ],
@@ -28,6 +24,7 @@
     "include": [
         "src/**/*.ts",
         "src/**/*.vue",
+        "test/**/*.ts"
     ],
     "exclude": [
         "node_modules"

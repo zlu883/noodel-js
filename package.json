@@ -3,10 +3,9 @@
     "version": "2.0.3",
     "license": "MIT",
     "scripts": {
-        "test": "vue-cli-service serve",
+        "test": "webpack-dev-server --env.dev --open",
         "clean": "rimraf dist && rimraf typings",
-        "build:prod": "webpack --hide-modules --display-entrypoints false --display-chunks false",
-        "build": "npm run clean && npm run build:prod",
+        "build": "npm run clean && webpack --display minimal",
         "lint": "vue-cli-service lint"
     },
     "main": "dist/noodel.common.js",
@@ -22,7 +21,6 @@
     "homepage": "https://zlu883.github.io/Noodel",
     "description": "Intuitive, adaptable user interface for dynamic content trees",
     "dependencies": {
-        "core-js": "^3.6.4",
         "css-element-queries": "^1.2.3",
         "hammerjs": "^2.0.8",
         "vue": "^2.6.11"
@@ -33,25 +31,21 @@
         "@types/mocha": "^8.0.1",
         "@typescript-eslint/eslint-plugin": "^2.18.0",
         "@typescript-eslint/parser": "^2.18.0",
-        "@vue/cli-plugin-babel": "~4.2.0",
-        "@vue/cli-plugin-eslint": "~4.2.0",
-        "@vue/cli-plugin-typescript": "~4.2.0",
-        "@vue/cli-service": "~4.2.0",
-        "@vue/eslint-config-typescript": "^5.0.1",
         "chai": "^4.2.0",
-        "eslint": "^6.7.2",
-        "eslint-plugin-vue": "^6.1.2",
+        "css-loader": "^4.2.1",
         "mini-css-extract-plugin": "^0.10.0",
         "mocha": "^8.1.1",
         "null-loader": "^4.0.0",
         "optimize-css-assets-webpack-plugin": "^5.0.3",
         "rimraf": "^3.0.2",
+        "style-loader": "^1.2.1",
         "terser-webpack-plugin": "^4.1.0",
         "ts-loader": "^8.0.2",
         "typescript": "~3.7.5",
         "vue-loader": "^15.9.3",
         "vue-template-compiler": "^2.6.11",
         "webpack": "^4.44.1",
-        "webpack-cli": "^3.3.12"
+        "webpack-cli": "^3.3.12",
+        "webpack-dev-server": "^3.11.0"
     }
 }
