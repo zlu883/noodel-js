@@ -3,10 +3,9 @@
     "version": "2.0.3",
     "license": "MIT",
     "scripts": {
-        "test": "webpack-dev-server --env.dev --open",
+        "test": "webpack-dev-server --env.test --open",
         "clean": "rimraf dist && rimraf typings",
-        "build": "npm run clean && webpack --display minimal",
-        "lint": "vue-cli-service lint"
+        "build": "npm run clean && webpack --env.prod"
     },
     "main": "dist/noodel.common.js",
     "types": "typings/main/Noodel.d.ts",
@@ -29,8 +28,6 @@
         "@types/chai": "^4.2.12",
         "@types/hammerjs": "^2.0.36",
         "@types/mocha": "^8.0.1",
-        "@typescript-eslint/eslint-plugin": "^2.18.0",
-        "@typescript-eslint/parser": "^2.18.0",
         "chai": "^4.2.0",
         "css-loader": "^4.2.1",
         "mini-css-extract-plugin": "^0.10.0",

@@ -58,10 +58,11 @@ function prodConfig() {
             libraryExport: 'default',
             libraryTarget: 'umd'
         }, 
+        stats: 'minimal'
     }
 }
 
-function devUnitTestConfig() {
+function testUnitConfig() {
     return {
         mode: 'development',
         devServer: {
@@ -106,7 +107,7 @@ function devUnitTestConfig() {
     }
 }
 
-function devLibConfig() {
+function testManualConfig() {
     return {
         mode: 'development',
         devServer: {
@@ -230,9 +231,9 @@ function fullUmdConfig() {
 }
 
 module.exports = env => {
-    return env.dev ? [
-        devLibConfig(),
-        devUnitTestConfig()
+    return env.test ? [
+        testUnitConfig(),
+        testManualConfig()
     ] : [
         baseUmdMinConfig(),
         baseUmdConfig(),
