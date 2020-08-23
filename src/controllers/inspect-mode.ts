@@ -1,7 +1,7 @@
 import NoodelView from '../types/NoodelView';
 import { getActiveChild } from '../util/getters';
-import Noode from '../main/Noode';
 import { cancelPan } from './noodel-navigate';
+import { findNoode } from './id-register';
 
 export function enterInspectMode(noodel: NoodelView) {
     
@@ -20,7 +20,7 @@ export function enterInspectMode(noodel: NoodelView) {
     noodel.isInInspectMode = true;
 
     if (typeof noodel.options.onEnterInspectMode === 'function') {
-        noodel.options.onEnterInspectMode(new Noode(focalNoode, noodel));
+        noodel.options.onEnterInspectMode(findNoode(noodel, focalNoode.id));
     }
 }
 
@@ -49,6 +49,6 @@ export function exitInspectMode(noodel: NoodelView) {
     noodel.isInInspectMode = false;
 
     if (typeof noodel.options.onExitInspectMode === 'function') {
-        noodel.options.onExitInspectMode(new Noode(focalNoode, noodel));
+        noodel.options.onExitInspectMode(findNoode(noodel, focalNoode.id));
     }
 }

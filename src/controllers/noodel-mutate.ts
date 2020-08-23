@@ -8,7 +8,7 @@ import { Axis } from '../enums/Axis';
 import { cancelPan } from './noodel-navigate';
 import { syncHashToFocalNoode } from './noodel-routing';
 import Noode from '../main/Noode';
-import { unregisterNoode } from './id-register';
+import { unregisterNoode, findNoode } from './id-register';
 import NoodeDefinition from '../types/NoodeDefinition';
 import { buildNoodeView } from './noodel-setup';
 import { debounce } from './throttle';
@@ -226,8 +226,8 @@ export function handleFocalNoodeChange(noodel: NoodelView, prev: NoodeView, curr
 
     syncHashToFocalNoode(noodel);
 
-    let prevNoode = prev ? new Noode(prev, noodel) : null;
-    let currentNoode = current ? new Noode(current, noodel) : null;
+    let prevNoode = prev ? findNoode(noodel, prev.id) : null;
+    let currentNoode = current ? findNoode(noodel, current.id) : null;
 
     if (prev && typeof prev.options.onExitFocus === 'function') {
         prev.options.onExitFocus(prevNoode, currentNoode);
@@ -247,8 +247,8 @@ export function handleFocalNoodeChange(noodel: NoodelView, prev: NoodeView, curr
     if (!prevParent && !currentParent) return;
     if (prevParent && currentParent && prevParent.id === currentParent.id) return;
 
-    let prevParentNoode = prevParent ? new Noode(prevParent, noodel) : null;
-    let currentParentNoode = currentParent ? new Noode(currentParent, noodel) : null;
+    let prevParentNoode = prevParent ? findNoode(noodel, prevParent.id) : null;
+    let currentParentNoode = currentParent ? findNoode(noodel, currentParent.id) : null;
 
     if (prevParent && typeof prevParent.options.onChildrenExitFocus === 'function') {
         prevParent.options.onChildrenExitFocus(prevParentNoode, currentParentNoode);

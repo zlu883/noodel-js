@@ -212,7 +212,7 @@ function baseCommonJsConfig() {
 function fullUmdMinConfig() {
     let config = prodConfig();
 
-    config.externals = undefined;
+    delete config.externals;
     config.output.filename = 'noodel-full.umd.min.js';
 
     return config;
@@ -221,12 +221,12 @@ function fullUmdMinConfig() {
 function fullUmdConfig() {
     let config = prodConfig();
 
-    config.externals = undefined;
+    delete config.externals;
     config.output.filename = 'noodel-full.umd.js';
     config.optimization = {
         minimize: false,
     };
-
+ 
     return config;
 }
 

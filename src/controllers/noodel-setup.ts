@@ -6,15 +6,17 @@ import { ResizeSensor } from 'css-element-queries';
 import { showActiveSubtree } from './noodel-mutate';
 import { setupRouting, unsetRouting } from './noodel-routing';
 import NoodeOptions from '../types/NoodeOptions';
-import { generateNoodeId, registerNoode, findNoode } from './id-register';
+import { generateNoodeId, registerNoode, findNoodeView } from './id-register';
 import { alignNoodelOnJump, cancelPan } from './noodel-navigate';
 import { traverseDescendents } from './noodel-traverse';
+import Noode from '../main/Noode';
 
 export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelView {
 
     let noodel: NoodelView = {
         idCount: -1,
-        idMap: new Map([]),
+        noodeViewMap: new Map([]),
+        noodeMap: new Map([]),
         throttleMap: new Map([]),
         debounceMap: new Map([]),
         root: null,
@@ -65,7 +67,8 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             onExitInspectMode: null,
             onFocalNoodeChange: null,
             onFocalParentChange: null
-        }
+        },
+        onHashChanged: null
     }
 
     let rootNoode = buildNoodeView(noodel, root, 1, 0, null);
@@ -83,7 +86,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         let hash = window.location.hash;
 
         if (hash) {
-            let target = findNoode(noodel, hash.substr(1));
+            let target = findNoodeView(noodel, hash.substr(1));
 
             if (target && target.parent) {
                 alignNoodelOnJump(noodel, target);
@@ -214,7 +217,7 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, level: 
             }
         }
     
-        registerNoode(noodel, noodeView.id, noodeView);
+        registerNoode(noodel, noodeView.id, new Noode(noodeView, noodel), noodeView);
     
         if (def.options && typeof def.options === "object") {
             parseAndApplyNoodeOptions(def.options, noodeView);

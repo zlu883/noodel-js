@@ -6,7 +6,7 @@ import { getPath as _getPath } from '../util/getters';
 import { alignBranchToIndex, updateNoodeSize, updateBranchSize } from '../controllers/noodel-align';
 import { shiftFocalNoode, doJumpNavigation } from '../controllers/noodel-navigate';
 import NoodelView from '../types/NoodelView';
-import { registerNoode, unregisterNoode } from '../controllers/id-register';
+import { registerNoode, unregisterNoode, findNoode } from '../controllers/id-register';
 import NoodeOptions from '../types/NoodeOptions';
 import ComponentContent from '../types/ComponentContent';
 import Vue from 'vue';
@@ -35,7 +35,7 @@ export default class Noode {
      */
     getParent(): Noode {
         if (this.isRoot()) return null;
-        return new Noode(this._v.parent, this._nv);
+        return findNoode(this._nv, this._v.id);
     }
 
     /**
@@ -76,16 +76,19 @@ export default class Noode {
             return null;
         }
 
-        return new Noode(this._v.children[index], this._nv);
+        return findNoode(this._nv, this._v.children[index].id);
     }
 
     /**
      * Gets a mapped array of this noode's list of children.
      */
     getChildren(): Noode[] {
-        return this._v.children.map(c => new Noode(c, this._nv));
+        return this._v.children.map(c => findNoode(this._nv, c.id));
     }
 
+    /**
+     * Gets the number of children of this noode.
+     */
     getChildCount(): number {
         return this._v.children.length;
     }
@@ -144,7 +147,7 @@ export default class Noode {
      */
     getActiveChild(): Noode {
         if (this._v.activeChildIndex === null) return null;
-        return new Noode(this._v.children[this._v.activeChildIndex], this._nv);
+        return findNoode(this._nv, this._v.children[this._v.activeChildIndex].id);
     }
 
     isRoot(): boolean {
@@ -177,7 +180,7 @@ export default class Noode {
         if (id === this._v.id) return;
         unregisterNoode(this._nv, this._v.id);
         this._v.id = id;
-        registerNoode(this._nv, id, this._v);
+        registerNoode(this._nv, id, this, this._v);
     }
 
     /**
@@ -248,6 +251,9 @@ export default class Noode {
         }
     }
 
+    /**
+     * Add a sibling noode before this noode.
+     */
     addNoodeBefore(def: NoodeDefinition): Noode {
         if (this.isRoot()) {
             console.warn("Cannot add sibling noode before root");
@@ -257,6 +263,9 @@ export default class Noode {
         return this.getParent().addChild(def, this.getIndex());
     }
 
+    /**
+     * Add a list of sibling noodes before this noode.
+     */
     addNoodesBefore(defs: NoodeDefinition[]): Noode[] {
         if (this.isRoot()) {
             console.warn("Cannot add sibling noodes before root");
@@ -266,6 +275,9 @@ export default class Noode {
         return this.getParent().addChildren(defs, this.getIndex());
     }
 
+    /**
+     * Add a sibling noode after this noode.
+     */
     addNoodeAfter(def: NoodeDefinition): Noode {
         if (this.isRoot()) {
             console.warn("Cannot add sibling noode after root");
@@ -275,6 +287,9 @@ export default class Noode {
         return this.getParent().addChild(def, this.getIndex() + 1);
     }
 
+    /**
+     * Add a list of sibling noodes after this noode.
+     */
     addNoodesAfter(defs: NoodeDefinition[]): Noode[] {
         if (this.isRoot()) {
             console.warn("Cannot add sibling noodes after root");
@@ -312,7 +327,7 @@ export default class Noode {
             index = this._v.children.length;
         }
 
-        return insertChildren(this._nv, this._v, index, childDefs).map(c => new Noode(c, this._nv));
+        return insertChildren(this._nv, this._v, index, childDefs).map(c => findNoode(this._nv, c.id));
     }
 
     /**

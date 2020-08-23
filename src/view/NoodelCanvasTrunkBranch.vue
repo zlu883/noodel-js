@@ -58,7 +58,6 @@
 
             updateBranchSize(this.store, this.parent);
 
-            if (this.store.options.skipResizeDetection) return;
             this.parent.branchResizeSensor = new ResizeSensor(this.parent.branchBoxEl, () => {
                 updateBranchSize(this.store, this.parent);
             });

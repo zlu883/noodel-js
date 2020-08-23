@@ -3,11 +3,13 @@ import { Axis } from '../enums/Axis';
 import NoodeView from './NoodeView';
 import NoodelOptions from './NoodelOptions';
 import Vector2D from './Vector2D';
+import Noode from 'src/main/Noode';
 
 export default interface NoodelView {
 
     idCount: number;
-    idMap: Map<string, NoodeView>;
+    noodeMap: Map<string, Noode>;
+    noodeViewMap: Map<string, NoodeView>;
     throttleMap: Map<string, boolean>;
     debounceMap: Map<string, number>;
 

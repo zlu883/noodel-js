@@ -39,6 +39,9 @@ export default interface NoodelOptions {
      * to prevent rapid toggling of subtree elements. Defaults to 360.
      */
     subtreeDebounceInterval?: number;
+    /**
+     * Determines whether routing should be enabled for this noodel. Defaults to true.
+     */
     useRouting?: boolean;
     /**
      * Whether to apply the default keyboard navigation. Defaults to true.
@@ -65,13 +68,22 @@ export default interface NoodelOptions {
      */
     useInspectModeDoubleTap?: boolean;
     /**
-     * If true, will not attach resize detectors on ALL noodes, which may give 
+     * If true, will not attach resize detectors on noodes, which may give 
      * a slight performance boost. Set this if you know that
-     * the size of ALL noodes will never change after creation. Defaults to false.
+     * the size of noodes in your noodel will never change after creation. Defaults to false.
      */
     skipResizeDetection?: boolean;
+    /**
+     * Whether to render the limit indicators of the canvas. Default true.
+     */
     showLimitIndicators?: boolean;
+    /**
+     * Whether to render the child indicators of noodes. Default true.
+     */
     showChildIndicators?: boolean;
+    /**
+     * Whether to render the branch column elements. Default false.
+     */
     showBranchColumns?: boolean;
     /**
      * Callback after the view has been mounted and properly aligned

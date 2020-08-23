@@ -88,7 +88,10 @@
                 Vue.nextTick(() => this.noode.parent.isChildrenTransparent = false);
 
                 // setup resize sensor, first callback will run after Vue.nextTick
-                if (this.noode.options.skipResizeDetection || this.store.options.skipResizeDetection) return;
+                let skipResizeDetection = typeof this.noode.options.skipResizeDetection === 'boolean' ? 
+                    this.noode.options.skipResizeDetection : this.store.options.skipResizeDetection;
+                if (skipResizeDetection) return;
+                
                 this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
                     updateNoodeSize(this.store, this.noode);
                 });

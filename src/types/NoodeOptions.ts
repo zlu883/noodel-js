@@ -5,12 +5,19 @@ import Noode from '../main/Noode';
  */
 export default interface NoodeOptions {
     /**
-     * If true, will not attach resize detectors on this noode, which may give 
-     * a slight performance boost. Set this if you know that
-     * the size of this noode will never change after creation. Defaults to false.
+     * If set to a boolean, will override the global skipResizeDetection option
+     * for this specific noode. Default null.
      */
     skipResizeDetection?: boolean | null;
+    /**
+     * If set to a boolean, will override the global showChildIndicators option for
+     * this specific noode. Default null.
+     */
     showChildIndicator?: boolean | null;
+    /**
+     * If set to a boolean, will override the global showBranchColumns option for
+     * the child branch of this specific noode. Default null.
+     */
     showBranchColumn?: boolean | null;
     /**
      * Handler called whenever this noode entered focus. Will be called once after noodel creation

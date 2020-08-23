@@ -14,11 +14,14 @@ export default interface NoodeDefinition {
      */
     children?: NoodeDefinition[];
     /**
-     * The index of the initial active child of this noode. Defaults to 0 (the first child),
-     * or null if the noode has no children.
+     * If provided, will mark the child at this index as active, instead of the default first child. 
+     */
+    activeChildIndex?: number;
+    /**
+     * If provided, will mark this noode as active. Takes precedence over the activeChildIndex of the parent.
+     * If multiple siblings are marked as active, the last one will take precedence.
      */
     isActive?: boolean;
-    activeChildIndex?: number;
     /**
      * Content of this noode.
      */

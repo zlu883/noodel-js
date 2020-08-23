@@ -8,7 +8,7 @@ import Noode from './Noode';
 import { getActiveChild } from '../util/getters';
 import { doJumpNavigation, shiftFocalLevel, shiftFocalNoode } from '../controllers/noodel-navigate';
 import { findNoodeByPath as _findNoodeByPath } from '../controllers/noodel-traverse';
-import { findNoode } from '../controllers/id-register';
+import { findNoodeView, findNoode } from '../controllers/id-register';
 import { handleFocalNoodeChange } from '../controllers/noodel-mutate';
 import { enterInspectMode, exitInspectMode } from '../controllers/inspect-mode';
 
@@ -133,14 +133,14 @@ export default class Noodel {
      * that serves as the parent of the topmost branch, and always exists.
      */
     getRoot(): Noode {
-        return new Noode(this._v.root, this._v);
+        return findNoode(this._v, this._v.root.id);
     }
 
     /**
      * Gets the parent noode of the current focal branch.
      */
     getFocalParent(): Noode {
-        return new Noode(this._v.focalParent, this._v);
+        return findNoode(this._v, this._v.focalParent.id);
     }
 
     /**
@@ -148,7 +148,7 @@ export default class Noodel {
      */
     getFocalNoode(): Noode {
         let focalNoode = getActiveChild(this._v.focalParent);
-        return focalNoode ? new Noode(focalNoode, this._v) : null;
+        return focalNoode ? findNoode(this._v, focalNoode.id) : null;
     }
 
     /**
@@ -164,7 +164,7 @@ export default class Noodel {
 
         let target = _findNoodeByPath(this._v, path);
         
-        return target ? new Noode(target, this._v) : null;
+        return target ? findNoode(this._v, target.id) : null;
     }
 
     /**
@@ -176,9 +176,9 @@ export default class Noodel {
             return null;
         }
 
-        let target = findNoode(this._v, id);
+        let target = findNoodeView(this._v, id);
         
-        return target ? new Noode(target, this._v) : null;
+        return target ? findNoode(this._v, target.id) : null;
     }
 
     // MUTATERS
