@@ -8,7 +8,7 @@ import Noode from './Noode';
 import { getActiveChild } from '../util/getters';
 import { doJumpNavigation, shiftFocalLevel, shiftFocalNoode } from '../controllers/noodel-navigate';
 import { findNoodeByPath as _findNoodeByPath } from '../controllers/noodel-traverse';
-import { findNoodeView, findNoode } from '../controllers/id-register';
+import { findNoodeView, findNoodeViewModel } from '../controllers/id-register';
 import { handleFocalNoodeChange } from '../controllers/noodel-mutate';
 import { enterInspectMode, exitInspectMode } from '../controllers/inspect-mode';
 
@@ -29,9 +29,9 @@ export default class Noodel {
         }
     });
 
-    _v: NoodelView;
-    vueRoot: Element;
-    vueInstance: Vue;
+    private _v: NoodelView;
+    private vueRoot: Element;
+    private vueInstance: Vue;
 
     /**
      * Creates the view model of a noodel based on the given content tree.
@@ -133,14 +133,14 @@ export default class Noodel {
      * that serves as the parent of the topmost branch, and always exists.
      */
     getRoot(): Noode {
-        return findNoode(this._v, this._v.root.id);
+        return findNoodeViewModel(this._v, this._v.root.id);
     }
 
     /**
      * Gets the parent noode of the current focal branch.
      */
     getFocalParent(): Noode {
-        return findNoode(this._v, this._v.focalParent.id);
+        return findNoodeViewModel(this._v, this._v.focalParent.id);
     }
 
     /**
@@ -148,7 +148,7 @@ export default class Noodel {
      */
     getFocalNoode(): Noode {
         let focalNoode = getActiveChild(this._v.focalParent);
-        return focalNoode ? findNoode(this._v, focalNoode.id) : null;
+        return focalNoode ? findNoodeViewModel(this._v, focalNoode.id) : null;
     }
 
     /**
@@ -164,7 +164,7 @@ export default class Noodel {
 
         let target = _findNoodeByPath(this._v, path);
         
-        return target ? findNoode(this._v, target.id) : null;
+        return target ? findNoodeViewModel(this._v, target.id) : null;
     }
 
     /**
@@ -178,7 +178,7 @@ export default class Noodel {
 
         let target = findNoodeView(this._v, id);
         
-        return target ? findNoode(this._v, target.id) : null;
+        return target ? findNoodeViewModel(this._v, target.id) : null;
     }
 
     // MUTATERS
@@ -245,19 +245,10 @@ export default class Noodel {
      * Performs a navigational jump to focus on the given noode.
      * Cannot jump to the root.
      * @param noode the noode to jump to, must be a Noode instance obtained from the noodel
+     * @deprecated use Noode.jumpToFocus() instead
      */
     jumpTo(noode: Noode) {
-        if (!(noode instanceof Noode)) {
-            console.warn("Cannot jump to noode: invalid target");
-            return;
-        }
-
-        if (!noode.getParent()) {
-            console.warn("Cannot jump to noode: target is root");
-            return;
-        }
-
-        doJumpNavigation(this._v, noode._v);
+        noode.jumpToFocus();
     }
 
     /**

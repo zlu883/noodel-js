@@ -1,30 +1,51 @@
 import NoodelView from '../types/NoodelView';
 import NoodeView from '../types/NoodeView';
-import Noode from 'src/main/Noode';
+import { traverseDescendents } from './noodel-traverse';
+import Noode from '../main/Noode';
 
 export function generateNoodeId(noodel: NoodelView) {
     noodel.idCount++;
     return '_' + noodel.idCount.toString();
 }
 
-export function registerNoode(noodel: NoodelView, id: string, noode: Noode, noodeView: NoodeView) {
-    if (noodel.noodeViewMap.has(id)) {
-        throw new Error("Cannot register new noode: duplicate ID");
-    }
-
-    noodel.noodeViewMap.set(id, noodeView);
-    noodel.noodeMap.set(id, noode);
+/**
+ * Register a noode and all its descendents.
+ */
+export function registerNoodeSubtree(noodel: NoodelView, noode: NoodeView) {
+    traverseDescendents(noode, (desc) => {
+        noodel.idMap.set(desc.id, {view: desc, viewModel: new Noode(desc, noodel)});
+    }, true);
 }
 
-export function unregisterNoode(noodel: NoodelView, id: string) {
-    noodel.noodeViewMap.delete(id);
-    noodel.noodeMap.delete(id);
+/**
+ * Unregister a noode and all its descendents.
+ */
+export function unregisterNoodeSubtree(noodel: NoodelView, noode: NoodeView) {
+    traverseDescendents(noode, (desc) => {
+        noodel.idMap.delete(desc.id);
+    }, true);
 }
 
-export function findNoodeView(noodel: NoodelView, id: string) {
-    return noodel.noodeViewMap.get(id);
+export function findNoodeView(noodel: NoodelView, id: string): NoodeView {
+    let noode = noodel.idMap.get(id);
+
+    return noode ? noode.view : null;
 }
 
-export function findNoode(noodel: NoodelView, id: string) {
-    return noodel.noodeMap.get(id);
+export function findNoodeViewModel(noodel: NoodelView, id: string): Noode {
+    let noode = noodel.idMap.get(id);
+    
+    return noode ? noode.viewModel : null;
+}
+
+export function isIdRegistered(noodel: NoodelView, id: string): boolean {
+    return noodel.idMap.has(id);
+}
+
+export function changeNoodeId(noodel: NoodelView, oldId: string, newId: string) {
+    let noode = noodel.idMap.get(oldId);
+
+    noode.view.id = newId;
+    noodel.idMap.delete(oldId);
+    noodel.idMap.set(newId, noode);
 }

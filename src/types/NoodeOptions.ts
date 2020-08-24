@@ -5,10 +5,16 @@ import Noode from '../main/Noode';
  */
 export default interface NoodeOptions {
     /**
+     * Option for disabling resize detection (on the branch axis) for this noode.
      * If set to a boolean, will override the global skipResizeDetection option
-     * for this specific noode. Default null.
+     * Default null.
      */
     skipResizeDetection?: boolean | null;
+    /**
+     * Option for disabling resize detection (on the trunk axis) for this noode's child branch.
+     * If set to a boolean, will override the global skipResizeDetection option. Default null.
+     */
+    skipBranchResizeDetection?: boolean | null;
     /**
      * If set to a boolean, will override the global showChildIndicators option for
      * this specific noode. Default null.

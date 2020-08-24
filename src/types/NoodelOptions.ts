@@ -68,9 +68,10 @@ export default interface NoodelOptions {
      */
     useInspectModeDoubleTap?: boolean;
     /**
-     * If true, will not attach resize detectors on noodes, which may give 
-     * a slight performance boost. Set this if you know that
-     * the size of noodes in your noodel will never change after creation. Defaults to false.
+     * Global option for disabling resize detection on ALL noodes and branches.
+     * Disabling resize detection may give a slight performance boost. Use this option if you
+     * know that the size of noodes and branches will never change after creation.
+     * Defaults to false.
      */
     skipResizeDetection?: boolean;
     /**

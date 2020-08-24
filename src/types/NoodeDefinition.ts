@@ -14,12 +14,13 @@ export default interface NoodeDefinition {
      */
     children?: NoodeDefinition[];
     /**
-     * If provided, will mark the child at this index as active, instead of the default first child. 
+     * If provided, will mark the child at this index as active, overriding the default (first child). 
+     * Takes precedence over the isActive marker in child noode definitions.
      */
     activeChildIndex?: number;
     /**
-     * If provided, will mark this noode as active. Takes precedence over the activeChildIndex of the parent.
-     * If multiple siblings are marked as active, the last one will take precedence.
+     * If provided, will mark this noode as active, overriding the default (first child).
+     * If multiple siblings are marked as active, only the first one will take effect.
      */
     isActive?: boolean;
     /**

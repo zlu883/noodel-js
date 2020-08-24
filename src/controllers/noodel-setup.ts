@@ -6,17 +6,14 @@ import { ResizeSensor } from 'css-element-queries';
 import { showActiveSubtree } from './noodel-mutate';
 import { setupRouting, unsetRouting } from './noodel-routing';
 import NoodeOptions from '../types/NoodeOptions';
-import { generateNoodeId, registerNoode, findNoodeView } from './id-register';
+import { generateNoodeId, registerNoodeSubtree, findNoodeView, isIdRegistered } from './id-register';
 import { alignNoodelOnJump, cancelPan } from './noodel-navigate';
-import { traverseDescendents } from './noodel-traverse';
-import Noode from '../main/Noode';
 
 export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelView {
 
     let noodel: NoodelView = {
         idCount: -1,
-        noodeViewMap: new Map([]),
-        noodeMap: new Map([]),
+        idMap: new Map([]),
         throttleMap: new Map([]),
         debounceMap: new Map([]),
         root: null,
@@ -71,15 +68,13 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         onHashChanged: null
     }
 
-    let rootNoode = buildNoodeView(noodel, root, 1, 0, null);
+    let rootNoode = buildNoodeView(noodel, root, 0, null, true);
 
-    rootNoode.isActive = true;
-    rootNoode.isFocalParent = true;
     noodel.root = rootNoode;
     noodel.focalParent = rootNoode;
 
+    registerNoodeSubtree(noodel, rootNoode);
     parseAndApplyOptions(options, noodel);
-    
     showActiveSubtree(noodel, rootNoode, noodel.options.visibleSubtreeDepth);
 
     if (noodel.options.useRouting) {
@@ -180,86 +175,88 @@ export function parseAndApplyNoodeOptions(options: NoodeOptions, noode: NoodeVie
     }
 }
 
-export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, level: number, index: number, parent: NoodeView): NoodeView {
-    
-    function parseNoodeDef(noodel: NoodelView, def: NoodeDefinition, level: number, index: number, parent: NoodeView) {
+export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, index: number, parent: NoodeView, isActive: boolean): NoodeView {
 
-        let noodeView: NoodeView = {
-            index: index,
-            level: level,
-            isChildrenVisible: false,
-            isChildrenTransparent: true,
-            isFocalParent: false,
-            isActive: false,
-            size: 0,
-            trunkRelativeOffset: parent ? parent.trunkRelativeOffset + parent.branchSize : 0,
-            childBranchOffset: 0,
-            childBranchOffsetAligned: 0,
-            applyBranchMove: false,
-            isInInspectMode: false,
-            branchRelativeOffset: parent && index > 0 ? parent.children[index - 1].branchRelativeOffset + parent.children[index - 1].size : 0,
-            branchSize: 0,
-            parent: parent,
-            id: typeof def.id === 'string' ? def.id : generateNoodeId(noodel),
-            children: [],
-            content: def.content || null,
-            className: parseClassName(def.className),
-            style: parseStyle(def.style),
-            activeChildIndex: null,
-            options: {
-                skipResizeDetection: null,
-                showBranchColumn: null,
-                showChildIndicator: null,
-                onChildrenEnterFocus: null,
-                onChildrenExitFocus: null,
-                onEnterFocus: null,
-                onExitFocus: null,
+    let isRoot = parent === null;
+    if (!def.children) def.children = [];
+    
+    // parse and validate ID
+    let newId = null;
+    
+    if (typeof def.id === 'string') {
+        if (isIdRegistered(noodel, def.id)) {
+            throw new Error("Duplicate ID for new noode: " + def.id);
+        }
+
+        newId = def.id;
+    } 
+    else {
+        newId = generateNoodeId(noodel);
+    } 
+
+    // parse and validate active child index
+    let activeChildIndex = def.children.length > 0 ? 0 : null;
+
+    if (typeof def.activeChildIndex === 'number') {
+        if (activeChildIndex < 0 || activeChildIndex >= def.children.length) {
+            throw new Error("Invalid active child index for new noode: " + newId);
+        }
+
+        activeChildIndex = def.activeChildIndex;
+    }
+    else {
+        // if active child index not specified, attempt to parse from isActive
+        for (let i = 0; i < def.children.length; i++) {
+            if (def.children[i].isActive) {
+                activeChildIndex = i;
+                break;
             }
         }
-    
-        registerNoode(noodel, noodeView.id, new Noode(noodeView, noodel), noodeView);
-    
-        if (def.options && typeof def.options === "object") {
-            parseAndApplyNoodeOptions(def.options, noodeView);
-        }
-    
-        let numOfChildren = Array.isArray(def.children) ? def.children.length : 0;
-    
-        if (typeof def.activeChildIndex !== 'number') {
-            noodeView.activeChildIndex = numOfChildren > 0 ? 0 : null;
-        }
-        else {
-            if (def.activeChildIndex < 0 || def.activeChildIndex >= numOfChildren) {
-                console.warn("Invalid initial active child index for noode ID " + noodeView.id);
-                noodeView.activeChildIndex = numOfChildren > 0 ? 0 : null;
-            }
-            else {
-                noodeView.activeChildIndex = def.activeChildIndex;
-            }
-        }
-    
-        if (parent && def.isActive) {
-            parent.activeChildIndex = index;
-        }
-    
-        if (numOfChildren > 0) {
-            for (let i = 0; i < def.children.length; i++) {
-                noodeView.children.push(parseNoodeDef(noodel, def.children[i], level + 1, i, noodeView));
-            }
-        }
-    
-        return noodeView;
     }
 
-    let defRoot = parseNoodeDef(noodel, def, level, index, parent);
-
-    traverseDescendents(defRoot, (noode) => {
-        if (noode.activeChildIndex !== null) {
-            noode.children[noode.activeChildIndex].isActive = true;
+    let newView: NoodeView = {
+        index: index,
+        level: isRoot ? 0 : parent.level + 1,
+        isChildrenVisible: false,
+        isChildrenTransparent: true, // initialize to transparent state for capturing size
+        isFocalParent: isRoot, // only initialze root as focal parent
+        isActive: isActive,
+        size: 0,
+        trunkRelativeOffset: isRoot ? 0 : parent.trunkRelativeOffset + parent.branchSize,
+        childBranchOffset: 0,
+        childBranchOffsetAligned: 0,
+        applyBranchMove: false,
+        isInInspectMode: false,
+        branchRelativeOffset: !isRoot && index > 0 ? parent.children[index - 1].branchRelativeOffset + parent.children[index - 1].size : 0,
+        branchSize: 0,
+        parent: parent,
+        id: newId,
+        children: [],
+        content: def.content || null,
+        className: parseClassName(def.className),
+        style: parseStyle(def.style),
+        activeChildIndex: activeChildIndex,
+        options: {
+            skipResizeDetection: null,
+            skipBranchResizeDetection: null,
+            showBranchColumn: null,
+            showChildIndicator: null,
+            onChildrenEnterFocus: null,
+            onChildrenExitFocus: null,
+            onEnterFocus: null,
+            onExitFocus: null,
         }
-    }, true);
+    }
 
-    return defRoot;
+    if (def.options && typeof def.options === "object") {
+        parseAndApplyNoodeOptions(def.options, newView);
+    }
+
+    for (let i = 0; i < def.children.length; i++) {
+        newView.children.push(buildNoodeView(noodel, def.children[i], i, newView, i === activeChildIndex));
+    }
+
+    return newView;
 }
 
 export function extractNoodeDefinition(noode: NoodeView): NoodeDefinition {
@@ -267,10 +264,13 @@ export function extractNoodeDefinition(noode: NoodeView): NoodeDefinition {
     return {
         id: noode.id,
         content: noode.content,
-        activeChildIndex: noode.activeChildIndex,
+        isActive: noode.isActive,
         children: noode.children.map(c => extractNoodeDefinition(c)),
         className: noode.className,
-        style: noode.style
+        style: noode.style,
+        options: {
+            ...noode.options
+        }
     };
 }
 

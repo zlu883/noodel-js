@@ -8,8 +8,7 @@ import Noode from 'src/main/Noode';
 export default interface NoodelView {
 
     idCount: number;
-    noodeMap: Map<string, Noode>;
-    noodeViewMap: Map<string, NoodeView>;
+    idMap: Map<string, {view: NoodeView, viewModel: Noode}>;
     throttleMap: Map<string, boolean>;
     debounceMap: Map<string, number>;
 

@@ -1,5 +1,5 @@
 import NoodeView from '../types/NoodeView';
-import { traverseActiveDescendents } from './noodel-traverse';
+import { traverseActiveDescendents, traverseDescendents } from './noodel-traverse';
 import { getActiveChild, isRoot } from '../util/getters';
 import NoodelView from '../types/NoodelView';
 import { alignTrunkToBranch, alignBranchBeforeNoodeDelete } from './noodel-align';
@@ -8,7 +8,7 @@ import { Axis } from '../enums/Axis';
 import { cancelPan } from './noodel-navigate';
 import { syncHashToFocalNoode } from './noodel-routing';
 import Noode from '../main/Noode';
-import { unregisterNoode, findNoode } from './id-register';
+import { unregisterNoodeSubtree, findNoodeViewModel } from './id-register';
 import NoodeDefinition from '../types/NoodeDefinition';
 import { buildNoodeView } from './noodel-setup';
 import { debounce } from './throttle';
@@ -82,6 +82,17 @@ export function hideActiveSubtree(origin: NoodeView, depth?: number) {
  */
 export function insertChildren(noodel: NoodelView, parent: NoodeView, index: number, childDefs: NoodeDefinition[]): NoodeView[] {
 
+    // construct view tree, this should come first as it may throw error
+    let children = childDefs.map((def, pos) => {
+        return buildNoodeView(
+            noodel,
+            def,
+            index + pos,
+            parent,
+            false // ignore whether the immediate children should be active, for now
+        );
+    });
+
     let prevFocalNoode = getActiveChild(noodel.focalParent);
 
     // if panning focal branch, cancel it
@@ -90,30 +101,31 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
         cancelPan(noodel);
     }
 
+    // adjust active child index if inserting before active, to retain active child
     if (parent.activeChildIndex !== null && index <= parent.activeChildIndex) {
         parent.activeChildIndex += childDefs.length;
     }
 
-    let children = childDefs.map((def, pos) => {
-        let child = buildNoodeView(
-            noodel,
-            def,
-            parent.level + 1,
-            index + pos,
-            parent
-        );
-
-        return child;
-    });
-
+    // do insert
     parent.children.splice(index, 0, ...children);
 
+    // adjust any sibling indices
     for (let i = index + children.length; i < parent.children.length; i++) {
         parent.children[i].index += children.length;
     }
 
+    // parse isActive from the definitions to set active child, only when the parent was originally empty
     if (parent.children.length === children.length) {
-        setActiveChild(noodel, parent, 0);
+        let activeChildIndex = 0; // assumes this cannot be null as there must be at least 1 child added
+
+        for (let i = 0; i < childDefs.length; i++) {
+            if (childDefs[i].isActive) {
+                activeChildIndex = i;
+                break;
+            }
+        }
+
+        setActiveChild(noodel, parent, activeChildIndex);
     }
 
     if (parent.isActive && (isRoot(parent) || parent.parent.isChildrenVisible)) {
@@ -208,7 +220,11 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
     // do delete
     let deletedNoodes = parent.children.splice(index, deleteCount);
 
-    deletedNoodes.forEach(n => unregisterNoode(noodel, n.id));
+    // clean up
+    deletedNoodes.forEach(noode => {
+        noode.parent = null;
+        unregisterNoodeSubtree(noodel, noode);
+    });
 
     handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
 
@@ -226,8 +242,8 @@ export function handleFocalNoodeChange(noodel: NoodelView, prev: NoodeView, curr
 
     syncHashToFocalNoode(noodel);
 
-    let prevNoode = prev ? findNoode(noodel, prev.id) : null;
-    let currentNoode = current ? findNoode(noodel, current.id) : null;
+    let prevNoode = prev ? findNoodeViewModel(noodel, prev.id) : null;
+    let currentNoode = current ? findNoodeViewModel(noodel, current.id) : null;
 
     if (prev && typeof prev.options.onExitFocus === 'function') {
         prev.options.onExitFocus(prevNoode, currentNoode);
@@ -247,8 +263,8 @@ export function handleFocalNoodeChange(noodel: NoodelView, prev: NoodeView, curr
     if (!prevParent && !currentParent) return;
     if (prevParent && currentParent && prevParent.id === currentParent.id) return;
 
-    let prevParentNoode = prevParent ? findNoode(noodel, prevParent.id) : null;
-    let currentParentNoode = currentParent ? findNoode(noodel, currentParent.id) : null;
+    let prevParentNoode = prevParent ? findNoodeViewModel(noodel, prevParent.id) : null;
+    let currentParentNoode = currentParent ? findNoodeViewModel(noodel, currentParent.id) : null;
 
     if (prevParent && typeof prevParent.options.onChildrenExitFocus === 'function') {
         prevParent.options.onChildrenExitFocus(prevParentNoode, currentParentNoode);
