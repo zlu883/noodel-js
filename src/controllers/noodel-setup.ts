@@ -57,7 +57,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             useInspectModeDoubleTap: true,
             skipResizeDetection: false,
             showLimitIndicators: true,
-            showBranchColumns: false,
+            showBranchBackdrops: false,
             showChildIndicators: true,
             onMount: null,
             onEnterInspectMode: null,
@@ -239,7 +239,7 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, index: 
         options: {
             skipResizeDetection: null,
             skipBranchResizeDetection: null,
-            showBranchColumn: null,
+            showBranchBackdrop: null,
             showChildIndicator: null,
             onChildrenEnterFocus: null,
             onChildrenExitFocus: null,

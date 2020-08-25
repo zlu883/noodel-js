@@ -9,16 +9,32 @@
         @dragstart="onDragStart"
     >
         <transition name="nd-limit">
-            <div class="nd-limit nd-limit-left" v-show="store.showLimits.left"/>
+            <div 
+                class="nd-limit nd-limit-left"
+                v-if="store.options.showLimitIndicators" 
+                v-show="store.showLimits.left"
+            />
         </transition>
         <transition name="nd-limit">
-            <div class="nd-limit nd-limit-right" v-show="store.showLimits.right"/>
+            <div 
+                class="nd-limit nd-limit-right"
+                v-if="store.options.showLimitIndicators" 
+                v-show="store.showLimits.right"
+            />
         </transition>
         <transition name="nd-limit">
-            <div class="nd-limit nd-limit-top" v-show="store.showLimits.top"/>
+            <div 
+                class="nd-limit nd-limit-top" 
+                v-if="store.options.showLimitIndicators" 
+                v-show="store.showLimits.top"
+            />
         </transition>
         <transition name="nd-limit">
-            <div class="nd-limit nd-limit-bottom" v-show="store.showLimits.bottom"/>
+            <div 
+                class="nd-limit nd-limit-bottom"
+                v-if="store.options.showLimitIndicators" 
+                v-show="store.showLimits.bottom"
+            />
         </transition>
         <div
             ref="trunk"
@@ -102,7 +118,7 @@
                 noode.branchSize = 0;
                 noode.childBranchOffset = 0;
                 noode.childBranchOffsetAligned = 0;
-                delete noode.branchEl;
+                delete noode.branchSliderEl;
                 delete noode.branchBoxEl;
                 delete noode.el;
                 delete noode.resizeSensor;

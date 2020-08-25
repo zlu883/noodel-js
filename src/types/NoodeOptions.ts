@@ -6,7 +6,7 @@ import Noode from '../main/Noode';
 export default interface NoodeOptions {
     /**
      * Option for disabling resize detection (on the branch axis) for this noode.
-     * If set to a boolean, will override the global skipResizeDetection option
+     * If set to a boolean, will override the global skipResizeDetection option.
      * Default null.
      */
     skipResizeDetection?: boolean | null;
@@ -21,10 +21,15 @@ export default interface NoodeOptions {
      */
     showChildIndicator?: boolean | null;
     /**
-     * If set to a boolean, will override the global showBranchColumns option for
+     * If set to a boolean, will override the global showBranchBackdrops option for
      * the child branch of this specific noode. Default null.
      */
-    showBranchColumn?: boolean | null;
+    showBranchBackdrop?: boolean | null;
+    /**
+     * Callback after the noode has mounted (i.e. fully rendered onto the DOM).
+     * @param self the noode's own view model object
+     */
+    onMount?: (self: Noode) => any | null;
     /**
      * Handler called whenever this noode entered focus. Will be called once after noodel creation
      * if this is the focal noode.

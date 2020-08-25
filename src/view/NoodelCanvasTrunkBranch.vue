@@ -9,11 +9,16 @@
             :style="branchBoxStyle"
             v-show="parent.isChildrenVisible || parent.isChildrenTransparent"
         >
+            <div
+                v-if="showBranchBackdrop"
+                class="nd-branch-backdrop"
+                :class="branchBackdropClass"
+            />
             <div 
-                class="nd-branch" 
-                ref="branch"
-                :class="branchClass"
-                :style="branchStyle"
+                class="nd-branch-slider" 
+                ref="branchSlider"
+                :class="branchSliderClass"
+                :style="branchSliderStyle"
                 @transitionend="onTransitionEnd"
             >  
                 <NoodeTransitionGroup
@@ -54,7 +59,7 @@
 
         mounted() {
             this.parent.branchBoxEl = this.$el as HTMLDivElement;
-            this.parent.branchEl = this.$refs.branch as HTMLDivElement;
+            this.parent.branchSliderEl = this.$refs.branchSlider as HTMLDivElement;
 
             updateBranchSize(this.store, this.parent);
 
@@ -72,10 +77,12 @@
             branchBoxStyle(): {} {
                 return {
                     left: `${this.parent.trunkRelativeOffset}px`,
+                    'pointer-events': !this.parent.isChildrenVisible ? 'none' : null,
+                    'opacity': !this.parent.isChildrenVisible && this.parent.isChildrenTransparent ? 0 : null
                 };
             },
 
-            branchStyle(): {} {
+            branchSliderStyle(): {} {
                 return {
                     transform: `translateY(${this.parent.childBranchOffset + getFocalHeight(this.store)}px)`
                 };
@@ -83,17 +90,27 @@
 
             branchBoxClass(): {} {
                 return {
-                    'nd-branch-box-focal': this.parent.isFocalParent,
-                    'nd-branch-box-hidden': !this.parent.isChildrenVisible,
-                    'nd-branch-box-transparent': !this.parent.isChildrenVisible && this.parent.isChildrenTransparent,
+                    'nd-branch-box-focal': this.parent.isFocalParent
                 }
             },
 
-            branchClass(): {} {
+            branchBackdropClass(): {} {
                 return {
-                    'nd-branch-move': this.parent.applyBranchMove,
-                    'nd-branch-focal': this.parent.isFocalParent
+                    'nd-branch-backdrop-focal': this.parent.isFocalParent
                 }
+            },
+
+            branchSliderClass(): {} {
+                return {
+                    'nd-branch-slider-move': this.parent.applyBranchMove,
+                    'nd-branch-slider-focal': this.parent.isFocalParent
+                }
+            },
+
+            showBranchBackdrop(): boolean {
+                return typeof this.parent.options.showBranchBackdrop === 'boolean'
+                    ? this.parent.options.showBranchBackdrop
+                    : this.store.options.showBranchBackdrops;
             }
         },
 
@@ -121,15 +138,6 @@
         box-sizing: border-box !important;
     }
 
-    .nd-branch {
-        position: relative;
-        z-index: 1; 
-    }
-
-    .nd-branch-focal {
-        z-index: 10;
-    }
-
     .nd-branch-box-enter, .nd-branch-box-leave-active {
         opacity: 0;
     }
@@ -140,18 +148,27 @@
         transition-duration: .5s; 
     }
 
-    .nd-branch-move {
+    .nd-branch-backdrop {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 150%;
+        height: 100%;
+    }
+
+    .nd-branch-slider {
+        position: relative;
+        z-index: 1;
+    }
+
+    .nd-branch-slider-focal {
+        z-index: 10;
+    }
+
+    .nd-branch-slider-move {
         transition-property: transform;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
         transition-duration: .5s; 
-    }
-
-    .nd-branch-box-hidden {
-        pointer-events: none;
-    } 
-
-    .nd-branch-box-transparent {
-        opacity: 0;
     }
 
 </style>

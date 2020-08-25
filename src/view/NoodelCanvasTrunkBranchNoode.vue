@@ -15,33 +15,22 @@
             </div>
         </transition>
         <div
-            v-if="useComponentContent"
             ref="noode"
             class="nd-noode"
             :class="noodeClass"
             :style="noodeStyle"
+            v-bind.prop="typeof noode.content === 'string' ? {'innerHTML': noode.content } : null"
             @pointerup="onPointerUp"
             @mouseup="onPointerUp"
             @touchend="onPointerUp"
         >
             <component 
+                v-if="this.noode.content && typeof this.noode.content === 'object'"
                 :is="noode.content.component" 
                 v-bind="noode.content.props"
                 v-on="noode.content.eventListeners"
             />
         </div>   
-        <div
-            v-else
-            ref="noode"
-            class="nd-noode"
-            :class="noodeClass"
-            :style="noodeStyle"
-            v-html="noode.content"
-            @pointerup="onPointerUp"
-            @mouseup="onPointerUp"
-            @touchend="onPointerUp"
-        >
-        </div>
         <transition name="nd-child-indicator">
             <div
                 v-if="showChildIndicator"
@@ -67,6 +56,7 @@
     import { getPath, getFocalHeight, getFocalWidth } from '../util/getters';
     import Vue, { PropType } from 'vue';
     import Noode from '../main/Noode';
+    import { findNoodeViewModel } from '../controllers/id-register';
 
     export default Vue.extend({
 
@@ -83,10 +73,6 @@
                 // do initial size capture
                 updateNoodeSize(this.store, this.noode);
 
-                // allows parent branch to fall back to display: none after first size update,
-                // using nextTick to wait for parent branch size capture to finish first
-                Vue.nextTick(() => this.noode.parent.isChildrenTransparent = false);
-
                 // setup resize sensor, first callback will run after Vue.nextTick
                 let skipResizeDetection = typeof this.noode.options.skipResizeDetection === 'boolean' ? 
                     this.noode.options.skipResizeDetection : this.store.options.skipResizeDetection;
@@ -94,6 +80,16 @@
                 
                 this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
                     updateNoodeSize(this.store, this.noode);
+                });
+
+                // allows parent branch to fall back to display: none after first size update,
+                // using nextTick to wait for parent branch size capture to finish first
+                Vue.nextTick(() => {
+                    this.noode.parent.isChildrenTransparent = false;
+
+                    if (typeof this.noode.options.onMount === 'function') {
+                        this.noode.options.onMount(findNoodeViewModel(this.store, this.noode.id));
+                    }
                 });
             });            
         },
@@ -114,10 +110,6 @@
         },
 
         computed: {
-
-            useComponentContent(): boolean {
-                return this.noode.content && (typeof this.noode.content === 'object');
-            },
 
             noodeBoxClass(): {} {
                 return {
@@ -150,7 +142,11 @@
             },
 
             showChildIndicator(): {} {
-                return this.noode.children.length > 0;
+                let showOption = typeof this.noode.options.showChildIndicator === 'boolean'
+                    ? this.noode.options.showChildIndicator
+                    : this.store.options.showChildIndicators;
+
+                return showOption && this.noode.children.length > 0;
             },
 
             childIndicatorClass(): {} {

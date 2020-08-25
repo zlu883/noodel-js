@@ -5,6 +5,8 @@
     <transition-group 
         name="nd-noode"
         tag="div"
+        class="nd-branch"
+        :class="branchClass"
     >
         <NoodelCanvasTrunkBranchNoode
             v-for="child in parent.children"
@@ -39,6 +41,15 @@
             store: Object as PropType<NoodelView>
         },
 
+        computed: {
+
+            branchClass(): {} {
+                return {
+                    'nd-branch-focal': this.parent.isFocalParent
+                }
+            },
+        },
+
     });
     
 </script>
@@ -46,5 +57,9 @@
 <!---------------------------- STYLES ------------------------------>
 
 <style>
+
+    .nd-branch {
+        position: relative;
+    }
 
 </style>

@@ -47,7 +47,7 @@ export default interface NoodeView {
     branchSize: number;
 
     el?: Element;
-    branchEl?: HTMLDivElement;
+    branchSliderEl?: HTMLDivElement;
     branchBoxEl?: HTMLDivElement;
 
     resizeSensor?: ResizeSensor;

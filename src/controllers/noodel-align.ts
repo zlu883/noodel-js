@@ -96,7 +96,7 @@ export function alignBranchOnNoodeResize(noodel: NoodelView, noode: NoodeView, n
             // If branch is in transition, cancel it temporarily and force an alignment.
             // This does not apply to inserts as branch transition is needed for FLIP animation in transition groups
             if (parent.applyBranchMove && !isInsert) {
-                let currentOffset = parent.branchEl.getBoundingClientRect().top - noodel.canvasEl.getBoundingClientRect().top - getFocalHeight(noodel);
+                let currentOffset = parent.branchSliderEl.getBoundingClientRect().top - noodel.canvasEl.getBoundingClientRect().top - getFocalHeight(noodel);
                 
                 // Find out the diff between transition target and current, for adding back later.
                 // Using diff rather than a fixed value prevents possible bugs with simultaneous resize of multiple noodes.

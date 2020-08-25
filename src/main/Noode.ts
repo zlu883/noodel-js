@@ -67,18 +67,19 @@ export default class Noode {
     }
 
     /**
-     * Gets the container element of this noode (i.e. nd-noode-box), if mounted.
+     * Gets the container element of this noode (i.e. nd-noode-box) if it is mounted,
+     * or null otherwise.
      */
     getEl(): HTMLDivElement {
-        return this._v.el as HTMLDivElement;
+        return this._v.el as HTMLDivElement || null;
     }
 
     /**
      * Gets the container element of the branch containing this noode's children
-     * (i.e. nd-branch-box), if it has children and is mounted.
+     * (i.e. nd-branch-box) if it has children and is mounted, or null otherwise.
      */
     getChildBranchEl(): HTMLDivElement {
-        return this._v.branchBoxEl as HTMLDivElement;
+        return this._v.branchBoxEl as HTMLDivElement || null;
     }
 
     /**
@@ -282,6 +283,8 @@ export default class Noode {
      * Cannot jump to the root.
      */
     jumpToFocus() {
+        this.throwErrorIfDeleted();
+
         if (this.isRoot()) {
             throw new Error("Cannot jump to root noode");
         }

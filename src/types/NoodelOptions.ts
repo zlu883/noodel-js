@@ -85,9 +85,9 @@ export default interface NoodelOptions {
     /**
      * Whether to render the branch column elements. Default false.
      */
-    showBranchColumns?: boolean;
+    showBranchBackdrops?: boolean;
     /**
-     * Callback after the view has been mounted and properly aligned
+     * Callback after the noodel has mounted (i.e. fully rendered onto the DOM) and properly aligned
      * after the first render. Changes to the view model from here onward
      * will sync with the view and trigger animation effects.
      */
