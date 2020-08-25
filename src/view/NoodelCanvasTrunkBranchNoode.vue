@@ -86,10 +86,6 @@
                 // using nextTick to wait for parent branch size capture to finish first
                 Vue.nextTick(() => {
                     this.noode.parent.isChildrenTransparent = false;
-
-                    if (typeof this.noode.options.onMount === 'function') {
-                        this.noode.options.onMount(findNoodeViewModel(this.store, this.noode.id));
-                    }
                 });
             });            
         },

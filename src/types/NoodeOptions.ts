@@ -26,11 +26,6 @@ export default interface NoodeOptions {
      */
     showBranchBackdrop?: boolean | null;
     /**
-     * Callback after the noode has mounted (i.e. fully rendered onto the DOM).
-     * @param self the noode's own view model object
-     */
-    onMount?: (self: Noode) => any | null;
-    /**
      * Handler called whenever this noode entered focus. Will be called once after noodel creation
      * if this is the focal noode.
      * @param self the current focal noode (i.e. this noode)
