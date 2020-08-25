@@ -97,6 +97,16 @@ export default class Noodel {
         delete this.vueRoot;
     }
 
+    /**
+     * Schedules a callback function to be called after Noodel's current DOM update cycle.
+     */
+    nextTick(callback: () => any) {
+        // double Vue nextTick because some changes may take two update cycles to settle
+        Vue.nextTick(() => {
+            Vue.nextTick(callback);
+        });
+    }
+
     // GETTERS
 
     /**
