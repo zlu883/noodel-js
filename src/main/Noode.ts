@@ -169,26 +169,41 @@ export default class Noode {
         return findNoodeViewModel(this._nv, this._v.children[this._v.activeChildIndex].id);
     }
 
+    /**
+     * Returns true if this noode is the root.
+     */
     isRoot(): boolean {
         this.throwErrorIfDeleted();
         return this._v.parent === null;
     }
 
+    /**
+     * Returns true if this noode is active.
+     */
     isActive(): boolean {
         return this._v.isActive;
     }
 
+    /**
+     * Returns true if this noode is inside the focal branch.
+     */
     isInFocalBranch(): boolean {
         this.throwErrorIfDeleted();
         if (this.isRoot()) return false;
         return this._v.parent.isFocalParent;
     }
 
+    /**
+     * Returns true if this noode is the parent of the focal branch.
+     */
     isFocalParent(): boolean {
         this.throwErrorIfDeleted();
         return this._v.isFocalParent;
     }
 
+    /**
+     * Returns true if this noode is the focal noode.
+     */
     isFocalNoode(): boolean {
         this.throwErrorIfDeleted();
         return this.isActive() && this.isInFocalBranch();
@@ -296,6 +311,7 @@ export default class Noode {
      * Add a sibling noode before this noode. 
      * Will always preserve the current active child. Returns the inserted
      * child.
+     * @param def definition tree of the noode to add
      */
     addNoodeBefore(def: NoodeDefinition): Noode {
         this.throwErrorIfDeleted();
@@ -311,6 +327,7 @@ export default class Noode {
      * Add a list of sibling noodes before this noode.
      * Will always preserve the current active child. Returns the inserted
      * children.
+     * @param defs definition trees of the noodes to add
      */
     addNoodesBefore(defs: NoodeDefinition[]): Noode[] {
         this.throwErrorIfDeleted();
@@ -326,6 +343,7 @@ export default class Noode {
      * Add a sibling noode after this noode.
      * Will always preserve the current active child. Returns the inserted
      * child.
+     * @param def definition tree of the noode to add
      */
     addNoodeAfter(def: NoodeDefinition): Noode {
         this.throwErrorIfDeleted();
@@ -341,6 +359,7 @@ export default class Noode {
      * Add a list of sibling noodes after this noode.
      * Will always preserve the current active child. Returns the inserted
      * children.
+     * @param defs definition trees of the noodes to add
      */
     addNoodesAfter(defs: NoodeDefinition[]): Noode[] {
         this.throwErrorIfDeleted();

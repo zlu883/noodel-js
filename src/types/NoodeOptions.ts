@@ -7,22 +7,22 @@ export default interface NoodeOptions {
     /**
      * Option for disabling resize detection (on the branch axis) for this noode.
      * If set to a boolean, will override the global skipResizeDetection option.
-     * Default null.
+     * Defaults to null.
      */
     skipResizeDetection?: boolean | null;
     /**
      * Option for disabling resize detection (on the trunk axis) for this noode's child branch.
-     * If set to a boolean, will override the global skipResizeDetection option. Default null.
+     * If set to a boolean, will override the global skipResizeDetection option. Defaults to null.
      */
     skipBranchResizeDetection?: boolean | null;
     /**
      * If set to a boolean, will override the global showChildIndicators option for
-     * this specific noode. Default null.
+     * this specific noode. Defaults to null.
      */
     showChildIndicator?: boolean | null;
     /**
      * If set to a boolean, will override the global showBranchBackdrops option for
-     * the child branch of this specific noode. Default null.
+     * the child branch of this specific noode. Defaults to null.
      */
     showBranchBackdrop?: boolean | null;
     /**

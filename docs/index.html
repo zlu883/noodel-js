@@ -89,7 +89,7 @@
                     It offers a new way to present content on the modern web that is intuitive, responsive and accessible.
                 </p>
                 <p>
-                    Currently available as Noodel.js, a JavaScript library. Powered by the reactive view engine of<a target="_blank" href="https://vuejs.org/"> Vue.js</a>.
+                    Currently available as Noodel.js, a JavaScript component library. Powered by the reactive view engine of<a target="_blank" href="https://vuejs.org/"> Vue.js</a>.
                 </p>
             </div>
             <div class="noode">
@@ -640,10 +640,15 @@
                     <p>or in JavaScript:</p>
                     <pre>
                         <code class="language-js">
-                            let noodeWith4thChildActive = {
-                                activeChildIndex: "3",
-                                content: "A special noode"
-                            }
+                            let noodeDefinitions = [
+                                {
+                                    content: "First child"
+                                },
+                                {
+                                    isActive: true, // this noode will be active instead
+                                    content: "Second child"
+                                },
+                            ];
                         </code>
                     </pre>
                 </div>
@@ -864,7 +869,7 @@
                             noodel.setFocalLevel(3);
 
                             // jump to a specific noode
-                            noodel.jumpTo(specialNoode);
+                            specialNoode.jumpToFocus();
                         </code>
                     </pre> 
                 </div>
@@ -1159,8 +1164,8 @@
                     <p>Destroys the noodel's view and removes it from the DOM, but keeping the current state of the view model.</p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">setOptions(options: NoodelOptions)</code></b>
-                    <p>Changes the options of the noodel. Properties of the given object will be merged into the current options.</p>
+                    <b><code class="language-ts">nextTick(callback: () => any)</code></b>
+                    <p>Schedules a callback function to be called after Noodel's current DOM update cycle.</p>
                 </div>
                 <div class="noode">
                     <b><code class="language-ts">getEl(): HTMLDivElement</code></b>
@@ -1197,6 +1202,10 @@
                 <div class="noode">
                     <b><code class="language-ts">findNoodeById(id: string): Noode</code></b>
                     <p>Gets the noode with the given ID. Returns null if does not exist.</p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">setOptions(options: NoodelOptions)</code></b>
+                    <p>Changes the options of the noodel. Properties of the given object will be merged into the current options.</p>
                 </div>
                 <div class="noode">
                     <b><code class="language-ts">setFocalLevel(level: number)</code></b>
@@ -1243,16 +1252,6 @@
                     </ul>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">jumpTo(noode: Noode)</code></b>
-                    <p>
-                        Performs a navigational jump to focus on the given noode.
-                        Cannot jump to the root.
-                    </p>
-                    <ul>
-                        <li><code class="language-ts">noode</code> the noode to jump to, must be a Noode instance obtained from the noodel</li>
-                    </ul>
-                </div>
-                <div class="noode">
                     <b><code class="language-ts">toggleInspectMode(on: boolean)</code></b>
                     <p>
                         Turns inspect mode on/off.
@@ -1283,13 +1282,6 @@
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">setOptions(options: NoodeOptions)</code></b>
-                    <p>
-                        Changes the options for this noode. Properties of the given object
-                        will be merged into the existing options.
-                    </p>
-                </div>
-                <div class="noode">
                     <b><code class="language-ts">getEl(): HTMLDivElement</code></b>
                     <p>
                         Gets the container element of this noode (i.e. nd-noode-box), if mounted.
@@ -1309,15 +1301,15 @@
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">getActiveChild(): Noode</code></b>
-                    <p>
-                        Gets the current active child. Returns null if does not exist.
-                    </p>
-                </div>
-                <div class="noode">
                     <b><code class="language-ts">getChildren(): Noode[]</code></b>
                     <p>
                         Gets a mapped array of this noode's list of children.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getChildCount(): number</code></b>
+                    <p>
+                        Gets the number of children of this noode.
                     </p>
                 </div>
                 <div class="noode">
@@ -1363,6 +1355,42 @@
                     </p>
                 </div>
                 <div class="noode">
+                    <b><code class="language-ts">getActiveChild(): Noode</code></b>
+                    <p>
+                        Gets the current active child. Returns null if does not exist.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">isRoot(): boolean</code></b>
+                    <p>
+                        Returns true if this noode is the root.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">isActive(): boolean</code></b>
+                    <p>
+                        Returns true if this noode is active.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">isInFocalBranch(): boolean</code></b>
+                    <p>
+                        Returns true if this noode is inside the focal branch.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">isFocalParent(): boolean</code></b>
+                    <p>
+                        Returns true if this noode is the parent of the focal branch.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">isFocalNoode(): boolean</code></b>
+                    <p>
+                        Returns true if this noode is the focal noode.
+                    </p>
+                </div>
+                <div class="noode">
                     <b><code class="language-ts">setId(id: string)</code></b>
                     <p>
                         Sets the ID of this noode.
@@ -1388,12 +1416,70 @@
                     </p>
                 </div>
                 <div class="noode">
+                    <b><code class="language-ts">setOptions(options: NoodeOptions)</code></b>
+                    <p>
+                        Changes the options for this noode. Properties of the given object
+                        will be merged into the existing options.
+                    </p>
+                </div>
+                <div class="noode">
                     <b><code class="language-ts">setActiveChild(index: number)</code></b>
                     <p>
                         Changes the active child of this noode. If doing so will toggle
                         the visibility of the focal branch (i.e this noode is an ancestor
                         of the focal branch), a jump to the new active child will be triggered.
                     </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">jumpToFocus()</code></b>
+                    <p>
+                        Performs a navigational jump to focus on this noode.
+                        Cannot jump to the root.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">addNoodeBefore(def: NoodeDefinition): Noode</code></b>
+                    <p>
+                        Add a sibling noode before this noode. 
+                        Will always preserve the current active child. Returns the inserted
+                        child.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">def</code> definition tree of the noode to add</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">addNoodesBefore(def: NoodeDefinition): Noode</code></b>
+                    <p>
+                        Add a list of sibling noodes before this noode. 
+                        Will always preserve the current active child. Returns the inserted
+                        children.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">defs</code> definition trees of the noodes to add</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">addNoodeAfter(def: NoodeDefinition): Noode</code></b>
+                    <p>
+                        Add a sibling noode after this noode. 
+                        Will always preserve the current active child. Returns the inserted
+                        child.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">def</code> definition tree of the noode to add</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">addNoodesAfter(def: NoodeDefinition): Noode</code></b>
+                    <p>
+                        Add a list of sibling noodes after this noode. 
+                        Will always preserve the current active child. Returns the inserted
+                        children.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">defs</code> definition trees of the noodes to add</li>
+                    </ul>
                 </div>
                 <div class="noode">
                     <b><code class="language-ts">addChild(childDef: NoodeDefinition, index?: number): Noode</code></b>
@@ -1461,10 +1547,10 @@
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">activeChildIndex?: number</code></b>
+                    <b><code class="language-ts">isActive?: boolean</code></b>
                     <p>
-                        The index of the initial active child of this noode. Defaults to 0 (the first child),
-                        or null if the noode has no children.
+                        If provided, will mark this noode as active, overriding the default (first child).
+                        If multiple siblings are marked as active, only the first one will take effect.
                     </p>
                 </div>
                 <div class="noode">
@@ -1477,14 +1563,14 @@
                     <b><code class="language-ts">className?: string | string[]</code></b>
                     <p>
                         Custom class(es) for this noode. Either a string of class names delimited by spaces
-                        or an array of class names.
+                        or an array.
                     </p>
                 </div>
                 <div class="noode">
                     <b><code class="language-ts">style?: string | object</code></b>
                     <p>
-                        Custom styles for this noode. Either a style string in inline style format
-                        or a style object in {"property": "value"} format.
+                        Custom styles for this noode. Either a string in inline style format
+                        or an object in {"property": "value"} format.
                     </p>
                 </div>
                 <div class="noode">
@@ -1559,9 +1645,10 @@
                 <div class="noode">
                     <b><code class="language-ts">skipResizeDetection?: boolean</code></b>
                     <p>
-                        If true, will not attach resize detectors on ALL noodes, which may give 
-                        a slight performance boost. Set this if you know that
-                        the size of ALL noodes will never change after creation. Defaults to false.
+                        Global option for disabling resize detection on ALL noodes and branches.
+                        Disabling resize detection may give a slight performance boost. Use this option if you
+                        know that the size of noodes and branches will never change after creation.
+                        Defaults to false.
                     </p>
                 </div>
                 <div class="noode">
@@ -1597,7 +1684,25 @@
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">onMount?: () => any</code></b>
+                    <b><code class="language-ts">showLimitIndicators?: boolean</code></b>
+                    <p>
+                        Whether to render the limit indicators of the canvas. Defaults to true.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">showChildIndicators?: boolean</code></b>
+                    <p>
+                        Whether to render the child indicators of noodes. Defaults to true.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">showBranchBackdrops?: boolean</code></b>
+                    <p>
+                        Whether to render the branch column elements. Defaults to false.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">onMount?: () => any | null</code></b>
                     <p>
                         Callback after the view has been mounted and properly aligned
                         after the first render. Changes to the view model from here onward
@@ -1605,7 +1710,7 @@
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">onFocalNoodeChange?: (current: Noode, prev: Noode) => any</code></b>
+                    <b><code class="language-ts">onFocalNoodeChange?: (current: Noode, prev: Noode) => any | null</code></b>
                     <p>
                         Handler called once after noodel creation, and whenever the focal noode
                         has changed.
@@ -1616,7 +1721,7 @@
                     </ul>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">onFocalParentChange?: (current: Noode, prev: Noode) => any</code></b>
+                    <b><code class="language-ts">onFocalParentChange?: (current: Noode, prev: Noode) => any | null</code></b>
                     <p>
                         Handler called once after noodel creation, and whenever the focal parent
                         has changed.
@@ -1627,7 +1732,7 @@
                     </ul>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">onEnterInspectMode?: (noode: Noode) => any</code></b>
+                    <b><code class="language-ts">onEnterInspectMode?: (noode: Noode) => any | null</code></b>
                     <p>
                         Handler called when entered inspect mode.
                     </p>
@@ -1636,7 +1741,7 @@
                     </ul>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">onExitInspectMode?: (noode: Noode) => any</code></b>
+                    <b><code class="language-ts">onExitInspectMode?: (noode: Noode) => any | null</code></b>
                     <p>
                         Handler called when exited inspect mode.
                     </p>
@@ -1649,15 +1754,36 @@
                 <h3>NoodeOptions<span class="label">interface</span></h3>
                 <p>Options for an individual noode.</p>
                 <div class="noode">
-                    <b><code class="language-ts">skipResizeDetection?: boolean</code></b>
+                    <b><code class="language-ts">skipResizeDetection?: boolean | null</code></b>
                     <p>
-                        If true, will not attach resize detectors on this noode, which may give 
-                        a slight performance boost. Set this if you know that
-                        the size of this noode will never change after creation. Defaults to false.
+                        Option for disabling resize detection (on the branch axis) for this noode.
+                        If set to a boolean, will override the global skipResizeDetection option.
+                        Defaults to null.
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">onEnterFocus?: (self: Noode, prev: Noode) => any</code></b>
+                    <b><code class="language-ts">skipBranchResizeDetection?: boolean | null</code></b>
+                    <p>
+                        Option for disabling resize detection (on the trunk axis) for this noode's child branch.
+                        If set to a boolean, will override the global skipResizeDetection option. Defaults to null.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">showChildIndicator?: boolean | null</code></b>
+                    <p>
+                        If set to a boolean, will override the global showChildIndicators option for
+                        this specific noode. Defaults to null.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">showBranchBackdrop?: boolean | null</code></b>
+                    <p>
+                        If set to a boolean, will override the global showBranchBackdrops option for
+                        the child branch of this specific noode. Defaults to null.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">onEnterFocus?: (self: Noode, prev: Noode) => any | null</code></b>
                     <p>
                         Handler called whenever this noode entered focus. Will be called once after noodel creation
                         if this is the focal noode.
@@ -1668,7 +1794,7 @@
                     </ul>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">onExitFocus?: (self: Noode, current: Noode) => any</code></b>
+                    <b><code class="language-ts">onExitFocus?: (self: Noode, current: Noode) => any | null</code></b>
                     <p>
                         Handler called whenever this noode exited focus.
                     </p>
@@ -1678,7 +1804,7 @@
                     </ul>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">onChildrenEnterFocus?:  (self: Noode, prev: Noode) => any</code></b>
+                    <b><code class="language-ts">onChildrenEnterFocus?:  (self: Noode, prev: Noode) => any | null</code></b>
                     <p>
                         Handler called whenever this noode's child branch entered focus. Will be called once after noodel creation
                         if this is the focal parent.
@@ -1689,7 +1815,7 @@
                     </ul>
                 </div>
                 <div class="noode">
-                    <b><code class="language-ts">onChildrenExitFocus?:  (self: Noode, current: Noode) => any</code></b>
+                    <b><code class="language-ts">onChildrenExitFocus?:  (self: Noode, current: Noode) => any | null</code></b>
                     <p>
                         Handler called whenever this noode's child branch exited focus.
                     </p>
@@ -1728,7 +1854,7 @@
                     <b><code class="language-css">nd-canvas</code></b>
                     <p>
                         Outermost container of the noodel that processes all inputs.
-                        Use this to determine the canvas size and background.
+                        Use this to style the canvas size and background.
                     </p>
                 </div>
                 <div class="noode">
@@ -1744,16 +1870,23 @@
                     </p>
                 </div>
                 <div class="noode">
+                    <b><code class="language-css">nd-trunk</code></b>
+                    <p>
+                        The trunk container. You should not style this element directly in most cases.
+                    </p>
+                </div>
+                <div class="noode">
                     <b><code class="language-css">nd-trunk-move</code></b>
                     <p>
-                        Class applied to the trunk element when moving in the trunk axis. Use this to control the timing and duration of the movement.
+                        Class applied to the <code class="language-css">nd-trunk</code> element when moving in the trunk axis. 
+                        Use this to control the timing and duration of the movement.
                     </p>
                 </div>
                 <div class="noode">
                     <b><code class="language-css">nd-branch-box</code></b>
                     <p>
-                        Outermost container of a branch that occupies 100% height of the canvas. Useful for styling the 'column' of each branch.
-                        Avoid overriding the size and positioning of this element.
+                        Outermost container of a branch that is responsible for its visibility.
+                        Avoid styling this element directly, use <code class="language-css">nd-branch-backdrop</code> instead.
                     </p>
                 </div>
                 <div class="noode">
@@ -1769,9 +1902,42 @@
                     </p>
                 </div>
                 <div class="noode">
+                    <b><code class="language-css">nd-branch-backdrop</code></b>
+                    <p>
+                        An absolute positioned child of the <code class="language-css">nd-branch-box</code> element that is optionally rendered.
+                        You can use this element to style the background of a branch.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-branch-backdrop-focal</code></b>
+                    <p>
+                        Applied to the focal <code class="language-css">nd-branch-backdrop</code> element.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-branch-slider</code></b>
+                    <p>
+                        Outer container for the items of a branch that is responsible for its sliding movement.
+                        Avoid styling this element directly, use <code class="language-css">nd-branch</code> instead.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-branch-slider-focal</code></b>
+                    <p>
+                        Applied to the focal <code class="language-css">nd-branch-slider</code> element.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-branch-slider-move</code></b>
+                    <p>
+                        Class applied to an <code class="language-css">nd-branch-slider</code> element when moving in the branch axis. 
+                        Use this to control the timing and duration of the movement.
+                    </p>
+                </div>
+                <div class="noode">
                     <b><code class="language-css">nd-branch</code></b>
                     <p>
-                        Immediate container of a branch responsible for its movement.
+                        Immediate container for the items of a branch.
                     </p>
                 </div>
                 <div class="noode">
@@ -1781,16 +1947,10 @@
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-css">nd-branch-move</code></b>
-                    <p>
-                        Class applied to an <code class="language-css">nd-branch</code> element when moving in the branch axis. Use this to control the timing and duration of the movement.
-                    </p>
-                </div>
-                <div class="noode">
                     <b><code class="language-css">nd-noode-box</code></b>
                     <p>
                         Outermost container of a noode.
-                        Avoid overriding the size and positioning of this element.
+                        Avoid styling this element directly, use <code class="language-css">nd-noode</code> instead.
                     </p>
                 </div>
                 <div class="noode">
@@ -1829,11 +1989,6 @@
                             Sibling animation during noode insert/delete depend on transitioning the branch
                             and noodes simultaneously. This means they should have identical duration and timing
                             functions - otherwise it will cause a "jump" in the animation.
-                        </p>
-                    </div>
-                    <div class="noode">
-                        <p>
-                            This is effectively Vue's v-move class applied to the transition-group of noodes.
                         </p>
                     </div>
                 </div>

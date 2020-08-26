@@ -16,33 +16,11 @@ export default interface NoodelOptions {
      */
     retainDepthOnTapNavigation?: boolean;
     /**
-     * Number of pixels to move for every pixel swiped in the branch axis. Defaults to 1.
-     */
-    swipeMultiplierBranch?: number;
-    /**
-     * Number of pixels to move for every pixel swiped in the trunk axis. Defaults to 1.
-     */
-    swipeMultiplierTrunk?: number;
-    /**
-     * Number of noodes (per unit of velocity) to snap across after a swipe is released.
-     * Defaults to 1.
-     */
-    snapMultiplierBranch?: number;
-    /**
-     * Number of levels (per unit of velocity) to snap across after a swipe is released.
-     * Defaults to 1.
-     */
-    snapMultiplierTrunk?: number;
-    /**
      * Amount of time to wait in ms (until no more consecutive hits) before showing the 
      * subtree of the focal noode, when moving the focal branch. Mainly a performance hack
      * to prevent rapid toggling of subtree elements. Defaults to 360.
      */
     subtreeDebounceInterval?: number;
-    /**
-     * Determines whether routing should be enabled for this noodel. Defaults to true.
-     */
-    useRouting?: boolean;
     /**
      * Whether to apply the default keyboard navigation. Defaults to true.
      */
@@ -75,15 +53,37 @@ export default interface NoodelOptions {
      */
     skipResizeDetection?: boolean;
     /**
-     * Whether to render the limit indicators of the canvas. Default true.
+     * Number of pixels to move for every pixel swiped in the branch axis. Defaults to 1.
+     */
+    swipeMultiplierBranch?: number;
+    /**
+     * Number of pixels to move for every pixel swiped in the trunk axis. Defaults to 1.
+     */
+    swipeMultiplierTrunk?: number;
+    /**
+     * Number of noodes (per unit of velocity) to snap across after a swipe is released.
+     * Defaults to 1.
+     */
+    snapMultiplierBranch?: number;
+    /**
+     * Number of levels (per unit of velocity) to snap across after a swipe is released.
+     * Defaults to 1.
+     */
+    snapMultiplierTrunk?: number;
+    /**
+     * Determines whether routing should be enabled for this noodel. Defaults to true.
+     */
+    useRouting?: boolean;
+    /**
+     * Whether to render the limit indicators of the canvas. Defaults to true.
      */
     showLimitIndicators?: boolean;
     /**
-     * Whether to render the child indicators of noodes. Default true.
+     * Whether to render the child indicators of noodes. Defaults to true.
      */
     showChildIndicators?: boolean;
     /**
-     * Whether to render the branch column elements. Default false.
+     * Whether to render the branch column elements. Defaults to false.
      */
     showBranchBackdrops?: boolean;
     /**

@@ -16,6 +16,7 @@ export default interface NoodeDefinition {
     /**
      * If provided, will mark the child at this index as active, overriding the default (first child). 
      * Takes precedence over the isActive marker in child noode definitions.
+     * @deprecated recommend to use isActive instead
      */
     activeChildIndex?: number;
     /**
@@ -29,12 +30,12 @@ export default interface NoodeDefinition {
     content?: string | ComponentContent;
     /**
      * Custom class(es) for this noode. Either a string of class names delimited by spaces
-     * or an array of class names.
+     * or an array.
      */
     className?: string | string[];
     /**
-     * Custom styles for this noode. Either a style string in inline style format
-     * or a style object in {"property": "value"} format.
+     * Custom styles for this noode. Either a string in inline style format
+     * or an object in {"property": "value"} format.
      */
     style?: string | object;
     /**
