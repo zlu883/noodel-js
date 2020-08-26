@@ -6,11 +6,11 @@ import Vue from 'vue';
 import NoodelView from '../types/NoodelView';
 import Noode from './Noode';
 import { getActiveChild } from '../util/getters';
-import { doJumpNavigation, shiftFocalLevel, shiftFocalNoode } from '../controllers/noodel-navigate';
+import { shiftFocalLevel, shiftFocalNoode } from '../controllers/noodel-navigate';
 import { findNoodeByPath as _findNoodeByPath } from '../controllers/noodel-traverse';
 import { findNoodeView, findNoodeViewModel } from '../controllers/id-register';
-import { handleFocalNoodeChange } from '../controllers/noodel-mutate';
 import { enterInspectMode, exitInspectMode } from '../controllers/inspect-mode';
+import { handleFocalNoodeChange } from '../controllers/event-emit';
 
 /**
  * The view model of a noodel. Has 2-way binding with the view.
@@ -99,6 +99,7 @@ export default class Noodel {
 
     /**
      * Schedules a callback function to be called after Noodel's current DOM update cycle.
+     * Use this if you need to access DOM elements after performing an update.
      */
     nextTick(callback: () => any) {
         // double Vue nextTick because some changes may take two update cycles to settle

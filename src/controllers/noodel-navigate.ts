@@ -1,4 +1,4 @@
-import { setActiveChild, setFocalParent, hideActiveSubtree, showActiveSubtree, handleFocalNoodeChange } from "../controllers/noodel-mutate";
+import { setActiveChild, setFocalParent, hideActiveSubtree, showActiveSubtree } from "../controllers/noodel-mutate";
 import { Axis } from '../enums/Axis';
 import NoodeView from '../types/NoodeView';
 import NoodelView from '../types/NoodelView';
@@ -6,6 +6,7 @@ import { getActiveChild, getFocalWidth, getFocalHeight } from '../util/getters';
 import { alignTrunkToBranch, alignBranchToIndex } from './noodel-align';
 import { forceReflow } from '../controllers/noodel-animate';
 import { exitInspectMode } from './inspect-mode';
+import { handleFocalNoodeChange } from './event-emit';
 
 /**
  * Core function for panning the trunk to a specified position, changing the focal parent

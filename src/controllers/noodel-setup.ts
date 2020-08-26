@@ -16,6 +16,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         idMap: new Map([]),
         throttleMap: new Map([]),
         debounceMap: new Map([]),
+        eventQueue: [],
         root: null,
         focalParent: null,
         focalLevel: 1,

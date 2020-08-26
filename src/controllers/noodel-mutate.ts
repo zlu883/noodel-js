@@ -1,16 +1,16 @@
 import NoodeView from '../types/NoodeView';
-import { traverseActiveDescendents, traverseDescendents } from './noodel-traverse';
+import { traverseActiveDescendents } from './noodel-traverse';
 import { getActiveChild, isRoot } from '../util/getters';
 import NoodelView from '../types/NoodelView';
 import { alignTrunkToBranch, alignBranchBeforeNoodeDelete } from './noodel-align';
 import { forceReflow } from './noodel-animate';
 import { Axis } from '../enums/Axis';
 import { cancelPan } from './noodel-navigate';
-import { syncHashToFocalNoode } from './noodel-routing';
-import { unregisterNoodeSubtree, findNoodeViewModel } from './id-register';
+import { unregisterNoodeSubtree, registerNoodeSubtree } from './id-register';
 import NoodeDefinition from '../types/NoodeDefinition';
 import { buildNoodeView } from './noodel-setup';
 import { debounce } from './throttle';
+import { handleFocalNoodeChange } from './event-emit';
 
 /**
  * Changes the focal parent of the noodel, and toggles the visibility of the active tree.
@@ -92,6 +92,9 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
         );
     });
 
+    // register new children and their descendents
+    children.forEach(child => registerNoodeSubtree(noodel, child));
+
     let prevFocalNoode = getActiveChild(noodel.focalParent);
 
     // if panning focal branch, cancel it
@@ -131,11 +134,11 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
         showActiveSubtree(noodel, noodel.focalParent, noodel.options.visibleSubtreeDepth);
     }
 
-    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
-
     // Allows resize sensors to be attached properly, preventing possible performance issue.
     // Will be toggled back off at noode mount.
     parent.isChildrenTransparent = true;
+
+    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
 
     return children;
 }
@@ -219,61 +222,14 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
     // do delete
     let deletedNoodes = parent.children.splice(index, deleteCount);
 
+    // should queue events before cleanup
+    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
+
     // clean up
     deletedNoodes.forEach(noode => {
         noode.parent = null;
         unregisterNoodeSubtree(noodel, noode);
     });
 
-    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
-
     return deletedNoodes;
-}
-
-/**
- * Triggers events and sync hash if the focal noode (and maybe also focal parent) have changed.
- * Does nothing if prev equals current.
- */
-export function handleFocalNoodeChange(noodel: NoodelView, prev: NoodeView, current: NoodeView) {
-
-    if (!prev && !current) return;
-    if (prev && current && prev.id === current.id) return;
-
-    syncHashToFocalNoode(noodel);
-
-    let prevNoode = prev ? findNoodeViewModel(noodel, prev.id) : null;
-    let currentNoode = current ? findNoodeViewModel(noodel, current.id) : null;
-
-    if (prev && typeof prev.options.onExitFocus === 'function') {
-        prev.options.onExitFocus(prevNoode, currentNoode);
-    }
-
-    if (current && typeof current.options.onEnterFocus === 'function') {
-        current.options.onEnterFocus(currentNoode, prevNoode);
-    }
-
-    if (typeof noodel.options.onFocalNoodeChange === 'function') {
-        noodel.options.onFocalNoodeChange(currentNoode, prevNoode);
-    }
-
-    let prevParent = prev ? prev.parent : null;
-    let currentParent = current ? current.parent : null;
-
-    if (!prevParent && !currentParent) return;
-    if (prevParent && currentParent && prevParent.id === currentParent.id) return;
-
-    let prevParentNoode = prevParent ? findNoodeViewModel(noodel, prevParent.id) : null;
-    let currentParentNoode = currentParent ? findNoodeViewModel(noodel, currentParent.id) : null;
-
-    if (prevParent && typeof prevParent.options.onChildrenExitFocus === 'function') {
-        prevParent.options.onChildrenExitFocus(prevParentNoode, currentParentNoode);
-    }
-
-    if (currentParent && typeof currentParent.options.onChildrenEnterFocus === 'function') {
-        currentParent.options.onChildrenEnterFocus(currentParentNoode, prevParentNoode);
-    }
-
-    if (typeof noodel.options.onFocalParentChange === 'function') {
-        noodel.options.onFocalParentChange(currentParentNoode, prevParentNoode);
-    }
 }

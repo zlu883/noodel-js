@@ -11,6 +11,7 @@ export default interface NoodelView {
     idMap: Map<string, {view: NoodeView, viewModel: Noode}>;
     throttleMap: Map<string, boolean>;
     debounceMap: Map<string, number>;
+    eventQueue: (() => any)[];
 
     root: NoodeView;
     focalParent: NoodeView;
