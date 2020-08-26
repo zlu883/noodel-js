@@ -216,7 +216,7 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, index: 
 
     let newView: NoodeView = {
         index: index,
-        level: isRoot ? 0 : parent.level + 1,
+        level: isRoot ? 1 : parent.level + 1,
         isChildrenVisible: false,
         isChildrenTransparent: true, // initialize to transparent state for capturing size
         isFocalParent: isRoot, // only initialze root as focal parent

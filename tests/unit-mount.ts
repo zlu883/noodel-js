@@ -2,7 +2,7 @@ import Noodel from "../src/main/Noodel";
 
 const assert = chai.assert;
 
-describe('Noodel mount and unmount', function () {
+describe('Noodel lifecycle', function () {
 
     describe('mount with invalid selector', function () {
         it('should fail with error', function () {
@@ -11,7 +11,7 @@ describe('Noodel mount and unmount', function () {
     });
 
     describe('mount empty noodel', function () {
-        let noodel;
+        let noodel: Noodel;
 
         beforeEach(function() {
             noodel = new Noodel();
@@ -69,7 +69,7 @@ describe('Noodel mount and unmount', function () {
     });
 
     describe('mount non-empty noodel', function () {
-        let noodel;
+        let noodel: Noodel;
 
         beforeEach(function() {
             noodel = new Noodel("#template");
@@ -96,11 +96,11 @@ describe('Noodel mount and unmount', function () {
             })
             noodel.mount("#noodel");
         });
-        it('should have 5 noode elements', function (done) {
+        it('should have 7 noode elements', function (done) {
             noodel.setOptions({
                 onMount: function () {
                     try {
-                        assert.strictEqual(document.querySelectorAll(".nd-noode").length, 5);
+                        assert.strictEqual(document.querySelectorAll(".nd-noode").length, 7);
                         done();
                     }
                     catch (err) {
@@ -110,11 +110,11 @@ describe('Noodel mount and unmount', function () {
             })
             noodel.mount("#noodel");
         });
-        it('should have 2 branch elements', function (done) {
+        it('should have 4 branch elements', function (done) {
             noodel.setOptions({
                 onMount: function () {
                     try {
-                        assert.strictEqual(document.querySelectorAll(".nd-branch-box").length, 2);
+                        assert.strictEqual(document.querySelectorAll(".nd-branch-box").length, 4);
                         done();
                     }
                     catch (err) {
@@ -138,11 +138,11 @@ describe('Noodel mount and unmount', function () {
             })
             noodel.mount("#noodel");
         });
-        it('should have 2 active noode elements', function (done) {
+        it('should have 4 active noode elements', function (done) {
             noodel.setOptions({
                 onMount: function () {
                     try {
-                        assert.strictEqual(document.querySelectorAll(".nd-noode-active").length, 2);
+                        assert.strictEqual(document.querySelectorAll(".nd-noode-active").length, 4);
                         done();
                     }
                     catch (err) {
@@ -187,7 +187,7 @@ describe('Noodel mount and unmount', function () {
                     try {
                         // at this moment in time the hidden branches are actually in "disappear" transition due to initial render
                         // so actually does not have display: none - maybe "correct" this behaviour in future
-                        assert.strictEqual(getComputedStyle(document.querySelectorAll(".nd-branch-box")[1]).opacity, '0');
+                        assert.strictEqual(getComputedStyle(noodel.findNoodeById("#2").getChildBranchEl()).opacity, '0');
                         done();
                     }
                     catch (err) {

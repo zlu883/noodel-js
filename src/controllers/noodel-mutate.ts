@@ -7,7 +7,6 @@ import { forceReflow } from './noodel-animate';
 import { Axis } from '../enums/Axis';
 import { cancelPan } from './noodel-navigate';
 import { syncHashToFocalNoode } from './noodel-routing';
-import Noode from '../main/Noode';
 import { unregisterNoodeSubtree, findNoodeViewModel } from './id-register';
 import NoodeDefinition from '../types/NoodeDefinition';
 import { buildNoodeView } from './noodel-setup';
