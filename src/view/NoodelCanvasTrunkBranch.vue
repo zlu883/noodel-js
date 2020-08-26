@@ -63,9 +63,14 @@
 
             updateBranchSize(this.store, this.parent);
 
-            this.parent.branchResizeSensor = new ResizeSensor(this.parent.branchBoxEl, () => {
-                updateBranchSize(this.store, this.parent);
-            });
+            let skipResizeDetection = typeof this.parent.options.skipBranchResizeDetection === 'boolean' ? 
+                this.parent.options.skipBranchResizeDetection : this.store.options.skipResizeDetection;
+                
+            if (!skipResizeDetection) {
+                this.parent.branchResizeSensor = new ResizeSensor(this.parent.branchBoxEl, () => {
+                    updateBranchSize(this.store, this.parent);
+                });
+            };   
         },
 
         beforeDestroy() {

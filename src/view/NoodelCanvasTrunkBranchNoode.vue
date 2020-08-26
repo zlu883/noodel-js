@@ -76,12 +76,13 @@
                 // setup resize sensor, first callback will run after Vue.nextTick
                 let skipResizeDetection = typeof this.noode.options.skipResizeDetection === 'boolean' ? 
                     this.noode.options.skipResizeDetection : this.store.options.skipResizeDetection;
-                if (skipResizeDetection) return;
                 
-                this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
-                    updateNoodeSize(this.store, this.noode);
-                });
-
+                if (!skipResizeDetection) {
+                    this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
+                        updateNoodeSize(this.store, this.noode);
+                    });
+                };
+                
                 // allows parent branch to fall back to display: none after first size update,
                 // using nextTick to wait for parent branch size capture to finish first
                 Vue.nextTick(() => {
