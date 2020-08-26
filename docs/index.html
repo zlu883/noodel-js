@@ -708,21 +708,7 @@
                                 onMount: null
                             });
                         </code>
-                    </pre>
-                    <div class="noode">
-                        <h3>Focal change events</h3>
-                        <p>
-                            Events listeners that listen to focal noode change are useful for triggering effects as noodes
-                            enter/leave focus, for example to sync with your own UI elements such as page dots.
-                        </p>
-                        <p>
-                            Note, however, these handlers are called synchronously if triggered by API operations.
-                            This means if you call <code class="language-css">moveForward()</code> 3 times in a row
-                            to move 3 noodes ahead, focal change handlers will be called 3 times, even though the view
-                            will only change once. Use <code class="language-css">moveForward(3)</code> or 
-                            <code class="language-css">jumpTo()</code> to trigger these events just once.
-                        </p>
-                    </div>    
+                    </pre>    
                 </div>
             </div>
             <div class="noode">
@@ -850,7 +836,14 @@
                             // view model of an individual noode
                             const currentFocalNoode = noodel.getFocalNoode();
                         </code>
-                    </pre>                 
+                    </pre>   
+                    <div class="noode">                      
+                        <p>
+                            From v2.1, each Noode instance (view model object of a noode) uniquely represents a noode in the tree.
+                            This means you can do things such as compare the equality of two noodes by simply comparing
+                            the reference of their Noode instances.
+                        </p>                 
+                    </div>              
                 </div>
                 <div class="noode">
                     <h3>Programmatic navigation</h3>
@@ -1165,7 +1158,7 @@
                 </div>
                 <div class="noode">
                     <b><code class="language-ts">nextTick(callback: () => any)</code></b>
-                    <p>Schedules a callback function to be called after Noodel's current DOM update cycle.</p>
+                    <p>Schedules a callback function to be called after Noodel's current DOM update cycle. Use this if you need to access DOM elements after performing an update.</p>
                 </div>
                 <div class="noode">
                     <b><code class="language-ts">getEl(): HTMLDivElement</code></b>
@@ -1262,10 +1255,29 @@
                 <h3>Noode<span class="label">class</span></h3>
                 <p>The view model of a noode. Has 2-way binding with the view.</p>
                 <div class="noode">
+                    <b><code class="language-ts">isDeleted(): boolean</code></b>
+                    <p>
+                        Returns true if this noode has been deleted from its noodel.
+                        Most operations on a deleted noode will throw an error.
+                    </p>
+                </div>
+                <div class="noode">
                     <b><code class="language-ts">getParent(): Noode</code></b>
                     <p>
                         Gets the parent of this noode. All noodes should have a parent
                         except the root, which will return null.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getPrev(): Noode</code></b>
+                    <p>
+                        Gets the previous sibling, or null if this is already the first.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">getNext(): Noode</code></b>
+                    <p>
+                        Gets the next sibling, or null if this is already the last.
                     </p>
                 </div>
                 <div class="noode">
@@ -1436,51 +1448,7 @@
                         Performs a navigational jump to focus on this noode.
                         Cannot jump to the root.
                     </p>
-                </div>
-                <div class="noode">
-                    <b><code class="language-ts">addNoodeBefore(def: NoodeDefinition): Noode</code></b>
-                    <p>
-                        Add a sibling noode before this noode. 
-                        Will always preserve the current active child. Returns the inserted
-                        child.
-                    </p>
-                    <ul>
-                        <li><code class="language-ts">def</code> definition tree of the noode to add</li>
-                    </ul>
-                </div>
-                <div class="noode">
-                    <b><code class="language-ts">addNoodesBefore(def: NoodeDefinition): Noode</code></b>
-                    <p>
-                        Add a list of sibling noodes before this noode. 
-                        Will always preserve the current active child. Returns the inserted
-                        children.
-                    </p>
-                    <ul>
-                        <li><code class="language-ts">defs</code> definition trees of the noodes to add</li>
-                    </ul>
-                </div>
-                <div class="noode">
-                    <b><code class="language-ts">addNoodeAfter(def: NoodeDefinition): Noode</code></b>
-                    <p>
-                        Add a sibling noode after this noode. 
-                        Will always preserve the current active child. Returns the inserted
-                        child.
-                    </p>
-                    <ul>
-                        <li><code class="language-ts">def</code> definition tree of the noode to add</li>
-                    </ul>
-                </div>
-                <div class="noode">
-                    <b><code class="language-ts">addNoodesAfter(def: NoodeDefinition): Noode</code></b>
-                    <p>
-                        Add a list of sibling noodes after this noode. 
-                        Will always preserve the current active child. Returns the inserted
-                        children.
-                    </p>
-                    <ul>
-                        <li><code class="language-ts">defs</code> definition trees of the noodes to add</li>
-                    </ul>
-                </div>
+                </div>                              
                 <div class="noode">
                     <b><code class="language-ts">addChild(childDef: NoodeDefinition, index?: number): Noode</code></b>
                     <p>
@@ -1506,6 +1474,24 @@
                     </ul>
                 </div>
                 <div class="noode">
+                    <b><code class="language-ts">addBefore(...defs: NoodeDefinition[]): Noode[]</code></b>
+                    <p>
+                        Syntax sugar for adding sibling noode(s) before this noode. 
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">defs</code> noode definitions to add</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">addAfter(...defs: NoodeDefinition[]): Noode[]</code></b>
+                    <p>
+                        Syntax sugar for adding sibling noode(s) after this noode. 
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">defs</code> noode definitions to add</li>
+                    </ul>
+                </div>
+                <div class="noode">
                     <b><code class="language-ts">removeChild(index: number): NoodeDefinition</code></b>
                     <p>
                         Removes a child noode (and its descendents) at the given index.
@@ -1525,8 +1511,32 @@
                         to the nearest ancestor branch. Returns the definitions of the deleted noodes.
                     </p>
                     <ul>
-                        <li><code class="language-ts">count</code> number of children to remove</li>
+                        <li><code class="language-ts">count</code> number of children to remove, will adjust to maximum if greater than possible range</li>
                     </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">removeBefore(count: number): NoodeDefinition[]</code></b>
+                    <p>
+                        Syntax sugar for removing sibling noode(s) before this noode.
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">count</code> number of noodes to remove, will adjust to maximum if greater than possible range</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">removeAfter(count: number): NoodeDefinition[]</code></b>
+                    <p>
+                        Syntax sugar for removing sibling noode(s) after this noode. 
+                    </p>
+                    <ul>
+                        <li><code class="language-ts">count</code> number of noodes to remove, will adjust to maximum if greater than possible range</li>
+                    </ul>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">removeSelf(): NoodeDefinition</code></b>
+                    <p>
+                        Syntax sugar for removing this noode from the tree. 
+                    </p>
                 </div>
             </div>
             <div class="noode" data-class="menu-item">

@@ -41,6 +41,14 @@ export default class Noode {
     // GETTERS
 
     /**
+     * Returns true if this noode has been deleted from its noodel.
+     * Most operations on a deleted noode will throw an error.
+     */
+    isDeleted(): boolean {
+        return this._nv === null;
+    }
+
+    /**
      * Gets the parent of this noode. All noodes should have a parent
      * except the root, which will return null.
      */
@@ -48,6 +56,22 @@ export default class Noode {
         this.throwErrorIfDeleted();
         if (this.isRoot()) return null;
         return findNoodeViewModel(this._nv, this._v.id);
+    }
+
+    /**
+     * Gets the previous sibling, or null if this is already the first.
+     */
+    getPrev(): Noode {
+        if (this.isRoot()) return null;
+        return this.getParent().getChild(this.getIndex() - 1);
+    }
+
+    /**
+     * Gets the next sibling, or null if this is already the last.
+     */
+    getNext(): Noode {
+        if (this.isRoot()) return null;
+        return this.getParent().getChild(this.getIndex() + 1);
     }
 
     /**
@@ -308,70 +332,6 @@ export default class Noode {
     }
 
     /**
-     * Add a sibling noode before this noode. 
-     * Will always preserve the current active child. Returns the inserted
-     * child.
-     * @param def definition tree of the noode to add
-     */
-    addNoodeBefore(def: NoodeDefinition): Noode {
-        this.throwErrorIfDeleted();
-
-        if (this.isRoot()) {
-            throw new Error("Cannot add sibling noode before root");
-        }
-
-        return this.getParent().addChild(def, this.getIndex());
-    }
-
-    /**
-     * Add a list of sibling noodes before this noode.
-     * Will always preserve the current active child. Returns the inserted
-     * children.
-     * @param defs definition trees of the noodes to add
-     */
-    addNoodesBefore(defs: NoodeDefinition[]): Noode[] {
-        this.throwErrorIfDeleted();
-
-        if (this.isRoot()) {
-            throw new Error("Cannot add sibling noodes before root");
-        }
-
-        return this.getParent().addChildren(defs, this.getIndex());
-    }
-
-    /**
-     * Add a sibling noode after this noode.
-     * Will always preserve the current active child. Returns the inserted
-     * child.
-     * @param def definition tree of the noode to add
-     */
-    addNoodeAfter(def: NoodeDefinition): Noode {
-        this.throwErrorIfDeleted();
-
-        if (this.isRoot()) {
-            throw new Error("Cannot add sibling noode after root");
-        }
-
-        return this.getParent().addChild(def, this.getIndex() + 1);
-    }
-
-    /**
-     * Add a list of sibling noodes after this noode.
-     * Will always preserve the current active child. Returns the inserted
-     * children.
-     * @param defs definition trees of the noodes to add
-     */
-    addNoodesAfter(defs: NoodeDefinition[]): Noode[] {
-        this.throwErrorIfDeleted();
-
-        if (this.isRoot()) {
-            throw new Error("Cannot add sibling noodes after root");
-        }
-
-        return this.getParent().addChildren(defs, this.getIndex() + 1);
-    }
-
-    /**
      * Inserts a child noode (and its descendents) at the given index.
      * Will always preserve the current active child. Returns the inserted
      * child.
@@ -408,6 +368,34 @@ export default class Noode {
     }
 
     /**
+     * Syntax sugar for adding sibling noode(s) before this noode. 
+     * @param defs noode definitions to add
+     */
+    addBefore(...defs: NoodeDefinition[]): Noode[] {
+        this.throwErrorIfDeleted();
+
+        if (this.isRoot()) {
+            throw new Error("Cannot add sibling noodes before root");
+        }
+
+        return this.getParent().addChildren(defs, this.getIndex());
+    }
+
+    /**
+     * Syntax sugar for adding sibling noode(s) after this noode. 
+     * @param defs noode definitions to add
+     */
+    addAfter(...defs: NoodeDefinition[]): Noode[] {
+        this.throwErrorIfDeleted();
+
+        if (this.isRoot()) {
+            throw new Error("Cannot add sibling noodes after root");
+        }
+
+        return this.getParent().addChildren(defs, this.getIndex() + 1);
+    }
+
+    /**
      * Removes a child noode (and its descendents) at the given index.
      * If the active child is removed, will set the next child active,
      * unless the child is the last in the list, where the previous child
@@ -426,7 +414,7 @@ export default class Noode {
      * unless the child is the last in the list, where the previous child
      * will be set active. If the focal branch is deleted, will jump
      * to the nearest ancestor branch. Returns the definitions of the deleted noodes.
-     * @param count number of children to remove
+     * @param count number of children to remove, will adjust to maximum if greater than possible range
      */
     removeChildren(index: number, count: number): NoodeDefinition[] {
         this.throwErrorIfDeleted();
@@ -450,5 +438,60 @@ export default class Noode {
         let deletedNoodes = deleteChildren(this._nv, this._v, index, count);
         
         return deletedNoodes.map(n => extractNoodeDefinition(n));
+    }
+
+    /**
+     * Syntax sugar for removing sibling noode(s) before this noode. 
+     * @param count number of noodes to remove, will adjust to maximum if greater than possible range
+     */
+    removeBefore(count: number): NoodeDefinition[] {
+        this.throwErrorIfDeleted();
+
+        if (typeof count !== 'number' || count < 0) {
+            throw new Error("Cannot remove before: invalid count");
+        }
+
+        if (this.isRoot()) return [];
+
+        let targetIndex = this.getIndex() - count;
+
+        if (targetIndex < 0) targetIndex = 0;
+
+        let targetCount = this.getIndex() - targetIndex;
+
+        if (targetCount <= 0) return [];
+
+        return this.getParent().removeChildren(targetIndex, targetCount);
+    }
+
+    /**
+     * Syntax sugar for removing sibling noode(s) after this noode. 
+     * @param count number of noodes to remove, will adjust to maximum if greater than possible range
+     */
+    removeAfter(count: number): NoodeDefinition[] {
+        this.throwErrorIfDeleted();
+
+        if (typeof count !== 'number' || count < 0) {
+            throw new Error("Cannot remove after: invalid count");
+        }
+
+        if (this.isRoot()) return [];
+
+        if (this.getIndex() === this.getChildCount() - 1) return [];
+
+        return this.getParent().removeChildren(this.getIndex() + 1, count);
+    }
+
+    /**
+     * Syntax sugar for removing this noode from the tree. 
+     */
+    removeSelf(): NoodeDefinition {
+        this.throwErrorIfDeleted();
+
+        if (this.isRoot()) {
+            throw new Error("Cannot remove the root");
+        }
+
+        return this.getParent().removeChild(this.getIndex());
     }
 }
