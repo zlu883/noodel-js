@@ -35,25 +35,37 @@ export default class Noodel {
 
     /**
      * Creates the view model of a noodel based on the given content tree.
+     * @param contentTree Initial content tree for the noodel. Can be an array of NoodeDefinition
+     * objects that specify noodes on the first level, an HTMLElement that contain templates for noodes on 
+     * the first level, or a selector string for such an element. If nothing is provided, will create an empty
+     * noodel with just the root.
+     * @param options Global options for the noodel
      */
-    constructor(root?: NoodeDefinition | Element | string, options?: NoodelOptions) {
-        if (!root) {
-            root = {};
+    constructor(contentTree?: NoodeDefinition[] | Element | string, options?: NoodelOptions) {
+        let root: NoodeDefinition = null;
+    
+        if (Array.isArray(contentTree)) {
+            root = {
+                children: contentTree
+            };
+        }
+        else if (typeof contentTree === "string") {
+            let el = document.querySelector(contentTree);
+            
+            if (!el) throw new Error("Cannot create noodel: invalid root param");
+            root = parseHTMLToNoode(el);
+        }
+        else if (contentTree instanceof Element) {
+            root = parseHTMLToNoode(contentTree);
         } 
-
-        if (typeof root === "string") {
-            root = document.querySelector(root);
+        else if (contentTree && typeof contentTree === 'object') {
+            root = (contentTree as any);
+        }
+        else {
+            root = {};
         }
 
-        if (!root || typeof root !== "object") {
-            throw new Error("Cannot create noodel: invalid root param");
-        }
-
-        if (root instanceof Element) {
-            root = parseHTMLToNoode(root);
-        }
-
-        if (typeof options !== "object") {
+        if (!options) {
             options = {};
         }
 

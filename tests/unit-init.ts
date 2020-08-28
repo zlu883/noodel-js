@@ -56,33 +56,31 @@ describe('Noodel init', function () {
         let noodel: Noodel;
 
         beforeEach(function () {
-            noodel = new Noodel({
-                children: [
-                    {
-                        content: "<h3>1</h3>",
-                        className: ["super", "great", "awesome"],
-                        style: { color: 'red', border: 'solid blue 2px' }
-                    }, 
-                    {
-                        id: "#2",
-                        content: "<h3>2</h3>",
-                        activeChildIndex: 1,
-                        children: [
-                            {
-                                content: "<h3>2/1</h3>"
-                            },
-                            {
-                                content: "<h3>2/2</h3>"
-                            }
-                        ]
-                    }, 
-                    {
-                        content: "<h3>3</h3>",
-                        className: "super great awesome",
-                        style: "color: red; border: solid blue 2px"
-                    }
-                ]
-            });
+            noodel = new Noodel([
+                {
+                    content: "<h3>1</h3>",
+                    className: ["super", "great", "awesome"],
+                    style: { color: 'red', border: 'solid blue 2px' }
+                }, 
+                {
+                    id: "#2",
+                    content: "<h3>2</h3>",
+                    activeChildIndex: 1,
+                    children: [
+                        {
+                            content: "<h3>2/1</h3>"
+                        },
+                        {
+                            content: "<h3>2/2</h3>"
+                        }
+                    ]
+                }, 
+                {
+                    content: "<h3>3</h3>",
+                    className: "super great awesome",
+                    style: "color: red; border: solid blue 2px"
+                }
+            ]);
         });
 
         it('should create root with level 1', function () {

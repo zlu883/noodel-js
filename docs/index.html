@@ -85,7 +85,7 @@
             <div class="noode">
                 <h3>Summary</h3>
                 <p>
-                    Noodel, short for <i>node model</i>, is a two-dimensional scroll-snap interface for content trees that you can navigate by simply moving up, down, left and right.
+                    Noodel, short for <i>node model</i>, is a 2-dimensional scroll-snap interface for content trees that you can navigate by simply moving up, down, left and right.
                     It offers a new way to present content in the modern age that is intuitive, responsive and accessible.
                 </p>
                 <p>
@@ -330,15 +330,15 @@
                     <pre>
                         <code class="language-js">
                             // Creates a view model based on the given content tree
-                            const noodel = new Noodel(root);
+                            const noodel = new Noodel(contentTree);
                             
                             // Renders the view onto the page
                             noodel.mount("#target");
                         </code>
                     </pre>
                     <p>
-                        The <i>root</i> parameter is an element selector or object that specifies the root
-                        of the content tree, and <i>#target</i> is the target element for placing the noodel.
+                        The <i>contentTree</i> parameter is an element selector or array of objects that specifies the 
+                        content tree, and <i>#target</i> is the target element for placing the noodel.
                     </p>
                     <div class="noode">
                         <p>
@@ -352,11 +352,11 @@
                     <p>
                         There are two ways to define the content tree that will be used by a noodel.
                         For sites driven by static HTML templates, you can define the tree via HTML and
-                        give its root element to the constructor:
+                        give the container element to the constructor:
                     </p>
                     <pre>
                         <code class="language-html">
-                            &lt;div id="root" style="display: none;"&gt;
+                            &lt;div id="noodel" style="display: none;"&gt;
                                 &lt;div class="noode"&gt;
                                     &lt;p&gt;My first noode&lt;/p&gt;
                                 &lt;/div&gt;
@@ -369,15 +369,15 @@
                             &lt;/div&gt;
 
                             &lt;script&gt;
-                                const noodel = new Noodel("#root");
-                                noodel.mount("#root");
+                                const noodel = new Noodel("#noodel");
+                                noodel.mount("#noodel");
                             &lt;/script&gt;
                         </code>
                     </pre>
                     <div class="noode">
                         <h3>The specifics</h3>
                         <p>
-                            Noodel will traverse the descendents of the root element and convert
+                            Noodel will traverse the descendents of the container element and convert
                             all <code class="language-html">&lt;div&gt;</code>s with 
                             <code class="language-html">class="noode"</code> into
                             noodes of the noodel, keeping all parent-child relationships. Any text or
@@ -385,7 +385,7 @@
                             <i>content</i> of that noode, concatenated in the order they appear.
                         </p>
                         <p>
-                            This contatenation preserves the markup of content elements
+                            This concatenation preserves the markup of content elements
                             so you have complete freedom in structuring and styling the content 
                             of each noode. Note this does not apply
                             to the <code class="language-html">&lt;div&gt;</code>s that serve as
@@ -401,45 +401,38 @@
                             nodes will not be preserved.
                         </p>
                         <p>
-                            By mounting a noodel on the root of the original DOM tree (as in the example),
+                            By mounting a noodel on the container of the original DOM tree (as in the example),
                             the original tree will be destroyed and replaced by that of the noodel. This is usually
                             the behavior you want.
                         </p>
                     </div>
                 </div>
                 <div class="noode">
-                    <h3>Defining content tree via object</h3>
+                    <h3>Defining content tree via object array</h3>
                     <p>
                         Alternatively, for dynamic sites/apps driven by JavaScript, you can specify 
-                        the content tree as a tree of objects:
+                        the content tree as an array of objects corresponding to noodes on the first level:
                     </p>
                     <pre>
                         <code class="language-js">
-                            let root = {
-                                children: [
-                                    {
-                                        content: "&lt;p&gt;My first noode&lt;/p&gt;"
-                                    },
-                                    {
-                                        content: "&lt;p&gt;My second noode&lt;/p&gt;"
-                                        children: [
-                                            {
-                                                content: "&lt;p&gt;First child of my second noode&lt;/p&gt;"
-                                            }
-                                        ]
-                                    }
-                                ]
-                            };
+                            let tree = [
+                                {
+                                    content: "&lt;p&gt;My first noode&lt;/p&gt;"
+                                },
+                                {
+                                    content: "&lt;p&gt;My second noode&lt;/p&gt;"
+                                    children: [
+                                        {
+                                            content: "&lt;p&gt;First child of my second noode&lt;/p&gt;"
+                                        }
+                                    ]
+                                }
+                            ];
 
-                            const noodel = new Noodel(root);
+                            const noodel = new Noodel(tree);
                             noodel.mount("#target");
                         </code>
                     </pre>
-                    <div class="noode">
-                        <p>
-                            Note you need to start with the root noode (an empty invisible noode that serves as the parent of the first level).
-                        </p>
-                    </div>
                     <div class="noode">
                         <p>
                             <img src="alert-triangle.svg" class="link-icon"/> Always use trusted HTML strings as content. Never
@@ -499,7 +492,7 @@
                                 },
                                 data: {
                                     // the Noodel instance must be registered as reactive data
-                                    noodel: new Noodel({})
+                                    noodel: new Noodel()
                                 }
                             }).mount("#el");
                         </code>
@@ -526,22 +519,20 @@
                     </p>
                     <pre>
                         <code class="language-js">
-                            const noodel = new Noodel({
-                                children: [
-                                    {
-                                        content: {
-                                            component: YourVueComponent, // your Vue component object or name
-                                            props: { // name-value pairs of props to pass to this component
-                                                "propA": "abc",
-                                                "propB": 20
-                                            },
-                                            eventListeners: { // name-value pairs of event listeners to attach onto the component
-                                                "onButtonClick": () => console.log("button click")
-                                            }
+                            const noodel = new Noodel([
+                                {
+                                    content: {
+                                        component: YourVueComponent, // your Vue component object or name
+                                        props: { // name-value pairs of props to pass to this component
+                                            "propA": "abc",
+                                            "propB": 20
+                                        },
+                                        eventListeners: { // name-value pairs of event listeners to attach onto the component
+                                            "onButtonClick": () => console.log("button click")
                                         }
                                     }
-                                ]
-                            })
+                                }
+                            ]);
                         </code>
                     </pre>
                 </div>
@@ -553,7 +544,7 @@
                     <pre>
                         <code class="language-js">
                             // Set noodel options on init
-                            const noodel = new Noodel(root, {
+                            const noodel = new Noodel(tree, {
                                 visibleSubtreeDepth: 10,
                                 swipeMultiplierTrunk: 0.9
                             });
@@ -570,16 +561,14 @@
                     <pre>
                         <code class="language-js">
                             // Set options at content tree creation
-                            const noodel = new Noodel({
-                                children: [
-                                    {
-                                        content: "something cool",
-                                        options: {
-                                            onEnterFocus: () => console.log("entered a cool noode")
-                                        }
+                            const noodel = new Noodel([
+                                {
+                                    content: "something cool",
+                                    options: {
+                                        onEnterFocus: () => console.log("entered a cool noode")
                                     }
-                                ]
-                            });
+                                }
+                            ]);
                             
                             // Set options dynamically
                             noodel.getRoot().getChild(0).setOptions({
@@ -640,7 +629,7 @@
                     <p>or in JavaScript:</p>
                     <pre>
                         <code class="language-js">
-                            let noodeDefinitions = [
+                            let tree = [
                                 {
                                     content: "First child"
                                 },
@@ -689,16 +678,14 @@
                     </p>
                     <pre>
                         <code class="language-js">
-                            const noodel = new Noodel({
-                                children: [
-                                    {
-                                        options: {
-                                            // noode specific event
-                                            onEnterFocus: () => console.log("entered focus")
-                                        }
+                            const noodel = new Noodel([
+                                {
+                                    options: {
+                                        // noode specific event
+                                        onEnterFocus: () => console.log("entered focus")
                                     }
-                                ]
-                            }, {
+                                }
+                            ], {
                                 // noodel event
                                 onMount: () => console.log("mounted")
                             });
@@ -803,18 +790,17 @@
                         Scrolling inside noodes is disabled normally but enabled during inspect mode.
                     </p>
                     <p>
-                        This allows scrolling to be handled by the browser natively, which is a MUCH better idea. 
-                        ("Don't mess with scrolling!" is a well-known sentiment, after all.)
+                        (This allows scrolling to be handled by the browser natively, which is a much better idea.) 
                     </p>
                     <div class="noode">
                         <p>
-                            Noodel's core principle is content chunking. Because
+                            Noodel is based on the principle of content chunking. Because
                             each noode has a limited space, as a general rule, you should try to break down
-                            long content into bite-sized pieces that can fit into individual noodes, with responsive styling for
+                            large blocks of content into bite-sized pieces that can fit into individual noodes, with responsive styling for
                             different screen sizes.
                         </p>
                         <p>
-                            However, this can become impractical in some situations, so inspect mode is provided as a fallback
+                            However, this can be impractical in some situations, so inspect mode is provided as a fallback
                             for viewing overflow content.
                         </p>
                     </div>
@@ -831,7 +817,7 @@
                     <pre>
                         <code class="language-js">
                             // view model of whole noodel
-                            const noodel = new Noodel(root);
+                            const noodel = new Noodel(tree);
 
                             // view model of an individual noode
                             const currentFocalNoode = noodel.getFocalNoode();
@@ -849,7 +835,7 @@
                     <h3>Programmatic navigation</h3>
                     <pre>
                         <code class="language-js">
-                            const noodel = new Noodel(root);
+                            const noodel = new Noodel(tree);
                             const specialNoode = noodel.findNoodeById("special");
 
                             // move to the next noode
@@ -870,13 +856,11 @@
                     <h3>Replacing noode content</h3>
                     <pre>
                         <code class="language-js">
-                            const noodel = new Noodel({
-                                children: [
-                                    {
-                                        content: "old"
-                                    }
-                                ]
-                            });
+                            const noodel = new Noodel([
+                                {
+                                    content: "old"
+                                }
+                            ]);
 
                             noodel.getRoot().getChild(0).setContent("new");
                         </code>
@@ -898,7 +882,7 @@
                     <h3>Noode insertion and deletion</h3>
                     <pre>
                         <code class="language-js">
-                            const rootNoode = new Noodel({}).getRoot();
+                            const rootNoode = new Noodel().getRoot();
 
                             // inserts a noode
                             rootNoode.addChild({
@@ -951,7 +935,7 @@
                     </p>
                     <pre>
                         <code class="language-js">
-                            const noodel = new Noodel({});
+                            const noodel = new Noodel();
 
                             noodel.getRoot().addChild({
                                 content: "first child of root",
@@ -1046,11 +1030,6 @@
                         You can extend/override most of Noodel's CSS classes to customize various visual features.
                     </p>
                     <p>
-                        In general, however, you should avoid setting properties that relate to layout and positioning, e.g.
-                        position, box-sizing, margin and transform, as they may interfere with how Noodel layout and
-                        calculates the size of its elements. 
-                    </p>
-                    <p>
                         See <a href="#nd-canvas">CSS classes</a> in the API section for the list of classes you can work with.
                     </p>
                 </div>
@@ -1078,17 +1057,16 @@
                         class (or on custom class/styles you provide for individual noodes). You can have either fixed size noodes 
                         (by setting a specific width/height) or
                         flexible size noodes (by not setting a specific width/height), and well as using max/min sizes
-                        to adapt to a range of situations. In addition, you can set the size of your content element
-                        inside a specific noode and let that determine the size of the noode container.
+                        to adapt to a range of situations. In addition, you can style your content
+                        and let them influence the size of their noode containers.
                     </p>
                     <p>
-                        And whenever the size of a noode changes, Noodel will align everything so your
+                        And whenever the size of a noode changes, Noodel will automatically align everything so your
                         focal noode is always centered at the right position!
                     </p>
                     <p>
-                        By default, Noodel comes with a basic <code class="language-css">max-height: 600px</code>
-                        and <code class="language-css">max-width: 800px</code> that matches the default size of the canvas,
-                        which you can easily override.
+                        By default, noodes only come with a <code class="language-css">max-height: 600px</code>
+                        and <code class="language-css">max-width: 800px</code> that matches the default size of the canvas.
                     </p>
                     <div class="noode">
                         <h3>Example: full-page carousel</h3>
@@ -1128,14 +1106,6 @@
                             You can apply any combination of them according to your needs.
                         </p>
                     </div>  
-                    <div class="noode">
-                        <p>
-                            <img src="alert-triangle.svg" class="link-icon"/> Noodel's view mechanism depends on CSS transitions of opacity and transform.
-                            Because CSS declarations for transitions are non-stackable, if you specify custom transitions for another property (e.g background-color)
-                            on an element that fades or moves,
-                            you need to also supply the corresponding opacity/transform transitions because the default transitions will be overriden.
-                        </p>
-                    </div> 
                 </div>  
             </div>
         </div>
@@ -1145,8 +1115,22 @@
                 <h3>Noodel<span class="label">class</span></h3>
                 <p>The view model of a noodel. Has 2-way binding with the view.</p>
                 <div class="noode">
-                    <b><code class="language-ts">constructor(root: NoodeDefinition | Element | string, options?: NoodelOptions)</code></b>
+                    <b><code class="language-ts">constructor(contentTree: NoodeDefinition[] | Element | string, options?: NoodelOptions)</code></b>
                     <p>Creates the view model of a noodel based on the given content tree.</p>
+                    <ul>
+                        <li>
+                            <code class="language-ts">contentTree</code> Initial content tree for the noodel. Can be an array of NoodeDefinition
+                            objects that specify noodes on the first level, an HTMLElement that contain templates for noodes on 
+                            the first level, or a selector string for such an element. If nothing is provided, will create an empty
+                            oodel with just the root.
+                        </li>
+                        <li><code class="language-ts">options</code> Global options for the noodel</li>
+                    </ul>
+                    <div class="noode">
+                        <p>
+                            [Deprecated] You can also pass in a single NoodeDefinition object that serves as the root.
+                        </p>
+                    </div>
                 </div>
                 <div class="noode">
                     <b><code class="language-ts">mount(el: string | Element)</code></b>
