@@ -118,7 +118,7 @@
                 noode.branchSize = 0;
                 noode.childBranchOffset = 0;
                 noode.childBranchOffsetAligned = 0;
-                delete noode.branchSliderEl;
+                delete noode.branchEl;
                 delete noode.branchBoxEl;
                 delete noode.el;
                 delete noode.resizeSensor;

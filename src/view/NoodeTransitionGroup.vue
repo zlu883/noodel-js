@@ -5,8 +5,8 @@
     <transition-group 
         name="nd-noode"
         tag="div"
-        class="nd-branch"
-        :class="branchClass"
+        class="nd-branch-inner"
+        :class="branchInnerClass"
     >
         <NoodelCanvasTrunkBranchNoode
             v-for="child in parent.children"
@@ -43,9 +43,9 @@
 
         computed: {
 
-            branchClass(): {} {
+            branchInnerClass(): {} {
                 return {
-                    'nd-branch-focal': this.parent.isFocalParent
+                    'nd-branch-inner-focal': this.parent.isFocalParent
                 }
             },
         },
@@ -58,7 +58,7 @@
 
 <style>
 
-    .nd-branch {
+    .nd-branch-inner {
         position: relative;
     }
 

@@ -15,10 +15,10 @@
                 :class="branchBackdropClass"
             />
             <div 
-                class="nd-branch-slider" 
-                ref="branchSlider"
-                :class="branchSliderClass"
-                :style="branchSliderStyle"
+                class="nd-branch" 
+                ref="branch"
+                :class="branchClass"
+                :style="branchStyle"
                 @transitionend="onTransitionEnd"
             >  
                 <NoodeTransitionGroup
@@ -59,7 +59,7 @@
 
         mounted() {
             this.parent.branchBoxEl = this.$el as HTMLDivElement;
-            this.parent.branchSliderEl = this.$refs.branchSlider as HTMLDivElement;
+            this.parent.branchEl = this.$refs.branch as HTMLDivElement;
 
             updateBranchSize(this.store, this.parent);
 
@@ -87,7 +87,7 @@
                 };
             },
 
-            branchSliderStyle(): {} {
+            branchStyle(): {} {
                 return {
                     transform: `translateY(${this.parent.childBranchOffset + getFocalHeight(this.store)}px)`
                 };
@@ -105,10 +105,10 @@
                 }
             },
 
-            branchSliderClass(): {} {
+            branchClass(): {} {
                 return {
-                    'nd-branch-slider-move': this.parent.applyBranchMove,
-                    'nd-branch-slider-focal': this.parent.isFocalParent
+                    'nd-branch-move': this.parent.applyBranchMove,
+                    'nd-branch-focal': this.parent.isFocalParent
                 }
             },
 
@@ -161,16 +161,16 @@
         height: 100%;
     }
 
-    .nd-branch-slider {
+    .nd-branch {
         position: relative;
         z-index: 1;
     }
 
-    .nd-branch-slider-focal {
+    .nd-branch-focal {
         z-index: 10;
     }
 
-    .nd-branch-slider-move {
+    .nd-branch-move {
         transition-property: transform;
         transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
         transition-duration: .5s; 

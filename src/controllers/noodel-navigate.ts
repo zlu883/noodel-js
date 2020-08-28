@@ -161,7 +161,7 @@ export function startPan(noodel: NoodelView, ev: HammerInput) {
 
         // finds the current focal branch offset with getBoundingClientRect, even if branch is in transition,
         // taking into account the canvas's position as it may not be full page
-        let currentFocalBranchOffset = noodel.focalParent.branchSliderEl.getBoundingClientRect().top - noodel.canvasEl.getBoundingClientRect().top - getFocalHeight(noodel);
+        let currentFocalBranchOffset = noodel.focalParent.branchEl.getBoundingClientRect().top - noodel.canvasEl.getBoundingClientRect().top - getFocalHeight(noodel);
 
         noodel.focalParent.applyBranchMove = false;
         noodel.focalParent.childBranchOffset = currentFocalBranchOffset;

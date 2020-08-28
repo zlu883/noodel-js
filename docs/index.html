@@ -1895,7 +1895,7 @@
                 <div class="noode">
                     <b><code class="language-css">nd-branch-box</code></b>
                     <p>
-                        Outermost container of a branch that is responsible for its visibility.
+                        Outermost container of a branch that is responsible for its visibility. Occupies 100% length of the canvas.
                         Avoid styling this element directly, use <code class="language-css">nd-branch-backdrop</code> instead.
                     </p>
                 </div>
@@ -1914,8 +1914,9 @@
                 <div class="noode">
                     <b><code class="language-css">nd-branch-backdrop</code></b>
                     <p>
-                        An absolute positioned child of the <code class="language-css">nd-branch-box</code> element that is optionally rendered.
-                        You can use this element to style the background of a branch.
+                        Absolute positioned child of the <code class="language-css">nd-branch-box</code> element that is optionally rendered.
+                        Prefer to style this instead of <code class="language-css">nd-branch-box</code>
+                        to prevent conflicts with the visibility mechanism.
                     </p>
                 </div>
                 <div class="noode">
@@ -1925,35 +1926,36 @@
                     </p>
                 </div>
                 <div class="noode">
-                    <b><code class="language-css">nd-branch-slider</code></b>
-                    <p>
-                        Outer container for the items of a branch that is responsible for its sliding movement.
-                        Avoid styling this element directly, use <code class="language-css">nd-branch</code> instead.
-                    </p>
-                </div>
-                <div class="noode">
-                    <b><code class="language-css">nd-branch-slider-focal</code></b>
-                    <p>
-                        Applied to the focal <code class="language-css">nd-branch-slider</code> element.
-                    </p>
-                </div>
-                <div class="noode">
-                    <b><code class="language-css">nd-branch-slider-move</code></b>
-                    <p>
-                        Class applied to an <code class="language-css">nd-branch-slider</code> element when moving in the branch axis. 
-                        Use this to control the timing and duration of the movement.
-                    </p>
-                </div>
-                <div class="noode">
                     <b><code class="language-css">nd-branch</code></b>
                     <p>
-                        Immediate container for the items of a branch.
+                        Outer container for the items of a branch that is responsible for its sliding movement.
+                        Avoid styling this element directly, use <code class="language-css">nd-branch-inner</code> instead.
                     </p>
                 </div>
                 <div class="noode">
                     <b><code class="language-css">nd-branch-focal</code></b>
                     <p>
                         Applied to the focal <code class="language-css">nd-branch</code> element.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-branch-move</code></b>
+                    <p>
+                        Class applied to an <code class="language-css">nd-branch</code> element when moving in the branch axis. 
+                        Use this to control the timing and duration of the movement.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-branch-inner</code></b>
+                    <p>
+                        Immediate container for the items of a branch. Prefer to style this instead of <code class="language-css">nd-branch</code>
+                        to prevent conflicts with the slide mechanism.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-branch-inner-focal</code></b>
+                    <p>
+                        Applied to the focal <code class="language-css">nd-branch-inner</code> element.
                     </p>
                 </div>
                 <div class="noode">
