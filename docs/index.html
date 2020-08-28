@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
-    <meta name="description" content="JavaScript library for a user interface that you can navigate with just 4 arrow keys. A new way to present content on the modern web that is intuitive, responsive and accessible.">
+    <meta name="description" content="2D scroll-snap interface for content trees that you can navigate by simply moving up, down, left and right.">
 
     <link rel="icon" href="logo_256x256.png">
 
@@ -85,21 +85,21 @@
             <div class="noode">
                 <h3>Summary</h3>
                 <p>
-                    Noodel, short for <i>node model</i>, is a user interface for dynamic content trees that you can navigate by just moving up, down, left and right.
-                    It offers a new way to present content on the modern web that is intuitive, responsive and accessible.
+                    Noodel, short for <i>node model</i>, is a two-dimensional scroll-snap interface for content trees that you can navigate by simply moving up, down, left and right.
+                    It offers a new way to present content in the modern age that is intuitive, responsive and accessible.
                 </p>
                 <p>
-                    Currently available as Noodel.js, a JavaScript component library. Powered by the reactive view engine of<a target="_blank" href="https://vuejs.org/"> Vue.js</a>.
+                    Currently available as Noodel.js, a JavaScript component for use in web projects. Powered by the reactive view engine of<a target="_blank" href="https://vuejs.org/"> Vue.js</a>.
                 </p>
             </div>
             <div class="noode">
                 <h3>What can I use it for?</h3>
                 <p>
-                    At the maximum, Noodel offers a <i>whole new way</i> to structure and present your website or web app
-                    that is intuitive and engaging. You can use it for virtually anything - from static blogs and wikis, to dynamic apps with complex control flow.
+                    At the maximum, you can use Noodel to present a full website or web app as a single, interactive content tree.
+                    The tree structure is naturally adaptable for many things - from static blogs and wikis, to dynamic apps with complex control flow.
                 </p>
                 <p>
-                    At the minimum, Noodel is a component you can plug in to an existing web page for an interactive carousel of flexible containers.
+                    At the minimum, Noodel is a component you can plug in to a web page as an interactive viewer for some part of content.
                 </p>
             </div>
             <div class="noode">
@@ -109,7 +109,7 @@
                     chunk of content.
                 </p>
                 <p>
-                    Your content tree will be presented on an infinite canvas that you can navigate just by
+                    Your content tree will be presented on an infinite canvas that you can navigate by simply
                     moving up, down, left and right.
                 </p>
                 <p>
@@ -123,7 +123,7 @@
             <div class="noode">
                 <h3>Why Noodel?</h3>
                 <p>
-                    Much of the content we encounter everyday naturally comes in tree hierarchies.
+                    Much of the content we encounter everyday naturally comes in tree structures.
                     Trees, however, are difficult to present on a viewing surface. Conventional
                     UI schemes tend to "flatten" trees into linear layouts - the most common offender being
                     long texts with many sections and subsections squashed into a single vertical column.
@@ -136,7 +136,7 @@
                 </p>
                 <p>
                     Noodel is a system designed from the ground up that aims to present content in a <i>better</i>
-                    way - by integrating navigation with the content itself. It is optimized for tree hierarchies, with a lot of
+                    way - by integrating navigation with the content itself. It is optimized for tree structures, with a lot of
                     considerations thrown in to make the user experience as great as possible.
                 </p>
             </div>
@@ -148,7 +148,7 @@
                         cognitive load by encouraging the removal of navigation bars and menus.
                     </li>
                     <li>
-                        <b>Noodel is device-agnostic.</b> The core mechanism and layout scheme remains identical,
+                        <b>Noodel is device-agnostic.</b> Its layout and navigation mechanism remains identical,
                         regardless of screen size and input method.
                     </li>
                     <li>
@@ -157,7 +157,7 @@
                         operates on just 4 arrow keys.
                     </li>
                     <li>
-                        <b>Noodel is flexible.</b> You can apply its chunking and tree recursion rules for as little or far as you wish.
+                        <b>Noodel is flexible.</b> You can use its chunking and tree recursion for as little or much as you like.
                         It doesn't care what you put into each node. The look-and-feel is fully customizable via plain CSS. 
                     </li>
                     <li>
@@ -165,7 +165,7 @@
                         You can add, update or delete nodes at any time to deal with asynchronous data or manage control flow. 
                     </li>
                     <li>
-                        <b>Noodel is interesting.</b> It is a fun and unique way of presenting your content that makes it stand out from others.
+                        <b>Noodel is interesting.</b> It is an engaging way to present your content that makes it stand out from others.
                     </li>
                 </ul>
             </div>
@@ -219,7 +219,7 @@
             <div class="noode">
                 <h3>Branch</h3>
                 <p>
-                    The container (carousel) for a list of sibling noodes is called a <i>branch</i>.
+                    The container (slider) for a list of sibling noodes is called a <i>branch</i>.
                 </p>
             </div>
             <div class="noode">
@@ -237,7 +237,7 @@
             <div class="noode">
                 <h3>Trunk</h3>
                 <p>
-                    The container (carousel) for the list of branches in the active tree, ordered from ancestor
+                    The container (slider) for the list of branches in the active tree, ordered from ancestor
                     to descendents, is called the <i>trunk</i>.
                 </p>
             </div>

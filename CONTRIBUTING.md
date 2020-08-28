@@ -14,9 +14,9 @@ This also means there are many things you can contribute to. Including but not l
 ## Roadmap
 Some planned features/enhancements for the future include, but not limited to:
 - Add more tests
+- Options for layout orientation (right to left, top to bottom, etc...)
+- Options for positioning the focal noode
 - Integration with other frameworks like React
-- Options for layout orientation
-- Options for focal position
 
 ## Bug reports
 Please use Github issues for bug reports. As a general rule, please provide:
@@ -35,16 +35,16 @@ Please use Github issues for submitting feature/enhancement requests. This can a
 Help is especially wanted for making example sites that use Noodel! It'll be great for showcasing the framework (and learning about its possibilities and limitations). These sites can be about any topic and in any structure. If you have an idea for such a site, or you have built a site using Noodel that you want the project to link to, please make your proposal as a feature request :)
 
 ## Building the project
-The project is scaffolded using [vue-cli](https://cli.vuejs.org/). Refer to its docs for more information.
+The project is managed using npm and webpack.
 
 After you've downloaded the project, do `npm install` to install all dependencies. 
 
 You can then use either:
-- `npm run build` to build the js bundle
-- `npm run test` to run a server with live reloading that serves the test html files to run in the browser (which is setup by adapting 'vue-cli-service serve')
+- `npm run build` to build the js and css bundles for production
+- `npm run test` to run a server with live reloading (using webpack-dev-server) that serves the test html pages to run in the browser. There is both a unit test page and a manual test page (for experimenting with things during development).
 
 ## Pull requests
-If you are interested in making a pull request, it'll be much appreciated. Please:
+Pull requests are welcome. Please:
 - Make your pull request against the `dev` branch
 - Provide a clear description of what you did
 - Make a reference to any Github issue(s) you are addressing
