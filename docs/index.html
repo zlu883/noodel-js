@@ -1150,7 +1150,7 @@
                 </div>
                 <div class="noode">
                     <b><code class="language-ts">getFocalLevel(): number</code></b>
-                    <p>Gets the current focal level (the level of the focal parent).</p>
+                    <p>Gets the level of the current focal branch. The first branch has level 1.</p>
                 </div>
                 <div class="noode">
                     <b><code class="language-ts">getActiveTreeHeight(): number</code></b>
@@ -1341,7 +1341,8 @@
                 <div class="noode">
                     <b><code class="language-ts">getLevel(): number</code></b>
                     <p>
-                        Gets the level of this noode. The root has level 1.
+                        Gets the level of this noode. The root has level 0,
+                        the first branch has level 1, and so on.
                     </p>
                 </div>
                 <div class="noode">

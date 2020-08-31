@@ -23,8 +23,8 @@ describe('Noodel init', function () {
             noodel = new Noodel("#template");
         });
 
-        it('should create root with level 1', function () {
-            assert.strictEqual(noodel.getRoot().getLevel(), 1);
+        it('should create root with level 0', function () {
+            assert.strictEqual(noodel.getRoot().getLevel(), 0);
         });
         it('should parse children of root', function () {
             assert.strictEqual(noodel.getRoot().getChildren().length, 3);
@@ -32,8 +32,8 @@ describe('Noodel init', function () {
         it('should parse grandchildren of root', function () {
             assert.strictEqual(noodel.getRoot().getChild(1).getChildren().length, 2);
         });
-        it('should create grandchildren with level 3', function () {
-            assert.strictEqual(noodel.getRoot().getChild(1).getChild(0).getLevel(), 3);
+        it('should create grandchildren with level 2', function () {
+            assert.strictEqual(noodel.getRoot().getChild(1).getChild(0).getLevel(), 2);
         });
         it('should parse specific ID of a noode', function () {
             assert.strictEqual(noodel.getRoot().getChild(1).getId(), '#2');
@@ -83,8 +83,8 @@ describe('Noodel init', function () {
             ]);
         });
 
-        it('should create root with level 1', function () {
-            assert.strictEqual(noodel.getRoot().getLevel(), 1);
+        it('should create root with level 0', function () {
+            assert.strictEqual(noodel.getRoot().getLevel(), 0);
         });
         it('should parse children of root', function () {
             assert.strictEqual(noodel.getRoot().getChildren().length, 3);
@@ -92,8 +92,8 @@ describe('Noodel init', function () {
         it('should parse grandchildren of root', function () {
             assert.strictEqual(noodel.getRoot().getChild(1).getChildren().length, 2);
         });
-        it('should create grandchildren with level 3', function () {
-            assert.strictEqual(noodel.getRoot().getChild(1).getChild(0).getLevel(), 3);
+        it('should create grandchildren with level 2', function () {
+            assert.strictEqual(noodel.getRoot().getChild(1).getChild(0).getLevel(), 2);
         });
         it('should parse specific ID of a noode', function () {
             assert.strictEqual(noodel.getRoot().getChild(1).getId(), '#2');

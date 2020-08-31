@@ -28,7 +28,7 @@ export function alignTrunkOnBranchResize(noodel: NoodelView, parent: NoodeView, 
         if (parent.isFocalParent) {
             alignVal = diff / 2;
         }
-        else if (parent.isChildrenVisible && parent.level < noodel.focalLevel) {
+        else if (parent.isChildrenVisible && (parent.level + 1) < noodel.focalLevel) {
             alignVal = diff; 
         }
 

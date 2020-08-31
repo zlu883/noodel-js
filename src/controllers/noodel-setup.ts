@@ -69,7 +69,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         onHashChanged: null
     }
 
-    let rootNoode = buildNoodeView(noodel, root, 0, null, true);
+    let rootNoode = buildNoodeView(noodel, root, 0, null, true, 0);
 
     noodel.root = rootNoode;
     noodel.focalParent = rootNoode;
@@ -176,7 +176,7 @@ export function parseAndApplyNoodeOptions(options: NoodeOptions, noode: NoodeVie
     }
 }
 
-export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, index: number, parent: NoodeView, isActive: boolean): NoodeView {
+export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, index: number, parent: NoodeView, isActive: boolean, branchRelativeOffset: number): NoodeView {
 
     let isRoot = parent === null;
     if (!def.children) def.children = [];
@@ -217,7 +217,7 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, index: 
 
     let newView: NoodeView = {
         index: index,
-        level: isRoot ? 1 : parent.level + 1,
+        level: isRoot ? 0 : parent.level + 1,
         isChildrenVisible: false,
         isChildrenTransparent: true, // initialize to transparent state for capturing size
         isFocalParent: isRoot, // only initialze root as focal parent
@@ -228,7 +228,7 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, index: 
         childBranchOffsetAligned: 0,
         applyBranchMove: false,
         isInInspectMode: false,
-        branchRelativeOffset: !isRoot && index > 0 ? parent.children[index - 1].branchRelativeOffset + parent.children[index - 1].size : 0,
+        branchRelativeOffset: branchRelativeOffset,
         branchSize: 0,
         parent: parent,
         id: newId,
@@ -254,7 +254,7 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, index: 
     }
 
     for (let i = 0; i < def.children.length; i++) {
-        newView.children.push(buildNoodeView(noodel, def.children[i], i, newView, i === activeChildIndex));
+        newView.children.push(buildNoodeView(noodel, def.children[i], i, newView, i === activeChildIndex, 0));
     }
 
     return newView;

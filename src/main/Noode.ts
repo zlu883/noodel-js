@@ -170,7 +170,8 @@ export default class Noode {
     }
 
     /**
-     * Gets the level of this noode. The root has level 1.
+     * Gets the level of this noode. The root has level 0,
+     * the first branch has level 1, and so on.
      */
     getLevel(): number {
         this.throwErrorIfDeleted();
@@ -308,7 +309,7 @@ export default class Noode {
         if (this._v.isFocalParent) {
             shiftFocalNoode(this._nv, index - this._v.activeChildIndex);
         }
-        else if (this._v.isChildrenVisible && this._v.level < this._nv.focalLevel) {
+        else if (this._v.isChildrenVisible && (this._v.level + 1) < this._nv.focalLevel) {
             doJumpNavigation(this._nv, this._v.children[index]);
         }
         else {

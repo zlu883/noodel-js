@@ -35,8 +35,8 @@ export function setFocalParent(noodel: NoodelView, newFocalParent: NoodeView) {
 
     newFocalParent.isFocalParent = true;
     noodel.focalParent = newFocalParent;
-    noodel.focalLevel = newFocalParent.level;
-    showActiveSubtree(noodel, noodel.root, newFocalParent.level - 1 + noodel.options.visibleSubtreeDepth, 0);
+    noodel.focalLevel = newFocalParent.level + 1;
+    showActiveSubtree(noodel, noodel.root, newFocalParent.level + noodel.options.visibleSubtreeDepth, 0);
 }
 
 /**
@@ -81,6 +81,10 @@ export function hideActiveSubtree(origin: NoodeView, depth?: number) {
  */
 export function insertChildren(noodel: NoodelView, parent: NoodeView, index: number, childDefs: NoodeDefinition[]): NoodeView[] {
 
+    // find initial relative offset for the new children
+    let prev = parent.children[index - 1];
+    let branchRelativeOffset = prev ? prev.branchRelativeOffset + prev.size : 0;
+
     // construct view tree, this should come first as it may throw error
     let children = childDefs.map((def, pos) => {
         return buildNoodeView(
@@ -88,7 +92,8 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
             def,
             index + pos,
             parent,
-            false // ignore whether the immediate children should be active, for now
+            false, // ignore whether the immediate children should be active, for now
+            branchRelativeOffset 
         );
     });
 
@@ -166,7 +171,7 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
     if (parent.activeChildIndex >= index && parent.activeChildIndex < index + deleteCount) { 
 
         // align trunk to nearest parent branch if current focal branch is being deleted
-        if (parent.level <= noodel.focalLevel && parent.isChildrenVisible) {
+        if ((parent.level + 1) <= noodel.focalLevel && parent.isChildrenVisible) {
 
             if (noodel.panAxis === Axis.HORIZONTAL) {
                 cancelPan(noodel);
@@ -184,7 +189,7 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
                     forceReflow();
                 }
             }
-            else if (parent.level < noodel.focalLevel) {
+            else if ((parent.level + 1) < noodel.focalLevel) {
                 setFocalParent(noodel, parent);
                 alignTrunkToBranch(noodel, parent);
                 forceReflow();

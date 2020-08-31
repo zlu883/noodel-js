@@ -130,7 +130,7 @@ export default class Noodel {
     }
 
     /**
-     * Gets the current focal level (the level of the focal parent).
+     * Gets the level of the current focal branch. The first branch has level 1.
      */
     getFocalLevel(): number {
         return this._v.focalLevel;
@@ -220,11 +220,6 @@ export default class Noodel {
      * the possible limits, will navigate to the furthest level in that direction.
      */
     setFocalLevel(level: number) {
-        if (typeof level !== 'number' || level < 1 || level > this.getActiveTreeHeight()) {
-            console.warn("Cannot set focal level: invalid level");
-            return;
-        }
-
         shiftFocalLevel(this._v, level - this._v.focalLevel);
     }
 
