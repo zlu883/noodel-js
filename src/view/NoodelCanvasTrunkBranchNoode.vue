@@ -148,7 +148,8 @@
 
             childIndicatorClass(): {} {
                 return {
-                    'nd-child-indicator-active': this.noode.isActive
+                    'nd-child-indicator-active': this.noode.isActive,
+                    'nd-child-indicator-expanded': this.noode.isChildrenVisible
                 }
             }
         }
@@ -247,7 +248,7 @@
         background-color: #ffffff;
     }
 
-    .nd-child-indicator-active::after {
+    .nd-child-indicator-expanded::after {
         content: "";
         position: absolute;
         left: .6em;
