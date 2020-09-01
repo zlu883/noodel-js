@@ -115,7 +115,7 @@ function testManualConfig() {
             stats: 'minimal'
         },
         devtool: 'eval-source-map',
-        entry: './src/main/Noodel.ts',
+        entry: './tests/manual.ts',
         resolve: {
             extensions: ['.ts', '.js', '.vue', '.json'],
         },
@@ -146,11 +146,8 @@ function testManualConfig() {
             new VueLoaderPlugin(),
         ],
         output: {
-            filename: 'noodel.js',
-            path: path.resolve(__dirname, 'dist'),
-            library: 'Noodel',
-            libraryExport: 'default',
-            libraryTarget: 'umd'
+            filename: 'manual-test.js',
+            path: path.resolve(__dirname, 'dist')
         }, 
     }
 }
