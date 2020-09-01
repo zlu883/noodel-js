@@ -5,12 +5,12 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
-    <meta name="description" content="2D scroll-snap interface for content trees that you can navigate by simply moving up, down, left and right.">
+    <meta name="description" content="A 4-way scroll-snap user interface for presenting content trees on the modern web. It is clean, intuitive and highly adaptable.">
 
     <link rel="icon" href="logo_256x256.png">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.css">
-    <script src="https://cdn.jsdelivr.net/npm/noodel/dist/noodel-full.umd.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/noodel/dist/noodel-full.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/prism.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/components/prism-typescript.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/plugins/normalize-whitespace/prism-normalize-whitespace.min.js"></script>
@@ -85,8 +85,8 @@
             <div class="noode">
                 <h3>Summary</h3>
                 <p>
-                    Noodel, short for <i>node model</i>, is a 2-dimensional scroll-snap interface for content trees that you can navigate by simply moving up, down, left and right.
-                    It offers a new way to present content in the modern age that is intuitive, responsive and accessible.
+                    Noodel, short for <i>node model</i>, is a 4-way scroll-snap user interface for content trees that you can navigate by simply moving up, down, left and right.
+                    It offers a new way to present content in the modern age that is clean, intuitive, and highly adaptable.
                 </p>
                 <p>
                     Currently available as Noodel.js, a JavaScript component for use in web projects. Powered by the reactive view engine of<a target="_blank" href="https://vuejs.org/"> Vue.js</a>.
@@ -96,10 +96,10 @@
                 <h3>What can I use it for?</h3>
                 <p>
                     At the maximum, you can use Noodel to present a full website or web app as a single, interactive content tree.
-                    The tree structure is naturally adaptable for many things - from static blogs and wikis, to dynamic apps with complex control flow.
+                    It can be used for virtually anything - from static blogs and wikis, to dynamic apps with complex control flow.
                 </p>
                 <p>
-                    At the minimum, Noodel is a component you can plug in to a web page as an interactive viewer for some part of content.
+                    At the minimum, Noodel is a component you can plug in to a web page as an interactive viewer for hierarchical information.
                 </p>
             </div>
             <div class="noode">
@@ -144,7 +144,7 @@
                 <h3>What's so good about it?</h3>
                 <ul>
                     <li>
-                        <b>Noodel is simple and intuitive.</b> Most people immediately understand how it works. It reduces clutter and
+                        <b>Noodel is clean and intuitive.</b> Most people immediately understand how it works. It reduces clutter and
                         cognitive load by encouraging the removal of navigation bars and menus.
                     </li>
                     <li>
@@ -152,12 +152,12 @@
                         regardless of screen size and input method.
                     </li>
                     <li>
-                        <b>Noodel is accessible.</b> By reducing the essential controls to 4 direction movements,
+                        <b>Noodel is accessible.</b> By reducing the essential controls to 4-way movements,
                         it can be easily adapted to contexts where control ability is limited. It is entirely possible to build a Noodel site that
                         operates on just 4 arrow keys.
                     </li>
                     <li>
-                        <b>Noodel is flexible.</b> You can use its chunking and tree recursion for as little or much as you like.
+                        <b>Noodel is flexible.</b> You can use chunking and tree recursion for as little or much as you like.
                         It doesn't care what you put into each node. The look-and-feel is fully customizable via plain CSS. 
                     </li>
                     <li>
@@ -172,7 +172,7 @@
             <div class="noode">
                 <h3>TypeScript support</h3>
                 <p>
-                    Noodel is completely written in TypeScript, with typing support for its API out-of-the-box :)
+                    Noodel is completely written in TypeScript, with typing support for its API out of the box :)
                 </p>
             </div>
         </div>
@@ -190,7 +190,7 @@
                 </p>
                 <div class="noode">
                     <p>
-                        Noodel's core principle is breaking down large streams of content into bite-sized units.
+                        Noodel is based on the principle of breaking down large blocks of content into bite-sized chunks.
                         A noode should never exceed the size of the viewport - a precondition for node-based navigation.
                     </p>
                 </div>
@@ -446,7 +446,7 @@
                 <div class="noode" data-id="usage-vue-summary">
                     <h3>Summary</h3>
                     <p>
-                        Noodel uses Vue internally and therefore provides integration with Vue out-of-the-box.
+                        Noodel uses Vue internally and therefore provides integration with Vue out of the box.
                         Noodel is available as a Vue component, and also allows you to use Vue components
                         as the content for individual noodes.
                     </p>
