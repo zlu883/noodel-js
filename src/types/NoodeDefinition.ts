@@ -25,7 +25,8 @@ export default interface NoodeDefinition {
      */
     isActive?: boolean;
     /**
-     * Content of this noode.
+     * Content of this noode. If is a string, will be inserted as innerHTML of the nd-noode element.
+     * Can also be a ComponentContent object that wraps a Vue component.
      */
     content?: string | ComponentContent;
     /**
@@ -42,4 +43,8 @@ export default interface NoodeDefinition {
      * Options for this noode.
      */
     options?: NoodeOptions;
+    /**
+     * Custom data to associate with this noode.
+     */
+    data?: any;
 }

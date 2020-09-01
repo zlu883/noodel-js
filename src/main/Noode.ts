@@ -21,11 +21,17 @@ export default class Noode {
     private _nv: NoodelView;
 
     /**
+     * Custom data associated with this noode. You can freely get/set this property.
+     */
+    data: any;
+
+    /**
      * Internal use only. To get the view model for specific noodes, use methods on the Noodel class instead.
      */
-    constructor(v: NoodeView, nv: NoodelView) {
+    constructor(v: NoodeView, nv: NoodelView, data?: any) {
         this._v = v;
         this._nv = nv;
+        this.data = data;
     }
 
     private setDeleted() {
@@ -45,7 +51,7 @@ export default class Noode {
      * Most operations on a deleted noode will throw an error.
      */
     isDeleted(): boolean {
-        return this._nv === null;
+        return !this._nv;
     }
 
     /**

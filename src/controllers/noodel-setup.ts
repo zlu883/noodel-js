@@ -249,6 +249,9 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, index: 
         }
     }
 
+    // temporarily use the view object as a holder for custom data, will be removed later
+    if (def.data !== undefined) newView["data"] = def.data;
+
     if (def.options && typeof def.options === "object") {
         parseAndApplyNoodeOptions(def.options, newView);
     }

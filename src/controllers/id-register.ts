@@ -11,9 +11,11 @@ export function generateNoodeId(noodel: NoodelView) {
 /**
  * Register a noode and all its descendents.
  */
-export function registerNoodeSubtree(noodel: NoodelView, noode: NoodeView) {
-    traverseDescendents(noode, (desc) => {
-        noodel.idMap.set(desc.id, {view: desc, viewModel: new Noode(desc, noodel)});
+export function registerNoodeSubtree(noodel: NoodelView, subtreeRoot: NoodeView) {
+    traverseDescendents(subtreeRoot, (desc) => {
+        noodel.idMap.set(desc.id, {view: desc, viewModel: new Noode(desc, noodel, desc["data"])});
+        // removes the custom data reference to avoid it being tracked by Vue
+        delete desc["data"];
     }, true);
 }
 

@@ -65,13 +65,14 @@ describe('Noodel init', function () {
                 {
                     id: "#2",
                     content: "<h3>2</h3>",
-                    activeChildIndex: 1,
                     children: [
                         {
-                            content: "<h3>2/1</h3>"
+                            content: "<h3>2/1</h3>",
+                            data: "customData"
                         },
                         {
-                            content: "<h3>2/2</h3>"
+                            content: "<h3>2/2</h3>",
+                            isActive: true
                         }
                     ]
                 }, 
@@ -115,6 +116,9 @@ describe('Noodel init', function () {
         });
         it('should parse custom style (object) of a noode', function () {
             assert.deepStrictEqual(noodel.getRoot().getChild(0).getStyle(), {'color': 'red', 'border': 'solid blue 2px'});
+        });
+        it('should parse custom data for a noode', function () {
+            assert.deepStrictEqual(noodel.getRoot().getChild(1).getChild(0).data, "customData");
         });
     });
 });
