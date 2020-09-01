@@ -85,7 +85,6 @@
         mounted: function() {
             setupContainer(this.$el, this.store);
             setupCanvasInput(this.$el as HTMLDivElement, this.store);
-            console.log(this.$refs);
             this.store.trunkEl = (this.$refs.trunk as any).$el as Element;
             this.store.canvasEl = this.$refs.canvas as Element;
             
@@ -160,9 +159,6 @@
         methods: {
 
             onTransitionEnd(ev: TransitionEvent) {
-                console.log(ev.propertyName === "transform");
-                console.log(ev.target);
-                console.log(this.$refs.trunk);
                 if (ev.propertyName === "transform" && ev.target === (this.$refs.trunk as any).$el) {
                     if (this.store.ignoreTransitionEnd) return;
                     this.store.applyTrunkMove = false;
