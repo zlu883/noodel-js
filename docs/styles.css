@@ -144,5 +144,14 @@ code[class*="language-"] {
 }
 
 .nd-limit {
-    background-color: #317524;
+    background-color: #8C6430;
+    transform: scale(2);
+}
+
+.nd-limit-enter, .nd-limit-leave-to {
+    transform: scale(1);
+}
+
+.nd-limit-enter-active, .nd-limit-leave-active {
+    transition-property: opacity, transform;
 }

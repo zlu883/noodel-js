@@ -672,6 +672,29 @@
                     </pre>
                 </div>
                 <div class="noode">
+                    <h3>Attach custom data</h3>
+                    <p>
+                        If you are using the object syntax, you can also associate custom data with each noode.
+                        This can be useful in advanced situations where you need to tag individual noodes with
+                        your own data:
+                    </p>
+                    <pre>
+                        <code class="language-js">
+                            const noodel = new Noodel([
+                                {
+                                    id: "noodeWithCustomData",
+                                    data: "sad"
+                                }
+                            ]);
+
+                            // get/set the custom data
+                            const noodeWithCustomData = noodel.findNoodeById("noodeWithCustomData");
+                            const data = noodeWithCustomData.data; // "sad"
+                            noodeWithCustomData.data = "happy";
+                        </code>
+                    </pre>
+                </div>
+                <div class="noode">
                     <h3>Listening to events</h3>
                     <p>
                         You can attach listener callbacks for events by setting them in the noodel/noode options:
@@ -1122,13 +1145,13 @@
                             <code class="language-ts">contentTree</code> Initial content tree for the noodel. Can be an array of NoodeDefinition
                             objects that specify noodes on the first level, an HTMLElement that contain templates for noodes on 
                             the first level, or a selector string for such an element. If nothing is provided, will create an empty
-                            oodel with just the root.
+                            noodel with just the root.
                         </li>
                         <li><code class="language-ts">options</code> Global options for the noodel</li>
                     </ul>
                     <div class="noode">
                         <p>
-                            [Deprecated] You can also pass in a single NoodeDefinition object that serves as the root.
+                            <b>[Deprecated]</b> You can also pass in a single NoodeDefinition object that serves as the root.
                         </p>
                     </div>
                 </div>
@@ -1238,6 +1261,12 @@
             <div class="noode" data-class="menu-item">
                 <h3>Noode<span class="label">class</span></h3>
                 <p>The view model of a noode. Has 2-way binding with the view.</p>
+                <div class="noode">
+                    <b><code class="language-ts">data: any</code></b>
+                    <p>
+                        Custom data associated with this noode. You can freely get/set this property.
+                    </p>
+                </div>
                 <div class="noode">
                     <b><code class="language-ts">isDeleted(): boolean</code></b>
                     <p>
@@ -1551,7 +1580,8 @@
                 <div class="noode">
                     <b><code class="language-ts">content?: string | ComponentContent</code></b>
                     <p>
-                        Content of this noode.
+                        Content of this noode. If is a string, will be inserted as innerHTML of the <code class="language-css">nd-noode</code> element.
+                        Can also be a ComponentContent object that wraps a Vue component.
                     </p>
                 </div>
                 <div class="noode">
@@ -1572,6 +1602,12 @@
                     <b><code class="language-ts">options?: NoodeOptions</code></b>
                     <p>
                         Options for this noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-ts">data?: any</code></b>
+                    <p>
+                        Custom data to associate with this noode.
                     </p>
                 </div>
             </div>
@@ -1693,7 +1729,7 @@
                 <div class="noode">
                     <b><code class="language-ts">showBranchBackdrops?: boolean</code></b>
                     <p>
-                        Whether to render the branch column elements. Defaults to false.
+                        Whether to render the branch backdrop elements. Defaults to false.
                     </p>
                 </div>
                 <div class="noode">
@@ -1867,7 +1903,7 @@
                 <div class="noode">
                     <b><code class="language-css">nd-trunk</code></b>
                     <p>
-                        The trunk container. You should not style this element directly in most cases.
+                        The trunk container. You should not need to style this element directly in most cases.
                     </p>
                 </div>
                 <div class="noode">
@@ -2018,6 +2054,12 @@
                     <b><code class="language-css">nd-child-indicator-active</code></b>
                     <p>
                         Applied to the <code class="language-css">nd-child-indicator</code> of an active noode.
+                    </p>
+                </div>
+                <div class="noode">
+                    <b><code class="language-css">nd-child-indicator-expanded</code></b>
+                    <p>
+                        Applied to the <code class="language-css">nd-child-indicator</code> of a noode that has visible children.
                     </p>
                 </div>
                 <div class="noode">

@@ -83,7 +83,7 @@ export default interface NoodelOptions {
      */
     showChildIndicators?: boolean;
     /**
-     * Whether to render the branch column elements. Defaults to false.
+     * Whether to render the branch backdrop elements. Defaults to false.
      */
     showBranchBackdrops?: boolean;
     /**
