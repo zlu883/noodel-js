@@ -6,7 +6,7 @@ import { ResizeSensor } from 'css-element-queries';
 import { showActiveSubtree } from './noodel-mutate';
 import { setupRouting, unsetRouting } from './noodel-routing';
 import NoodeOptions from '../types/NoodeOptions';
-import { generateNoodeId, registerNoodeSubtree, findNoodeView, isIdRegistered } from './id-register';
+import { generateNoodeId, registerNoodeSubtree, findNoodeView, isIdRegistered, findNoodeViewModel } from './id-register';
 import { alignNoodelOnJump, cancelPan } from './noodel-navigate';
 
 export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelView {
@@ -263,19 +263,23 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, index: 
     return newView;
 }
 
-export function extractNoodeDefinition(noode: NoodeView): NoodeDefinition {
+export function extractNoodeDefinition(noodel: NoodelView, noode: NoodeView): NoodeDefinition {
 
-    return {
+    let data = findNoodeViewModel(noodel, noode.id).data;
+    let def: NoodeDefinition = {
         id: noode.id,
         content: noode.content,
         isActive: noode.isActive,
-        children: noode.children.map(c => extractNoodeDefinition(c)),
+        children: noode.children.map(c => extractNoodeDefinition(noodel, c)),
         className: noode.className,
         style: noode.style,
         options: {
             ...noode.options
         }
     };
+
+    if (data !== undefined) def.data = data;
+    return def;
 }
 
 export function parseClassName(className: string | string[]): string[] {

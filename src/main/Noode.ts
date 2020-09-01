@@ -6,7 +6,7 @@ import { getPath as _getPath } from '../util/getters';
 import { alignBranchToIndex, updateNoodeSize, updateBranchSize } from '../controllers/noodel-align';
 import { shiftFocalNoode, doJumpNavigation } from '../controllers/noodel-navigate';
 import NoodelView from '../types/NoodelView';
-import { findNoodeViewModel, changeNoodeId } from '../controllers/id-register';
+import { findNoodeViewModel, changeNoodeId, unregisterNoodeSubtree } from '../controllers/id-register';
 import NoodeOptions from '../types/NoodeOptions';
 import ComponentContent from '../types/ComponentContent';
 import Vue from 'vue';
@@ -93,7 +93,8 @@ export default class Noode {
      * Useful if you want to perform your own operations on the content tree.
      */
     getDefinition(): NoodeDefinition {
-        return extractNoodeDefinition(this._v);
+        this.throwErrorIfDeleted();
+        return extractNoodeDefinition(this._nv, this._v);
     }
 
     /**
@@ -443,8 +444,17 @@ export default class Noode {
         }
 
         let deletedNoodes = deleteChildren(this._nv, this._v, index, count);
-        
-        return deletedNoodes.map(n => extractNoodeDefinition(n));
+
+        // extract definitions, this must happen before unregistering
+        let defs = deletedNoodes.map(n => extractNoodeDefinition(this._nv, n));
+
+        // unregister
+        deletedNoodes.forEach(noode => {
+            noode.parent = null;
+            unregisterNoodeSubtree(this._nv, noode);
+        });
+
+        return defs;
     }
 
     /**

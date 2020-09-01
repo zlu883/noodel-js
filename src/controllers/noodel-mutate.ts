@@ -227,14 +227,8 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
     // do delete
     let deletedNoodes = parent.children.splice(index, deleteCount);
 
-    // should queue events before cleanup
+    // queue events
     handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
-
-    // clean up
-    deletedNoodes.forEach(noode => {
-        noode.parent = null;
-        unregisterNoodeSubtree(noodel, noode);
-    });
 
     return deletedNoodes;
 }
