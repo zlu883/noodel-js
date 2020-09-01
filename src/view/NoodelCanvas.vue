@@ -36,20 +36,23 @@
                 v-show="store.showLimits.bottom"
             />
         </transition>
-        <div
+        <transition-group 
+            name="nd-branch-box"
+            tag="div"
             ref="trunk"
             class="nd-trunk"
             :class="trunkClass"
             :style="trunkStyle"
-            @transitionend="onTransitionEnd"
+            @transitionend.native="onTransitionEnd"
         >
             <NoodelCanvasTrunkBranch
                 v-for="parent in allBranchParents"
+                v-show="parent.isChildrenVisible || parent.isChildrenTransparent"
                 :key="parent.id"                  
                 :parent="parent"
                 :store="store"
             />
-        </div>
+        </transition-group>
     </div>
     
 </template>
@@ -82,7 +85,8 @@
         mounted: function() {
             setupContainer(this.$el, this.store);
             setupCanvasInput(this.$el as HTMLDivElement, this.store);
-            this.store.trunkEl = this.$refs.trunk as Element;
+            console.log(this.$refs);
+            this.store.trunkEl = (this.$refs.trunk as any).$el as Element;
             this.store.canvasEl = this.$refs.canvas as Element;
             
             this.$nextTick(() => {
@@ -156,7 +160,10 @@
         methods: {
 
             onTransitionEnd(ev: TransitionEvent) {
-                if (ev.propertyName === "transform" && ev.target === this.$refs.trunk) {
+                console.log(ev.propertyName === "transform");
+                console.log(ev.target);
+                console.log(this.$refs.trunk);
+                if (ev.propertyName === "transform" && ev.target === (this.$refs.trunk as any).$el) {
                     if (this.store.ignoreTransitionEnd) return;
                     this.store.applyTrunkMove = false;
                 }

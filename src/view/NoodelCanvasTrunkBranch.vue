@@ -2,32 +2,29 @@
 
 <template>
 
-    <transition name="nd-branch-box">
+    <div
+        class="nd-branch-box"
+        :class="branchBoxClass"
+        :style="branchBoxStyle"
+    >
         <div
-            class="nd-branch-box"
-            :class="branchBoxClass"
-            :style="branchBoxStyle"
-            v-show="parent.isChildrenVisible || parent.isChildrenTransparent"
-        >
-            <div
-                v-if="showBranchBackdrop"
-                class="nd-branch-backdrop"
-                :class="branchBackdropClass"
+            v-if="showBranchBackdrop"
+            class="nd-branch-backdrop"
+            :class="branchBackdropClass"
+        />
+        <div 
+            class="nd-branch" 
+            ref="branch"
+            :class="branchClass"
+            :style="branchStyle"
+            @transitionend="onTransitionEnd"
+        >  
+            <NoodeTransitionGroup
+                :store="store"
+                :parent="parent"
             />
-            <div 
-                class="nd-branch" 
-                ref="branch"
-                :class="branchClass"
-                :style="branchStyle"
-                @transitionend="onTransitionEnd"
-            >  
-                <NoodeTransitionGroup
-                    :store="store"
-                    :parent="parent"
-                />
-            </div>
         </div>
-    </transition>
+    </div>
     
 </template>
 
@@ -157,7 +154,8 @@
         position: absolute;
         left: 0;
         top: 0;
-        width: 150%;
+        background-color: green;
+        width: 100%;
         height: 100%;
     }
 
