@@ -85,7 +85,6 @@
         mounted: function() {
             setupContainer(this.$el, this.store);
             setupCanvasInput(this.$el as HTMLDivElement, this.store);
-            console.log(this.$refs);
             this.store.trunkEl = (this.$refs.trunk as any).$el as Element;
             this.store.canvasEl = this.$refs.canvas as Element;
             
