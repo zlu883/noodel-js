@@ -1,6 +1,6 @@
 {
     "name": "noodel",
-    "version": "2.0.3",
+    "version": "2.1.0",
     "license": "MIT",
     "scripts": {
         "test": "webpack-dev-server --env.test --open",
@@ -18,7 +18,7 @@
         "name": "Zuohao (Jonny) Lu"
     },
     "homepage": "https://zlu883.github.io/Noodel",
-    "description": "Adaptable scroll-snap interface for content trees",
+    "description": "2-dimensional scroll-snap user interface for content trees",
     "dependencies": {
         "css-element-queries": "^1.2.3",
         "hammerjs": "^2.0.8",
