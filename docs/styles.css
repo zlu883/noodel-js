@@ -74,6 +74,7 @@ code[class*="language-"] {
 }
 
 .nd-canvas {
+    outline: none;
     background-color: #e0ae69;
     width: 100%;
     height: 100%;
