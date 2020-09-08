@@ -7,6 +7,9 @@
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
     <meta name="description" content="A 4-way scroll-snap user interface for presenting content trees on the modern web. It is clean, intuitive and highly adaptable.">
 
+    <!--Fix for Netlify's rewrite trailing slash issue-->
+    <script>(function(){const{protocol:n,host:o,pathname:a,search:i,hash:c}=window.location;a.endsWith("/")||a.includes(".")||window.location.replace(`${n}//${o}${a}/${i}${c}`)})()</script>
+    
     <link rel="icon" href="./logo_256x256.png">
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.min.css">
