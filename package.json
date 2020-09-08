@@ -17,7 +17,7 @@
     "author": {
         "name": "Zuohao (Jonny) Lu"
     },
-    "homepage": "https://zlu883.github.io/Noodel",
+    "homepage": "https://github.com/zlu883/noodel-js",
     "description": "4-way scroll-snap user interface for content trees",
     "dependencies": {
         "css-element-queries": "^1.2.3",

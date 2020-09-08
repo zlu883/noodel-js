@@ -6,7 +6,7 @@ Noodel, short for *node model*, is a 4-way scroll-snap user interface for conten
 
 Currently available as Noodel.js, a JavaScript component for use in web projects.
 
-## [Demo / documentation](https://zlu883.github.io/Noodel/)
+## [Demo / documentation](https://zlu883.github.io/noodel-js/)
 
 Noodel is self-explanatory: it uses itself to present its own docs ;)
 
@@ -24,7 +24,7 @@ Expected to work on IE >= 10 and all major modern browsers.
 
 ## Contribution
 
-Please [see here](https://github.com/zlu883/Noodel/blob/master/CONTRIBUTING.md) for details.
+Please [see here](https://github.com/zlu883/noodel-js/blob/master/CONTRIBUTING.md) for details.
 
 ## License
 
