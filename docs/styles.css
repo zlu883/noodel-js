@@ -7,6 +7,14 @@ body {
     color: #222222;
 }
 
+a {
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
 pre[class*="language-"] {
     overflow: hidden;
 }
