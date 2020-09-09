@@ -19,12 +19,14 @@ code[class*="language-"] {
 }
 
 .logo {
-    width: 100px;
+    height: 120px;
     display: block;
     margin: auto;
 }
 
 .title {
+    font-weight: lighter;
+    color: #509923;
     margin: auto;
     text-align: center;
 }
@@ -36,14 +38,13 @@ code[class*="language-"] {
     right: 20px;
     top: 15px;
     padding: 0 10px;
-    background-color: #4aaf36;
+    background-color: #60b52b;
     border-radius: 10px;
     position: absolute;
     color: white;
 }
 
 .link-container {
-    margin-top: 10px;
     display: flex;
     justify-content: center;
 }
@@ -66,7 +67,7 @@ code[class*="language-"] {
 
 .label {
     margin: 0 0.5em;
-    background-color: #4aaf36;
+    background-color: #60b52b;
     color: white;
     padding: .1em .3em;
     border-radius: .5em;
@@ -75,13 +76,13 @@ code[class*="language-"] {
 
 .nd-canvas {
     outline: none;
-    background-color: #e0ae69;
+    background-color: #deab6a;
     width: 100%;
     height: 100%;
 }
 
 .nd-noode, .nd-child-indicator {
-    background-color: #f6dfbc;
+    background-color: #ffedd9;
 }
 
 .nd-noode {
@@ -89,47 +90,48 @@ code[class*="language-"] {
 }
 
 .nd-noode-active, .nd-child-indicator-active {
-    background-color: #fcf4e9;
-}
-
-.nd-child-indicator-active:after {
-    border-left-color: #fcf4e9;
-}
-
-.nd-branch-focal .nd-noode, .nd-branch-focal .nd-child-indicator {
-    background-color: #f9ead4;
-}
-
-.nd-branch-focal .nd-noode-active, .nd-branch-focal .nd-child-indicator-active {
     background-color: white;
 }
 
-.nd-branch-focal .nd-child-indicator-active:after {
-    border-left-color: white;
+.nd-branch-inner {
+    opacity: 0.8;
+    transition-property: opacity;
+    transition-duration: 0.5s;
+    transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
+}
+
+.nd-branch-inner-focal {
+    opacity: 1;
 }
 
 @media (max-width: 800px) {
     .nd-noode {
-        max-width: 85vw;
+        max-width: 80vw;
     }
 }
 
 @media (max-height: 800px) {
     .nd-noode {
-        max-height: 85vh;
+        max-height: 80vh;
     }
 }
 
 @media (min-width: 801px) {
     .nd-noode {
-        max-width: 720px;
+        max-width: 700px;
     }
 }
 
 @media (min-height: 801px) {
     .nd-noode {
-        max-height: 720px;
+        max-height: 700px;
     }
+}
+
+.landing-noode {
+    text-align: center;
+    padding: 2em;
+    font-size: 18px;
 }
 
 .menu-item {
@@ -145,7 +147,7 @@ code[class*="language-"] {
 }
 
 .nd-limit {
-    background-color: #8C6430;
+    background-color: #a67a4b;
     transform: scale(2);
 }
 
@@ -155,4 +157,9 @@ code[class*="language-"] {
 
 .nd-limit-enter-active, .nd-limit-leave-active {
     transition-property: opacity, transform;
+}
+
+.copyright {
+    text-align: center;
+    color: #444444;
 }

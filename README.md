@@ -2,9 +2,9 @@
 
 <img alt="Noodel logo" src="docs/logo_256x256.png" width="90">
 
-Noodel, short for *node model*, is a 4-way scroll-snap user interface for content trees that you can navigate by simply moving up, down, left and right. It offers a new way to present content in the modern age that is clean, intuitive, and highly adaptable.
+Noodel, short for *node model*, is a 4-way scroll-snap user interface for content trees that you can navigate by simply moving up, down, left and right. It offers a new way to present content that is clean, intuitive, and adaptable.
 
-Currently available as Noodel.js, a JavaScript component for use in web projects.
+Noodel is currently available as Noodel.js, an open source JavaScript component for use in web projects. 
 
 ## [Demo / documentation](https://zlu883.github.io/noodel-js/)
 
