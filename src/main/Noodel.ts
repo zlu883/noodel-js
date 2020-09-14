@@ -152,6 +152,13 @@ export default class Noodel {
     }
 
     /**
+     * Gets the number of noodes in this noodel (excluding the root).
+     */
+    getNoodeCount(): number {
+        return this._v.idMap.size - 1;
+    }
+
+    /**
      * Gets the root noode. The root is an invisible noode
      * that serves as the parent of the topmost branch, and always exists.
      */

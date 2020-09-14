@@ -10,7 +10,7 @@ import { findNoodeViewModel, changeNoodeId, unregisterNoodeSubtree } from '../co
 import NoodeOptions from '../types/NoodeOptions';
 import ComponentContent from '../types/ComponentContent';
 import Vue from 'vue';
-import { traverseDescendents } from '../controllers/noodel-traverse';
+import { traverseActiveDescendents, traverseDescendents } from '../controllers/noodel-traverse';
 
 /**
  * The view model of a noode. Has 2-way binding with the view.
@@ -28,7 +28,7 @@ export default class Noode {
     /**
      * Internal use only. To get the view model for specific noodes, use methods on the Noodel class instead.
      */
-    constructor(v: NoodeView, nv: NoodelView, data?: any) {
+    constructor(v, nv, data?: any) { // types omitted to avoid including internal types in the declarations
         this._v = v;
         this._nv = nv;
         this.data = data;
@@ -214,6 +214,25 @@ export default class Noode {
      */
     isActive(): boolean {
         return this._v.isActive;
+    }
+
+    /**
+     * Returns true if this noode is logically visible (i.e even when rendered beyond 
+     * canvas boundary). Note that visibility may be delayed due to debounce effects.
+     */
+    isVisible(): boolean {
+        this.throwErrorIfDeleted();
+        if (this.isRoot()) return false;
+        return this._v.parent.isChildrenVisible;
+    }
+
+    /**
+     * Returns true if this noode's children is logically visible (i.e even when rendered beyond 
+     * canvas boundary). Note that visibility may be delayed due to debounce effects.
+     */
+    isChildrenVisible(): boolean {
+        this.throwErrorIfDeleted();
+        return this._v.isChildrenVisible;
     }
 
     /**
@@ -510,5 +529,33 @@ export default class Noode {
         }
 
         return this.getParent().removeChild(this.getIndex());
+    }
+
+    // TRAVERSAL
+
+    /**
+     * Traverse the subtree of this noode and perform the specified action
+     * on each descendent.
+     * @param func the action to perform
+     * @param includeSelf whether to include this noode in the traversal
+     */
+    traverseSubtree(func: (noode: Noode) => any, includeSelf: boolean) {
+        traverseDescendents(this._v, desc => {
+            func(findNoodeViewModel(this._nv, desc.id));
+        }, includeSelf);
+    }
+
+    /**
+     * Traverse the active lineage (i.e active child and its active child, etc) 
+     * of this noode and perform the specified action
+     * on each descendent.
+     * @param func the action to perform
+     * @param includeSelf whether to include this noode in the traversal
+     * @param includeTail whether to include the last noode in the lineage (if it's not self)
+     */
+    traverseActiveLineage(func: (noode: Noode) => any, includeSelf: boolean, includeTail: boolean) {
+        traverseActiveDescendents(this._v, desc => {
+            func(findNoodeViewModel(this._nv, desc.id));
+        }, includeSelf, includeTail);
     }
 }
