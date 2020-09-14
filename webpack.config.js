@@ -191,21 +191,6 @@ function baseUmdConfig() {
     return config;
 }
 
-function baseCommonJsConfig() {
-    let config = prodConfig();
-
-    config.externals = {
-        'vue': 'commonjs2 vue'
-    };
-    config.output.filename = 'noodel.common.js';
-    config.output.libraryTarget = 'commonjs'
-    config.optimization = {
-        minimize: false,
-    };
-
-    return config;
-}
-
 function fullUmdMinConfig() {
     let config = prodConfig();
 
@@ -234,7 +219,6 @@ module.exports = env => {
     ] : [
         baseUmdMinConfig(),
         baseUmdConfig(),
-        baseCommonJsConfig(),
         fullUmdMinConfig(),
         fullUmdConfig(),
     ];

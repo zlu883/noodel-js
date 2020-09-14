@@ -3,6 +3,7 @@
     "compilerOptions": {
         "declaration": true,
         "declarationDir": "typings",
+        "types": []
     },
     "include": [
         "src/**/*.ts",

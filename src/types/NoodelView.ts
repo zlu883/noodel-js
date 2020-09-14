@@ -3,7 +3,7 @@ import { Axis } from '../enums/Axis';
 import NoodeView from './NoodeView';
 import NoodelOptions from './NoodelOptions';
 import Vector2D from './Vector2D';
-import Noode from 'src/main/Noode';
+import Noode from '../main/Noode';
 
 export default interface NoodelView {
 

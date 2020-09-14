@@ -7,7 +7,7 @@
         "clean": "rimraf dist && rimraf typings",
         "build": "npm run clean && webpack --env.prod"
     },
-    "main": "dist/noodel.common.js",
+    "main": "dist/noodel.umd.js",
     "types": "typings/main/Noodel.d.ts",
     "files": [
         "dist",
