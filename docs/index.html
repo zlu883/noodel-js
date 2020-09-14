@@ -1264,6 +1264,10 @@
                         <p>Gets the height (total number of levels) in the current active tree.</p>
                     </div>
                     <div class="noode">
+                        <b><code class="language-ts">getNoodeCount(): number</code></b>
+                        <p>Gets the number of noodes in this noodel (excluding the root).</p>
+                    </div>
+                    <div class="noode">
                         <b><code class="language-ts">getRoot(): Noode</code></b>
                         <p>Gets the root noode. The root is an invisible noode that serves as the parent of the topmost
                             branch, and always exists.</p>
@@ -1485,6 +1489,20 @@
                         </p>
                     </div>
                     <div class="noode">
+                        <b><code class="language-ts">isVisible(): boolean</code></b>
+                        <p>
+                            Returns true if this noode is logically visible (i.e even when rendered beyond 
+                            canvas boundary). Note that visibility may be delayed due to debounce effects.
+                        </p>
+                    </div>
+                    <div class="noode">
+                        <b><code class="language-ts">isChildrenVisible(): boolean</code></b>
+                        <p>
+                            Returns true if this noode's children is logically visible (i.e even when rendered beyond 
+                            canvas boundary). Note that visibility may be delayed due to debounce effects.
+                        </p>
+                    </div>
+                    <div class="noode">
                         <b><code class="language-ts">isInFocalBranch(): boolean</code></b>
                         <p>
                             Returns true if this noode is inside the focal branch.
@@ -1646,6 +1664,17 @@
                         <p>
                             Syntax sugar for removing this noode from the tree.
                         </p>
+                    </div>
+                    <div class="noode">
+                        <b><code class="language-ts">traverseSubtree(func: (noode: Noode) => any, includeSelf: boolean)</code></b>
+                        <p>
+                            Do a preorder traversal of this noode's subtree and perform the specified action
+                            on each descendent.
+                        </p>
+                        <ul>
+                            <li><code class="language-ts">func</code> the action to perform</li>
+                            <li><code class="language-ts">includeSelf</code> whether to include this noode in the traversal</li>
+                        </ul>
                     </div>
                 </div>
                 <div class="noode" data-class="menu-item">

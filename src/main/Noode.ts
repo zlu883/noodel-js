@@ -534,7 +534,7 @@ export default class Noode {
     // TRAVERSAL
 
     /**
-     * Traverse the subtree of this noode and perform the specified action
+     * Do a preorder traversal of this noode's subtree and perform the specified action
      * on each descendent.
      * @param func the action to perform
      * @param includeSelf whether to include this noode in the traversal
@@ -543,19 +543,5 @@ export default class Noode {
         traverseDescendents(this._v, desc => {
             func(findNoodeViewModel(this._nv, desc.id));
         }, includeSelf);
-    }
-
-    /**
-     * Traverse the active lineage (i.e active child and its active child, etc) 
-     * of this noode and perform the specified action
-     * on each descendent.
-     * @param func the action to perform
-     * @param includeSelf whether to include this noode in the traversal
-     * @param includeTail whether to include the last noode in the lineage (if it's not self)
-     */
-    traverseActiveLineage(func: (noode: Noode) => any, includeSelf: boolean, includeTail: boolean) {
-        traverseActiveDescendents(this._v, desc => {
-            func(findNoodeViewModel(this._nv, desc.id));
-        }, includeSelf, includeTail);
     }
 }
