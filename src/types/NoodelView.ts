@@ -63,4 +63,7 @@ export default interface NoodelView {
     onHashChanged?: () => any;
 
     isFirstRenderDone?: boolean;
+
+    lastPanTimestamp?: number;
+    swipeVelocityBuffer?: number[];
 }

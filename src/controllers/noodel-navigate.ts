@@ -172,9 +172,11 @@ export function startPan(noodel: NoodelView, ev: HammerInput) {
 export function updatePan(noodel: NoodelView, ev: HammerInput) {
 
     if (noodel.panAxis === Axis.HORIZONTAL) {
+        updateSwipeVelocityBuffer(noodel, ev.velocityX, (ev as any).timeStamp);
         panTrunk(noodel, noodel.panOffsetOriginTrunk + (ev.deltaX * noodel.options.swipeMultiplierTrunk));     
     }
     else if (noodel.panAxis === Axis.VERTICAL) {
+        updateSwipeVelocityBuffer(noodel, ev.velocityY, (ev as any).timeStamp);
         panFocalBranch(noodel, noodel.panOffsetOriginFocalBranch + (ev.deltaY * noodel.options.swipeMultiplierBranch));
     }
 }
@@ -184,15 +186,18 @@ export function releasePan(noodel: NoodelView, ev: HammerInput) {
     if (noodel.panAxis === Axis.HORIZONTAL) {
         noodel.panOffsetOriginTrunk = null;
         noodel.panAxis = null; // before shiftFocalLevel to prevent extra cancelPan check
-        shiftFocalLevel(noodel, computeSnapCount(ev.velocityX, noodel.options.snapMultiplierTrunk));
+        updateSwipeVelocityBuffer(noodel, ev.velocityX, (ev as any).timeStamp);
+        shiftFocalLevel(noodel, computeSnapCount(computeSwipeVelocity(noodel), noodel.options.snapMultiplierTrunk));
     }
     else if (noodel.panAxis === Axis.VERTICAL) {
         noodel.panOffsetOriginFocalBranch = null;
         noodel.panAxis = null; // before shiftFocalNoode to prevent extra cancelPan check
-        shiftFocalNoode(noodel, computeSnapCount(ev.velocityY, noodel.options.snapMultiplierBranch));
+        updateSwipeVelocityBuffer(noodel, ev.velocityY, (ev as any).timeStamp);
+        shiftFocalNoode(noodel, computeSnapCount(computeSwipeVelocity(noodel), noodel.options.snapMultiplierBranch));
     }
 
     unsetLimitIndicators(noodel);
+    clearSwipeVelocityBuffer(noodel);
 }
 
 export function cancelPan(noodel: NoodelView) {
@@ -211,6 +216,7 @@ export function cancelPan(noodel: NoodelView) {
     }
 
     unsetLimitIndicators(noodel);
+    clearSwipeVelocityBuffer(noodel);
 }
 
 export function unsetLimitIndicators(noodel: NoodelView) {
@@ -436,12 +442,66 @@ function findNewFocalParent(noodel: NoodelView, levelDiff: number): NoodeView {
 }
 
 /**
- * Algorithm for computing how many noodes to snap across depending on swipe velocity.
- * Currently just a rough formula, can be further adjusted if necessary. 
+ * Calculate how many noodes to snap across depending on swipe velocity.
+ * The current algorithm is adjusted based on velocities obtained 
+ * from manual tests of swipe motions on mobile and desktop.
+ * Can be further fine-tuned if necessary.
  */
 function computeSnapCount(velocity: number, snapMultiplier: number) {
-    if (Math.abs(velocity) < 0.1) return 0;
-    let count = Math.max(0, Math.round(Math.log(Math.abs(velocity) + Math.E) * snapMultiplier));
+    let absVelocity = Math.abs(velocity) * snapMultiplier;
 
-    return (velocity > 0) ? -count : count;
+    if (absVelocity < 0.1) {
+        return 0;
+    }
+    else if (absVelocity < 1) {
+        return (velocity > 0) ? -1 : 1;
+    }
+    else {
+        // count = 1.4 ln(velocity) + 1
+        let count = Math.round((1.4 * Math.log(absVelocity) + 1));
+        
+        return (velocity > 0) ? -count : count;
+    }
+}
+
+/**
+ * The velocity values obtained from hammerjs is highly unstable and thus need
+ * to be averaged out by capturing the last 10 velocities in a buffer.
+ * 
+ * There is also a 60ms threshold for detecting "settle" of the swipe movement.
+ * If duration between two consecutive events exceed this threshold the buffer will be refreshed.
+ * 
+ * Direction change of the swipe movement will not cause a buffer refresh for now
+ * to account for transient directional glitches in the swipe motion.
+ */
+function updateSwipeVelocityBuffer(noodel: NoodelView, velocity: number, timestamp: number) {
+    if (noodel.lastPanTimestamp === null || timestamp - noodel.lastPanTimestamp < 60) {
+        noodel.swipeVelocityBuffer.push(velocity);
+
+        if (noodel.swipeVelocityBuffer.length > 10) {
+            noodel.swipeVelocityBuffer.shift();
+        }
+    }
+    else {
+        noodel.swipeVelocityBuffer = [];
+        noodel.swipeVelocityBuffer.push(velocity);
+    }
+
+    noodel.lastPanTimestamp = timestamp;
+}
+
+/**
+ * Computes the average of the last 10 velocities.
+ */
+function computeSwipeVelocity(noodel: NoodelView) {
+    let sum = 0;
+
+    noodel.swipeVelocityBuffer.forEach(val => sum += val);
+
+    return sum / noodel.swipeVelocityBuffer.length;
+}
+
+function clearSwipeVelocityBuffer(noodel: NoodelView) {
+    noodel.lastPanTimestamp = null;
+    noodel.swipeVelocityBuffer = [];
 }

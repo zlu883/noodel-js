@@ -66,7 +66,9 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             onFocalNoodeChange: null,
             onFocalParentChange: null
         },
-        onHashChanged: null
+        onHashChanged: null,
+        lastPanTimestamp: null,
+        swipeVelocityBuffer: []
     }
 
     let rootNoode = buildNoodeView(noodel, root, 0, null, true, 0);

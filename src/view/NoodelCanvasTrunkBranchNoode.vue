@@ -236,7 +236,7 @@
     .nd-child-indicator {
         position: absolute;
         height: 1em;
-        width: .6em;
+        width: .7em;
         right: 0;
         top: 50%;
         transform: translateY(-50%);
@@ -251,7 +251,7 @@
     .nd-child-indicator-expanded::after {
         content: "";
         position: absolute;
-        left: .6em;
+        left: .7em;
         bottom: 0;
         width: 0;
         height: 0;

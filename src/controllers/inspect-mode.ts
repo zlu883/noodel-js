@@ -12,7 +12,6 @@ export function enterInspectMode(noodel: NoodelView) {
     // touch-action: auto on focal noode under inspect mode
     // interferes with Hammer's recognizers, so they must be disabled first
     noodel.hammerJsInstance.get('pan').set({enable: false});
-    noodel.hammerJsInstance.get('swipe').set({enable: false});
     
     let focalNoode = getActiveChild(noodel.focalParent);
     
@@ -27,7 +26,6 @@ export function exitInspectMode(noodel: NoodelView) {
     if (!noodel.isInInspectMode) return;
 
     noodel.hammerJsInstance.get('pan').set({enable: true});
-    noodel.hammerJsInstance.get('swipe').set({enable: true});
 
     // unset selection
     const sel = window.getSelection ? window.getSelection() : document.getSelection();

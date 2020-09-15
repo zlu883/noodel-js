@@ -220,14 +220,12 @@ export function setupCanvasInput(el: HTMLDivElement, noodel: NoodelView) {
 
     const manager = new Hammer.Manager(el);
 
-    let swipe = new Hammer.Swipe({direction: Hammer.DIRECTION_ALL});
     let pan = new Hammer.Pan({threshold: 10, direction: Hammer.DIRECTION_ALL});
     let singleTap = new Hammer.Tap({taps: 1, posThreshold: 100});
     let doubleTap = new Hammer.Tap({taps: 2, posThreshold: 100});
 
-    manager.add([swipe, pan, doubleTap, singleTap]);
+    manager.add([pan, doubleTap, singleTap]);
 
-    swipe.recognizeWith(pan);
     singleTap.recognizeWith(doubleTap);
 
     manager.on("panstart", (ev) => onPanStart(noodel, ev));
