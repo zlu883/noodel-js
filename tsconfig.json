@@ -1,7 +1,7 @@
 {
     "compilerOptions": {
         "target": "es5",
-        "module": "CommonJS",
+        "module": "esnext",
         "strict": false,
         "noImplicitThis": true,
         "importHelpers": true,

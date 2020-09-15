@@ -28,7 +28,7 @@ export default class Noode {
     /**
      * Internal use only. To get the view model for specific noodes, use methods on the Noodel class instead.
      */
-    constructor(v, nv, data?: any) { // types omitted to avoid including internal types in the declarations
+    private constructor(v: NoodeView, nv: NoodelView, data?: any) { // set to private to avoid including internal types in the declarations
         this._v = v;
         this._nv = nv;
         this.data = data;
