@@ -61,7 +61,7 @@ export default class Noode {
     getParent(): Noode {
         this.throwErrorIfDeleted();
         if (this.isRoot()) return null;
-        return findNoodeViewModel(this._nv, this._v.id);
+        return findNoodeViewModel(this._nv, this._v.parent.id);
     }
 
     /**
