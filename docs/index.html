@@ -11,7 +11,7 @@
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.min.css">
     <script src="https://cdn.jsdelivr.net/npm/noodel/dist/noodel-full.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/noodel-search/dist/noodel-search.umd.min.js"></script>
+    <script src="./noodel-search.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/prism.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/components/prism-typescript.min.js"></script>
     <script
@@ -29,7 +29,7 @@
     </noscript>
 
     <script>
-        window.addEventListener("load", function () {
+        window.addEventListener("load", function() {
             document.body.style.width = window.innerWidth + 'px';
             document.body.style.height = window.innerHeight + 'px';
             requestAnimationFrame(function () {
@@ -38,35 +38,93 @@
                     swipeMultiplierTrunk: 0.9,
                     swipeMultiplierBranch: 0.7,
                     snapMultiplierTrunk: 0.8,
-                    onFocalNoodeChange: function (current) {
+                    onFocalNoodeChange: function(current) {
                         const index = current.getIndex() + 1;
                         const total = current.getParent().getChildCount();
                         document.getElementById("noodeCount").textContent = index + " / " + total; 
+                    },
+                    onMount: function() {
+                        document.getElementById("noodeCount").classList.remove("hidden");
+
+                        const search = new NoodelSearch(noodel, "searchFocus");
+                        const searchInput = document.getElementById("searchInput");
+                        const searchButton = document.getElementById("searchButton");
+
+                        const resetSearch = function() {
+                            search.clear();
+                            document.getElementById("searchCount").classList.add("hidden");
+                            document.getElementById("searchIcon").classList.remove("hidden");
+                            document.getElementById("searchPrev").disabled = true;
+                            document.getElementById("searchNext").disabled = true;
+                        }
+                        const updateSearchCount = function() {
+                            if (search.getMarkCount() > 0) {
+                                document.getElementById("searchCount").textContent = search.getFocalMarkPosition().globalMarkIndex + 1 + " / " + search.getMarkCount();
+                            }
+                            else {
+                                document.getElementById("searchCount").textContent = "0 / 0";
+                            }
+                        }
+                        const executeSearch = function() {
+                            search.search(searchInput.value, {
+                                separateWordSearch: false
+                            }, function() {
+                                document.getElementById("searchCount").classList.remove("hidden");
+                                document.getElementById("searchIcon").classList.add("hidden");
+
+                                if (search.getMarkCount() > 1) {
+                                    document.getElementById("searchPrev").disabled = false;
+                                    document.getElementById("searchNext").disabled = false;
+                                }
+                                
+                                search.next();
+                                updateSearchCount();
+                            });
+                        }
+                        const toPrev = function() {
+                            search.prev();
+                            updateSearchCount();
+                        }
+                        const toNext = function() {
+                            search.next();
+                            updateSearchCount();
+                        }
+
+                        searchButton.classList.remove("hidden");
+                        searchButton.addEventListener("click", function(ev) {
+                            const searchBar = document.getElementById("searchBar");
+
+                            if (searchBar.classList.contains("hidden")) {
+                                searchBar.classList.remove("hidden");
+                                searchButton.firstElementChild.src = "x.svg";
+                                searchInput.focus()
+                                searchInput.select();
+                            }
+                            else {
+                                searchBar.classList.add("hidden");
+                                resetSearch();
+                                searchButton.firstElementChild.src = "search.svg";
+                            }
+                        });
+                        document.getElementById("searchBar").addEventListener("submit", function(ev) {
+                            ev.preventDefault();
+
+                            if (searchInput.value.length === 0) {
+                                resetSearch();
+                            }
+                            else {
+                                executeSearch();
+                            }
+                        });
+                        searchInput.addEventListener("input", function(ev) {
+                            resetSearch();
+                        });
+                        document.getElementById("searchPrev").addEventListener("click", toPrev);
+                        document.getElementById("searchNext").addEventListener("click", toNext);
                     }
                 });
                 
                 noodel.mount("#root");
-
-                const search = new NoodelSearch(noodel);
-
-                document.getElementById("searchInput").addEventListener("input", function(ev) {
-                    if (ev.target.value.length === 0) {
-                        search.clear();
-                        return;
-                    }
-
-                    search.search(ev.target.value, {}, function() {
-                        document.getElementById("searchCount").textContent = search.getMarkCount();
-                    });
-                });
-                document.getElementById("searchPrev").addEventListener("click", function() {
-                    search.prev();
-                    document.getElementById("searchCount").textContent = search.getFocalMarkPosition().globalMarkIndex + 1 + " / " + search.getMarkCount();
-                });
-                document.getElementById("searchNext").addEventListener("click", function() {
-                    search.next();
-                    document.getElementById("searchCount").textContent = search.getFocalMarkPosition().globalMarkIndex + 1 + " / " + search.getMarkCount();
-                });
             });
         });
         window.addEventListener("resize", function () {
@@ -74,14 +132,23 @@
             document.body.style.height = window.innerHeight + 'px';
         });
     </script>
-    <div id="noodeCount"></div>
-    <div id="searchBar">
-        <input id="searchInput" type="text" >
-        <div id="searchCountBox"><span id="searchCount"></span></div>
-        <button id="searchNext"><img src="chevron-down.svg"></button>
-        <button id="searchPrev"><img src="chevron-up.svg"></button>
-    </div>
-    <button id="searchButton"><img src="search.svg"></button>
+    <div id="noodeCount" class="hidden"></div>
+    <form id="searchBar" class="hidden">
+        <input id="searchInput" type="text">
+        <div id="searchIndicator">
+            <button id="searchIcon" type="submit"><img src="search-dark.svg"></button>
+            <span id="searchCount" class="hidden"></span>
+        </div>
+        <button id="searchNext" type="button" disabled>
+            <img src="chevron-down.svg">
+        </button>
+        <button id="searchPrev" type="button" disabled>
+            <img src="chevron-up.svg">
+        </button>
+    </form>
+    <button id="searchButton" class="hidden">
+        <img src="search.svg">
+    </button>
     <div id="root" style="display: none;">
         <div class="noode" data-class="landing-noode">
             <img src="logo_v7_textless_512x512.svg" class="logo" />

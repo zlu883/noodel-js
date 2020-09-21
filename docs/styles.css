@@ -7,6 +7,15 @@ body {
     color: #222222;
 }
 
+button, input {
+    outline: none;
+}
+
+button:disabled {
+    opacity: 0.6;
+    cursor: initial !important;
+}
+
 a {
     text-decoration: none;
 }
@@ -98,6 +107,7 @@ code[class*="language-"] {
 
 .nd-noode {
     border-radius: .7em;
+    position: relative;
 }
 
 .nd-noode-active, .nd-child-indicator-active {
@@ -252,7 +262,7 @@ code[class*="language-"] {
     font-family: inherit;
 }
 
-#searchCountBox {
+#searchIndicator {
     min-width: 35px;
     padding: 0 .3em;
     height: 1.5em;
@@ -277,5 +287,29 @@ code[class*="language-"] {
     justify-content: center;
     padding: 0;
     cursor: pointer;
+}
+
+#searchIcon {
+    height: 100%;
+    width: 100%;
+    cursor: pointer;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+#searchIcon > img {
+    height: 80%;
+}
+
+.searchFocus {
+    background-color: aquamarine;
+}
+
+.hidden {
+    display: none !important;
 }
 
