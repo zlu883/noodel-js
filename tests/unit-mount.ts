@@ -22,6 +22,7 @@ describe('Noodel lifecycle', function () {
             let div = document.createElement('div');
             div.id = 'noodel';
             document.getElementById("mocha").before(div);
+            window.history.replaceState(null, '', window.location.href.split("#")[0]);
         });
 
         it('should create canvas element', function (done) {
@@ -80,6 +81,7 @@ describe('Noodel lifecycle', function () {
             let div = document.createElement('div');
             div.id = 'noodel';
             document.getElementById("mocha").before(div);
+            window.history.replaceState(null, '', window.location.href.split("#")[0]);
         });
 
         it('should create canvas element', function (done) {
@@ -193,6 +195,59 @@ describe('Noodel lifecycle', function () {
                     catch (err) {
                         done(err);
                     }                    
+                }
+            })
+            noodel.mount("#noodel");
+        });
+    });
+
+    describe('unmount/remount noodel', function () {
+        let noodel: Noodel;
+
+        beforeEach(function() {
+            noodel = new Noodel("#template");
+        });
+
+        afterEach(function() {
+            noodel.unmount();
+            let div = document.createElement('div');
+            div.id = 'noodel';
+            document.getElementById("mocha").before(div);
+            window.history.replaceState(null, '', window.location.href.split("#")[0]);
+        });
+
+        it('should unmount and remount while keeping state', function (done) {
+            let isRemount = false;
+
+            noodel.setOptions({
+                onMount: function () {
+                    if (isRemount) {
+                        try {
+                            assert.strictEqual(document.querySelectorAll(".nd-canvas").length, 1);
+                            assert.strictEqual(noodel.getFocalNoode().getId(), "#2");
+                            done();
+                        }
+                        catch (err) {
+                            done(err);
+                        }
+                    }
+                    else {
+                        try {
+                            noodel.findNoodeById("#2").jumpToFocus();
+                            noodel.unmount();
+                            assert.strictEqual(document.querySelectorAll(".nd-canvas").length, 0);
+                            
+                            let div = document.createElement('div');
+                            div.id = 'noodel';
+                            document.getElementById("mocha").before(div);
+                            
+                            isRemount = true;
+                            noodel.mount("#noodel");
+                        }
+                        catch (err) {
+                            done(err);
+                        }
+                    }
                 }
             })
             noodel.mount("#noodel");
