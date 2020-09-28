@@ -10,7 +10,7 @@ import { findNoodeViewModel, changeNoodeId, unregisterNoodeSubtree } from '../co
 import NoodeOptions from '../types/NoodeOptions';
 import ComponentContent from '../types/ComponentContent';
 import Vue from 'vue';
-import { traverseActiveDescendents, traverseDescendents } from '../controllers/noodel-traverse';
+import { traverseDescendents } from '../controllers/noodel-traverse';
 
 /**
  * The view model of a noode. Has 2-way binding with the view.

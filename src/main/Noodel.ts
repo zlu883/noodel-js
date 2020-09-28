@@ -8,7 +8,7 @@ import Noode from './Noode';
 import { getActiveChild } from '../util/getters';
 import { shiftFocalLevel, shiftFocalNoode } from '../controllers/noodel-navigate';
 import { findNoodeByPath as _findNoodeByPath } from '../controllers/noodel-traverse';
-import { findNoodeView, findNoodeViewModel } from '../controllers/id-register';
+import { findNoodeViewModel } from '../controllers/id-register';
 import { enterInspectMode, exitInspectMode } from '../controllers/inspect-mode';
 import { handleFocalNoodeChange } from '../controllers/event-emit';
 
@@ -205,10 +205,8 @@ export default class Noodel {
             console.warn("Cannot find noode: invalid id");
             return null;
         }
-
-        let target = findNoodeView(this._v, id);
         
-        return target ? findNoodeViewModel(this._v, target.id) : null;
+        return findNoodeViewModel(this._v, id);
     }
 
     // MUTATERS

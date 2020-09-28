@@ -6,7 +6,7 @@ import { alignTrunkToBranch, alignBranchBeforeNoodeDelete } from './noodel-align
 import { forceReflow } from './noodel-animate';
 import { Axis } from '../enums/Axis';
 import { cancelPan } from './noodel-navigate';
-import { unregisterNoodeSubtree, registerNoodeSubtree } from './id-register';
+import { registerNoodeSubtree } from './id-register';
 import NoodeDefinition from '../types/NoodeDefinition';
 import { buildNoodeView } from './noodel-setup';
 import { debounce } from './throttle';
