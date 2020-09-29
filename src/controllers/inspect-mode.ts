@@ -1,9 +1,9 @@
-import NoodelView from '../types/NoodelView';
+import NoodelState from '../types/NoodelState';
 import { getActiveChild } from '../util/getters';
 import { cancelPan } from './noodel-navigate';
 import { queueEnterInspectMode, queueExitInspectMode } from './event-emit';
 
-export function enterInspectMode(noodel: NoodelView) {
+export function enterInspectMode(noodel: NoodelState) {
     
     if (noodel.isInInspectMode) return;
     
@@ -21,7 +21,7 @@ export function enterInspectMode(noodel: NoodelView) {
     queueEnterInspectMode(noodel, focalNoode);
 }
 
-export function exitInspectMode(noodel: NoodelView) {
+export function exitInspectMode(noodel: NoodelState) {
 
     if (!noodel.isInInspectMode) return;
 

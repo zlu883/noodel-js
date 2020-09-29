@@ -12,7 +12,7 @@
             v-for="child in parent.children"
             :key="child.id"
             :noode="child" 
-            :store="store"
+            :noodel="noodel"
         />
     </transition-group>
     
@@ -24,8 +24,8 @@
 
     import NoodelCanvasTrunkBranchNoode from "./NoodelCanvasTrunkBranchNoode.vue";
 
-    import NoodelView from '../types/NoodelView';
-    import NoodeView from '../types/NoodeView';
+    import NoodelState from '../types/NoodelState';
+    import NoodeState from '../types/NoodeState';
     import Vue, { PropType } from 'vue';
 
     // By extracting the transition-group into its own component addresses the issue
@@ -37,8 +37,8 @@
         },
 
         props: {
-            parent: Object as PropType<NoodeView>,
-            store: Object as PropType<NoodelView>
+            parent: Object as PropType<NoodeState>,
+            noodel: Object as PropType<NoodelState>
         },
 
         computed: {

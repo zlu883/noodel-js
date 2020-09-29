@@ -1,20 +1,20 @@
-import NoodeView from '../types/NoodeView';
-import NoodelView from '../types/NoodelView';
+import NoodeState from '../types/NoodeState';
+import NoodelState from '../types/NoodelState';
 import { traverseDescendents } from './noodel-traverse';
 import { NoodelAxis } from '../types/NoodelAxis';
 import Vue from 'vue';
 import { forceReflow } from './noodel-animate';
 import { getFocalWidth, getFocalHeight } from '../util/getters';
 
-export function updateNoodeSize(noodel: NoodelView, noode: NoodeView) {
+export function updateNoodeSize(noodel: NoodelState, noode: NoodeState) {
     alignBranchOnNoodeResize(noodel, noode, noode.el.getBoundingClientRect().height);
 }
 
-export function updateBranchSize(noodel: NoodelView, parent: NoodeView) {
+export function updateBranchSize(noodel: NoodelState, parent: NoodeState) {
     alignTrunkOnBranchResize(noodel, parent, parent.branchBoxEl.getBoundingClientRect().width);
 }
 
-export function alignTrunkOnBranchResize(noodel: NoodelView, parent: NoodeView, newSize: number, isInsert = false) {
+export function alignTrunkOnBranchResize(noodel: NoodelState, parent: NoodeState, newSize: number, isInsert = false) {
     
     let diff = newSize - parent.branchSize;
     
@@ -67,7 +67,7 @@ export function alignTrunkOnBranchResize(noodel: NoodelView, parent: NoodeView, 
     }
 }
 
-export function alignBranchOnNoodeResize(noodel: NoodelView, noode: NoodeView, newSize: number, isInsert = false) {
+export function alignBranchOnNoodeResize(noodel: NoodelState, noode: NoodeState, newSize: number, isInsert = false) {
 
     const parent = noode.parent;
     let diff = newSize - noode.size;
@@ -131,7 +131,7 @@ export function alignBranchOnNoodeResize(noodel: NoodelView, noode: NoodeView, n
  * Aligns the branch as necessary BEFORE the deletion of a noode
  * and the mutation of its array of siblings.
  */
-export function alignBranchBeforeNoodeDelete(noode: NoodeView) {
+export function alignBranchBeforeNoodeDelete(noode: NoodeState) {
 
     let parent = noode.parent;
 
@@ -155,7 +155,7 @@ export function alignBranchBeforeNoodeDelete(noode: NoodeView) {
 /**
  * Aligns the trunk to center on the given branch.
  */
-export function alignTrunkToBranch(noodel: NoodelView, branchParent: NoodeView) {
+export function alignTrunkToBranch(noodel: NoodelState, branchParent: NoodeState) {
 
     let targetOffset = (-branchParent.trunkRelativeOffset) - (branchParent.branchSize / 2);
 
@@ -173,7 +173,7 @@ export function alignTrunkToBranch(noodel: NoodelView, branchParent: NoodeView) 
 /**
  * Aligns a branch to center on the noode at the given index.
  */
-export function alignBranchToIndex(parent: NoodeView, index: number) {
+export function alignBranchToIndex(parent: NoodeState, index: number) {
 
     let targetOffset = (-parent.children[index].branchRelativeOffset) - (parent.children[index].size / 2);
 

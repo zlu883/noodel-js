@@ -1,11 +1,11 @@
-import NoodeView from '../types/NoodeView';
+import NoodeState from '../types/NoodeState';
 import NoodeDefinition from '../types/NoodeDefinition';
 import { setActiveChild as _setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
 import { extractNoodeDefinition, parseAndApplyNoodeOptions, parseClassName, parseStyle } from '../controllers/noodel-setup';
 import { getPath as _getPath } from '../util/getters';
 import { alignBranchToIndex, updateNoodeSize, updateBranchSize } from '../controllers/noodel-align';
 import { shiftFocalNoode, doJumpNavigation } from '../controllers/noodel-navigate';
-import NoodelView from '../types/NoodelView';
+import NoodelState from '../types/NoodelState';
 import { findNoodeViewModel, changeNoodeId, unregisterNoodeSubtree } from '../controllers/id-register';
 import NoodeOptions from '../types/NoodeOptions';
 import ComponentContent from '../types/ComponentContent';
@@ -17,8 +17,8 @@ import { traverseDescendents } from '../controllers/noodel-traverse';
  */
 export default class Noode {
 
-    private _v: NoodeView;
-    private _nv: NoodelView;
+    private _v: NoodeState;
+    private _nv: NoodelState;
 
     /**
      * Custom data associated with this noode. You can freely get/set this property.
@@ -28,7 +28,7 @@ export default class Noode {
     /**
      * Internal use only. To get the view model for specific noodes, use methods on the Noodel class instead.
      */
-    private constructor(v: NoodeView, nv: NoodelView, data?: any) { // set to private to avoid including internal types in the declarations
+    private constructor(v: NoodeState, nv: NoodelState, data?: any) { // set to private to avoid including internal types in the declarations
         this._v = v;
         this._nv = nv;
         this.data = data;

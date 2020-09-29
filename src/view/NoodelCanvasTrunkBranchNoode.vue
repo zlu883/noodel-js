@@ -49,9 +49,9 @@
 
     import { ResizeSensor } from "css-element-queries";
 
-    import NoodeView from "../types/NoodeView";
+    import NoodeState from "../types/NoodeState";
     import { updateNoodeSize } from "../controllers/noodel-align";
-    import NoodelView from '../types/NoodelView';
+    import NoodelState from '../types/NoodelState';
     import { traverseAncestors } from '../controllers/noodel-traverse';
     import { getPath, getFocalHeight, getFocalWidth } from '../util/getters';
     import Vue, { PropType } from 'vue';
@@ -61,8 +61,8 @@
     export default Vue.extend({
 
         props: {
-            noode: Object as PropType<NoodeView>,
-            store: Object as PropType<NoodelView>
+            noode: Object as PropType<NoodeState>,
+            noodel: Object as PropType<NoodelState>
         },
 
         mounted() {         
@@ -71,15 +71,15 @@
             // nextTick is required for vue's v-move effect to work
             Vue.nextTick(() => {
                 // do initial size capture
-                updateNoodeSize(this.store, this.noode);
+                updateNoodeSize(this.noodel, this.noode);
 
                 // setup resize sensor, first callback will run after Vue.nextTick
                 let skipResizeDetection = typeof this.noode.options.skipResizeDetection === 'boolean' ? 
-                    this.noode.options.skipResizeDetection : this.store.options.skipResizeDetection;
+                    this.noode.options.skipResizeDetection : this.noodel.options.skipResizeDetection;
                 
                 if (!skipResizeDetection) {
                     this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
-                        updateNoodeSize(this.store, this.noode);
+                        updateNoodeSize(this.noodel, this.noode);
                     });
                 };
                 
@@ -100,9 +100,9 @@
         methods: {
 
             onPointerUp() {
-                if (this.store.pointerUpSrcNoode) return;
-                this.store.pointerUpSrcNoode = this.noode;
-                requestAnimationFrame(() => this.store.pointerUpSrcNoode = null);
+                if (this.noodel.pointerUpSrcNoode) return;
+                this.noodel.pointerUpSrcNoode = this.noode;
+                requestAnimationFrame(() => this.noodel.pointerUpSrcNoode = null);
             },
         },
 
@@ -118,9 +118,9 @@
                 return {
                     left: '50%',
                     top: '50%',
-                    width: `${this.store.containerWidth + 10}px`,
-                    height: `${this.store.containerHeight + 10}px`,
-                    transform: `translate(${-getFocalWidth(this.store) - 5}px, ${-getFocalHeight(this.store) - 5}px)`
+                    width: `${this.noodel.containerWidth + 10}px`,
+                    height: `${this.noodel.containerHeight + 10}px`,
+                    transform: `translate(${-getFocalWidth(this.noodel) - 5}px, ${-getFocalHeight(this.noodel) - 5}px)`
                 }
             },
 
@@ -141,7 +141,7 @@
             showChildIndicator(): {} {
                 let showOption = typeof this.noode.options.showChildIndicator === 'boolean'
                     ? this.noode.options.showChildIndicator
-                    : this.store.options.showChildIndicators;
+                    : this.noodel.options.showChildIndicators;
 
                 return showOption && this.noode.children.length > 0;
             },

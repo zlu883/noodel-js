@@ -5,29 +5,29 @@
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-left"
-				v-if="store.options.showLimitIndicators"
-				v-show="store.showLeftLimit"
+				v-if="noodel.options.showLimitIndicators"
+				v-show="noodel.showLeftLimit"
 			/>
 		</transition>
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-right"
-				v-if="store.options.showLimitIndicators"
-				v-show="store.showRightLimit"
+				v-if="noodel.options.showLimitIndicators"
+				v-show="noodel.showRightLimit"
 			/>
 		</transition>
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-top"
-				v-if="store.options.showLimitIndicators"
-				v-show="store.showTopLimit"
+				v-if="noodel.options.showLimitIndicators"
+				v-show="noodel.showTopLimit"
 			/>
 		</transition>
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-bottom"
-				v-if="store.options.showLimitIndicators"
-				v-show="store.showBottomLimit"
+				v-if="noodel.options.showLimitIndicators"
+				v-show="noodel.showBottomLimit"
 			/>
 		</transition>
 		<transition-group
@@ -46,7 +46,7 @@
 				"
 				:key="parent.id"
 				:parent="parent"
-				:store="store"
+				:noodel="noodel"
 			/>
 		</transition-group>
 	</div>
@@ -61,12 +61,12 @@
 	import { setupContainer } from "../controllers/noodel-setup";
 	import { setupCanvasInput } from "../controllers/input-binding";
 	import { traverseDescendents } from "../controllers/noodel-traverse";
-	import NoodelView from "../types/NoodelView";
+	import NoodelState from "../types/NoodelState";
 	import {
 		alignBranchToIndex,
 		alignTrunkToBranch,
 	} from "../controllers/noodel-align";
-	import NoodeView from "../types/NoodeView";
+	import NoodeState from "../types/NoodeState";
 	import Vue, { PropType } from "vue";
 
 	export default Vue.extend({
@@ -75,28 +75,28 @@
 		},
 
 		props: {
-			store: Object as PropType<NoodelView>,
+			noodel: Object as PropType<NoodelState>,
 		},
 
 		mounted: function () {
-			setupContainer(this.$el, this.store);
-			setupCanvasInput(this.$el as HTMLDivElement, this.store);
-			this.store.trunkEl = (this.$refs.trunk as any).$el as Element;
-			this.store.canvasEl = this.$refs.canvas as Element;
+			setupContainer(this.$el, this.noodel);
+			setupCanvasInput(this.$el as HTMLDivElement, this.noodel);
+			this.noodel.trunkEl = (this.$refs.trunk as any).$el as Element;
+			this.noodel.canvasEl = this.$refs.canvas as Element;
 
 			this.$nextTick(() => {
 				this.allBranchParents.forEach((parent) => {
 					alignBranchToIndex(parent, parent.activeChildIndex);
 				});
 
-				alignTrunkToBranch(this.store, this.store.focalParent);
+				alignTrunkToBranch(this.noodel, this.noodel.focalParent);
 
 				requestAnimationFrame(() => {
 					this.$nextTick(() => {
-						this.store.isFirstRenderDone = true;
+						this.noodel.isFirstRenderDone = true;
 
-						if (typeof this.store.options.onMount === "function") {
-							this.store.options.onMount();
+						if (typeof this.noodel.options.onMount === "function") {
+							this.noodel.options.onMount();
 						}
 					});
 				});
@@ -104,17 +104,17 @@
 		},
 
 		destroyed: function () {
-			this.store.trunkOffset = 0;
-			this.store.trunkOffsetAligned = 0;
-			this.store.containerHeight = 0;
-			this.store.containerWidth = 0;
-			this.store.isFirstRenderDone = false;
+			this.noodel.trunkOffset = 0;
+			this.noodel.trunkOffsetAligned = 0;
+			this.noodel.containerHeight = 0;
+			this.noodel.containerWidth = 0;
+			this.noodel.isFirstRenderDone = false;
 
-			delete this.store.canvasEl;
-			delete this.store.trunkEl;
+			delete this.noodel.canvasEl;
+			delete this.noodel.trunkEl;
 
 			traverseDescendents(
-				this.store.root,
+				this.noodel.root,
 				(noode) => {
 					noode.trunkRelativeOffset = 0;
 					noode.branchRelativeOffset = 0;
@@ -136,31 +136,31 @@
 
 		computed: {
 			trunkStyle(): {} {
-				let orientation = this.store.options.orientation;
+				let orientation = this.noodel.options.orientation;
 
 				if (orientation === "ltr") {
 					return {
-						transform: `translateX(${this.store.trunkOffset + getFocalWidth(this.store)}px)`,
+						transform: `translateX(${this.noodel.trunkOffset + getFocalWidth(this.noodel)}px)`,
 					};
                 }
                 else if (orientation === "rtl") {
                     return {
-						transform: `translateX(${-this.store.trunkOffset + getFocalWidth(this.store)}px)`,
+						transform: `translateX(${-this.noodel.trunkOffset + getFocalWidth(this.noodel)}px)`,
 					};
                 }
 			},
 
 			trunkClass(): {} {
 				return {
-					"nd-trunk-move": this.store.applyTrunkMove,
+					"nd-trunk-move": this.noodel.applyTrunkMove,
 				};
 			},
 
-			allBranchParents(): NoodeView[] {
-				let allBranchParents: NoodeView[] = [];
+			allBranchParents(): NoodeState[] {
+				let allBranchParents: NoodeState[] = [];
 
 				traverseDescendents(
-					this.store.root,
+					this.noodel.root,
 					(desc) => {
 						if (desc.children.length > 0) {
 							allBranchParents.push(desc);
@@ -179,13 +179,13 @@
 					ev.propertyName === "transform" &&
 					ev.target === (this.$refs.trunk as any).$el
 				) {
-					if (this.store.ignoreTransitionEnd) return;
-					this.store.applyTrunkMove = false;
+					if (this.noodel.ignoreTransitionEnd) return;
+					this.noodel.applyTrunkMove = false;
 				}
 			},
 
 			onDragStart(ev: DragEvent) {
-				if (this.store.isInInspectMode) return;
+				if (this.noodel.isInInspectMode) return;
 				ev.preventDefault();
 			},
 		},

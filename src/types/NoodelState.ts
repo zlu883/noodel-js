@@ -1,18 +1,18 @@
 import { NoodelAxis } from './NoodelAxis';
-import NoodeView from './NoodeView';
+import NoodeState from './NoodeState';
 import NoodelOptions from './NoodelOptions';
 import Noode from '../main/Noode';
 
-export default interface NoodelView {
+export default interface NoodelState {
 
     idCount: number;
-    idMap: Map<string, {view: NoodeView, viewModel: Noode}>;
+    idMap: Map<string, {viewState: NoodeState, viewModel: Noode}>;
     throttleMap: Map<string, boolean>;
     debounceMap: Map<string, number>;
     eventQueue: (() => any)[];
 
-    root: NoodeView;
-    focalParent: NoodeView;
+    root: NoodeState;
+    focalParent: NoodeState;
     focalLevel: number;
     
     trunkOffset: number;
@@ -45,11 +45,11 @@ export default interface NoodelView {
      * Transient holder for the noode that registered a pointerup event, removed after one frame.
      * Used by HammerJS handlers to determine the origin of tap input.
      */
-    pointerUpSrcNoode?: NoodeView;
+    pointerUpSrcNoode?: NoodeState;
     /**
      * The focal noode when a pan started. Used for triggering focal change events on pan end.
      */
-    panStartFocalNoode?: NoodeView;
+    panStartFocalNoode?: NoodeState;
 
     isInInspectMode: boolean;
 

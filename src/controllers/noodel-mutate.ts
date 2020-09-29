@@ -1,7 +1,7 @@
-import NoodeView from '../types/NoodeView';
+import NoodeState from '../types/NoodeState';
 import { traverseActiveDescendents } from './noodel-traverse';
 import { getActiveChild, isRoot } from '../util/getters';
-import NoodelView from '../types/NoodelView';
+import NoodelState from '../types/NoodelState';
 import { alignTrunkToBranch, alignBranchBeforeNoodeDelete } from './noodel-align';
 import { forceReflow } from './noodel-animate';
 import { cancelPan } from './noodel-navigate';
@@ -15,7 +15,7 @@ import { handleFocalNoodeChange } from './event-emit';
  * Changes the focal parent of the noodel, and toggles the visibility of the active tree.
  * Does not align the trunk.
  */
-export function setFocalParent(noodel: NoodelView, newFocalParent: NoodeView) {
+export function setFocalParent(noodel: NoodelState, newFocalParent: NoodeState) {
 
     noodel.focalParent.isFocalParent = false;
 
@@ -42,7 +42,7 @@ export function setFocalParent(noodel: NoodelView, newFocalParent: NoodeView) {
  * Changes the active child of the parent to the given index (can be null to unset active child).
  * Does not align the branch.
  */
-export function setActiveChild(noodel: NoodelView, parent: NoodeView, index: number | null) {
+export function setActiveChild(noodel: NoodelState, parent: NoodeState, index: number | null) {
     if (getActiveChild(parent)) {
         getActiveChild(parent).isActive = false;
     }
@@ -54,7 +54,7 @@ export function setActiveChild(noodel: NoodelView, parent: NoodeView, index: num
     }
 }
 
-export function showActiveSubtree(noodel: NoodelView, origin: NoodeView, depth?: number, debounceInterval = 0) {
+export function showActiveSubtree(noodel: NoodelState, origin: NoodeState, depth?: number, debounceInterval = 0) {
     debounce(noodel, 'showActiveSubtree', () => {
         traverseActiveDescendents(origin, desc => {
             // check necessary to reduce Vue node patching
@@ -65,7 +65,7 @@ export function showActiveSubtree(noodel: NoodelView, origin: NoodeView, depth?:
     }, debounceInterval)
 }
 
-export function hideActiveSubtree(origin: NoodeView, depth?: number) {
+export function hideActiveSubtree(origin: NoodeState, depth?: number) {
     traverseActiveDescendents(origin, desc => {
         // check necessary to reduce Vue node patching
         if (desc.isChildrenVisible) {
@@ -78,7 +78,7 @@ export function hideActiveSubtree(origin: NoodeView, depth?: number) {
  * Insert children to a parent at a particular index, adjusting the indices of siblings,
  * and the parent's active child if necessary.
  */
-export function insertChildren(noodel: NoodelView, parent: NoodeView, index: number, childDefs: NoodeDefinition[]): NoodeView[] {
+export function insertChildren(noodel: NoodelState, parent: NoodeState, index: number, childDefs: NoodeDefinition[]): NoodeState[] {
 
     // find initial relative offset for the new children
     let prev = parent.children[index - 1];
@@ -151,7 +151,7 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
  * Deletes children from a parent at a particular index, adjusting the indices of siblings,
  * and the parent's active child if necessary.
  */
-export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: number, deleteCount: number): NoodeView[] {
+export function deleteChildren(noodel: NoodelState, parent: NoodeState, index: number, deleteCount: number): NoodeState[] {
 
     let prevFocalNoode = getActiveChild(noodel.focalParent);
 

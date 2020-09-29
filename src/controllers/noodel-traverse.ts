@@ -1,8 +1,8 @@
-import NoodeView from '../types/NoodeView';
+import NoodeState from '../types/NoodeState';
 import { isRoot, getActiveChild } from '../util/getters';
-import NoodelView from '../types/NoodelView';
+import NoodelState from '../types/NoodelState';
 
-export function traverseAncestors(origin: NoodeView, task: (noode: NoodeView) => any, includeOrigin: boolean, includeRoot: boolean) {
+export function traverseAncestors(origin: NoodeState, task: (noode: NoodeState) => any, includeOrigin: boolean, includeRoot: boolean) {
 
     if (includeOrigin) task(origin);
 
@@ -20,7 +20,7 @@ export function traverseAncestors(origin: NoodeView, task: (noode: NoodeView) =>
     }
 }
 
-export function traverseDescendents(origin: NoodeView, task: (descendent: NoodeView) => any, includeOrigin: boolean) {
+export function traverseDescendents(origin: NoodeState, task: (descendent: NoodeState) => any, includeOrigin: boolean) {
     if (includeOrigin) task(origin);
 
     origin.children.forEach(child => {
@@ -29,8 +29,8 @@ export function traverseDescendents(origin: NoodeView, task: (descendent: NoodeV
 }
 
 export function traverseActiveDescendents(
-    origin: NoodeView, 
-    task: (descendent: NoodeView) => any, 
+    origin: NoodeState, 
+    task: (descendent: NoodeState) => any, 
     includeOrigin: boolean, 
     includeTail: boolean, 
     maxDepth: number = Number.MAX_SAFE_INTEGER
@@ -54,7 +54,7 @@ export function traverseActiveDescendents(
     }
 }
 
-export function findNoodeByPath(noodel: NoodelView, path: number[]): NoodeView {
+export function findNoodeByPath(noodel: NoodelState, path: number[]): NoodeState {
 
     let target = noodel.root;
 

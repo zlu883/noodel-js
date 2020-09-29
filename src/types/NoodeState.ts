@@ -2,18 +2,18 @@ import { ResizeSensor } from 'css-element-queries';
 import NoodeOptions from './NoodeOptions';
 import ComponentContent from './ComponentContent';
 
-export default interface NoodeView {
+export default interface NoodeState {
 
     id: string;
     index: number;
     level: number;
-    children: NoodeView[];
+    children: NoodeState[];
     activeChildIndex: number;
     content: string | ComponentContent;
     className: string[];
     style: object;
 
-    parent: NoodeView;
+    parent: NoodeState;
     /**
      * Toggles visibility of children via display: none.
      */

@@ -1,7 +1,7 @@
 import { setActiveChild, setFocalParent, hideActiveSubtree, showActiveSubtree } from "../controllers/noodel-mutate";
 import { NoodelAxis } from '../types/NoodelAxis';
-import NoodeView from '../types/NoodeView';
-import NoodelView from '../types/NoodelView';
+import NoodeState from '../types/NoodeState';
+import NoodelState from '../types/NoodelState';
 import { getActiveChild, getFocalWidth, getFocalHeight } from '../util/getters';
 import { alignTrunkToBranch, alignBranchToIndex } from './noodel-align';
 import { forceReflow } from '../controllers/noodel-animate';
@@ -13,7 +13,7 @@ import { handleFocalNoodeChange } from './event-emit';
  * or set limit indicators as necessary. Makes no assumption on the magnitude of the movement, 
  * and aims to be correct regardless of the target offset, bounding the movement to the possible limits.
  */
-function panTrunk(noodel: NoodelView, targetOffset: number) {
+function panTrunk(noodel: NoodelState, targetOffset: number) {
 
     let offsetDiff = targetOffset - noodel.trunkOffsetAligned;
     let targetFocalParent = noodel.focalParent;
@@ -77,7 +77,7 @@ function panTrunk(noodel: NoodelView, targetOffset: number) {
  * Makes no assumption on the magnitude of the movement, and aims to be correct
  * regardless of the target offset, bounding the movement to the possible limits.
  */
-function panFocalBranch(noodel: NoodelView, targetOffset: number) {
+function panFocalBranch(noodel: NoodelState, targetOffset: number) {
 
     let offsetDiff = targetOffset - noodel.focalParent.childBranchOffsetAligned;
     let targetIndex = noodel.focalParent.activeChildIndex;
@@ -136,7 +136,7 @@ function panFocalBranch(noodel: NoodelView, targetOffset: number) {
     noodel.focalParent.childBranchOffset = targetOffset;
 }
 
-export function startPan(noodel: NoodelView, ev: HammerInput) {
+export function startPan(noodel: NoodelState, ev: HammerInput) {
 
     clearTimeout(noodel.limitIndicatorTimeout);
 
@@ -169,7 +169,7 @@ export function startPan(noodel: NoodelView, ev: HammerInput) {
     }
 }
 
-export function updatePan(noodel: NoodelView, ev: HammerInput) {
+export function updatePan(noodel: NoodelState, ev: HammerInput) {
 
     if (noodel.panAxis === "trunk") {
         updateSwipeVelocityBuffer(noodel, ev.velocityX, (ev as any).timeStamp);
@@ -181,7 +181,7 @@ export function updatePan(noodel: NoodelView, ev: HammerInput) {
     }
 }
 
-export function releasePan(noodel: NoodelView, ev: HammerInput) {
+export function releasePan(noodel: NoodelState, ev: HammerInput) {
 
     if (noodel.panAxis === "trunk") {
         noodel.panOffsetOriginTrunk = null;
@@ -200,7 +200,7 @@ export function releasePan(noodel: NoodelView, ev: HammerInput) {
     clearSwipeVelocityBuffer(noodel);
 }
 
-export function cancelPan(noodel: NoodelView) {
+export function cancelPan(noodel: NoodelState) {
 
     if (noodel.panAxis === null) return;
 
@@ -219,7 +219,7 @@ export function cancelPan(noodel: NoodelView) {
     clearSwipeVelocityBuffer(noodel);
 }
 
-export function unsetLimitIndicators(noodel: NoodelView) {
+export function unsetLimitIndicators(noodel: NoodelState) {
     forceReflow();
     noodel.showTopLimit = false;
     noodel.showBottomLimit = false;
@@ -231,7 +231,7 @@ export function unsetLimitIndicators(noodel: NoodelView) {
  * Shifts the focal level by a level difference. If the difference is 0,
  * will align trunk to the current focal level.
  */
-export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
+export function shiftFocalLevel(noodel: NoodelState, levelDiff: number) {
 
     clearTimeout(noodel.limitIndicatorTimeout);
 
@@ -278,7 +278,7 @@ export function shiftFocalLevel(noodel: NoodelView, levelDiff: number) {
  * Shifts the active noode in the focal branch by an index difference. If the difference
  * is 0, will align the branch to the current active noode.
  */
-export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
+export function shiftFocalNoode(noodel: NoodelState, indexDiff: number) {
     
     clearTimeout(noodel.limitIndicatorTimeout);
 
@@ -335,7 +335,7 @@ export function shiftFocalNoode(noodel: NoodelView, indexDiff: number) {
  * Jumps to a specific noode in the tree, realigning all affected branches and trunk
  * if necessary. Should not expose to input handlers/API methods, use doJumpNavigation instead.
  */
-export function alignNoodelOnJump(noodel: NoodelView, target: NoodeView) {
+export function alignNoodelOnJump(noodel: NoodelState, target: NoodeState) {
 
     // if panning, cancel it
     if (noodel.panAxis !== null) {
@@ -392,7 +392,7 @@ export function alignNoodelOnJump(noodel: NoodelView, target: NoodeView) {
  * Jump navigation wrapper for use by input handlers/API methods, taking 
  * care of side effects.
  */
-export function doJumpNavigation(noodel: NoodelView, target: NoodeView) {
+export function doJumpNavigation(noodel: NoodelState, target: NoodeState) {
 
     clearTimeout(noodel.limitIndicatorTimeout);
 
@@ -413,7 +413,7 @@ export function doJumpNavigation(noodel: NoodelView, target: NoodeView) {
  * on the current active tree. If levelDiff goes beyond the existing
  * branches, will return the furthest branch possible, i.e. the root or the deepest branch.
  */
-function findNewFocalParent(noodel: NoodelView, levelDiff: number): NoodeView {
+function findNewFocalParent(noodel: NoodelState, levelDiff: number): NoodeState {
 
     let nextParent = noodel.focalParent;
 
@@ -474,7 +474,7 @@ function computeSnapCount(velocity: number, snapMultiplier: number) {
  * Direction change of the swipe movement will not cause a buffer refresh for now
  * to account for transient directional glitches in the swipe motion.
  */
-function updateSwipeVelocityBuffer(noodel: NoodelView, velocity: number, timestamp: number) {
+function updateSwipeVelocityBuffer(noodel: NoodelState, velocity: number, timestamp: number) {
     if (noodel.lastPanTimestamp === null || timestamp - noodel.lastPanTimestamp < 60) {
         noodel.swipeVelocityBuffer.push(velocity);
 
@@ -493,7 +493,7 @@ function updateSwipeVelocityBuffer(noodel: NoodelView, velocity: number, timesta
 /**
  * Computes the average of the last 10 velocities.
  */
-function computeSwipeVelocity(noodel: NoodelView) {
+function computeSwipeVelocity(noodel: NoodelState) {
     let sum = 0;
 
     noodel.swipeVelocityBuffer.forEach(val => sum += val);
@@ -501,7 +501,7 @@ function computeSwipeVelocity(noodel: NoodelView) {
     return sum / noodel.swipeVelocityBuffer.length;
 }
 
-function clearSwipeVelocityBuffer(noodel: NoodelView) {
+function clearSwipeVelocityBuffer(noodel: NoodelState) {
     noodel.lastPanTimestamp = null;
     noodel.swipeVelocityBuffer = [];
 }

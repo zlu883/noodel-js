@@ -1,6 +1,6 @@
-import NoodelView from '../types/NoodelView';
+import NoodelState from '../types/NoodelState';
 
-export function throttle(noodel: NoodelView, key: string, func: () => any, interval: number) {
+export function throttle(noodel: NoodelState, key: string, func: () => any, interval: number) {
     if (noodel.throttleMap.get(key)) return;
 
     func();
@@ -16,7 +16,7 @@ export function throttle(noodel: NoodelView, key: string, func: () => any, inter
  * Execute the given function after the interval, overriding previous
  * occurrences with the same key. If interval is 0, will override and execute immediately.
  */
-export function debounce(noodel: NoodelView, key: string, func: () => any, interval: number) {
+export function debounce(noodel: NoodelState, key: string, func: () => any, interval: number) {
     let timeoutId = noodel.debounceMap.get(key);
     
     if (timeoutId) {

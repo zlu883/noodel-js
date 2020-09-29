@@ -3,7 +3,7 @@ import NoodelOptions from '../types/NoodelOptions';
 import { setupNoodel, parseHTMLToNoode, parseAndApplyOptions } from '../controllers/noodel-setup';
 import NoodelCanvas from '../view/NoodelCanvas.vue';
 import Vue from 'vue';
-import NoodelView from '../types/NoodelView';
+import NoodelState from '../types/NoodelState';
 import Noode from './Noode';
 import { getActiveChild } from '../util/getters';
 import { shiftFocalLevel, shiftFocalNoode } from '../controllers/noodel-navigate';
@@ -25,11 +25,11 @@ export default class Noodel {
     static VueComponent = Vue.extend({
         props: ['noodel'],
         render: function(h) {
-            return h(NoodelCanvas, { props: { store: this.noodel._v }})
+            return h(NoodelCanvas, { props: { noodel: this.noodel._v }})
         }
     });
 
-    private _v: NoodelView;
+    private _v: NoodelState;
     private vueRoot: Element;
     private vueInstance: Vue;
 
@@ -91,7 +91,7 @@ export default class Noodel {
         Vue.config.productionTip = false;
 
         this.vueInstance = new Vue({
-            render: h => h(NoodelCanvas, { props: { store: this._v }}),
+            render: h => h(NoodelCanvas, { props: { noodel: this._v }}),
             data: this._v
         }).$mount(el);
 

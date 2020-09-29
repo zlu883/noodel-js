@@ -1,17 +1,17 @@
 import NoodeDefinition from '../types/NoodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
-import NoodeView from '../types/NoodeView';
-import NoodelView from '../types/NoodelView';
+import NoodeState from '../types/NoodeState';
+import NoodelState from '../types/NoodelState';
 import { ResizeSensor } from 'css-element-queries';
 import { showActiveSubtree } from './noodel-mutate';
 import { setupRouting, unsetRouting } from './noodel-routing';
 import NoodeOptions from '../types/NoodeOptions';
-import { generateNoodeId, registerNoodeSubtree, findNoodeView, isIdRegistered, findNoodeViewModel } from './id-register';
+import { generateNoodeId, registerNoodeSubtree, findNoodeViewState, isIdRegistered, findNoodeViewModel } from './id-register';
 import { alignNoodelOnJump, cancelPan } from './noodel-navigate';
 
-export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelView {
+export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelState {
 
-    let noodel: NoodelView = {
+    let noodel: NoodelState = {
         idCount: -1,
         idMap: new Map([]),
         throttleMap: new Map([]),
@@ -29,7 +29,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         showBottomLimit: false,
         showLeftLimit: false,
         showRightLimit: false,
-        
+
         panOffsetOriginTrunk: null,
         panOffsetOriginFocalBranch: null,
         panAxis: null,
@@ -82,7 +82,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         let hash = window.location.hash;
 
         if (hash) {
-            let target = findNoodeView(noodel, hash.substr(1));
+            let target = findNoodeViewState(noodel, hash.substr(1));
 
             if (target && target.parent) {
                 alignNoodelOnJump(noodel, target);
@@ -138,7 +138,7 @@ export function parseHTMLToNoode(el: Element): NoodeDefinition {
     };
 }
 
-export function setupContainer(el: Element, noodel: NoodelView) {
+export function setupContainer(el: Element, noodel: NoodelState) {
 
     let rect = el.getBoundingClientRect();
 
@@ -151,7 +151,7 @@ export function setupContainer(el: Element, noodel: NoodelView) {
     });
 }
 
-export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView) {
+export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState) {
 
     noodel.options = {
         ...noodel.options,
@@ -168,7 +168,7 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelView)
     }
 }
 
-export function parseAndApplyNoodeOptions(options: NoodeOptions, noode: NoodeView) {
+export function parseAndApplyNoodeOptions(options: NoodeOptions, noode: NoodeState) {
 
     noode.options = {
         ...noode.options,
@@ -176,7 +176,7 @@ export function parseAndApplyNoodeOptions(options: NoodeOptions, noode: NoodeVie
     }
 }
 
-export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, index: number, parent: NoodeView, isActive: boolean, branchRelativeOffset: number): NoodeView {
+export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index: number, parent: NoodeState, isActive: boolean, branchRelativeOffset: number): NoodeState {
 
     let isRoot = parent === null;
     if (!def.children) def.children = [];
@@ -215,7 +215,7 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, index: 
         }
     }
 
-    let newView: NoodeView = {
+    let newView: NoodeState = {
         index: index,
         level: isRoot ? 0 : parent.level + 1,
         isChildrenVisible: false,
@@ -263,7 +263,7 @@ export function buildNoodeView(noodel: NoodelView, def: NoodeDefinition, index: 
     return newView;
 }
 
-export function extractNoodeDefinition(noodel: NoodelView, noode: NoodeView): NoodeDefinition {
+export function extractNoodeDefinition(noodel: NoodelState, noode: NoodeState): NoodeDefinition {
 
     let data = findNoodeViewModel(noodel, noode.id).data;
     let def: NoodeDefinition = {

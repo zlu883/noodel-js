@@ -20,7 +20,7 @@
             @transitionend="onTransitionEnd"
         >  
             <NoodeTransitionGroup
-                :store="store"
+                :noodel="noodel"
                 :parent="parent"
             />
         </div>
@@ -37,8 +37,8 @@
     import NoodeTransitionGroup from './NoodeTransitionGroup.vue';
 
     import { getFocalHeight } from '../util/getters';
-    import NoodeView from '../types/NoodeView';
-    import NoodelView from '../types/NoodelView';
+    import NoodeState from '../types/NoodeState';
+    import NoodelState from '../types/NoodelState';
     import Vue, { PropType } from 'vue';
     import { updateBranchSize } from '../controllers/noodel-align';
 
@@ -49,22 +49,22 @@
         },
 
         props: {
-            parent: Object as PropType<NoodeView>,
-            store: Object as PropType<NoodelView>
+            parent: Object as PropType<NoodeState>,
+            noodel: Object as PropType<NoodelState>
         },
 
         mounted() {
             this.parent.branchBoxEl = this.$el as HTMLDivElement;
             this.parent.branchEl = this.$refs.branch as HTMLDivElement;
 
-            updateBranchSize(this.store, this.parent);
+            updateBranchSize(this.noodel, this.parent);
 
             let skipResizeDetection = typeof this.parent.options.skipBranchResizeDetection === 'boolean' ? 
-                this.parent.options.skipBranchResizeDetection : this.store.options.skipResizeDetection;
+                this.parent.options.skipBranchResizeDetection : this.noodel.options.skipResizeDetection;
                 
             if (!skipResizeDetection) {
                 this.parent.branchResizeSensor = new ResizeSensor(this.parent.branchBoxEl, () => {
-                    updateBranchSize(this.store, this.parent);
+                    updateBranchSize(this.noodel, this.parent);
                 });
             };   
         },
@@ -76,7 +76,7 @@
         computed: {
 
             branchBoxStyle(): {} {
-                let orientation = this.store.options.orientation;
+                let orientation = this.noodel.options.orientation;
                 let transform;
 
                 if (orientation === 'ltr') {
@@ -95,7 +95,7 @@
 
             branchStyle(): {} {
                 return {
-                    transform: `translateY(${this.parent.childBranchOffset + getFocalHeight(this.store)}px)`
+                    transform: `translateY(${this.parent.childBranchOffset + getFocalHeight(this.noodel)}px)`
                 };
             },
 
@@ -121,7 +121,7 @@
             showBranchBackdrop(): boolean {
                 return typeof this.parent.options.showBranchBackdrop === 'boolean'
                     ? this.parent.options.showBranchBackdrop
-                    : this.store.options.showBranchBackdrops;
+                    : this.noodel.options.showBranchBackdrops;
             }
         },
 

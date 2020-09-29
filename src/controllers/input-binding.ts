@@ -1,11 +1,11 @@
 import { startPan, updatePan, releasePan, doJumpNavigation, shiftFocalNoode, shiftFocalLevel } from './noodel-navigate';
 import Hammer from 'hammerjs';
-import NoodelView from '../types/NoodelView';
+import NoodelState from '../types/NoodelState';
 import { exitInspectMode, enterInspectMode } from './inspect-mode';
 import { throttle } from './throttle';
 import { getActiveChild } from '../util/getters';
 
-function onKeyDown(noodel: NoodelView, ev: KeyboardEvent) {   
+function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {   
     
     if (checkInputPreventClass(noodel, ev, 'nd-prevent-key')) return;
 
@@ -79,13 +79,13 @@ function onKeyDown(noodel: NoodelView, ev: KeyboardEvent) {
     }
 }
 
-function onKeyUp(noodel: NoodelView, event: KeyboardEvent) {
+function onKeyUp(noodel: NoodelState, event: KeyboardEvent) {
     if (event.key === "Shift") {
         noodel.isShiftKeyPressed = false;
     }
 }
 
-function onWheel(noodel: NoodelView, ev: WheelEvent) {
+function onWheel(noodel: NoodelState, ev: WheelEvent) {
 
     if (!noodel.options.useWheelNavigation) return;
     if (noodel.isInInspectMode) return;
@@ -129,7 +129,7 @@ function onWheel(noodel: NoodelView, ev: WheelEvent) {
     }
 }
 
-function onPanStart(noodel: NoodelView, ev: HammerInput) {
+function onPanStart(noodel: NoodelState, ev: HammerInput) {
 
     if (!noodel.options.useSwipeNavigation) return;
     if (noodel.isInInspectMode) return;
@@ -138,20 +138,20 @@ function onPanStart(noodel: NoodelView, ev: HammerInput) {
     startPan(noodel, ev);
 }
 
-function onPan(noodel: NoodelView, ev: HammerInput) {
+function onPan(noodel: NoodelState, ev: HammerInput) {
     if (ev.isFinal) return;
     if (noodel.panAxis === null) return;
 
     updatePan(noodel, ev);
 }
 
-function onPanEnd(noodel: NoodelView, ev: HammerInput) {
+function onPanEnd(noodel: NoodelState, ev: HammerInput) {
     if (noodel.panAxis === null) return;
 
     releasePan(noodel, ev); 
 }
 
-function onTap(noodel: NoodelView, ev: HammerInput) {
+function onTap(noodel: NoodelState, ev: HammerInput) {
 
     if (noodel.panAxis !== null) return;
     if (checkInputPreventClass(noodel, ev.srcEvent, 'nd-prevent-tap')) return;
@@ -191,7 +191,7 @@ function onTap(noodel: NoodelView, ev: HammerInput) {
     }
 }
 
-function checkInputPreventClass(noodel: NoodelView, ev: Event, className: string): boolean {
+function checkInputPreventClass(noodel: NoodelState, ev: Event, className: string): boolean {
     
     let target = ev.target;
 
@@ -212,7 +212,7 @@ function checkInputPreventClass(noodel: NoodelView, ev: Event, className: string
     }
 }
 
-export function setupCanvasInput(el: HTMLDivElement, noodel: NoodelView) {
+export function setupCanvasInput(el: HTMLDivElement, noodel: NoodelState) {
 
     el.addEventListener('keydown', (ev: KeyboardEvent) => throttle(noodel, 'keydown', () => onKeyDown(noodel, ev), 60));
     el.addEventListener('keyup', (ev: KeyboardEvent) => onKeyUp(noodel, ev));

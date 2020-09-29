@@ -1,10 +1,10 @@
-import NoodelView from '../types/NoodelView';
+import NoodelState from '../types/NoodelState';
 import { findNoodeViewModel } from './id-register';
-import NoodeView from '../types/NoodeView';
+import NoodeState from '../types/NoodeState';
 import Vue from 'vue';
 import { syncHashToFocalNoode } from './noodel-routing';
 
-function queueEvent(noodel: NoodelView, ev: () => any) {
+function queueEvent(noodel: NoodelState, ev: () => any) {
     if (noodel.eventQueue.length === 0) {
         Vue.nextTick(() => flushEventQueue(noodel));
     }
@@ -12,7 +12,7 @@ function queueEvent(noodel: NoodelView, ev: () => any) {
     noodel.eventQueue.push(ev);
 }
 
-function flushEventQueue(noodel: NoodelView) {
+function flushEventQueue(noodel: NoodelState) {
     for (let i = 0; i < noodel.eventQueue.length; i++) {
         noodel.eventQueue[i]();
     }
@@ -20,14 +20,14 @@ function flushEventQueue(noodel: NoodelView) {
     noodel.eventQueue = [];
 }
 
-export function queueEnterInspectMode(noodel: NoodelView, focalNoode: NoodeView) {
+export function queueEnterInspectMode(noodel: NoodelState, focalNoode: NoodeState) {
     if (typeof noodel.options.onEnterInspectMode === 'function') {
         let vm = findNoodeViewModel(noodel, focalNoode.id);
         queueEvent(noodel, () => noodel.options.onEnterInspectMode(vm));
     }
 }
 
-export function queueExitInspectMode(noodel: NoodelView, focalNoode: NoodeView) {
+export function queueExitInspectMode(noodel: NoodelState, focalNoode: NoodeState) {
     if (typeof noodel.options.onExitInspectMode === 'function') {
         let vm = findNoodeViewModel(noodel, focalNoode.id);
         queueEvent(noodel, () => noodel.options.onExitInspectMode(vm));
@@ -38,7 +38,7 @@ export function queueExitInspectMode(noodel: NoodelView, focalNoode: NoodeView) 
  * Triggers events and sync hash if the focal noode (and maybe also focal parent) have changed.
  * Does nothing if prev equals current.
  */
-export function handleFocalNoodeChange(noodel: NoodelView, prev: NoodeView, current: NoodeView) {
+export function handleFocalNoodeChange(noodel: NoodelState, prev: NoodeState, current: NoodeState) {
 
     if (!prev && !current) return;
     if (prev && current && prev.id === current.id) return;
