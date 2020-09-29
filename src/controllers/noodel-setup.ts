@@ -64,7 +64,8 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             onEnterInspectMode: null,
             onExitInspectMode: null,
             onFocalNoodeChange: null,
-            onFocalParentChange: null
+            onFocalParentChange: null,
+            orientation: "ltr",
         },
         onHashChanged: null,
         lastPanTimestamp: null,

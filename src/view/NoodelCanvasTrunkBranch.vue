@@ -77,8 +77,18 @@
         computed: {
 
             branchBoxStyle(): {} {
+                let orientation = this.store.options.orientation;
+                let transform;
+
+                if (orientation === 'ltr') {
+                    transform = `translateX(${this.parent.trunkRelativeOffset}px)`;
+                }
+                else if (orientation === "rtl") {
+                    transform = `translateX(${-(this.parent.trunkRelativeOffset + this.parent.branchSize)}px)`;
+                }
+
                 return {
-                    transform: `translateX(${this.parent.trunkRelativeOffset}px)`,
+                    transform: transform,
                     'pointer-events': !this.parent.isChildrenVisible ? 'none' : null,
                     'opacity': !this.parent.isChildrenVisible && this.parent.isChildrenTransparent ? 0 : null
                 };

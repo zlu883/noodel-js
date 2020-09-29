@@ -1,255 +1,272 @@
 <!--------------------------- TEMPLATE ----------------------------->
 
 <template>
-
-    <div 
-        class="nd-canvas"
-        ref="canvas"
-        tabindex="0"
-        @dragstart="onDragStart"
-    >
-        <transition name="nd-limit">
-            <div 
-                class="nd-limit nd-limit-left"
-                v-if="store.options.showLimitIndicators" 
-                v-show="store.showLimits.left"
-            />
-        </transition>
-        <transition name="nd-limit">
-            <div 
-                class="nd-limit nd-limit-right"
-                v-if="store.options.showLimitIndicators" 
-                v-show="store.showLimits.right"
-            />
-        </transition>
-        <transition name="nd-limit">
-            <div 
-                class="nd-limit nd-limit-top" 
-                v-if="store.options.showLimitIndicators" 
-                v-show="store.showLimits.top"
-            />
-        </transition>
-        <transition name="nd-limit">
-            <div 
-                class="nd-limit nd-limit-bottom"
-                v-if="store.options.showLimitIndicators" 
-                v-show="store.showLimits.bottom"
-            />
-        </transition>
-        <transition-group 
-            name="nd-branch-box"
-            tag="div"
-            ref="trunk"
-            class="nd-trunk"
-            :class="trunkClass"
-            :style="trunkStyle"
-            @transitionend.native="onTransitionEnd"
-        >
-            <NoodelCanvasTrunkBranch
-                v-for="parent in allBranchParents"
-                v-show="parent.isChildrenVisible || parent.isChildrenTransparent"
-                :key="parent.id"                  
-                :parent="parent"
-                :store="store"
-            />
-        </transition-group>
-    </div>
-    
+	<div class="nd-canvas" ref="canvas" tabindex="0" @dragstart="onDragStart">
+		<transition name="nd-limit">
+			<div
+				class="nd-limit nd-limit-left"
+				v-if="store.options.showLimitIndicators"
+				v-show="store.showLimits.left"
+			/>
+		</transition>
+		<transition name="nd-limit">
+			<div
+				class="nd-limit nd-limit-right"
+				v-if="store.options.showLimitIndicators"
+				v-show="store.showLimits.right"
+			/>
+		</transition>
+		<transition name="nd-limit">
+			<div
+				class="nd-limit nd-limit-top"
+				v-if="store.options.showLimitIndicators"
+				v-show="store.showLimits.top"
+			/>
+		</transition>
+		<transition name="nd-limit">
+			<div
+				class="nd-limit nd-limit-bottom"
+				v-if="store.options.showLimitIndicators"
+				v-show="store.showLimits.bottom"
+			/>
+		</transition>
+		<transition-group
+			name="nd-branch-box"
+			tag="div"
+			ref="trunk"
+			class="nd-trunk"
+			:class="trunkClass"
+			:style="trunkStyle"
+			@transitionend.native="onTransitionEnd"
+		>
+			<NoodelCanvasTrunkBranch
+				v-for="parent in allBranchParents"
+				v-show="
+					parent.isChildrenVisible || parent.isChildrenTransparent
+				"
+				:key="parent.id"
+				:parent="parent"
+				:store="store"
+			/>
+		</transition-group>
+	</div>
 </template>
 
 <!---------------------------- SCRIPT ------------------------------>
 
 <script lang="ts">
+	import NoodelCanvasTrunkBranch from "./NoodelCanvasTrunkBranch.vue";
 
-    import NoodelCanvasTrunkBranch from "./NoodelCanvasTrunkBranch.vue";
+	import { getFocalWidth } from "../util/getters";
+	import { setupContainer } from "../controllers/noodel-setup";
+	import { setupCanvasInput } from "../controllers/input-binding";
+	import { traverseDescendents } from "../controllers/noodel-traverse";
+	import NoodelView from "../types/NoodelView";
+	import {
+		alignBranchToIndex,
+		alignTrunkToBranch,
+	} from "../controllers/noodel-align";
+	import NoodeView from "../types/NoodeView";
+	import Vue, { PropType } from "vue";
 
-    import { getFocalWidth } from '../util/getters';
-    import { setupContainer } from '../controllers/noodel-setup';
-    import { setupCanvasInput } from '../controllers/input-binding';
-    import { traverseDescendents } from '../controllers/noodel-traverse';
-    import NoodelView from '../types/NoodelView';
-    import { alignBranchToIndex, alignTrunkToBranch } from '../controllers/noodel-align';
-    import NoodeView from '../types/NoodeView';
-    import Vue, { PropType } from 'vue';
+	export default Vue.extend({
+		components: {
+			NoodelCanvasTrunkBranch,
+		},
 
-    export default Vue.extend({
-        
-        components: {
-            NoodelCanvasTrunkBranch
-        },
+		props: {
+			store: Object as PropType<NoodelView>,
+		},
 
-        props: {
-            store: Object as PropType<NoodelView>
-        },
+		mounted: function () {
+			setupContainer(this.$el, this.store);
+			setupCanvasInput(this.$el as HTMLDivElement, this.store);
+			this.store.trunkEl = (this.$refs.trunk as any).$el as Element;
+			this.store.canvasEl = this.$refs.canvas as Element;
 
-        mounted: function() {
-            setupContainer(this.$el, this.store);
-            setupCanvasInput(this.$el as HTMLDivElement, this.store);
-            this.store.trunkEl = (this.$refs.trunk as any).$el as Element;
-            this.store.canvasEl = this.$refs.canvas as Element;
-            
-            this.$nextTick(() => {
-                this.allBranchParents.forEach(parent => {
-                    alignBranchToIndex(parent, parent.activeChildIndex);
-                });
+			this.$nextTick(() => {
+				this.allBranchParents.forEach((parent) => {
+					alignBranchToIndex(parent, parent.activeChildIndex);
+				});
 
-                alignTrunkToBranch(this.store, this.store.focalParent);
-                
-                requestAnimationFrame(() => {
-                    this.$nextTick(() => {
-                        this.store.isFirstRenderDone = true;
+				alignTrunkToBranch(this.store, this.store.focalParent);
 
-                        if (typeof this.store.options.onMount === 'function') {
-                            this.store.options.onMount();
-                        }; 
-                    });           
-                });
-            });   
-        },
+				requestAnimationFrame(() => {
+					this.$nextTick(() => {
+						this.store.isFirstRenderDone = true;
 
-        destroyed: function() {
-            this.store.trunkOffset = 0;
-            this.store.trunkOffsetAligned = 0;
-            delete this.store.canvasEl;
-            delete this.store.trunkEl;
-            delete this.store.isFirstRenderDone;
-            traverseDescendents(this.store.root, (noode) => {
-                noode.trunkRelativeOffset = 0;
-                noode.branchRelativeOffset = 0;
-                noode.isChildrenTransparent = true;
-                noode.size = 0;
-                noode.branchSize = 0;
-                noode.childBranchOffset = 0;
-                noode.childBranchOffsetAligned = 0;
-                delete noode.branchEl;
-                delete noode.branchBoxEl;
-                delete noode.el;
-                delete noode.resizeSensor;
-                delete noode.branchResizeSensor;
-            }, true);
-        },
+						if (typeof this.store.options.onMount === "function") {
+							this.store.options.onMount();
+						}
+					});
+				});
+			});
+		},
 
-        computed: {
+		destroyed: function () {
+			this.store.trunkOffset = 0;
+			this.store.trunkOffsetAligned = 0;
+			delete this.store.canvasEl;
+			delete this.store.trunkEl;
+			delete this.store.isFirstRenderDone;
+			traverseDescendents(
+				this.store.root,
+				(noode) => {
+					noode.trunkRelativeOffset = 0;
+					noode.branchRelativeOffset = 0;
+					noode.isChildrenTransparent = true;
+					noode.size = 0;
+					noode.branchSize = 0;
+					noode.childBranchOffset = 0;
+					noode.childBranchOffsetAligned = 0;
+					delete noode.branchEl;
+					delete noode.branchBoxEl;
+					delete noode.el;
+					delete noode.resizeSensor;
+					delete noode.branchResizeSensor;
+				},
+				true
+			);
+		},
 
-            trunkStyle(): {} {
-                return {
-                    transform: 'translateX(' + (this.store.trunkOffset + getFocalWidth(this.store)) + 'px)'
-                };
-            },
+		computed: {
+			trunkStyle(): {} {
+				let orientation = this.store.options.orientation;
 
-            trunkClass(): {} {
-                return {
-                    'nd-trunk-move': this.store.applyTrunkMove
-                };
-            },
-
-            allBranchParents(): NoodeView[] {
-                let allBranchParents: NoodeView[] = [];
-
-                traverseDescendents(this.store.root, desc => {
-                    if (desc.children.length > 0) {
-                        allBranchParents.push(desc);
-                    }
-                }, true);
-
-                return allBranchParents;
-            }
-        },
-
-        methods: {
-
-            onTransitionEnd(ev: TransitionEvent) {
-                if (ev.propertyName === "transform" && ev.target === (this.$refs.trunk as any).$el) {
-                    if (this.store.ignoreTransitionEnd) return;
-                    this.store.applyTrunkMove = false;
+				if (orientation === "ltr") {
+					return {
+						transform: `translateX(${this.store.trunkOffset + getFocalWidth(this.store)}px)`,
+					};
                 }
-            },
+                else if (orientation === "rtl") {
+                    return {
+						transform: `translateX(${-this.store.trunkOffset + getFocalWidth(this.store)}px)`,
+					};
+                }
+			},
 
-            onDragStart(ev: DragEvent) {
-                if (this.store.isInInspectMode) return;
-                ev.preventDefault();
-            }
-        }
+			trunkClass(): {} {
+				return {
+					"nd-trunk-move": this.store.applyTrunkMove,
+				};
+			},
 
-    });
-    
+			allBranchParents(): NoodeView[] {
+				let allBranchParents: NoodeView[] = [];
+
+				traverseDescendents(
+					this.store.root,
+					(desc) => {
+						if (desc.children.length > 0) {
+							allBranchParents.push(desc);
+						}
+					},
+					true
+				);
+
+				return allBranchParents;
+			},
+		},
+
+		methods: {
+			onTransitionEnd(ev: TransitionEvent) {
+				if (
+					ev.propertyName === "transform" &&
+					ev.target === (this.$refs.trunk as any).$el
+				) {
+					if (this.store.ignoreTransitionEnd) return;
+					this.store.applyTrunkMove = false;
+				}
+			},
+
+			onDragStart(ev: DragEvent) {
+				if (this.store.isInInspectMode) return;
+				ev.preventDefault();
+			},
+		},
+	});
 </script>
 
 <!---------------------------- STYLES ------------------------------>
 
 <style>
-
 	.nd-canvas {
-        position: relative;
-        width: 800px;
-        height: 600px;
-        overflow: hidden;
-        -webkit-touch-callout: none;
-        -webkit-user-select: none;
-        -khtml-user-select: none;
-        -moz-user-select: none;
-        -ms-user-select: none;
-        user-select: none;
-        cursor: grab;
-        background-color: #a6a6a6;
-        overscroll-behavior: none;
-    }
+		position: relative;
+		width: 800px;
+		height: 600px;
+		overflow: hidden;
+		-webkit-touch-callout: none;
+		-webkit-user-select: none;
+		-khtml-user-select: none;
+		-moz-user-select: none;
+		-ms-user-select: none;
+		user-select: none;
+		cursor: grab;
+		background-color: #a6a6a6;
+		overscroll-behavior: none;
+	}
 
-    .nd-limit {
-        position: absolute;
-        z-index: 9999;
-        border: solid 0px;
-        background-color: #595959;
-    }
+	.nd-limit {
+		position: absolute;
+		z-index: 9999;
+		border: solid 0px;
+		background-color: #595959;
+	}
 
-    .nd-limit-enter, .nd-limit-leave-active {
-        opacity: 0;
-    }
+	.nd-limit-enter,
+	.nd-limit-leave-active {
+		opacity: 0;
+	}
 
-    .nd-limit-enter-active, .nd-limit-leave-active {
-        transition-property: opacity;
-        transition-duration: 0.5s;
-        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000);
-    }
+	.nd-limit-enter-active,
+	.nd-limit-leave-active {
+		transition-property: opacity;
+		transition-duration: 0.5s;
+		transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+	}
 
-    .nd-limit-left {   
-        top: 0;
-        left: 0;
-        height: 100%;
-        width: 1em;
-    }
+	.nd-limit-left {
+		top: 0;
+		left: 0;
+		height: 100%;
+		width: 1em;
+	}
 
-    .nd-limit-right {
-        top: 0;
-        right: 0;
-        height: 100%;
-        width: 1em;
-    }
+	.nd-limit-right {
+		top: 0;
+		right: 0;
+		height: 100%;
+		width: 1em;
+	}
 
-    .nd-limit-top {
-        top: 0;
-        left: 0;
-        height: 1em;
-        width: 100%;
-    }
+	.nd-limit-top {
+		top: 0;
+		left: 0;
+		height: 1em;
+		width: 100%;
+	}
 
-    .nd-limit-bottom {
-        bottom: 0;
-        left: 0;
-        height: 1em;
-        width: 100%;
-    }
+	.nd-limit-bottom {
+		bottom: 0;
+		left: 0;
+		height: 1em;
+		width: 100%;
+	}
 
-    .nd-trunk {
-        position: relative;
-        height: 100%;
-        width: 100%;
-    }
+	.nd-trunk {
+		position: relative;
+		height: 100%;
+		width: 100%;
+	}
 
-    .nd-trunk-move {
-        transition-property: transform;
-        transition-duration: .5s; 
-        transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1.000); /* easeOutCubic from Penner equations */
-    }
-
+	.nd-trunk-move {
+		transition-property: transform;
+		transition-duration: 0.5s;
+		transition-timing-function: cubic-bezier(
+			0.215,
+			0.61,
+			0.355,
+			1
+		); /* easeOutCubic from Penner equations */
+	}
 </style>

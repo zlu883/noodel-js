@@ -87,6 +87,10 @@ export default interface NoodelOptions {
      */
     showBranchBackdrops?: boolean;
     /**
+     * Determines the direction of the trunk axis. Defaults to ltr (left to right).
+     */
+    orientation?: "ltr" | "rtl" | "ttb" | "btt";
+    /**
      * Callback after the noodel has mounted (i.e. fully rendered onto the DOM) and properly aligned
      * after the first render. Changes to the view model from here onward
      * will sync with the view and trigger animation effects.
