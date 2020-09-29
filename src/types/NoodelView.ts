@@ -1,8 +1,6 @@
-import Compass from './Compass';
-import { Axis } from '../enums/Axis';
+import { NoodelAxis } from './NoodelAxis';
 import NoodeView from './NoodeView';
 import NoodelOptions from './NoodelOptions';
-import Vector2D from './Vector2D';
 import Noode from '../main/Noode';
 
 export default interface NoodelView {
@@ -25,7 +23,11 @@ export default interface NoodelView {
     applyTrunkMove: boolean;
     ignoreTransitionEnd?: boolean;
 
-    showLimits: Compass;
+    showTopLimit: boolean;
+    showBottomLimit: boolean;
+    showLeftLimit: boolean;
+    showRightLimit: boolean;
+
     limitIndicatorTimeout?: number;
 
     /**
@@ -36,7 +38,7 @@ export default interface NoodelView {
      * This is the offset of the focal branch when panning begins.
      */
     panOffsetOriginFocalBranch: number;
-    panAxis: Axis;
+    panAxis: NoodelAxis;
 
     isShiftKeyPressed?: boolean;
     /**
@@ -57,7 +59,8 @@ export default interface NoodelView {
     
     hammerJsInstance?: HammerManager;
 
-    containerSize: Vector2D;
+    containerHeight: number;
+    containerWidth: number;
     options: NoodelOptions;
 
     onHashChanged?: () => any;

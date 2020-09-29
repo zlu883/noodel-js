@@ -4,7 +4,6 @@ import { getActiveChild, isRoot } from '../util/getters';
 import NoodelView from '../types/NoodelView';
 import { alignTrunkToBranch, alignBranchBeforeNoodeDelete } from './noodel-align';
 import { forceReflow } from './noodel-animate';
-import { Axis } from '../enums/Axis';
 import { cancelPan } from './noodel-navigate';
 import { registerNoodeSubtree } from './id-register';
 import NoodeDefinition from '../types/NoodeDefinition';
@@ -104,7 +103,7 @@ export function insertChildren(noodel: NoodelView, parent: NoodeView, index: num
 
     // if panning focal branch, cancel it
     // unfortunately it's too difficult to align pan offsets at the moment
-    if (parent.isFocalParent && noodel.panAxis === Axis.VERTICAL) {
+    if (parent.isFocalParent && noodel.panAxis === "branch") {
         cancelPan(noodel);
     }
 
@@ -158,7 +157,7 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
 
     // if panning focal branch, cancel it
     // unfortunately it's too difficult to align pan offsets at the moment
-    if (parent.isFocalParent && noodel.panAxis === Axis.VERTICAL) {
+    if (parent.isFocalParent && noodel.panAxis === "branch") {
         cancelPan(noodel);
     }
 
@@ -173,7 +172,7 @@ export function deleteChildren(noodel: NoodelView, parent: NoodeView, index: num
         // align trunk to nearest parent branch if current focal branch is being deleted
         if ((parent.level + 1) <= noodel.focalLevel && parent.isChildrenVisible) {
 
-            if (noodel.panAxis === Axis.HORIZONTAL) {
+            if (noodel.panAxis === "trunk") {
                 cancelPan(noodel);
             }
 

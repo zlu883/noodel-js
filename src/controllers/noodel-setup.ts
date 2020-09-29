@@ -25,21 +25,18 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         trunkOffsetAligned: 0,
         applyTrunkMove: false,
 
-        showLimits: {
-            top: false,
-            bottom: false,
-            left: false,
-            right: false
-        },
+        showTopLimit: false,
+        showBottomLimit: false,
+        showLeftLimit: false,
+        showRightLimit: false,
+        
         panOffsetOriginTrunk: null,
         panOffsetOriginFocalBranch: null,
         panAxis: null,
         isInInspectMode: false,
 
-        containerSize: {
-            x: 0,
-            y: 0
-        },
+        containerHeight: 0,
+        containerWidth: 0,
         
         options: {
             visibleSubtreeDepth: 1,
@@ -145,12 +142,12 @@ export function setupContainer(el: Element, noodel: NoodelView) {
 
     let rect = el.getBoundingClientRect();
 
-    noodel.containerSize.x = rect.width;
-    noodel.containerSize.y = rect.height;
+    noodel.containerWidth = rect.width;
+    noodel.containerHeight = rect.height;
 
     new ResizeSensor(el, (size) => {
-        noodel.containerSize.x = size.width,
-        noodel.containerSize.y = size.height
+        noodel.containerWidth = size.width,
+        noodel.containerHeight = size.height
     });
 }
 

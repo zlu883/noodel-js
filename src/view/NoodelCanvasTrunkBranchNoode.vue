@@ -118,8 +118,8 @@
                 return {
                     left: '50%',
                     top: '50%',
-                    width: `${this.store.containerSize.x + 10}px`,
-                    height: `${this.store.containerSize.y + 10}px`,
+                    width: `${this.store.containerWidth + 10}px`,
+                    height: `${this.store.containerHeight + 10}px`,
                     transform: `translate(${-getFocalWidth(this.store) - 5}px, ${-getFocalHeight(this.store) - 5}px)`
                 }
             },

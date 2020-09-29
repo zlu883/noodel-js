@@ -1,7 +1,7 @@
 import NoodeView from '../types/NoodeView';
 import NoodelView from '../types/NoodelView';
 import { traverseDescendents } from './noodel-traverse';
-import { Axis } from '../enums/Axis';
+import { NoodelAxis } from '../types/NoodelAxis';
 import Vue from 'vue';
 import { forceReflow } from './noodel-animate';
 import { getFocalWidth, getFocalHeight } from '../util/getters';
@@ -33,7 +33,7 @@ export function alignTrunkOnBranchResize(noodel: NoodelView, parent: NoodeView, 
         }
 
         if (alignVal !== 0) {
-            if (noodel.panAxis === Axis.HORIZONTAL) {
+            if (noodel.panAxis === "trunk") {
                 noodel.panOffsetOriginTrunk -= alignVal;
             }
 
@@ -89,7 +89,7 @@ export function alignBranchOnNoodeResize(noodel: NoodelView, noode: NoodeView, n
         }
 
         if (alignVal !== 0) {
-            if (noodel.panAxis === Axis.VERTICAL && parent.isFocalParent) {
+            if (noodel.panAxis === "branch" && parent.isFocalParent) {
                 noodel.panOffsetOriginFocalBranch -= alignVal;
             }
 

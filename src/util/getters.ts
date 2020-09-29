@@ -3,11 +3,11 @@ import NoodelView from '../types/NoodelView';
 import { traverseAncestors } from '../controllers/noodel-traverse';
 
 export function getFocalHeight(noodel: NoodelView) {
-    return noodel.containerSize.y / 2;
+    return noodel.containerHeight / 2;
 }
 
 export function getFocalWidth(noodel: NoodelView) {
-    return noodel.containerSize.x / 2;
+    return noodel.containerWidth / 2;
 }
 
 export function isRoot(noode: NoodeView): boolean {

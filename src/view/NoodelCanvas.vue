@@ -6,28 +6,28 @@
 			<div
 				class="nd-limit nd-limit-left"
 				v-if="store.options.showLimitIndicators"
-				v-show="store.showLimits.left"
+				v-show="store.showLeftLimit"
 			/>
 		</transition>
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-right"
 				v-if="store.options.showLimitIndicators"
-				v-show="store.showLimits.right"
+				v-show="store.showRightLimit"
 			/>
 		</transition>
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-top"
 				v-if="store.options.showLimitIndicators"
-				v-show="store.showLimits.top"
+				v-show="store.showTopLimit"
 			/>
 		</transition>
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-bottom"
 				v-if="store.options.showLimitIndicators"
-				v-show="store.showLimits.bottom"
+				v-show="store.showBottomLimit"
 			/>
 		</transition>
 		<transition-group
@@ -106,9 +106,13 @@
 		destroyed: function () {
 			this.store.trunkOffset = 0;
 			this.store.trunkOffsetAligned = 0;
+			this.store.containerHeight = 0;
+			this.store.containerWidth = 0;
+			this.store.isFirstRenderDone = false;
+
 			delete this.store.canvasEl;
 			delete this.store.trunkEl;
-			delete this.store.isFirstRenderDone;
+
 			traverseDescendents(
 				this.store.root,
 				(noode) => {
@@ -119,6 +123,7 @@
 					noode.branchSize = 0;
 					noode.childBranchOffset = 0;
 					noode.childBranchOffsetAligned = 0;
+
 					delete noode.branchEl;
 					delete noode.branchBoxEl;
 					delete noode.el;
