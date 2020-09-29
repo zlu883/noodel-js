@@ -2,7 +2,7 @@ import NoodeState from '../types/NoodeState';
 import NoodeDefinition from '../types/NoodeDefinition';
 import { setActiveChild as _setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
 import { extractNoodeDefinition, parseAndApplyNoodeOptions, parseClassName, parseStyle } from '../controllers/noodel-setup';
-import { getPath as _getPath } from '../util/getters';
+import { getPath as _getPath } from '../controllers/getters';
 import { alignBranchToIndex, updateNoodeSize, updateBranchSize } from '../controllers/noodel-align';
 import { shiftFocalNoode, doJumpNavigation } from '../controllers/noodel-navigate';
 import NoodelState from '../types/NoodelState';

@@ -1,6 +1,6 @@
 import NoodeState from '../types/NoodeState';
 import { traverseActiveDescendents } from './noodel-traverse';
-import { getActiveChild, isRoot } from '../util/getters';
+import { getActiveChild, isRoot } from './getters';
 import NoodelState from '../types/NoodelState';
 import { alignTrunkToBranch, alignBranchBeforeNoodeDelete } from './noodel-align';
 import { forceReflow } from './noodel-animate';

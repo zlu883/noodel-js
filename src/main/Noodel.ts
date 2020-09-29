@@ -5,7 +5,7 @@ import NoodelCanvas from '../view/NoodelCanvas.vue';
 import Vue from 'vue';
 import NoodelState from '../types/NoodelState';
 import Noode from './Noode';
-import { getActiveChild } from '../util/getters';
+import { getActiveChild } from '../controllers/getters';
 import { shiftFocalLevel, shiftFocalNoode } from '../controllers/noodel-navigate';
 import { findNoodeByPath as _findNoodeByPath } from '../controllers/noodel-traverse';
 import { findNoodeViewModel } from '../controllers/id-register';

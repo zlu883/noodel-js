@@ -53,7 +53,7 @@
     import { updateNoodeSize } from "../controllers/noodel-align";
     import NoodelState from '../types/NoodelState';
     import { traverseAncestors } from '../controllers/noodel-traverse';
-    import { getPath, getFocalHeight, getFocalWidth } from '../util/getters';
+    import { getPath, getFocalHeight, getFocalWidth } from '../controllers/getters';
     import Vue, { PropType } from 'vue';
     import Noode from '../main/Noode';
     import { findNoodeViewModel } from '../controllers/id-register';

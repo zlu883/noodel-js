@@ -1,7 +1,7 @@
 import NoodelState from '../types/NoodelState';
 import { doJumpNavigation } from './noodel-navigate';
 import { findNoodeViewState } from './id-register';
-import { getActiveChild } from '../util/getters';
+import { getActiveChild } from './getters';
 
 export function setupRouting(noodel: NoodelState) {
 

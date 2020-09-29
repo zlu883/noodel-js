@@ -36,7 +36,7 @@
 
     import NoodeTransitionGroup from './NoodeTransitionGroup.vue';
 
-    import { getFocalHeight } from '../util/getters';
+    import { getFocalHeight } from '../controllers/getters';
     import NoodeState from '../types/NoodeState';
     import NoodelState from '../types/NoodelState';
     import Vue, { PropType } from 'vue';

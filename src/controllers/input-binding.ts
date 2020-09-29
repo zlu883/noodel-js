@@ -3,7 +3,7 @@ import Hammer from 'hammerjs';
 import NoodelState from '../types/NoodelState';
 import { exitInspectMode, enterInspectMode } from './inspect-mode';
 import { throttle } from './throttle';
-import { getActiveChild } from '../util/getters';
+import { getActiveChild } from './getters';
 
 function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {   
     

@@ -1,5 +1,5 @@
 import NoodeState from '../types/NoodeState';
-import { isRoot, getActiveChild } from '../util/getters';
+import { isRoot, getActiveChild } from './getters';
 import NoodelState from '../types/NoodelState';
 
 export function traverseAncestors(origin: NoodeState, task: (noode: NoodeState) => any, includeOrigin: boolean, includeRoot: boolean) {

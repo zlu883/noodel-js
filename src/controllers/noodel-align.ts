@@ -4,7 +4,7 @@ import { traverseDescendents } from './noodel-traverse';
 import { NoodelAxis } from '../types/NoodelAxis';
 import Vue from 'vue';
 import { forceReflow } from './noodel-animate';
-import { getFocalWidth, getFocalHeight } from '../util/getters';
+import { getFocalWidth, getFocalHeight } from './getters';
 
 export function updateNoodeSize(noodel: NoodelState, noode: NoodeState) {
     alignBranchOnNoodeResize(noodel, noode, noode.el.getBoundingClientRect().height);

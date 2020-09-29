@@ -2,7 +2,7 @@ import { setActiveChild, setFocalParent, hideActiveSubtree, showActiveSubtree } 
 import { NoodelAxis } from '../types/NoodelAxis';
 import NoodeState from '../types/NoodeState';
 import NoodelState from '../types/NoodelState';
-import { getActiveChild, getFocalWidth, getFocalHeight } from '../util/getters';
+import { getActiveChild, getFocalWidth, getFocalHeight } from './getters';
 import { alignTrunkToBranch, alignBranchToIndex } from './noodel-align';
 import { forceReflow } from '../controllers/noodel-animate';
 import { exitInspectMode } from './inspect-mode';

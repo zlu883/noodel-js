@@ -1,5 +1,5 @@
 import NoodelState from '../types/NoodelState';
-import { getActiveChild } from '../util/getters';
+import { getActiveChild } from './getters';
 import { cancelPan } from './noodel-navigate';
 import { queueEnterInspectMode, queueExitInspectMode } from './event-emit';
 

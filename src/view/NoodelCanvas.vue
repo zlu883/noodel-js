@@ -57,7 +57,7 @@
 <script lang="ts">
 	import NoodelCanvasTrunkBranch from "./NoodelCanvasTrunkBranch.vue";
 
-	import { getFocalWidth } from "../util/getters";
+	import { getFocalWidth } from "../controllers/getters";
 	import { setupContainer } from "../controllers/noodel-setup";
 	import { setupCanvasInput } from "../controllers/input-binding";
 	import { traverseDescendents } from "../controllers/noodel-traverse";
