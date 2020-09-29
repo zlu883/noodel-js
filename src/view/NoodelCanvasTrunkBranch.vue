@@ -78,7 +78,7 @@
 
             branchBoxStyle(): {} {
                 return {
-                    left: `${this.parent.trunkRelativeOffset}px`,
+                    transform: `translateX(${this.parent.trunkRelativeOffset}px)`,
                     'pointer-events': !this.parent.isChildrenVisible ? 'none' : null,
                     'opacity': !this.parent.isChildrenVisible && this.parent.isChildrenTransparent ? 0 : null
                 };

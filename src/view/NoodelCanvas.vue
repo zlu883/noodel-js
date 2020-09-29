@@ -243,7 +243,7 @@
     .nd-trunk {
         position: relative;
         height: 100%;
-        width: 999999999px !important;
+        width: 100%;
     }
 
     .nd-trunk-move {
