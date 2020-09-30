@@ -1,4 +1,4 @@
-import { ResizeSensor } from 'css-element-queries';
+import ResizeSensor from "css-element-queries/src/ResizeSensor";
 import NoodeOptions from './NoodeOptions';
 import ComponentContent from './ComponentContent';
 

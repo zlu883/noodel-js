@@ -32,7 +32,7 @@
 
 <script lang="ts">
 
-    import { ResizeSensor } from 'css-element-queries';
+    import ResizeSensor from "css-element-queries/src/ResizeSensor.js";
 
     import NoodeTransitionGroup from './NoodeTransitionGroup.vue';
 

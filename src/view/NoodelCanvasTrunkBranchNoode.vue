@@ -47,7 +47,7 @@
 
 <script lang="ts">
 
-    import { ResizeSensor } from "css-element-queries";
+    import ResizeSensor from "css-element-queries/src/ResizeSensor";
 
     import NoodeState from "../types/NoodeState";
     import { updateNoodeSize } from "../controllers/noodel-align";

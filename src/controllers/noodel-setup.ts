@@ -2,7 +2,7 @@ import NoodeDefinition from '../types/NoodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
 import NoodeState from '../types/NoodeState';
 import NoodelState from '../types/NoodelState';
-import { ResizeSensor } from 'css-element-queries';
+import ResizeSensor from "css-element-queries/src/ResizeSensor";
 import { showActiveSubtree } from './noodel-mutate';
 import { setupRouting, unsetRouting } from './noodel-routing';
 import NoodeOptions from '../types/NoodeOptions';
