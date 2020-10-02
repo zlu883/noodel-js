@@ -6,132 +6,23 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
     <meta name="description" content="User interface for responsive, dynamic content trees on the modern web">
-
     <link rel="icon" href="logo_v7_textless_512x512.svg">
-
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.min.css">
     <script src="https://cdn.jsdelivr.net/npm/noodel/dist/noodel-full.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/noodel-search/dist/noodel-search.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/prism.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/components/prism-typescript.min.js"></script>
-    <script
-        src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/plugins/normalize-whitespace/prism-normalize-whitespace.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/plugins/normalize-whitespace/prism-normalize-whitespace.min.js"></script>
+    <script src="index.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/themes/prism.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="./styles.css">
-
     <title>Noodel.js</title>
 </head>
 
 <body>
     <noscript>
-        <strong>We're sorry but Noodel doesn't work properly without JavaScript enabled. Please enable it to
-            continue.</strong>
+        <strong>We're sorry but Noodel doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
-
-    <script>
-        window.addEventListener("load", function() {
-            document.body.style.width = window.innerWidth + 'px';
-            document.body.style.height = window.innerHeight + 'px';
-            requestAnimationFrame(function () {
-                const noodel = new Noodel("#root", {
-                    retainDepthOnTapNavigation: true,
-                    swipeMultiplierTrunk: 0.9,
-                    swipeMultiplierBranch: 0.7,
-                    snapMultiplierTrunk: 0.8,
-                    onFocalNoodeChange: function(current) {
-                        const index = current.getIndex() + 1;
-                        const total = current.getParent().getChildCount();
-                        document.getElementById("noodeCount").textContent = index + " / " + total; 
-                    },
-                    onMount: function() {
-                        document.getElementById("noodeCount").classList.remove("hidden");
-
-                        const search = new NoodelSearch(noodel, "searchFocus");
-                        const searchInput = document.getElementById("searchInput");
-                        const searchButton = document.getElementById("searchButton");
-
-                        const resetSearch = function() {
-                            search.clear();
-                            document.getElementById("searchCount").classList.add("hidden");
-                            document.getElementById("searchIcon").classList.remove("hidden");
-                            document.getElementById("searchPrev").disabled = true;
-                            document.getElementById("searchNext").disabled = true;
-                        }
-                        const updateSearchCount = function() {
-                            if (search.getMarkCount() > 0) {
-                                document.getElementById("searchCount").textContent = search.getFocalMarkPosition().globalMarkIndex + 1 + " / " + search.getMarkCount();
-                            }
-                            else {
-                                document.getElementById("searchCount").textContent = "0 / 0";
-                            }
-                        }
-                        const executeSearch = function() {
-                            search.search(searchInput.value, {
-                                separateWordSearch: false
-                            }, function() {
-                                document.getElementById("searchCount").classList.remove("hidden");
-                                document.getElementById("searchIcon").classList.add("hidden");
-
-                                if (search.getMarkCount() > 1) {
-                                    document.getElementById("searchPrev").disabled = false;
-                                    document.getElementById("searchNext").disabled = false;
-                                }
-                                
-                                search.next();
-                                updateSearchCount();
-                            });
-                        }
-                        const toPrev = function() {
-                            search.prev();
-                            updateSearchCount();
-                        }
-                        const toNext = function() {
-                            search.next();
-                            updateSearchCount();
-                        }
-
-                        searchButton.classList.remove("hidden");
-                        searchButton.addEventListener("click", function(ev) {
-                            const searchBar = document.getElementById("searchBar");
-
-                            if (searchBar.classList.contains("hidden")) {
-                                searchBar.classList.remove("hidden");
-                                searchButton.firstElementChild.src = "x.svg";
-                                searchInput.focus()
-                                searchInput.select();
-                            }
-                            else {
-                                searchBar.classList.add("hidden");
-                                resetSearch();
-                                searchButton.firstElementChild.src = "search.svg";
-                            }
-                        });
-                        document.getElementById("searchBar").addEventListener("submit", function(ev) {
-                            ev.preventDefault();
-
-                            if (searchInput.value.length === 0) {
-                                resetSearch();
-                            }
-                            else {
-                                executeSearch();
-                            }
-                        });
-                        searchInput.addEventListener("input", function(ev) {
-                            resetSearch();
-                        });
-                        document.getElementById("searchPrev").addEventListener("click", toPrev);
-                        document.getElementById("searchNext").addEventListener("click", toNext);
-                    }
-                });
-                
-                noodel.mount("#root");
-            });
-        });
-        window.addEventListener("resize", function () {
-            document.body.style.width = window.innerWidth + 'px';
-            document.body.style.height = window.innerHeight + 'px';
-        });
-    </script>
     <div id="noodeCount" class="hidden"></div>
     <form id="searchBar" class="hidden">
         <input id="searchInput" type="text">
@@ -2332,6 +2223,33 @@
                             during noode insert/delete.
                         </p>
                     </div>
+                </div>
+            </div>
+            <div class="noode" data-class="menu-item">
+                <h3>Browser support</h3>
+                <div class="noode">
+                    <p>Noodel is targeted to work on all major modern browsers.</p>
+                    <p>Support for IE 10 and 11 is best-effort only - Noodel <i>should</i> work on these browsers, but there may be quirks and bugs in some features.</p>
+                    <p>IE 9 and below are not supported.</p>
+                </div>  
+            </div>
+            <div class="noode" data-class="menu-item">
+                <h3>Contribute</h3>
+                <div class="noode">
+                    <p>Contributions are most welcome! Please <b><a href="https://github.com/zlu883/noodel-js/blob/master/CONTRIBUTING.md">see here</a></b> for details.</p>
+                </div>
+            </div>
+            <div class="noode" data-class="menu-item">
+                <h3>Donate</h3>
+                <div class="noode">
+                    <p>If you find Noodel useful or inspiring, please consider supporting the author :)</p>
+                    <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+                        <input type="hidden" name="cmd" value="_s-xclick" />
+                        <input type="hidden" name="hosted_button_id" value="5YLHMEDSS3A6W" />
+                        <input type="image" src="https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif" border="0" name="submit" title="PayPal - The safer, easier way to pay online!" alt="Donate with PayPal button" />
+                        <img alt="" border="0" src="https://www.paypal.com/en_NZ/i/scr/pixel.gif" width="1" height="1" />
+                    </form>
+                    <p>Or via <b><a href="https://github.com/sponsors/zlu883">Github Sponsors</a></b></p>
                 </div>
             </div>
         </div>

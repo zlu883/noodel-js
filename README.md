@@ -8,7 +8,7 @@ Noodel is currently available as Noodel.js, an open source JavaScript library fo
 
 ## [Demo / documentation](https://js.noodel.io/)
 
-Noodel is self-explanatory: it uses itself to present its own docs ;)
+Noodel eats its own dog food: it uses itself to present its own docs ;)
 
 See the link above for everything you need to know!
 
@@ -20,11 +20,19 @@ See the link above for everything you need to know!
 
 ## Browser support
 
-Expected to work on IE >= 10 and all major modern browsers.
+Noodel is targeted to work on all major modern browsers.
+
+Support for IE 10 and 11 is best-effort only - Noodel *should* work on these browsers, but there may be quirks and bugs in some features.
+
+IE 9 and below are not supported.
 
 ## Contribution
 
-Please [see here](https://github.com/zlu883/noodel-js/blob/master/CONTRIBUTING.md) for details.
+Contributions are most welcome! Please [see here](https://github.com/zlu883/noodel-js/blob/master/CONTRIBUTING.md) for details.
+
+## Donate
+
+If you find Noodel useful or inspiring, please consider supporting the author via [Paypal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=5YLHMEDSS3A6W) or [Github Sponsors](https://github.com/sponsors/zlu883) :relaxed:
 
 ## License
 

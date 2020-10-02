@@ -1,22 +1,25 @@
 # Contribution Guide
-Hello there! First and foremost, thank you for your interest in Noodel. If you are also considering to contribute to this project, you are very much welcome! 
+Hello! First, thank you for your interest in Noodel. If you are also considering to contribute, you are most welcome! 
 
 ## How you can contribute
-At this stage, Noodel is a fresh new project that has just started. Many aspects of it are still works in progress. As such, this guideline is just a basic draft, to be ironed out in the days to come. 
+At this stage, Noodel is quite a new project, and many aspects of it are works in progress. As such, this guideline is just a draft, to be ironed out in the days to come. 
 
-This also means there are many things you can contribute to. Including but not limited to:
+This also means there are many things you can contribute. Including but not limited to:
 - Reporting bug and issues
 - Suggesting features and enhancements
-- Maintaining documentation
-- Creating example sites
+- Improving documentation
+- Making examples for showcasing features
+- Improving tests
 - Spreading the word
 
 ## Roadmap
 Some planned features/enhancements for the future include, but not limited to:
-- Add more tests
-- Options for layout orientation (right to left, top to bottom, etc...)
-- Options for positioning the focal noode
-- Integration with other frameworks like React
+- Add more tests (test coverage is quite bad at the moment...)
+- Options for layout orientation (right to left, top to bottom, etc)
+- Options for "docking" the trunk and branches to the edge of the canvas
+- Options for changing the focal position
+- Content overflow detection
+- Integration with other frameworks e.g. React
 
 ## Bug reports
 Please use Github issues for bug reports. As a general rule, please provide:
