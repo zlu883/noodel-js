@@ -16,9 +16,9 @@ export function updateBranchSize(noodel: NoodelState, parent: NoodeState) {
 
 export function alignTrunkOnBranchResize(noodel: NoodelState, parent: NoodeState, newSize: number, isInsert = false) {
     
-    let diff = newSize - parent.branchSize;
+    let diff = newSize - parent.childBranchSize;
     
-    parent.branchSize = newSize;
+    parent.childBranchSize = newSize;
 
     if (Math.abs(diff) > 0.01) {
         traverseDescendents(parent, desc => desc.trunkRelativeOffset += diff, false);
@@ -157,7 +157,7 @@ export function alignBranchBeforeNoodeDelete(noode: NoodeState) {
  */
 export function alignTrunkToBranch(noodel: NoodelState, branchParent: NoodeState) {
 
-    let targetOffset = (-branchParent.trunkRelativeOffset) - (branchParent.branchSize / 2);
+    let targetOffset = (-branchParent.trunkRelativeOffset) - (branchParent.childBranchSize / 2);
 
     // only apply transition effect if there's actual movement
     if (Math.abs(noodel.trunkOffset - targetOffset) >= 1) { 

@@ -83,7 +83,7 @@
                     transform = `translateX(${this.parent.trunkRelativeOffset}px)`;
                 }
                 else if (orientation === "rtl") {
-                    transform = `translateX(${-(this.parent.trunkRelativeOffset + this.parent.branchSize)}px)`;
+                    transform = `translateX(${-(this.parent.trunkRelativeOffset + this.parent.childBranchSize)}px)`;
                 }
 
                 return {

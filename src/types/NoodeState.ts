@@ -44,7 +44,7 @@ export default interface NoodeState {
     branchRelativeOffset: number;
 
     size: number;
-    branchSize: number;
+    childBranchSize: number;
 
     el?: Element;
     branchEl?: HTMLDivElement;

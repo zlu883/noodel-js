@@ -1,0 +1,1 @@
+export type Orientation = 'ltr' | 'rtl' | 'ttb' | 'btt';

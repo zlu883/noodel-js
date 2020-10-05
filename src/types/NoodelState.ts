@@ -15,18 +15,22 @@ export default interface NoodelState {
     focalParent: NoodeState;
     focalLevel: number;
     
+    /**
+     * This is the orientation-agnostic offset of the trunk counting from
+     * the *start* of the trunk axis. Does not take into account the focal position.
+     */
     trunkOffset: number;
     /**
-     * This is the expected offset if the trunk is aligned to the current focal branch.
+     * This is the expected trunk offset if the trunk is aligned to the current focal branch.
      */
     trunkOffsetAligned: number;
     applyTrunkMove: boolean;
     ignoreTransitionEnd?: boolean;
 
-    showTopLimit: boolean;
-    showBottomLimit: boolean;
-    showLeftLimit: boolean;
-    showRightLimit: boolean;
+    branchStartReached: boolean;
+    branchEndReached: boolean;
+    trunkStartReached: boolean;
+    trunkEndReached: boolean;
 
     limitIndicatorTimeout?: number;
 

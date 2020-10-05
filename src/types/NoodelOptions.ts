@@ -1,4 +1,6 @@
 import Noode from '../main/Noode';
+import { BranchDirection } from './BranchDirection';
+import { Orientation } from './Orientation';
 
 /**
  * Global options for a noodel.
@@ -89,7 +91,12 @@ export default interface NoodelOptions {
     /**
      * Determines the direction of the trunk axis. Defaults to ltr (left to right).
      */
-    orientation?: "ltr" | "rtl" | "ttb" | "btt";
+    orientation?: Orientation;
+    /**
+     * Determines the direction of the branch axis under the current trunk orientation.
+     * Defaults to "normal".
+     */
+    branchDirection?: BranchDirection;
     /**
      * Callback after the noodel has mounted (i.e. fully rendered onto the DOM) and properly aligned
      * after the first render. Changes to the view model from here onward

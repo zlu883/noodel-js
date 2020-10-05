@@ -25,10 +25,10 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         trunkOffsetAligned: 0,
         applyTrunkMove: false,
 
-        showTopLimit: false,
-        showBottomLimit: false,
-        showLeftLimit: false,
-        showRightLimit: false,
+        branchStartReached: false,
+        branchEndReached: false,
+        trunkStartReached: false,
+        trunkEndReached: false,
 
         panOffsetOriginTrunk: null,
         panOffsetOriginFocalBranch: null,
@@ -63,6 +63,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             onFocalNoodeChange: null,
             onFocalParentChange: null,
             orientation: "ltr",
+            branchDirection: "normal"
         },
         onHashChanged: null,
         lastPanTimestamp: null,
@@ -223,13 +224,13 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
         isFocalParent: isRoot, // only initialze root as focal parent
         isActive: isActive,
         size: 0,
-        trunkRelativeOffset: isRoot ? 0 : parent.trunkRelativeOffset + parent.branchSize,
+        trunkRelativeOffset: isRoot ? 0 : parent.trunkRelativeOffset + parent.childBranchSize,
         childBranchOffset: 0,
         childBranchOffsetAligned: 0,
         applyBranchMove: false,
         isInInspectMode: false,
         branchRelativeOffset: branchRelativeOffset,
-        branchSize: 0,
+        childBranchSize: 0,
         parent: parent,
         id: newId,
         children: [],

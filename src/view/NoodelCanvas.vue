@@ -6,28 +6,28 @@
 			<div
 				class="nd-limit nd-limit-left"
 				v-if="noodel.options.showLimitIndicators"
-				v-show="noodel.showLeftLimit"
+				v-show="noodel.trunkStartReached"
 			/>
 		</transition>
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-right"
 				v-if="noodel.options.showLimitIndicators"
-				v-show="noodel.showRightLimit"
+				v-show="noodel.trunkEndReached"
 			/>
 		</transition>
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-top"
 				v-if="noodel.options.showLimitIndicators"
-				v-show="noodel.showTopLimit"
+				v-show="noodel.branchStartReached"
 			/>
 		</transition>
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-bottom"
 				v-if="noodel.options.showLimitIndicators"
-				v-show="noodel.showBottomLimit"
+				v-show="noodel.branchEndReached"
 			/>
 		</transition>
 		<transition-group
@@ -120,7 +120,7 @@
 					noode.branchRelativeOffset = 0;
 					noode.isChildrenTransparent = true;
 					noode.size = 0;
-					noode.branchSize = 0;
+					noode.childBranchSize = 0;
 					noode.childBranchOffset = 0;
 					noode.childBranchOffsetAligned = 0;
 
