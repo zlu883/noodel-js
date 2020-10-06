@@ -27,3 +27,15 @@ document.getElementById("setBtt").addEventListener("click", () => {
         orientation: 'btt'
     })
 });
+
+document.getElementById("setNormal").addEventListener("click", () => {
+    noodel.setOptions({
+        branchDirection: 'normal'
+    })
+});
+
+document.getElementById("setReversed").addEventListener("click", () => {
+    noodel.setOptions({
+        branchDirection: 'reversed'
+    })
+});

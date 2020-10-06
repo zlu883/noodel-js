@@ -68,7 +68,7 @@ export default interface NoodelState {
 
     onHashChanged?: () => any;
 
-    isFirstRenderDone?: boolean;
+    isMounted?: boolean;
 
     lastPanTimestamp?: number;
     swipeVelocityBuffer?: number[];

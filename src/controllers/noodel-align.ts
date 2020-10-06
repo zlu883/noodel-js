@@ -3,6 +3,7 @@ import NoodelState from '../types/NoodelState';
 import { traverseDescendents } from './noodel-traverse';
 import Vue from 'vue';
 import { findCurrentBranchOffset, findCurrentTrunkOffset, forceReflow } from './noodel-animate';
+import { cancelPan } from './noodel-pan';
 
 export function updateNoodeSize(noodel: NoodelState, noode: NoodeState, newHeight: number, newWidth: number, isInsert = false) {
     let orientation = noodel.options.orientation;
@@ -59,7 +60,7 @@ export function updateNoodeSize(noodel: NoodelState, noode: NoodeState, newHeigh
                 });
             }
             else {
-                if (isInsert && noodel.isFirstRenderDone) {
+                if (isInsert && noodel.isMounted) {
                     parent.applyBranchMove = true;
                     parent.branchOffset += alignVal;
                 }
@@ -187,4 +188,43 @@ export function alignBranchToIndex(parent: NoodeState, index: number) {
     }
 
     parent.branchOffset = targetOffset;
+}
+
+/**
+ * Recapture the size of all noodes and branches and realign the trunk and all branches.
+ */
+export function realignAll(noodel: NoodelState) {
+
+    cancelPan(noodel);
+    noodel.applyTrunkMove = false;
+    noodel.trunkOffset = 0;
+
+    traverseDescendents(
+        noodel.root,
+        (noode) => {
+            noode.trunkRelativeOffset = 0;
+            noode.branchRelativeOffset = 0;
+            noode.size = 0;
+            noode.branchSize = 0;
+            noode.applyBranchMove = false;
+            noode.branchOffset = 0;
+        },
+        true
+    );
+
+    traverseDescendents(
+        noodel.root,
+        (noode) => {
+            if (noode.el) {
+                let rect = noode.el.getBoundingClientRect();
+                updateNoodeSize(noodel, noode, rect.height, rect.width);
+            }
+
+            if (noode.branchBoxEl) {
+                let rect = noode.branchBoxEl.getBoundingClientRect();
+                updateBranchSize(noodel, noode, rect.height, rect.width);
+            }
+        },
+        true
+    );
 }

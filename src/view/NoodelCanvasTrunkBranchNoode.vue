@@ -94,6 +94,8 @@
 
         beforeDestroy() {
             if (this.noode.resizeSensor) this.noode.resizeSensor.detach();
+            this.noode.resizeSensor = null;
+            this.noode.el = null;
             (this.$refs.noode as HTMLDivElement).style.overflow = 'hidden';
             (this.$refs.noode as HTMLDivElement).classList.remove('nd-noode-active');
         },

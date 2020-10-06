@@ -9,6 +9,7 @@ import NoodeOptions from '../types/NoodeOptions';
 import { generateNoodeId, registerNoodeSubtree, findNoodeViewState, isIdRegistered, findNoodeViewModel } from './id-register';
 import { alignNoodelOnJump } from './noodel-navigate';
 import { cancelPan } from './noodel-pan';
+import { realignAll } from './noodel-align';
 
 export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelState {
 
@@ -154,8 +155,12 @@ export function setupContainer(el: Element, noodel: NoodelState) {
 
 export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState) {
 
+    let oldOptions = {
+        ...noodel.options
+    }
+
     noodel.options = {
-        ...noodel.options,
+        ...oldOptions,
         ...options
     }
 
@@ -166,6 +171,16 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
     }
     else {
         unsetRouting(noodel);
+    }
+
+    if (noodel.isMounted) {
+        let oldOrientation = oldOptions.orientation;
+        let newOrientation = noodel.options.orientation;
+
+        if (((oldOrientation === 'ltr' || oldOrientation === 'rtl') && (newOrientation === 'ttb' || newOrientation === 'btt')) ||
+        ((oldOrientation === 'ttb' || oldOrientation === 'btt') && (newOrientation === 'ltr' || newOrientation === 'rtl'))) {
+            realignAll(noodel);
+        }
     }
 }
 

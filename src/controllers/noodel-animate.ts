@@ -21,6 +21,9 @@ export function forceReflow() {
  * of it being in transition.
  */
 export function findCurrentTrunkOffset(noodel: NoodelState): number {
+
+    if (!noodel.applyTrunkMove) return noodel.trunkOffset;
+
     let orientation = noodel.options.orientation;
     let canvasRect = noodel.canvasEl.getBoundingClientRect();
     let trunkRect = noodel.trunkEl.getBoundingClientRect();
@@ -44,6 +47,9 @@ export function findCurrentTrunkOffset(noodel: NoodelState): number {
  * of it being in transition.
  */
 export function findCurrentBranchOffset(noodel: NoodelState, parent: NoodeState): number {
+
+    if (!parent.applyBranchMove) return parent.branchOffset;
+
     let orientation = noodel.options.orientation;
     let branchDirection = noodel.options.branchDirection;
     let canvasRect = noodel.canvasEl.getBoundingClientRect();

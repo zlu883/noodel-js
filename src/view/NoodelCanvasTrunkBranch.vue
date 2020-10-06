@@ -72,6 +72,9 @@
 
         beforeDestroy() {
             if (this.parent.branchResizeSensor) this.parent.branchResizeSensor.detach();
+            this.parent.branchResizeSensor = null;
+            this.parent.branchEl = null;
+            this.parent.branchBoxEl = null;
         },
 
         computed: {
@@ -85,21 +88,25 @@
                     style['left'] = 0;
                     style['height'] = '100%';
                     style['transform'] = `translateX(${this.parent.trunkRelativeOffset}px)`;
+                    style['flex-direction'] = branchDirection === 'normal' ? 'column' : 'column-reverse';
                 }
                 else if (orientation === "rtl") {
                     style['right'] = 0;
                     style['height'] = '100%';
                     style['transform'] = `translateX(${-this.parent.trunkRelativeOffset}px)`;
+                    style['flex-direction'] = branchDirection === 'normal' ? 'column' : 'column-reverse';
                 }
                 else if (orientation === "ttb") {
                     style['top'] = 0;
                     style['width'] = '100%';
                     style['transform'] = `translateY(${this.parent.trunkRelativeOffset}px)`;
+                    style['flex-direction'] = branchDirection === 'normal' ? 'row' : 'row-reverse';
                 }
                 else if (orientation === "btt") {
                     style['bottom'] = 0;
                     style['width'] = '100%';
                     style['transform'] = `translateY(${-this.parent.trunkRelativeOffset}px)`;
+                    style['flex-direction'] = branchDirection === 'normal' ? 'row' : 'row-reverse';
                 }
 
                 style['pointer-events'] = !this.parent.isBranchVisible ? 'none' : null;
@@ -115,21 +122,17 @@
 
                 if (orientation === 'ltr' || orientation === 'rtl') {
                     if (branchDirection === 'normal') {
-                        style['top'] = 0;
                         style['transform'] = `translateY(${-this.parent.branchOffset + getFocalHeight(this.noodel)}px)`;
                     }
                     else if (branchDirection === 'reversed') {
-                        style['bottom'] = 0;
                         style['transform'] = `translateY(${this.parent.branchOffset - getFocalHeight(this.noodel)}px)`;
                     }
                 }
                 else if (orientation === "ttb" || orientation === 'btt') {
                     if (branchDirection === 'normal') {
-                        style['left'] = 0;
                         style['transform'] = `translateX(${-this.parent.branchOffset + getFocalWidth(this.noodel)}px)`;
                     }
                     else if (branchDirection === 'reversed') {
-                        style['right'] = 0;
                         style['transform'] = `translateX(${this.parent.branchOffset - getFocalWidth(this.noodel)}px)`;
                     }
                 }
@@ -184,6 +187,7 @@
     .nd-branch-box {
         position: absolute;
         box-sizing: border-box !important;
+        display: flex;
     }
 
     .nd-branch-box-enter, .nd-branch-box-leave-active {

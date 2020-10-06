@@ -6,28 +6,28 @@
 			<div
 				class="nd-limit nd-limit-left"
 				v-if="noodel.options.showLimitIndicators"
-				v-show="noodel.trunkStartReached"
+				v-show="showLeftLimit"
 			/>
 		</transition>
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-right"
 				v-if="noodel.options.showLimitIndicators"
-				v-show="noodel.trunkEndReached"
+				v-show="showRightLimit"
 			/>
 		</transition>
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-top"
 				v-if="noodel.options.showLimitIndicators"
-				v-show="noodel.branchStartReached"
+				v-show="showTopLimit"
 			/>
 		</transition>
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-bottom"
 				v-if="noodel.options.showLimitIndicators"
-				v-show="noodel.branchEndReached"
+				v-show="showBottomLimit"
 			/>
 		</transition>
 		<transition-group
@@ -91,7 +91,7 @@
 
 				requestAnimationFrame(() => {
 					this.$nextTick(() => {
-						this.noodel.isFirstRenderDone = true;
+						this.noodel.isMounted = true;
 
 						if (typeof this.noodel.options.onMount === "function") {
 							this.noodel.options.onMount();
@@ -105,7 +105,7 @@
 			this.noodel.trunkOffset = 0;
 			this.noodel.containerHeight = 0;
 			this.noodel.containerWidth = 0;
-			this.noodel.isFirstRenderDone = false;
+			this.noodel.isMounted = false;
 
 			delete this.noodel.canvasEl;
 			delete this.noodel.trunkEl;
@@ -131,6 +131,86 @@
 		},
 
 		computed: {
+			showLeftLimit(): boolean {
+				let orientation = this.noodel.options.orientation;
+				let branchDirection = this.noodel.options.branchDirection;
+
+				if (orientation === 'ltr') {
+					return this.noodel.trunkStartReached;
+				}
+				else if (orientation === 'rtl') {
+					return this.noodel.trunkEndReached;
+				}
+				else {
+					if (branchDirection === 'normal') {
+						return this.noodel.branchStartReached;
+					}
+					else {
+						return this.noodel.branchEndReached;
+					}
+				}
+			},
+
+			showRightLimit(): boolean {
+				let orientation = this.noodel.options.orientation;
+				let branchDirection = this.noodel.options.branchDirection;
+
+				if (orientation === 'ltr') {
+					return this.noodel.trunkEndReached;
+				}
+				else if (orientation === 'rtl') {
+					return this.noodel.trunkStartReached;
+				}
+				else {
+					if (branchDirection === 'normal') {
+						return this.noodel.branchEndReached;
+					}
+					else {
+						return this.noodel.branchStartReached;
+					}
+				}
+			},
+
+			showTopLimit(): boolean {
+				let orientation = this.noodel.options.orientation;
+				let branchDirection = this.noodel.options.branchDirection;
+
+				if (orientation === 'ttb') {
+					return this.noodel.trunkStartReached;
+				}
+				else if (orientation === 'btt') {
+					return this.noodel.trunkEndReached;
+				}
+				else {
+					if (branchDirection === 'normal') {
+						return this.noodel.branchStartReached;
+					}
+					else {
+						return this.noodel.branchEndReached;
+					}
+				}
+			},
+
+			showBottomLimit(): boolean {
+				let orientation = this.noodel.options.orientation;
+				let branchDirection = this.noodel.options.branchDirection;
+
+				if (orientation === 'ttb') {
+					return this.noodel.trunkEndReached;
+				}
+				else if (orientation === 'btt') {
+					return this.noodel.trunkStartReached;
+				}
+				else {
+					if (branchDirection === 'normal') {
+						return this.noodel.branchEndReached;
+					}
+					else {
+						return this.noodel.branchStartReached;
+					}
+				}
+			},
+
 			trunkStyle(): {} {
 				let orientation = this.noodel.options.orientation;
 				let transform: string = null;
