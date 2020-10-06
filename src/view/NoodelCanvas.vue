@@ -41,9 +41,7 @@
 		>
 			<NoodelCanvasTrunkBranch
 				v-for="parent in allBranchParents"
-				v-show="
-					parent.isChildrenVisible || parent.isChildrenTransparent
-				"
+				v-show="parent.isBranchVisible || parent.isBranchTransparent"
 				:key="parent.id"
 				:parent="parent"
 				:noodel="noodel"
@@ -57,7 +55,7 @@
 <script lang="ts">
 	import NoodelCanvasTrunkBranch from "./NoodelCanvasTrunkBranch.vue";
 
-	import { getFocalWidth } from "../controllers/getters";
+	import { getFocalHeight, getFocalWidth } from "../controllers/getters";
 	import { setupContainer } from "../controllers/noodel-setup";
 	import { setupCanvasInput } from "../controllers/input-binding";
 	import { traverseDescendents } from "../controllers/noodel-traverse";
@@ -105,7 +103,6 @@
 
 		destroyed: function () {
 			this.noodel.trunkOffset = 0;
-			this.noodel.trunkOffsetAligned = 0;
 			this.noodel.containerHeight = 0;
 			this.noodel.containerWidth = 0;
 			this.noodel.isFirstRenderDone = false;
@@ -118,11 +115,10 @@
 				(noode) => {
 					noode.trunkRelativeOffset = 0;
 					noode.branchRelativeOffset = 0;
-					noode.isChildrenTransparent = true;
+					noode.isBranchTransparent = true;
 					noode.size = 0;
-					noode.childBranchSize = 0;
-					noode.childBranchOffset = 0;
-					noode.childBranchOffsetAligned = 0;
+					noode.branchSize = 0;
+					noode.branchOffset = 0;
 
 					delete noode.branchEl;
 					delete noode.branchBoxEl;
@@ -137,17 +133,22 @@
 		computed: {
 			trunkStyle(): {} {
 				let orientation = this.noodel.options.orientation;
+				let transform: string = null;
 
 				if (orientation === "ltr") {
-					return {
-						transform: `translateX(${this.noodel.trunkOffset + getFocalWidth(this.noodel)}px)`,
-					};
+					transform = `translateX(${getFocalWidth(this.noodel) - this.noodel.trunkOffset}px)`;
                 }
                 else if (orientation === "rtl") {
-                    return {
-						transform: `translateX(${-this.noodel.trunkOffset + getFocalWidth(this.noodel)}px)`,
-					};
-                }
+					transform = `translateX(${-getFocalWidth(this.noodel) + this.noodel.trunkOffset}px)`;
+				}
+				else if (orientation === "ttb") {
+					transform = `translateY(${getFocalHeight(this.noodel) - this.noodel.trunkOffset}px)`;
+				}
+				else if (orientation === "btt") {
+					transform = `translateY(${-getFocalHeight(this.noodel) + this.noodel.trunkOffset}px)`;
+				}
+				
+				return { transform };
 			},
 
 			trunkClass(): {} {

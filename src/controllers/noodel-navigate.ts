@@ -127,7 +127,7 @@ export function alignNoodelOnJump(noodel: NoodelState, target: NoodeState) {
     // finds the nearest visible branch
     let nearestVisibleBranchParent = target.parent;
 
-    while (!nearestVisibleBranchParent.isChildrenVisible) {
+    while (!nearestVisibleBranchParent.isBranchVisible) {
         nearestVisibleBranchParent = nearestVisibleBranchParent.parent;
     }
 
@@ -149,7 +149,7 @@ export function alignNoodelOnJump(noodel: NoodelState, target: NoodeState) {
 
         // shows the intermediate branch that was not visible, should happen after alignBranch
         // to prevent triggering a transition that will be ignored by the browser
-        nextParent.isChildrenVisible = true;
+        nextParent.isBranchVisible = true;
 
         nextActiveChildIndex = nextParent.index;
         nextParent = nextParent.parent;

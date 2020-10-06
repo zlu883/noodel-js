@@ -191,7 +191,7 @@ function onTap(noodel: NoodelState, ev: HammerInput) {
         if (noodel.pointerUpSrcNoode) {
             let target = noodel.pointerUpSrcNoode;
 
-            if (noodel.options.retainDepthOnTapNavigation && !target.isChildrenVisible) {
+            if (noodel.options.retainDepthOnTapNavigation && !target.isBranchVisible) {
                 let levelDiff = getActiveChild(noodel.focalParent).level - target.level;
 
                 for (let i = 0; i < levelDiff; i++) {

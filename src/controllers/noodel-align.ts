@@ -1,73 +1,19 @@
 import NoodeState from '../types/NoodeState';
 import NoodelState from '../types/NoodelState';
 import { traverseDescendents } from './noodel-traverse';
-import { NoodelAxis } from '../types/NoodelAxis';
 import Vue from 'vue';
-import { forceReflow } from './noodel-animate';
-import { getFocalWidth, getFocalHeight } from './getters';
+import { findCurrentBranchOffset, findCurrentTrunkOffset, forceReflow } from './noodel-animate';
 
-export function updateNoodeSize(noodel: NoodelState, noode: NoodeState) {
-    alignBranchOnNoodeResize(noodel, noode, noode.el.getBoundingClientRect().height);
-}
+export function updateNoodeSize(noodel: NoodelState, noode: NoodeState, newHeight: number, newWidth: number, isInsert = false) {
+    let orientation = noodel.options.orientation;
+    let newSize = null;
 
-export function updateBranchSize(noodel: NoodelState, parent: NoodeState) {
-    alignTrunkOnBranchResize(noodel, parent, parent.branchBoxEl.getBoundingClientRect().width);
-}
-
-export function alignTrunkOnBranchResize(noodel: NoodelState, parent: NoodeState, newSize: number, isInsert = false) {
-    
-    let diff = newSize - parent.childBranchSize;
-    
-    parent.childBranchSize = newSize;
-
-    if (Math.abs(diff) > 0.01) {
-        traverseDescendents(parent, desc => desc.trunkRelativeOffset += diff, false);
-
-        let alignVal = 0;
-
-        if (parent.isFocalParent) {
-            alignVal = diff / 2;
-        }
-        else if (parent.isChildrenVisible && (parent.level + 1) < noodel.focalLevel) {
-            alignVal = diff; 
-        }
-
-        if (alignVal !== 0) {
-            if (noodel.panAxis === "trunk") {
-                noodel.panOffsetOriginTrunk -= alignVal;
-            }
-
-            // If trunk is in transition, cancel it temporarily and force an alignment.
-            // This does not apply to inserts as transitions can only happen during simultaneous child insert + navigation,
-            // and transition should be kept in this case
-            if (noodel.applyTrunkMove && !isInsert) {                
-                let currentOffset = noodel.trunkEl.getBoundingClientRect().left - noodel.canvasEl.getBoundingClientRect().left - getFocalWidth(noodel);
-                
-                // Find out the diff between transition target and current, for adding back later.
-                // Using diff rather than a fixed value prevents possible bugs with simultaneous resize of multiple branches.
-                let transitDiff = noodel.trunkOffset - currentOffset;
-
-                // set trunk to current exact position + alignment 
-                noodel.trunkOffset = currentOffset - alignVal;
-                noodel.applyTrunkMove = false;
-
-                // resume transition
-                Vue.nextTick(() => {
-                    forceReflow();
-                    noodel.trunkOffset += transitDiff;
-                    noodel.applyTrunkMove = true;
-                });
-            }
-            else {
-                noodel.trunkOffset -= alignVal;
-            }
-
-            noodel.trunkOffsetAligned -= alignVal;
-        }
+    if (orientation === 'ltr' || orientation === 'rtl') {
+        newSize = newHeight;
     }
-}
-
-export function alignBranchOnNoodeResize(noodel: NoodelState, noode: NoodeState, newSize: number, isInsert = false) {
+    else if (orientation === "ttb" || orientation === 'btt') {
+        newSize = newWidth;
+    }
 
     const parent = noode.parent;
     let diff = newSize - noode.size;
@@ -90,39 +36,97 @@ export function alignBranchOnNoodeResize(noodel: NoodelState, noode: NoodeState,
 
         if (alignVal !== 0) {
             if (noodel.panAxis === "branch" && parent.isFocalParent) {
-                noodel.panOffsetOriginFocalBranch -= alignVal;
+                noodel.panOriginBranch += alignVal;
             }
 
             // If branch is in transition, cancel it temporarily and force an alignment.
             // This does not apply to inserts as branch transition is needed for FLIP animation in transition groups
             if (parent.applyBranchMove && !isInsert) {
-                let currentOffset = parent.branchEl.getBoundingClientRect().top - noodel.canvasEl.getBoundingClientRect().top - getFocalHeight(noodel);
+                let currentOffset = findCurrentBranchOffset(noodel, parent);
                 
                 // Find out the diff between transition target and current, for adding back later.
                 // Using diff rather than a fixed value prevents possible bugs with simultaneous resize of multiple noodes.
-                let transitDiff = parent.childBranchOffset - currentOffset;
+                let transitDiff = parent.branchOffset - currentOffset;
 
                 // set branch to current exact position + alignment 
-                parent.childBranchOffset = currentOffset - alignVal;                
+                parent.branchOffset = currentOffset - alignVal;                
                 parent.applyBranchMove = false;
     
                 Vue.nextTick(() => {
                     forceReflow();
-                    parent.childBranchOffset += transitDiff;
+                    parent.branchOffset += transitDiff;
                     parent.applyBranchMove = true;
                 });
             }
             else {
                 if (isInsert && noodel.isFirstRenderDone) {
                     parent.applyBranchMove = true;
-                    parent.childBranchOffset -= alignVal;
+                    parent.branchOffset += alignVal;
                 }
                 else {
-                    parent.childBranchOffset -= alignVal;
+                    parent.branchOffset += alignVal;
                 }
             }
+        }
+    }
+}
 
-            parent.childBranchOffsetAligned -= alignVal;
+export function updateBranchSize(noodel: NoodelState, parent: NoodeState, newHeight: number, newWidth: number, isInsert = false) {
+    let orientation = noodel.options.orientation;
+    let newSize = null;
+
+    if (orientation === 'ltr' || orientation === 'rtl') {
+        newSize = newWidth;
+    }
+    else if (orientation === "ttb" || orientation === 'btt') {
+        newSize = newHeight;
+    }
+
+    let diff = newSize - parent.branchSize;
+
+    parent.branchSize = newSize;
+
+    if (Math.abs(diff) > 0.01) {
+        traverseDescendents(parent, desc => desc.trunkRelativeOffset += diff, false);
+
+        let alignVal = 0;
+
+        if (parent.isFocalParent) {
+            alignVal = diff / 2;
+        }
+        else if (parent.isBranchVisible && (parent.level + 1) < noodel.focalLevel) {
+            alignVal = diff; 
+        }
+
+        if (alignVal !== 0) {
+            if (noodel.panAxis === "trunk") {
+                noodel.panOriginTrunk += alignVal;
+            }
+
+            // If trunk is in transition, cancel it temporarily and force an alignment.
+            // This does not apply to inserts as transitions can only happen during simultaneous child insert + navigation,
+            // and transition should be kept in this case
+            if (noodel.applyTrunkMove && !isInsert) {                
+                let currentOffset = findCurrentTrunkOffset(noodel);
+                
+                // Find out the diff between transition target and current, for adding back later.
+                // Using diff rather than a fixed value prevents possible bugs with simultaneous resize of multiple branches.
+                let transitDiff = noodel.trunkOffset - currentOffset;
+
+                // set trunk to current exact position + alignment 
+                noodel.trunkOffset = currentOffset - alignVal;
+                noodel.applyTrunkMove = false;
+
+                // resume transition
+                Vue.nextTick(() => {
+                    forceReflow();
+                    noodel.trunkOffset += transitDiff;
+                    noodel.applyTrunkMove = true;
+                });
+            }
+            else {
+                noodel.trunkOffset += alignVal;
+            }
         }
     }
 }
@@ -142,13 +146,11 @@ export function alignBranchBeforeNoodeDelete(noode: NoodeState) {
 
     if (noode.index === parent.activeChildIndex) {
         parent.applyBranchMove = true;
-        parent.childBranchOffset += noode.size / 2;
-        parent.childBranchOffsetAligned += noode.size / 2;
+        parent.branchOffset -= noode.size / 2;
     }
     else if (noode.index < parent.activeChildIndex) {
         parent.applyBranchMove = true;
-        parent.childBranchOffset += noode.size;
-        parent.childBranchOffsetAligned += noode.size;
+        parent.branchOffset -= noode.size;
     }
 }
 
@@ -157,7 +159,7 @@ export function alignBranchBeforeNoodeDelete(noode: NoodeState) {
  */
 export function alignTrunkToBranch(noodel: NoodelState, branchParent: NoodeState) {
 
-    let targetOffset = (-branchParent.trunkRelativeOffset) - (branchParent.childBranchSize / 2);
+    let targetOffset = branchParent.trunkRelativeOffset + (branchParent.branchSize / 2);
 
     // only apply transition effect if there's actual movement
     if (Math.abs(noodel.trunkOffset - targetOffset) >= 1) { 
@@ -167,7 +169,6 @@ export function alignTrunkToBranch(noodel: NoodelState, branchParent: NoodeState
     }
 
     noodel.trunkOffset = targetOffset;
-    noodel.trunkOffsetAligned = targetOffset;
 }
 
 /**
@@ -175,15 +176,15 @@ export function alignTrunkToBranch(noodel: NoodelState, branchParent: NoodeState
  */
 export function alignBranchToIndex(parent: NoodeState, index: number) {
 
-    let targetOffset = (-parent.children[index].branchRelativeOffset) - (parent.children[index].size / 2);
+    let targetChild = parent.children[index];
+    let targetOffset = targetChild.branchRelativeOffset + (targetChild.size / 2);
 
     // only apply transition effect if there's actual movement and branch is visible
-    if (parent.isChildrenVisible && Math.abs(parent.childBranchOffset - targetOffset) >= 1) { 
+    if (parent.isBranchVisible && Math.abs(parent.branchOffset - targetOffset) >= 1) { 
         parent.applyBranchMove = true;
         parent.ignoreTransitionEnd = true;
         requestAnimationFrame(() => parent.ignoreTransitionEnd = false);
     }
 
-    parent.childBranchOffset = targetOffset;
-    parent.childBranchOffsetAligned = targetOffset;
+    parent.branchOffset = targetOffset;
 }

@@ -1,4 +1,4 @@
-import ResizeSensor from "css-element-queries/src/ResizeSensor";
+import ResizeSensor from "../util/ResizeSensor";
 import NoodeOptions from './NoodeOptions';
 import ComponentContent from './ComponentContent';
 
@@ -15,23 +15,23 @@ export default interface NoodeState {
 
     parent: NoodeState;
     /**
-     * Toggles visibility of children via display: none.
+     * Toggles visibility of child branch via display: none.
      */
-    isChildrenVisible: boolean;
+    isBranchVisible: boolean;
     /**
-     * If true, will hide children with opacity: 0 instead of display: none.
+     * If true, will hide child branch with opacity: 0 instead of display: none.
      * Used temporarily for setting up resize sensors.
      */
-    isChildrenTransparent: boolean;
+    isBranchTransparent: boolean;
     isFocalParent: boolean;
     isActive: boolean;
 
     trunkRelativeOffset: number;
-    childBranchOffset: number;
     /**
-     * This is the expected offset if a branch is aligned to its active index.
+     * This is the orientation-agnostic offset of this noode's child branch counting from
+     * the *start* of the branch axis. Does not take into account the focal position.
      */
-    childBranchOffsetAligned: number;
+    branchOffset: number;
     applyBranchMove: boolean;
     ignoreTransitionEnd?: boolean;
 
@@ -44,7 +44,7 @@ export default interface NoodeState {
     branchRelativeOffset: number;
 
     size: number;
-    childBranchSize: number;
+    branchSize: number;
 
     el?: Element;
     branchEl?: HTMLDivElement;

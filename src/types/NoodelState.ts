@@ -20,10 +20,6 @@ export default interface NoodelState {
      * the *start* of the trunk axis. Does not take into account the focal position.
      */
     trunkOffset: number;
-    /**
-     * This is the expected trunk offset if the trunk is aligned to the current focal branch.
-     */
-    trunkOffsetAligned: number;
     applyTrunkMove: boolean;
     ignoreTransitionEnd?: boolean;
 
@@ -37,11 +33,14 @@ export default interface NoodelState {
     /**
      * This is the offset of the trunk when panning begins.
      */
-    panOffsetOriginTrunk: number;
+    panOriginTrunk: number;
     /**
      * This is the offset of the focal branch when panning begins.
      */
-    panOffsetOriginFocalBranch: number;
+    panOriginBranch: number;
+    /**
+     * The current pan axis, if panning. Otherwise is null.
+     */
     panAxis: NoodelAxis;
 
     isShiftKeyPressed?: boolean;

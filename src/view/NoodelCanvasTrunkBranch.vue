@@ -32,11 +32,10 @@
 
 <script lang="ts">
 
-    import ResizeSensor from "css-element-queries/src/ResizeSensor.js";
-
+    import ResizeSensor from "../util/ResizeSensor";
     import NoodeTransitionGroup from './NoodeTransitionGroup.vue';
 
-    import { getFocalHeight } from '../controllers/getters';
+    import { getFocalHeight, getFocalWidth } from '../controllers/getters';
     import NoodeState from '../types/NoodeState';
     import NoodelState from '../types/NoodelState';
     import Vue, { PropType } from 'vue';
@@ -57,14 +56,16 @@
             this.parent.branchBoxEl = this.$el as HTMLDivElement;
             this.parent.branchEl = this.$refs.branch as HTMLDivElement;
 
-            updateBranchSize(this.noodel, this.parent);
+            let branchRect = this.parent.branchBoxEl.getBoundingClientRect();
+            
+            updateBranchSize(this.noodel, this.parent, branchRect.height, branchRect.width, true);
 
             let skipResizeDetection = typeof this.parent.options.skipBranchResizeDetection === 'boolean' ? 
                 this.parent.options.skipBranchResizeDetection : this.noodel.options.skipResizeDetection;
                 
             if (!skipResizeDetection) {
-                this.parent.branchResizeSensor = new ResizeSensor(this.parent.branchBoxEl, () => {
-                    updateBranchSize(this.noodel, this.parent);
+                this.parent.branchResizeSensor = new ResizeSensor(this.parent.branchBoxEl, (size) => {
+                    updateBranchSize(this.noodel, this.parent, size.height, size.width);
                 });
             };   
         },
@@ -77,26 +78,63 @@
 
             branchBoxStyle(): {} {
                 let orientation = this.noodel.options.orientation;
-                let transform;
+                let branchDirection = this.noodel.options.branchDirection;
+                let style = {};
 
                 if (orientation === 'ltr') {
-                    transform = `translateX(${this.parent.trunkRelativeOffset}px)`;
+                    style['left'] = 0;
+                    style['height'] = '100%';
+                    style['transform'] = `translateX(${this.parent.trunkRelativeOffset}px)`;
                 }
                 else if (orientation === "rtl") {
-                    transform = `translateX(${-(this.parent.trunkRelativeOffset + this.parent.childBranchSize)}px)`;
+                    style['right'] = 0;
+                    style['height'] = '100%';
+                    style['transform'] = `translateX(${-this.parent.trunkRelativeOffset}px)`;
+                }
+                else if (orientation === "ttb") {
+                    style['top'] = 0;
+                    style['width'] = '100%';
+                    style['transform'] = `translateY(${this.parent.trunkRelativeOffset}px)`;
+                }
+                else if (orientation === "btt") {
+                    style['bottom'] = 0;
+                    style['width'] = '100%';
+                    style['transform'] = `translateY(${-this.parent.trunkRelativeOffset}px)`;
                 }
 
-                return {
-                    transform: transform,
-                    'pointer-events': !this.parent.isChildrenVisible ? 'none' : null,
-                    'opacity': !this.parent.isChildrenVisible && this.parent.isChildrenTransparent ? 0 : null
-                };
+                style['pointer-events'] = !this.parent.isBranchVisible ? 'none' : null;
+                style['opacity'] = !this.parent.isBranchVisible && this.parent.isBranchTransparent ? 0 : null;
+
+                return style;
             },
 
             branchStyle(): {} {
-                return {
-                    transform: `translateY(${this.parent.childBranchOffset + getFocalHeight(this.noodel)}px)`
-                };
+                let orientation = this.noodel.options.orientation;
+                let branchDirection = this.noodel.options.branchDirection;
+                let style = {};
+
+                if (orientation === 'ltr' || orientation === 'rtl') {
+                    if (branchDirection === 'normal') {
+                        style['top'] = 0;
+                        style['transform'] = `translateY(${-this.parent.branchOffset + getFocalHeight(this.noodel)}px)`;
+                    }
+                    else if (branchDirection === 'reversed') {
+                        style['bottom'] = 0;
+                        style['transform'] = `translateY(${this.parent.branchOffset - getFocalHeight(this.noodel)}px)`;
+                    }
+                }
+                else if (orientation === "ttb" || orientation === 'btt') {
+                    if (branchDirection === 'normal') {
+                        style['left'] = 0;
+                        style['transform'] = `translateX(${-this.parent.branchOffset + getFocalWidth(this.noodel)}px)`;
+                    }
+                    else if (branchDirection === 'reversed') {
+                        style['right'] = 0;
+                        style['transform'] = `translateX(${this.parent.branchOffset - getFocalWidth(this.noodel)}px)`;
+                    }
+                }
+
+                return style;
             },
 
             branchBoxClass(): {} {
@@ -145,7 +183,6 @@
 
     .nd-branch-box {
         position: absolute;
-        height: 100%;
         box-sizing: border-box !important;
     }
 

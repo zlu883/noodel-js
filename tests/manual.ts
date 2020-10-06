@@ -14,4 +14,16 @@ document.getElementById("setLtr").addEventListener("click", () => {
     noodel.setOptions({
         orientation: 'ltr'
     })
-})
+});
+
+document.getElementById("setTtb").addEventListener("click", () => {
+    noodel.setOptions({
+        orientation: 'ttb'
+    })
+});
+
+document.getElementById("setBtt").addEventListener("click", () => {
+    noodel.setOptions({
+        orientation: 'btt'
+    })
+});

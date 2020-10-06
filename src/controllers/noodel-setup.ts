@@ -2,12 +2,13 @@ import NoodeDefinition from '../types/NoodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
 import NoodeState from '../types/NoodeState';
 import NoodelState from '../types/NoodelState';
-import ResizeSensor from "css-element-queries/src/ResizeSensor";
+import ResizeSensor from "../util/ResizeSensor";
 import { showActiveSubtree } from './noodel-mutate';
 import { setupRouting, unsetRouting } from './noodel-routing';
 import NoodeOptions from '../types/NoodeOptions';
 import { generateNoodeId, registerNoodeSubtree, findNoodeViewState, isIdRegistered, findNoodeViewModel } from './id-register';
-import { alignNoodelOnJump, cancelPan } from './noodel-navigate';
+import { alignNoodelOnJump } from './noodel-navigate';
+import { cancelPan } from './noodel-pan';
 
 export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelState {
 
@@ -22,7 +23,6 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         focalLevel: 1,
         
         trunkOffset: 0,
-        trunkOffsetAligned: 0,
         applyTrunkMove: false,
 
         branchStartReached: false,
@@ -30,8 +30,8 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         trunkStartReached: false,
         trunkEndReached: false,
 
-        panOffsetOriginTrunk: null,
-        panOffsetOriginFocalBranch: null,
+        panOriginTrunk: null,
+        panOriginBranch: null,
         panAxis: null,
         isInInspectMode: false,
 
@@ -219,18 +219,17 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
     let newView: NoodeState = {
         index: index,
         level: isRoot ? 0 : parent.level + 1,
-        isChildrenVisible: false,
-        isChildrenTransparent: true, // initialize to transparent state for capturing size
+        isBranchVisible: false,
+        isBranchTransparent: true, // initialize to transparent state for capturing size
         isFocalParent: isRoot, // only initialze root as focal parent
         isActive: isActive,
         size: 0,
-        trunkRelativeOffset: isRoot ? 0 : parent.trunkRelativeOffset + parent.childBranchSize,
-        childBranchOffset: 0,
-        childBranchOffsetAligned: 0,
+        trunkRelativeOffset: isRoot ? 0 : parent.trunkRelativeOffset + parent.branchSize,
+        branchOffset: 0,
         applyBranchMove: false,
         isInInspectMode: false,
         branchRelativeOffset: branchRelativeOffset,
-        childBranchSize: 0,
+        branchSize: 0,
         parent: parent,
         id: newId,
         children: [],

@@ -47,8 +47,7 @@
 
 <script lang="ts">
 
-    import ResizeSensor from "css-element-queries/src/ResizeSensor";
-
+    import ResizeSensor from "../util/ResizeSensor";
     import NoodeState from "../types/NoodeState";
     import { updateNoodeSize } from "../controllers/noodel-align";
     import NoodelState from '../types/NoodelState';
@@ -71,22 +70,24 @@
             // nextTick is required for vue's v-move effect to work
             Vue.nextTick(() => {
                 // do initial size capture
-                updateNoodeSize(this.noodel, this.noode);
+                let noodeRect = this.noode.el.getBoundingClientRect();
+                
+                updateNoodeSize(this.noodel, this.noode, noodeRect.height, noodeRect.width, true);
 
                 // setup resize sensor, first callback will run after Vue.nextTick
                 let skipResizeDetection = typeof this.noode.options.skipResizeDetection === 'boolean' ? 
                     this.noode.options.skipResizeDetection : this.noodel.options.skipResizeDetection;
                 
                 if (!skipResizeDetection) {
-                    this.noode.resizeSensor = new ResizeSensor(this.$el, () => {
-                        updateNoodeSize(this.noodel, this.noode);
+                    this.noode.resizeSensor = new ResizeSensor(this.$el, (size) => {
+                        updateNoodeSize(this.noodel, this.noode, size.height, size.width);
                     });
                 };
                 
                 // allows parent branch to fall back to display: none after first size update,
                 // using nextTick to wait for parent branch size capture to finish first
                 Vue.nextTick(() => {
-                    this.noode.parent.isChildrenTransparent = false;
+                    this.noode.parent.isBranchTransparent = false;
                 });
             });            
         },
@@ -149,7 +150,7 @@
             childIndicatorClass(): {} {
                 return {
                     'nd-child-indicator-active': this.noode.isActive,
-                    'nd-child-indicator-expanded': this.noode.isChildrenVisible
+                    'nd-child-indicator-expanded': this.noode.isBranchVisible
                 }
             }
         }

@@ -7,6 +7,7 @@
         tag="div"
         class="nd-branch-inner"
         :class="branchInnerClass"
+        :style="branchInnerStyle"
     >
         <NoodelCanvasTrunkBranchNoode
             v-for="child in parent.children"
@@ -48,6 +49,31 @@
                     'nd-branch-inner-focal': this.parent.isFocalParent
                 }
             },
+
+            branchInnerStyle(): {} {
+                let orientation = this.noodel.options.orientation;
+                let branchDirection = this.noodel.options.branchDirection;
+                let style = {};
+
+                if (orientation === 'ltr' || orientation === 'rtl') {
+                    if (branchDirection === 'normal') {
+                        style['flex-direction'] = 'column';
+                    }
+                    else if (branchDirection === 'reversed') {
+                        style['flex-direction'] = 'column-reverse';
+                    }
+                }
+                else if (orientation === "ttb" || orientation === 'btt') {
+                    if (branchDirection === 'normal') {
+                        style['flex-direction'] = 'row';
+                    }
+                    else if (branchDirection === 'reversed') {
+                        style['flex-direction'] = 'row-reverse';
+                    }
+                }
+
+                return style;
+            }
         },
 
     });
@@ -60,6 +86,7 @@
 
     .nd-branch-inner {
         position: relative;
+        display: flex;
     }
 
 </style>

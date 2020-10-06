@@ -1,6 +1,6 @@
 import NoodelState from '../types/NoodelState';
 import { getActiveChild } from './getters';
-import { cancelPan } from './noodel-navigate';
+import { cancelPan } from './noodel-pan';
 import { queueEnterInspectMode, queueExitInspectMode } from './event-emit';
 
 export function enterInspectMode(noodel: NoodelState) {

@@ -223,7 +223,7 @@ export default class Noode {
     isVisible(): boolean {
         this.throwErrorIfDeleted();
         if (this.isRoot()) return false;
-        return this._v.parent.isChildrenVisible;
+        return this._v.parent.isBranchVisible;
     }
 
     /**
@@ -232,7 +232,7 @@ export default class Noode {
      */
     isChildrenVisible(): boolean {
         this.throwErrorIfDeleted();
-        return this._v.isChildrenVisible;
+        return this._v.isBranchVisible;
     }
 
     /**
@@ -281,9 +281,12 @@ export default class Noode {
         this._v.content = content;
         
         Vue.nextTick(() => {
-            if (this._v.parent.isChildrenVisible) {
-                updateNoodeSize(this._nv, this._v);
-                updateBranchSize(this._nv, this._v.parent);
+            if (this._v.parent.isBranchVisible) {
+                let noodeRect = this._v.el.getBoundingClientRect();
+                let branchRect = this._v.parent.branchBoxEl.getBoundingClientRect();
+
+                updateNoodeSize(this._nv, this._v, noodeRect.height, noodeRect.width);
+                updateBranchSize(this._nv, this._v.parent, branchRect.height, branchRect.width);
             }
         });
     }
@@ -335,7 +338,7 @@ export default class Noode {
         if (this._v.isFocalParent) {
             shiftFocalNoode(this._nv, index - this._v.activeChildIndex);
         }
-        else if (this._v.isChildrenVisible && (this._v.level + 1) < this._nv.focalLevel) {
+        else if (this._v.isBranchVisible && (this._v.level + 1) < this._nv.focalLevel) {
             doJumpNavigation(this._nv, this._v.children[index]);
         }
         else {

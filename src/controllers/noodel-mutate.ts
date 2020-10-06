@@ -4,7 +4,7 @@ import { getActiveChild, isRoot } from './getters';
 import NoodelState from '../types/NoodelState';
 import { alignTrunkToBranch, alignBranchBeforeNoodeDelete } from './noodel-align';
 import { forceReflow } from './noodel-animate';
-import { cancelPan } from './noodel-navigate';
+import { cancelPan } from './noodel-pan';
 import { registerNoodeSubtree } from './id-register';
 import NoodeDefinition from '../types/NoodeDefinition';
 import { buildNoodeView } from './noodel-setup';
@@ -58,8 +58,8 @@ export function showActiveSubtree(noodel: NoodelState, origin: NoodeState, depth
     debounce(noodel, 'showActiveSubtree', () => {
         traverseActiveDescendents(origin, desc => {
             // check necessary to reduce Vue node patching
-            if (!desc.isChildrenVisible) {
-                desc.isChildrenVisible = true;
+            if (!desc.isBranchVisible) {
+                desc.isBranchVisible = true;
             }
         }, true, false, depth);
     }, debounceInterval)
@@ -68,8 +68,8 @@ export function showActiveSubtree(noodel: NoodelState, origin: NoodeState, depth
 export function hideActiveSubtree(origin: NoodeState, depth?: number) {
     traverseActiveDescendents(origin, desc => {
         // check necessary to reduce Vue node patching
-        if (desc.isChildrenVisible) {
-            desc.isChildrenVisible = false;
+        if (desc.isBranchVisible) {
+            desc.isBranchVisible = false;
         }
     }, true, false, depth);
 }
@@ -134,13 +134,13 @@ export function insertChildren(noodel: NoodelState, parent: NoodeState, index: n
         setActiveChild(noodel, parent, activeChildIndex);
     }
 
-    if (parent.isActive && (isRoot(parent) || parent.parent.isChildrenVisible)) {
+    if (parent.isActive && (isRoot(parent) || parent.parent.isBranchVisible)) {
         showActiveSubtree(noodel, noodel.focalParent, noodel.options.visibleSubtreeDepth);
     }
 
     // Allows resize sensors to be attached properly, preventing possible performance issue.
     // Will be toggled back off at noode mount.
-    parent.isChildrenTransparent = true;
+    parent.isBranchTransparent = true;
 
     handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
 
@@ -170,7 +170,7 @@ export function deleteChildren(noodel: NoodelState, parent: NoodeState, index: n
     if (parent.activeChildIndex >= index && parent.activeChildIndex < index + deleteCount) { 
 
         // align trunk to nearest parent branch if current focal branch is being deleted
-        if ((parent.level + 1) <= noodel.focalLevel && parent.isChildrenVisible) {
+        if ((parent.level + 1) <= noodel.focalLevel && parent.isBranchVisible) {
 
             if (noodel.panAxis === "trunk") {
                 cancelPan(noodel);
@@ -197,19 +197,17 @@ export function deleteChildren(noodel: NoodelState, parent: NoodeState, index: n
 
         if (parent.children.length === deleteCount) { // all children deleted
             setActiveChild(noodel, parent, null);
-            parent.isChildrenVisible = false;
+            parent.isBranchVisible = false;
         }
         else if (index + deleteCount < parent.children.length) { // siblings exist after the deleted children
             setActiveChild(noodel, parent, index + deleteCount); // set next sibling active
             showActiveSubtree(noodel, parent, noodel.options.visibleSubtreeDepth);            
-            parent.childBranchOffset -= getActiveChild(parent).size / 2;
-            parent.childBranchOffsetAligned -= getActiveChild(parent).size / 2;
+            parent.branchOffset -= getActiveChild(parent).size / 2;
         }
         else { // no siblings exist after deleted children
             setActiveChild(noodel, parent, index - 1); // set prev sibling active
             showActiveSubtree(noodel, parent, noodel.options.visibleSubtreeDepth);
-            parent.childBranchOffset += getActiveChild(parent).size / 2;
-            parent.childBranchOffsetAligned += getActiveChild(parent).size / 2;
+            parent.branchOffset += getActiveChild(parent).size / 2;
         }
     }
 
