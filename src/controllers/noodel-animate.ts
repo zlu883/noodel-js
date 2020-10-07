@@ -29,16 +29,16 @@ export function findCurrentTrunkOffset(noodel: NoodelState): number {
     let trunkRect = noodel.trunkEl.getBoundingClientRect();
 
     if (orientation === 'ltr') {
-        return trunkRect.left - canvasRect.left - getFocalWidth(noodel);
+        return getFocalWidth(noodel) - (trunkRect.left - canvasRect.left);
     }
     else if (orientation === 'rtl') {
-        return canvasRect.right - trunkRect.right - getFocalWidth(noodel);
+        return getFocalWidth(noodel) - (canvasRect.right - trunkRect.right);
     }
     else if (orientation === 'ttb') {
-        return trunkRect.top - canvasRect.top - getFocalHeight(noodel);
+        return getFocalHeight(noodel) - (trunkRect.top - canvasRect.top);
     }
     else if (orientation === 'btt') {
-        return canvasRect.bottom - trunkRect.bottom - getFocalHeight(noodel);
+        return getFocalHeight(noodel) - (canvasRect.bottom - trunkRect.bottom);
     }
 }
 
@@ -57,18 +57,18 @@ export function findCurrentBranchOffset(noodel: NoodelState, parent: NoodeState)
 
     if (orientation === 'ltr' || orientation === 'rtl') {
         if (branchDirection === 'normal') {
-            return focalBranchRect.top - canvasRect.top - getFocalHeight(noodel);
+            return getFocalHeight(noodel) - (focalBranchRect.top - canvasRect.top);
         }
         else if (branchDirection === 'reversed') {
-            return canvasRect.bottom - focalBranchRect.bottom - getFocalHeight(noodel);
+            return getFocalHeight(noodel) - (canvasRect.bottom - focalBranchRect.bottom);
         }
     }
     else if (orientation === 'ttb' || orientation === 'btt') {
         if (branchDirection === 'normal') {
-            return focalBranchRect.left - canvasRect.left - getFocalWidth(noodel);
+            return getFocalWidth(noodel) - (focalBranchRect.left - canvasRect.left);
         }
         else if (branchDirection === 'reversed') {
-            return canvasRect.right - focalBranchRect.right - getFocalWidth(noodel);
+            return getFocalWidth(noodel) - (canvasRect.right - focalBranchRect.right);
         }
     }
 }

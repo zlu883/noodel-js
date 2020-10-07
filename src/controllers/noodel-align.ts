@@ -208,23 +208,28 @@ export function realignAll(noodel: NoodelState) {
             noode.branchSize = 0;
             noode.applyBranchMove = false;
             noode.branchOffset = 0;
+            noode.isBranchTransparent = true;
         },
         true
     );
 
-    traverseDescendents(
-        noodel.root,
-        (noode) => {
-            if (noode.el) {
-                let rect = noode.el.getBoundingClientRect();
-                updateNoodeSize(noodel, noode, rect.height, rect.width);
-            }
+    Vue.nextTick(() => {
+        traverseDescendents(
+            noodel.root,
+            (noode) => {
+                if (noode.el) {
+                    let rect = noode.el.getBoundingClientRect();
+                    updateNoodeSize(noodel, noode, rect.height, rect.width);
+                }
+    
+                if (noode.branchBoxEl) {
+                    let rect = noode.branchBoxEl.getBoundingClientRect();
+                    updateBranchSize(noodel, noode, rect.height, rect.width);
+                }
 
-            if (noode.branchBoxEl) {
-                let rect = noode.branchBoxEl.getBoundingClientRect();
-                updateBranchSize(noodel, noode, rect.height, rect.width);
-            }
-        },
-        true
-    );
+                noode.isBranchTransparent = false;
+            },
+            true
+        );
+    });
 }

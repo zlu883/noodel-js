@@ -31,6 +31,31 @@ export function setupCanvasInput(el: HTMLDivElement, noodel: NoodelState) {
     noodel.hammerJsInstance = manager;
 }
 
+/**
+ * Trigger a noodel movement for the given real axis,
+ * which will be converted to noodel axis based on the 
+ * current orientation options.
+ */
+function moveNoodel(noodel: NoodelState, axis: Axis, diff: number) {
+    let orientation = noodel.options.orientation;
+	let branchDirection = noodel.options.branchDirection;
+
+    if ((orientation === 'ltr' && axis === 'x') || (orientation === 'ttb' && axis === 'y')) {
+        shiftFocalLevel(noodel, diff);
+    }
+    else if ((orientation === 'rtl' && axis === 'x') || (orientation === 'btt' && axis === 'y')) {
+        shiftFocalLevel(noodel, -diff);
+    }
+    else {
+        if (branchDirection === 'normal') {
+            shiftFocalNoode(noodel, diff);
+        }
+        else {
+            shiftFocalNoode(noodel, -diff);
+        }  
+    }
+}
+
 function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {   
     
     if (checkInputPreventClass(noodel, ev, 'nd-prevent-key')) return;
@@ -52,55 +77,55 @@ function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {
     if (noodel.isInInspectMode) return;
 
     if (ev.key === "ArrowDown") {
-        shiftFocalNoode(noodel, 1);
+        moveNoodel(noodel, 'y', 1);
     }
     else if (ev.key === "ArrowUp") {
-        shiftFocalNoode(noodel, -1);
+        moveNoodel(noodel, 'y', -1);
     }
     else if (ev.key === "ArrowLeft") {
-        shiftFocalLevel(noodel, -1);
+        moveNoodel(noodel, 'x', -1);
     }
     else if (ev.key === "ArrowRight") {
-        shiftFocalLevel(noodel, 1);
+        moveNoodel(noodel, 'x', 1);
     }
     else if (ev.key === " " || ev.key === "Spacebar") {
         if (noodel.isShiftKeyPressed) {
-            shiftFocalNoode(noodel, -3);
+            moveNoodel(noodel, 'x', 3);
         }
         else {
-            shiftFocalNoode(noodel, 3);
+            moveNoodel(noodel, 'y', 3);
         }
     }
     else if (ev.key === "PageDown") {
         if (noodel.isShiftKeyPressed) {
-            shiftFocalLevel(noodel, 3);
+            moveNoodel(noodel, 'x', 3);
         }
         else {
-            shiftFocalNoode(noodel, 3);
+            moveNoodel(noodel, 'y', 3);
         }
     }
     else if (ev.key === "PageUp") {
         if (noodel.isShiftKeyPressed) {
-            shiftFocalLevel(noodel, -3);
+            moveNoodel(noodel, 'x', -3);
         }
         else {
-            shiftFocalNoode(noodel, -3);
+            moveNoodel(noodel, 'y', -3);
         }
     }
     else if (ev.key === "Home") {
         if (noodel.isShiftKeyPressed) {
-            shiftFocalLevel(noodel, Number.MIN_SAFE_INTEGER);
+            moveNoodel(noodel, 'x', Number.MIN_SAFE_INTEGER);
         }
         else {
-            shiftFocalNoode(noodel, Number.MIN_SAFE_INTEGER);
+            moveNoodel(noodel, 'y', Number.MIN_SAFE_INTEGER);
         }
     }
     else if (ev.key === "End") {
         if (noodel.isShiftKeyPressed) {
-            shiftFocalLevel(noodel, Number.MAX_SAFE_INTEGER);
+            moveNoodel(noodel, 'x', Number.MAX_SAFE_INTEGER);
         }
         else {
-            shiftFocalNoode(noodel, Number.MAX_SAFE_INTEGER);
+            moveNoodel(noodel, 'y', Number.MAX_SAFE_INTEGER);
         }
     }
 }
@@ -120,36 +145,36 @@ function onWheel(noodel: NoodelState, ev: WheelEvent) {
     if (Math.abs(ev.deltaY) > Math.abs(ev.deltaX)) {
         if (noodel.isShiftKeyPressed) {
             if (ev.deltaY > 0) {
-                shiftFocalLevel(noodel, 1);
+                moveNoodel(noodel, 'x', 1);
             }
             else if (ev.deltaY < 0) {
-                shiftFocalLevel(noodel, -1);
+                moveNoodel(noodel, 'x', -1);
             }
         }
         else {
             if (ev.deltaY > 0) {
-                shiftFocalNoode(noodel, 1);
+                moveNoodel(noodel, 'y', 1);
             }
             else if (ev.deltaY < 0) {
-                shiftFocalNoode(noodel, -1);
+                moveNoodel(noodel, 'y', -1);
             }
         }      
     }
     else if (Math.abs(ev.deltaX) > Math.abs(ev.deltaY)) {
         if (noodel.isShiftKeyPressed) {
             if (ev.deltaY > 0) {
-                shiftFocalNoode(noodel, 1);
+                moveNoodel(noodel, 'y', 1);
             }
             else if (ev.deltaY < 0) {
-                shiftFocalNoode(noodel, -1);
+                moveNoodel(noodel, 'y', -1);
             }
         }
         else {
             if (ev.deltaX > 0) {
-                shiftFocalLevel(noodel, 1);
+                moveNoodel(noodel, 'x', 1);
             }
             else if (ev.deltaX < 0) {
-                shiftFocalLevel(noodel, -1);
+                moveNoodel(noodel, 'x', -1);
             }
         }      
     }
