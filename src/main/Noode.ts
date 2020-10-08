@@ -516,7 +516,7 @@ export default class Noode {
 
         if (this.isRoot()) return [];
 
-        if (this.getIndex() === this.getChildCount() - 1) return [];
+        if (this.getIndex() === this.getParent().getChildCount() - 1) return [];
 
         return this.getParent().removeChildren(this.getIndex() + 1, count);
     }

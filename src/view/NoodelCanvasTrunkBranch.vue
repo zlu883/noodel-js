@@ -3,6 +3,7 @@
 <template>
 
     <div
+        :id="parent.id"
         class="nd-branch-box"
         :class="branchBoxClass"
         :style="branchBoxStyle"
@@ -188,6 +189,10 @@
         position: absolute;
         box-sizing: border-box !important;
         display: flex;
+    }
+
+    .nd-branch-box-leave {
+        opacity: 1;
     }
 
     .nd-branch-box-enter, .nd-branch-box-leave-active {

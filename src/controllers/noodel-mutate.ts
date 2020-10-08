@@ -202,12 +202,12 @@ export function deleteChildren(noodel: NoodelState, parent: NoodeState, index: n
         else if (index + deleteCount < parent.children.length) { // siblings exist after the deleted children
             setActiveChild(noodel, parent, index + deleteCount); // set next sibling active
             showActiveSubtree(noodel, parent, noodel.options.visibleSubtreeDepth);            
-            parent.branchOffset -= getActiveChild(parent).size / 2;
+            parent.branchOffset += getActiveChild(parent).size / 2;
         }
         else { // no siblings exist after deleted children
             setActiveChild(noodel, parent, index - 1); // set prev sibling active
             showActiveSubtree(noodel, parent, noodel.options.visibleSubtreeDepth);
-            parent.branchOffset += getActiveChild(parent).size / 2;
+            parent.branchOffset -= getActiveChild(parent).size / 2;
         }
     }
 
@@ -223,6 +223,10 @@ export function deleteChildren(noodel: NoodelState, parent: NoodeState, index: n
 
     // do delete
     let deletedNoodes = parent.children.splice(index, deleteCount);
+
+    // add fading flag for noodes to be removed from a branch where the branch itself is not deleted
+    // this is used to determine which noodes need their positions adjusted for fade out
+    if (parent.children.length > 0) deletedNoodes.forEach(noode => noode["fade"] = true);
 
     // queue events
     handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));

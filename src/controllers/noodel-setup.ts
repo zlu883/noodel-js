@@ -10,6 +10,7 @@ import { generateNoodeId, registerNoodeSubtree, findNoodeViewState, isIdRegister
 import { alignNoodelOnJump } from './noodel-navigate';
 import { cancelPan } from './noodel-pan';
 import { realignAll } from './noodel-align';
+import { traverseDescendents } from './noodel-traverse';
 
 export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelState {
 
@@ -155,12 +156,11 @@ export function setupContainer(el: Element, noodel: NoodelState) {
 
 export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState) {
 
-    let oldOptions = {
-        ...noodel.options
-    }
+    let oldOrientation = noodel.options.orientation;
+    let oldBranchDirection = noodel.options.branchDirection;
 
     noodel.options = {
-        ...oldOptions,
+        ...noodel.options,
         ...options
     }
 
@@ -174,12 +174,17 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
     }
 
     if (noodel.isMounted) {
-        let oldOrientation = oldOptions.orientation;
         let newOrientation = noodel.options.orientation;
+        let newBranchDirection = noodel.options.branchDirection;
 
         if (((oldOrientation === 'ltr' || oldOrientation === 'rtl') && (newOrientation === 'ttb' || newOrientation === 'btt')) ||
         ((oldOrientation === 'ttb' || oldOrientation === 'btt') && (newOrientation === 'ltr' || newOrientation === 'rtl'))) {
             realignAll(noodel);
+        }
+        else if (newBranchDirection !== oldBranchDirection) {
+            // prevents transition going haywire, not necessary if orientation also changes since
+            // realignAll will do it
+            traverseDescendents(noodel.root, noode => noode.applyBranchMove = false, true);
         }
     }
 }
