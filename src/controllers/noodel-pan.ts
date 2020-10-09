@@ -138,7 +138,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
                 velocity = -velocityY;
                 delta = -deltaY;
             }
-            else if (branchDirection === 'reversed') {
+            else if (branchDirection === 'reverse') {
                 velocity = velocityY;
                 delta = deltaY;
             }           
@@ -148,7 +148,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
                 velocity = -velocityX;
                 delta = -deltaX;
             }
-            else if (branchDirection === 'reversed') {
+            else if (branchDirection === 'reverse') {
                 velocity = velocityX;
                 delta = deltaX;
             }     

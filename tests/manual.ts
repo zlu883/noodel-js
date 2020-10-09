@@ -36,7 +36,7 @@ document.getElementById("setNormal").addEventListener("click", () => {
 
 document.getElementById("setReversed").addEventListener("click", () => {
     noodel.setOptions({
-        branchDirection: 'reversed'
+        branchDirection: 'reverse'
     })
 });
 

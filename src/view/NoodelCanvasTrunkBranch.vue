@@ -125,7 +125,7 @@
                     if (branchDirection === 'normal') {
                         style['transform'] = `translateY(${-this.parent.branchOffset + getFocalHeight(this.noodel)}px)`;
                     }
-                    else if (branchDirection === 'reversed') {
+                    else if (branchDirection === 'reverse') {
                         style['transform'] = `translateY(${this.parent.branchOffset - getFocalHeight(this.noodel)}px)`;
                     }
                 }
@@ -133,7 +133,7 @@
                     if (branchDirection === 'normal') {
                         style['transform'] = `translateX(${-this.parent.branchOffset + getFocalWidth(this.noodel)}px)`;
                     }
-                    else if (branchDirection === 'reversed') {
+                    else if (branchDirection === 'reverse') {
                         style['transform'] = `translateX(${this.parent.branchOffset - getFocalWidth(this.noodel)}px)`;
                     }
                 }

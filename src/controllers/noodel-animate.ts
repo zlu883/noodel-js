@@ -59,7 +59,7 @@ export function findCurrentBranchOffset(noodel: NoodelState, parent: NoodeState)
         if (branchDirection === 'normal') {
             return getFocalHeight(noodel) - (focalBranchRect.top - canvasRect.top);
         }
-        else if (branchDirection === 'reversed') {
+        else if (branchDirection === 'reverse') {
             return getFocalHeight(noodel) - (canvasRect.bottom - focalBranchRect.bottom);
         }
     }
@@ -67,7 +67,7 @@ export function findCurrentBranchOffset(noodel: NoodelState, parent: NoodeState)
         if (branchDirection === 'normal') {
             return getFocalWidth(noodel) - (focalBranchRect.left - canvasRect.left);
         }
-        else if (branchDirection === 'reversed') {
+        else if (branchDirection === 'reverse') {
             return getFocalWidth(noodel) - (canvasRect.right - focalBranchRect.right);
         }
     }

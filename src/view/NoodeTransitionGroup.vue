@@ -59,7 +59,7 @@
                     if (branchDirection === 'normal') {
                         style['flex-direction'] = 'column';
                     }
-                    else if (branchDirection === 'reversed') {
+                    else if (branchDirection === 'reverse') {
                         style['flex-direction'] = 'column-reverse';
                     }
                 }
@@ -67,7 +67,7 @@
                     if (branchDirection === 'normal') {
                         style['flex-direction'] = 'row';
                     }
-                    else if (branchDirection === 'reversed') {
+                    else if (branchDirection === 'reverse') {
                         style['flex-direction'] = 'row-reverse';
                     }
                 }

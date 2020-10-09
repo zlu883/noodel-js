@@ -1,1 +1,1 @@
-export type BranchDirection = 'normal' | 'reversed';
+export type BranchDirection = 'normal' | 'reverse';
