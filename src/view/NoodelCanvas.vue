@@ -1,7 +1,13 @@
 <!--------------------------- TEMPLATE ----------------------------->
 
 <template>
-	<div class="nd-canvas" ref="canvas" tabindex="0" @dragstart="onDragStart">
+	<div 
+		class="nd-canvas"
+		:class="canvasClass"
+		ref="canvas" 
+		tabindex="0" 
+		@dragstart="onDragStart"
+	>
 		<transition name="nd-limit">
 			<div
 				class="nd-limit nd-limit-left"
@@ -131,6 +137,17 @@
 		},
 
 		computed: {
+			canvasClass(): {} {
+				let orientation = this.noodel.options.orientation;
+				let branchDirection = this.noodel.options.branchDirection;
+				let classes = {};
+
+				classes['nd-canvas-' + orientation] = true;
+				classes['nd-canvas-' + branchDirection] = true;
+				
+				return classes;
+			},
+
 			showLeftLimit(): boolean {
 				let orientation = this.noodel.options.orientation;
 				let branchDirection = this.noodel.options.branchDirection;
