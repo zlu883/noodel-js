@@ -189,6 +189,11 @@
         position: absolute;
         box-sizing: border-box !important;
         display: flex;
+        z-index: 1;
+    }
+
+    .nd-branch-box-focal {
+        z-index: 10;
     }
 
     .nd-branch-box-leave {
@@ -215,11 +220,6 @@
 
     .nd-branch {
         position: relative;
-        z-index: 1;
-    }
-
-    .nd-branch-focal {
-        z-index: 10;
     }
 
     .nd-branch-move {

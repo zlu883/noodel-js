@@ -5,7 +5,7 @@
 		<transition name="nd-inspect-backdrop">
 			<div
 				class="nd-inspect-backdrop"
-				:style="backdropStyle"
+                :style="backdropStyle"
 				v-if="noode.isInInspectMode"
 			></div>
 		</transition>
@@ -154,13 +154,8 @@
 
 			backdropStyle(): {} {
 				return {
-					left: "50%",
-					top: "50%",
-					width: `${this.noodel.containerWidth + 10}px`,
-					height: `${this.noodel.containerHeight + 10}px`,
-					transform: `translate(${-getFocalWidth(this.noodel) - 5}px, ${
-						-getFocalHeight(this.noodel) - 5
-					}px)`,
+					width: `${this.noodel.containerWidth * 10}px`,
+					height: `${this.noodel.containerHeight * 10}px`,
 				};
 			},
 
@@ -215,6 +210,9 @@
 
 	.nd-inspect-backdrop {
 		position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
 		z-index: 1;
 		background-color: rgba(0, 0, 0, 0.4);
 		cursor: auto;
