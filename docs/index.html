@@ -14,8 +14,7 @@
     <script src="https://cdn.jsdelivr.net/npm/noodel-search/dist/noodel-search.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/prism.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/components/prism-typescript.min.js"></script>
-    <script
-        src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/plugins/normalize-whitespace/prism-normalize-whitespace.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/plugins/normalize-whitespace/prism-normalize-whitespace.min.js"></script>
     <link href="https://cdn.jsdelivr.net/npm/prismjs@1.20.0/themes/prism.css" rel="stylesheet" />
     <link rel="stylesheet" type="text/css" href="./styles.css">
 
@@ -154,7 +153,7 @@
             <img src="logo_v7_textless_512x512.svg" class="logo" />
             <h1 class="title">Noodel.js</h1>
             <p>User interface for responsive, dynamic content trees on the modern web</p>
-            <span class="version">v2.2.1</span>
+            <span class="version">v2.3.0</span>
             <div class="link-container">
                 <a class="link" href="https://github.com/zlu883/noodel-js" target="_blank"><img src="./github.svg"
                         class="link-icon" /> GitHub</a>
@@ -418,12 +417,12 @@
                         <p>You can use Noodel by directly embedding its script and CSS into your HTML:</p>
                         <pre>
                         <code class="language-html">
-                            // You should specify the version number (e.g noodel@2.2.1) in production
+                            // You should specify the version number (e.g noodel@2.3.0) in production
                             &lt;script src="https://cdn.jsdelivr.net/npm/noodel/dist/noodel-full.umd.min.js"&gt;&lt;/script&gt;
                             &lt;link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/noodel/dist/noodel.css"&gt;
                         </code>
                     </pre>
-                        <p>Noodel is available via jsDelivr and unpkg.</p>
+                        <p>Noodel is available via npm-linked CDNs such as <a href="https://www.jsdelivr.com/">jsdelivr</a> and <a href="https://unpkg.com/">unpkg</a>.</p>
                         <div class="noode" data-id="note-on-builds">
                             <h3>A note on builds</h3>
                             <p>
@@ -1974,6 +1973,19 @@
                         </p>
                     </div>
                     <div class="noode">
+                        <b><code class="language-ts">orientation?: 'ltr' | 'rtl' | 'ttb' | 'btt'</code></b>
+                        <p>
+                            Determines the direction of the trunk axis. Defaults to 'ltr' (left to right).
+                        </p>
+                    </div>
+                    <div class="noode">
+                        <b><code class="language-ts">branchDirection?: 'normal' | 'reverse'</code></b>
+                        <p>
+                            Determines the direction of the branch axis under the current trunk orientation.
+                            Defaults to 'normal'.
+                        </p>
+                    </div>
+                    <div class="noode">
                         <b><code class="language-ts">onMount?: () => any | null</code></b>
                         <p>
                             Callback after the view has been mounted and properly aligned
@@ -2140,9 +2152,22 @@
                             Use this to style the canvas size and background.
                         </p>
                     </div>
+                    <div class="noode" data-id="nd-canvas">
+                        <b><code class="language-css">nd-canvas-ltr, nd-canvas-rtl, nd-canvas-ttb, nd-canvas-btt</code></b>
+                        <p>
+                            Class applied to the canvas element depending on the current trunk orientation.
+                            Use this with descendent combinators to style elements under a specific orientation.
+                        </p>
+                    </div>
+                    <div class="noode" data-id="nd-canvas">
+                        <b><code class="language-css">nd-canvas-normal, nd-canvas-reverse</code></b>
+                        <p>
+                            Class applied to the canvas element depending on the current branch direction.
+                            Use this with descendent combinators to style elements under a specific branch direction.
+                        </p>
+                    </div>
                     <div class="noode">
-                        <b><code
-                                class="language-css">nd-limit, nd-limit-left, nd-limit-right, nd-limit-top, nd-limit-bottom</code></b>
+                        <b><code class="language-css">nd-limit, nd-limit-left, nd-limit-right, nd-limit-top, nd-limit-bottom</code></b>
                         <p>
                             Classes applied to the limit indicators (the bars that come up when you reach the view
                             limits).

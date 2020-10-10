@@ -1,6 +1,6 @@
 {
     "name": "noodel",
-    "version": "2.2.1",
+    "version": "2.3.0",
     "license": "MIT",
     "scripts": {
         "test": "webpack-dev-server --env.test --open",
