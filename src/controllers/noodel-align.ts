@@ -50,7 +50,7 @@ export function updateNoodeSize(noodel: NoodelState, noode: NoodeState, newHeigh
                 let transitDiff = parent.branchOffset - currentOffset;
 
                 // set branch to current exact position + alignment 
-                parent.branchOffset = currentOffset - alignVal;                
+                parent.branchOffset = currentOffset + alignVal;                
                 parent.applyBranchMove = false;
     
                 Vue.nextTick(() => {
@@ -109,13 +109,11 @@ export function updateBranchSize(noodel: NoodelState, parent: NoodeState, newHei
             // and transition should be kept in this case
             if (noodel.applyTrunkMove && !isInsert) {                
                 let currentOffset = findCurrentTrunkOffset(noodel);
-                
                 // Find out the diff between transition target and current, for adding back later.
                 // Using diff rather than a fixed value prevents possible bugs with simultaneous resize of multiple branches.
                 let transitDiff = noodel.trunkOffset - currentOffset;
-
                 // set trunk to current exact position + alignment 
-                noodel.trunkOffset = currentOffset - alignVal;
+                noodel.trunkOffset = currentOffset + alignVal;
                 noodel.applyTrunkMove = false;
 
                 // resume transition

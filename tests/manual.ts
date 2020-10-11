@@ -60,3 +60,21 @@ document.getElementById("deleteActiveChild").addEventListener("click", () => {
     let c = noodel.getFocalNoode().getActiveChild();
     if (c) c.removeSelf();
 });
+
+document.getElementById("deleteMultipleBefore").addEventListener("click", () => {
+    noodel.getFocalNoode().removeBefore(3);
+});
+
+document.getElementById("deleteMultipleAfter").addEventListener("click", () => {
+    noodel.getFocalNoode().removeAfter(3);
+});
+
+// animation behaviour for deleting multiple items is slightly different depending on
+// whether the call is singular or broken down into multiple calls
+// due to the fact that branchRelativeOffset cannot be adjusted for deleted items
+document.getElementById("deleteMultipleChild").addEventListener("click", () => {
+    // let c = noodel.getFocalNoode().getActiveChild();
+    // c.removeAfter(2);
+    // if (c) c.removeSelf();
+    noodel.getFocalNoode().removeChildren(0, 3);
+});
