@@ -56,6 +56,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             useInspectModeKey: true,
             useInspectModeDoubleTap: true,
             skipResizeDetection: false,
+            useOverflowDetection: false,
             showLimitIndicators: true,
             showBranchBackdrops: false,
             showChildIndicators: true,
@@ -266,7 +267,11 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
             onChildrenExitFocus: null,
             onEnterFocus: null,
             onExitFocus: null,
-        }
+        },
+        hasOverflowTop: false,
+        hasOverflowLeft: false,
+        hasOverflowBottom: false,
+        hasOverflowRight: false
     }
 
     // temporarily use the view object as a holder for custom data, will be removed later

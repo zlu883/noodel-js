@@ -2,6 +2,8 @@ import NoodelState from '../types/NoodelState';
 import { getActiveChild } from './getters';
 import { cancelPan } from './noodel-pan';
 import { queueEnterInspectMode, queueExitInspectMode } from './event-emit';
+import { checkContentOverflow } from './noodel-align';
+import Vue from 'vue';
 
 export function enterInspectMode(noodel: NoodelState) {
     
@@ -15,6 +17,10 @@ export function enterInspectMode(noodel: NoodelState) {
     
     let focalNoode = getActiveChild(noodel.focalParent);
     
+    focalNoode.hasOverflowLeft = false;
+    focalNoode.hasOverflowRight = false;
+    focalNoode.hasOverflowTop = false;
+    focalNoode.hasOverflowBottom = false;
     focalNoode.isInInspectMode = true;
     noodel.isInInspectMode = true;
 
@@ -41,6 +47,7 @@ export function exitInspectMode(noodel: NoodelState) {
 
     let focalNoode = getActiveChild(noodel.focalParent);
     
+    Vue.nextTick(() => checkContentOverflow(noodel, focalNoode));
     focalNoode.isInInspectMode = false;
     noodel.isInInspectMode = false;
 

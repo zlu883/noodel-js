@@ -54,6 +54,7 @@ export default interface NoodelOptions {
      * Defaults to false.
      */
     skipResizeDetection?: boolean;
+    useOverflowDetection?: boolean;
     /**
      * Number of pixels to move for every pixel swiped in the branch axis. Defaults to 1.
      */

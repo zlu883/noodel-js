@@ -54,5 +54,10 @@ export default interface NoodeState {
     resizeSensor?: ResizeSensor;
     branchResizeSensor?: ResizeSensor;
 
+    hasOverflowTop: boolean;
+    hasOverflowLeft: boolean;
+    hasOverflowBottom: boolean;
+    hasOverflowRight: boolean;
+
     options?: NoodeOptions;
 }

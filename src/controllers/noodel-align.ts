@@ -215,8 +215,8 @@ export function realignAll(noodel: NoodelState) {
         traverseDescendents(
             noodel.root,
             (noode) => {
-                if (noode.el) {
-                    let rect = noode.el.getBoundingClientRect();
+                if (noode.boxEl) {
+                    let rect = noode.boxEl.getBoundingClientRect();
                     updateNoodeSize(noodel, noode, rect.height, rect.width);
                 }
     
@@ -230,4 +230,31 @@ export function realignAll(noodel: NoodelState) {
             true
         );
     });
+}
+
+export function checkContentOverflow(noodel: NoodelState, noode: NoodeState) {
+
+    if (!noodel.options.useOverflowDetection) return;
+    if (!(noode.parent.isBranchVisible || noode.parent.isBranchTransparent)) return;
+
+    let el = noode.el;
+    let clientHeight = el.clientHeight;
+    let clientWidth = el.clientWidth;
+    let scrollHeight = el.scrollHeight;
+    let scrollWidth = el.scrollWidth;
+    let scrollTop = el.scrollTop;
+    let scrollLeft = el.scrollLeft;
+    let direction = getComputedStyle(el).direction;
+
+    noode.hasOverflowTop = scrollHeight > clientHeight && scrollTop >= 1;
+    noode.hasOverflowBottom = scrollHeight > clientHeight && scrollTop + clientHeight <= scrollHeight - 1;
+
+    if (direction === 'ltr') {
+        noode.hasOverflowLeft = scrollWidth > clientWidth && scrollLeft >= 1;
+        noode.hasOverflowRight = scrollWidth > clientWidth && scrollLeft + clientWidth <= scrollWidth - 1;
+    }
+    else {
+        noode.hasOverflowLeft = scrollWidth > clientWidth && Math.abs(scrollLeft) + clientWidth <= scrollWidth - 1;
+        noode.hasOverflowRight = scrollWidth > clientWidth && scrollLeft <= -1;
+    }
 }

@@ -37,8 +37,24 @@
 				v-if="showChildIndicator"
 				class="nd-child-indicator"
 				:class="childIndicatorClass"
-			></div>
+			/>
 		</transition>
+		<div
+			v-if="noode.hasOverflowTop"
+			class="nd-overflow-indicator nd-overflow-indicator-top"
+		/>
+		<div
+			v-if="noode.hasOverflowLeft"
+			class="nd-overflow-indicator nd-overflow-indicator-left"
+		/>
+		<div
+			v-if="noode.hasOverflowBottom"
+			class="nd-overflow-indicator nd-overflow-indicator-bottom"
+		/>
+		<div
+			v-if="noode.hasOverflowRight"
+			class="nd-overflow-indicator nd-overflow-indicator-right"
+		/>
 	</div>
 </template>
 
@@ -47,7 +63,7 @@
 <script lang="ts">
 	import ResizeSensor from "../util/ResizeSensor";
 	import NoodeState from "../types/NoodeState";
-	import { updateNoodeSize } from "../controllers/noodel-align";
+	import { checkContentOverflow, updateNoodeSize } from "../controllers/noodel-align";
 	import NoodelState from "../types/NoodelState";
 	import { traverseAncestors } from "../controllers/noodel-traverse";
 	import { getPath, getFocalHeight, getFocalWidth } from "../controllers/getters";
@@ -78,20 +94,30 @@
 					true
 				);
 
-				// setup resize sensor, first callback will run after Vue.nextTick
+				checkContentOverflow(this.noodel, this.noode);
+
+				// setup resize sensor, first callback will run after mounting finish on root component
+				// i.e. isMounted will be true
 				let skipResizeDetection =
 					typeof this.noode.options.skipResizeDetection === "boolean"
 						? this.noode.options.skipResizeDetection
 						: this.noodel.options.skipResizeDetection;
 
 				if (!skipResizeDetection) {
+					let first = true;
 					this.noode.resizeSensor = new ResizeSensor(this.noode.boxEl, (size) => {
+						if (first) { // skips the first callback because size capture is already done
+							first = false;
+							return;
+						}
+
 						updateNoodeSize(
 							this.noodel,
 							this.noode,
 							size.height,
 							size.width
 						);
+						checkContentOverflow(this.noodel, this.noode);
 					});
 				}
 
@@ -324,5 +350,39 @@
 		transition-property: opacity;
 		transition-duration: 0.5s;
 		transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+	}
+
+	.nd-overflow-indicator {
+		position: absolute;
+		background-color: rgba(0, 0, 0, 0.4);
+		z-index: 50;
+	}
+
+	.nd-overflow-indicator-left {
+		left: 0;
+		top: 0;
+		width: 2em;
+		height: 100%;
+	}
+
+	.nd-overflow-indicator-right {
+		right: 0;
+		top: 0;
+		width: 2em;
+		height: 100%;
+	}
+
+	.nd-overflow-indicator-top {
+		left: 0;
+		top: 0;
+		height: 2em;
+		width: 100%;
+	}
+
+	.nd-overflow-indicator-bottom {
+		left: 0;
+		bottom: 0;
+		height: 2em;
+		width: 100%;
 	}
 </style>
