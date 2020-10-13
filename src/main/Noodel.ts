@@ -126,7 +126,7 @@ export default class Noodel {
      * Gets the container element of this noodel (i.e. nd-canvas), if mounted.
      */
     getEl(): HTMLDivElement {
-        return this._v.canvasEl as HTMLDivElement;
+        return this._v.canvasEl;
     }
 
     /**

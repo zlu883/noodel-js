@@ -46,7 +46,8 @@ export default interface NoodeState {
     size: number;
     branchSize: number;
 
-    el?: Element;
+    el?: HTMLDivElement;
+    boxEl?: HTMLDivElement;
     branchEl?: HTMLDivElement;
     branchBoxEl?: HTMLDivElement;
 

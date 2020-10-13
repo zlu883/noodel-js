@@ -102,7 +102,7 @@ export default class Noode {
      * or null otherwise.
      */
     getEl(): HTMLDivElement {
-        return this._v.el as HTMLDivElement || null;
+        return this._v.boxEl || null;
     }
 
     /**
@@ -110,7 +110,7 @@ export default class Noode {
      * (i.e. nd-branch-box) if it has children and is mounted, or null otherwise.
      */
     getChildBranchEl(): HTMLDivElement {
-        return this._v.branchBoxEl as HTMLDivElement || null;
+        return this._v.branchBoxEl || null;
     }
 
     /**
@@ -282,7 +282,7 @@ export default class Noode {
         
         Vue.nextTick(() => {
             if (this._v.parent.isBranchVisible) {
-                let noodeRect = this._v.el.getBoundingClientRect();
+                let noodeRect = this._v.boxEl.getBoundingClientRect();
                 let branchRect = this._v.parent.branchBoxEl.getBoundingClientRect();
 
                 updateNoodeSize(this._nv, this._v, noodeRect.height, noodeRect.width);

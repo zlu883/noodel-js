@@ -141,14 +141,14 @@ export function parseHTMLToNoode(el: Element): NoodeDefinition {
     };
 }
 
-export function setupContainer(el: Element, noodel: NoodelState) {
+export function setupCanvasEl(noodel: NoodelState) {
 
-    let rect = el.getBoundingClientRect();
+    let rect = noodel.canvasEl.getBoundingClientRect();
 
     noodel.containerWidth = rect.width;
     noodel.containerHeight = rect.height;
 
-    new ResizeSensor(el, (size) => {
+    new ResizeSensor(noodel.canvasEl, (size) => {
         noodel.containerWidth = size.width,
         noodel.containerHeight = size.height
     });

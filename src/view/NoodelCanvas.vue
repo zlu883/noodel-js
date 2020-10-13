@@ -4,7 +4,6 @@
 	<div 
 		class="nd-canvas"
 		:class="canvasClass"
-		ref="canvas" 
 		tabindex="0" 
 		@dragstart="onDragStart"
 	>
@@ -62,7 +61,7 @@
 	import NoodelCanvasTrunkBranch from "./NoodelCanvasTrunkBranch.vue";
 
 	import { getFocalHeight, getFocalWidth } from "../controllers/getters";
-	import { setupContainer } from "../controllers/noodel-setup";
+	import { setupCanvasEl } from "../controllers/noodel-setup";
 	import { setupCanvasInput } from "../controllers/input-binding";
 	import { traverseDescendents } from "../controllers/noodel-traverse";
 	import NoodelState from "../types/NoodelState";
@@ -83,10 +82,10 @@
 		},
 
 		mounted: function () {
-			setupContainer(this.$el, this.noodel);
-			setupCanvasInput(this.$el as HTMLDivElement, this.noodel);
-			this.noodel.trunkEl = (this.$refs.trunk as any).$el as Element;
-			this.noodel.canvasEl = this.$refs.canvas as Element;
+			this.noodel.canvasEl = this.$el as HTMLDivElement;
+			this.noodel.trunkEl = (this.$refs.trunk as any).$el as HTMLDivElement;
+			setupCanvasEl(this.noodel);
+			setupCanvasInput(this.noodel);
 
 			this.$nextTick(() => {
 				this.allBranchParents.forEach((parent) => {
@@ -129,6 +128,7 @@
 					delete noode.branchEl;
 					delete noode.branchBoxEl;
 					delete noode.el;
+					delete noode.boxEl;
 					delete noode.resizeSensor;
 					delete noode.branchResizeSensor;
 				},
@@ -275,7 +275,7 @@
 			onTransitionEnd(ev: TransitionEvent) {
 				if (
 					ev.propertyName === "transform" &&
-					ev.target === (this.$refs.trunk as any).$el
+					ev.target === this.noodel.trunkEl
 				) {
 					if (this.noodel.ignoreTransitionEnd) return;
 					this.noodel.applyTrunkMove = false;

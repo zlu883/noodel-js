@@ -62,12 +62,13 @@
 		},
 
 		mounted() {
-			this.noode.el = this.$el;
+			this.noode.boxEl = this.$el as HTMLDivElement;
+			this.noode.el = this.$refs.noode as HTMLDivElement;
 
 			// nextTick is required for vue's v-move effect to work
 			Vue.nextTick(() => {
 				// do initial size capture
-				let noodeRect = this.noode.el.getBoundingClientRect();
+				let noodeRect = this.noode.boxEl.getBoundingClientRect();
 
 				updateNoodeSize(
 					this.noodel,
@@ -84,7 +85,7 @@
 						: this.noodel.options.skipResizeDetection;
 
 				if (!skipResizeDetection) {
-					this.noode.resizeSensor = new ResizeSensor(this.$el, (size) => {
+					this.noode.resizeSensor = new ResizeSensor(this.noode.boxEl, (size) => {
 						updateNoodeSize(
 							this.noodel,
 							this.noode,
@@ -113,28 +114,29 @@
                 let branchDirection = this.noodel.options.branchDirection;
                 let offset = this.noode.branchRelativeOffset + "px";
 
-                (this.noode.el as HTMLDivElement).classList.remove("nd-noode-active");
+                this.noode.boxEl.classList.remove("nd-noode-active");
 
                 if (orientation === "ltr" || orientation === "rtl") {
-                    (this.noode.el as HTMLDivElement).style.width = "100%";
+                    this.noode.boxEl.style.width = "100%";
 
                     if (branchDirection === "normal") {
-                        (this.noode.el as HTMLDivElement).style.top = offset;
+                        this.noode.boxEl.style.top = offset;
                     } else {
-                        (this.noode.el as HTMLDivElement).style.bottom = offset;
+                        this.noode.boxEl.style.bottom = offset;
                     }
                 } else {
-                    (this.noode.el as HTMLDivElement).style.height = "100%";
+                    this.noode.boxEl.style.height = "100%";
 
                     if (branchDirection === "normal") {
-                        (this.noode.el as HTMLDivElement).style.left = offset;
+                        this.noode.boxEl.style.left = offset;
                     } else {
-                        (this.noode.el as HTMLDivElement).style.right = offset;
+                        this.noode.boxEl.style.right = offset;
                     }
                 }
             }
 			
 			this.noode.el = null;
+			this.noode.boxEl = null;
 		},
 
 		methods: {

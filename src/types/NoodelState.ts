@@ -57,8 +57,8 @@ export default interface NoodelState {
     isInInspectMode: boolean;
 
     // references to DOM elements mainly for calculating positions
-    canvasEl?: Element;
-    trunkEl?: Element;
+    canvasEl?: HTMLDivElement;
+    trunkEl?: HTMLDivElement;
     
     hammerJsInstance?: HammerManager;
 

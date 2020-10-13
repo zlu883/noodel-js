@@ -7,7 +7,9 @@ import { throttle } from './throttle';
 import { getActiveChild } from './getters';
 import { Axis } from 'src/types/Axis';
 
-export function setupCanvasInput(el: HTMLDivElement, noodel: NoodelState) {
+export function setupCanvasInput(noodel: NoodelState) {
+
+    let el = noodel.canvasEl;
 
     el.addEventListener('keydown', (ev: KeyboardEvent) => throttle(noodel, 'keydown', () => onKeyDown(noodel, ev), 60));
     el.addEventListener('keyup', (ev: KeyboardEvent) => onKeyUp(noodel, ev));
