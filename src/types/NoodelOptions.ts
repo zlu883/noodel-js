@@ -54,6 +54,12 @@ export default interface NoodelOptions {
      * Defaults to false.
      */
     skipResizeDetection?: boolean;
+    /**
+     * Global option for enabling overflow detection on ALL noodes. When enabled, 
+     * will automatically check for content overflow on mount, noode resize
+     * (if resize detection is enabled), and when exiting inspect mode.
+     * Defaults to false.
+     */
     useOverflowDetection?: boolean;
     /**
      * Number of pixels to move for every pixel swiped in the branch axis. Defaults to 1.
@@ -85,6 +91,11 @@ export default interface NoodelOptions {
      * Whether to render the child indicators of noodes. Defaults to true.
      */
     showChildIndicators?: boolean;
+    /**
+     * Whether to show noode overflow indicators if overflow is detected. Defaults
+     * to false.
+     */
+    showOverflowIndicators?: boolean;
     /**
      * Whether to render the branch backdrop elements. Defaults to false.
      */

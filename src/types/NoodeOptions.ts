@@ -16,10 +16,20 @@ export default interface NoodeOptions {
      */
     skipBranchResizeDetection?: boolean | null;
     /**
+     * If set to a boolean, will override the global useOverflowDetection for this
+     * specific noode. Defaults to null.
+     */
+    useOverflowDetection?: boolean | null;
+    /**
      * If set to a boolean, will override the global showChildIndicators option for
      * this specific noode. Defaults to null.
      */
     showChildIndicator?: boolean | null;
+    /**
+     * If set to a boolean, will override showOverflowIndicators in the global options
+     * for this specific noode. Defaults to null.
+     */
+    showOverflowIndicators?: boolean | null;
     /**
      * If set to a boolean, will override the global showBranchBackdrops option for
      * the child branch of this specific noode. Defaults to null.

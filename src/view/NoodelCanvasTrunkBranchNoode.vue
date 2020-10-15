@@ -39,22 +39,30 @@
 				:class="childIndicatorClass"
 			/>
 		</transition>
-		<div
-			v-if="noode.hasOverflowTop"
-			class="nd-overflow-indicator nd-overflow-indicator-top"
-		/>
-		<div
-			v-if="noode.hasOverflowLeft"
-			class="nd-overflow-indicator nd-overflow-indicator-left"
-		/>
-		<div
-			v-if="noode.hasOverflowBottom"
-			class="nd-overflow-indicator nd-overflow-indicator-bottom"
-		/>
-		<div
-			v-if="noode.hasOverflowRight"
-			class="nd-overflow-indicator nd-overflow-indicator-right"
-		/>
+		<transition name="nd-overflow-indicator">
+			<div
+				v-if="showOverflowIndicators && noode.hasOverflowTop"
+				class="nd-overflow-indicator nd-overflow-indicator-top"
+			/>
+		</transition>
+		<transition name="nd-overflow-indicator">
+			<div
+				v-if="showOverflowIndicators && noode.hasOverflowLeft"
+				class="nd-overflow-indicator nd-overflow-indicator-left"
+			/>
+		</transition>
+		<transition name="nd-overflow-indicator">
+			<div
+				v-if="showOverflowIndicators && noode.hasOverflowBottom"
+				class="nd-overflow-indicator nd-overflow-indicator-bottom"
+			/>
+		</transition>
+		<transition name="nd-overflow-indicator">
+			<div
+				v-if="showOverflowIndicators && noode.hasOverflowRight"
+				class="nd-overflow-indicator nd-overflow-indicator-right"
+			/>
+		</transition>		
 	</div>
 </template>
 
@@ -201,7 +209,7 @@
 				return this.noode.style;
 			},
 
-			showChildIndicator(): {} {
+			showChildIndicator(): boolean {
 				let showOption =
 					typeof this.noode.options.showChildIndicator === "boolean"
 						? this.noode.options.showChildIndicator
@@ -216,6 +224,12 @@
 					"nd-child-indicator-expanded": this.noode.isBranchVisible,
 				};
 			},
+
+			showOverflowIndicators(): boolean {
+				return typeof this.noode.options.showOverflowIndicators === "boolean"
+					? this.noode.options.showOverflowIndicators
+					: this.noodel.options.showOverflowIndicators;
+			}
 		},
 	});
 </script>
@@ -354,35 +368,6 @@
 
 	.nd-overflow-indicator {
 		position: absolute;
-		background-color: rgba(0, 0, 0, 0.4);
 		z-index: 50;
-	}
-
-	.nd-overflow-indicator-left {
-		left: 0;
-		top: 0;
-		width: 2em;
-		height: 100%;
-	}
-
-	.nd-overflow-indicator-right {
-		right: 0;
-		top: 0;
-		width: 2em;
-		height: 100%;
-	}
-
-	.nd-overflow-indicator-top {
-		left: 0;
-		top: 0;
-		height: 2em;
-		width: 100%;
-	}
-
-	.nd-overflow-indicator-bottom {
-		left: 0;
-		bottom: 0;
-		height: 2em;
-		width: 100%;
 	}
 </style>

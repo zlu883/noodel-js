@@ -9,7 +9,7 @@ import NoodeOptions from '../types/NoodeOptions';
 import { generateNoodeId, registerNoodeSubtree, findNoodeViewState, isIdRegistered, findNoodeViewModel } from './id-register';
 import { alignNoodelOnJump } from './noodel-navigate';
 import { cancelPan } from './noodel-pan';
-import { realignAll } from './noodel-align';
+import { resetAlignment } from './noodel-align';
 import { traverseDescendents } from './noodel-traverse';
 
 export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelState {
@@ -180,7 +180,7 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
 
         if (((oldOrientation === 'ltr' || oldOrientation === 'rtl') && (newOrientation === 'ttb' || newOrientation === 'btt')) ||
         ((oldOrientation === 'ttb' || oldOrientation === 'btt') && (newOrientation === 'ltr' || newOrientation === 'rtl'))) {
-            realignAll(noodel);
+            resetAlignment(noodel);
         }
         else if (newBranchDirection !== oldBranchDirection) {
             // prevents transition going haywire, not necessary if orientation also changes since

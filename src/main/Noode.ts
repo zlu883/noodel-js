@@ -3,7 +3,7 @@ import NoodeDefinition from '../types/NoodeDefinition';
 import { setActiveChild as _setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
 import { extractNoodeDefinition, parseAndApplyNoodeOptions, parseClassName, parseStyle } from '../controllers/noodel-setup';
 import { getPath as _getPath } from '../controllers/getters';
-import { alignBranchToIndex, updateNoodeSize, updateBranchSize } from '../controllers/noodel-align';
+import { alignBranchToIndex, updateNoodeSize, updateBranchSize, checkContentOverflow } from '../controllers/noodel-align';
 import { shiftFocalNoode, doJumpNavigation } from '../controllers/noodel-navigate';
 import NoodelState from '../types/NoodelState';
 import { findNoodeViewModel, changeNoodeId, unregisterNoodeSubtree } from '../controllers/id-register';
@@ -258,6 +258,20 @@ export default class Noode {
     isFocalNoode(): boolean {
         this.throwErrorIfDeleted();
         return this.isActive() && this.isInFocalBranch();
+    }
+
+    /**
+     * Returns an object that specifies whether this noode has
+     * content overflow in each of the 4 directions. Only valid
+     * if overflow is detected/manually checked before hand.
+     */
+    hasOverflow(): {top: boolean, bottom: boolean, left: boolean, right: boolean} {
+        return {
+            top: this._v.hasOverflowTop,
+            bottom: this._v.hasOverflowBottom,
+            left: this._v.hasOverflowLeft,
+            right: this._v.hasOverflowRight
+        }
     }
 
     // MUTATERS
@@ -546,5 +560,65 @@ export default class Noode {
         traverseDescendents(this._v, desc => {
             func(findNoodeViewModel(this._nv, desc.id));
         }, includeSelf);
+    }
+
+    // ALIGNMENT
+    
+    /**
+     * Asynchronous method to capture the length of this noode (on the branch axis) and adjust 
+     * the branch's position if necessary. Use when resize detection is disabled to manually
+     * trigger realignment on noode resize. Fails silently if this is root or noodel is not mounted.
+     */
+    realign() {
+        this.throwErrorIfDeleted();
+        if (!this._nv.isMounted) return;
+        if (this.isRoot()) return;
+
+        this._v.parent.isBranchTransparent = true;
+
+        Vue.nextTick(() => {
+            let rect = this._v.boxEl.getBoundingClientRect();
+            
+            updateNoodeSize(this._nv, this._v, rect.height, rect.width);
+            this._v.parent.isBranchTransparent = false;
+        });
+    }
+
+    /**
+     * Asynchronous method to capture the length of this noode's child branch (on the trunk axis) and adjust 
+     * the trunk's position if necessary. Use when resize detection is disabled to manually
+     * trigger realignment on branch resize. Fails silently if this has no children or noodel is not mounted.
+     */
+    realignBranch() {
+        this.throwErrorIfDeleted();
+        if (!this._nv.isMounted) return;
+        if (this.getChildCount() === 0) return;
+
+        this._v.isBranchTransparent = true;
+
+        Vue.nextTick(() => {
+            let rect = this._v.branchBoxEl.getBoundingClientRect();
+
+            updateBranchSize(this._nv, this._v, rect.height, rect.width);
+            this._v.isBranchTransparent = false;
+        });
+    }
+
+    /**
+     * Asynchronous method to manually check for content overflow in this noode. Use when
+     * overflow detection is disabled or insufficient (e.g. when content size changed
+     * but did not affect noode size). Fails silently if this is root or noodel is not mounted.
+     */
+    checkOverflow() {
+        this.throwErrorIfDeleted();
+        if (!this._nv.isMounted) return;
+        if (this.isRoot()) return;
+
+        this._v.parent.isBranchTransparent = true;
+        
+        Vue.nextTick(() => {
+            checkContentOverflow(this._nv, this._v);
+            this._v.parent.isBranchTransparent = false;
+        });
     }
 }

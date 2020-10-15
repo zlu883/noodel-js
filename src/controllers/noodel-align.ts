@@ -190,8 +190,9 @@ export function alignBranchToIndex(parent: NoodeState, index: number) {
 
 /**
  * Recapture the size of all noodes and branches and realign the trunk and all branches.
+ * This method is used to reset various values if the noodel changed its orientation.
  */
-export function realignAll(noodel: NoodelState) {
+export function resetAlignment(noodel: NoodelState) {
 
     cancelPan(noodel);
     noodel.applyTrunkMove = false;
@@ -234,7 +235,12 @@ export function realignAll(noodel: NoodelState) {
 
 export function checkContentOverflow(noodel: NoodelState, noode: NoodeState) {
 
-    if (!noodel.options.useOverflowDetection) return;
+    if (!(typeof noode.options.showOverflowIndicators === "boolean"
+    ? noode.options.showOverflowIndicators
+    : noodel.options.showOverflowIndicators)) {
+        return;
+    }
+    
     if (!(noode.parent.isBranchVisible || noode.parent.isBranchTransparent)) return;
 
     let el = noode.el;
