@@ -15,7 +15,6 @@ This also means there are many things you can contribute. Including but not limi
 ## Roadmap
 Some planned features/enhancements for the future include, but not limited to:
 - Add more tests (test coverage is quite bad at the moment...)
-- Options for layout orientation (right to left, top to bottom, etc)
 - Options for "docking" the trunk and branches to the edge of the canvas
 - Options for changing the focal position
 - Content overflow detection
@@ -48,7 +47,7 @@ You can then use either:
 
 ## Pull requests
 Pull requests are welcome. Please:
-- Make your pull request against the `dev` branch
+- Make your pull request against the `master` branch
 - Provide a clear description of what you did
 - Make a reference to any Github issue(s) you are addressing
 
