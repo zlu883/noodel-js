@@ -105,7 +105,7 @@ export function parseHTMLToNoode(el: Element): NoodeDefinition {
     let id = el.getAttribute('data-id');
     let className = el.getAttribute('data-class');
     let style = el.getAttribute('data-style');
-    let activeChildIndex = 0;
+    let isActive = el.hasAttribute('data-active');
     let content = '';
     let noodeCount = 0;
     let children: NoodeDefinition[] = [];
@@ -119,11 +119,6 @@ export function parseHTMLToNoode(el: Element): NoodeDefinition {
         else if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.nodeName === "DIV" && (node as Element).className.split(' ').some(c => c === 'noode')) {
                 noodeCount++;
-
-                if ((node as Element).hasAttribute('data-active')) {
-                    activeChildIndex = noodeCount - 1;
-                }
-
                 children.push(parseHTMLToNoode(node as Element));
             }
             else {
@@ -134,8 +129,8 @@ export function parseHTMLToNoode(el: Element): NoodeDefinition {
 
     return {
         id: id,
-        content: content,
-        activeChildIndex: children.length > 0 ? activeChildIndex : null,
+        content: content || null,
+        isActive: isActive,
         children: children,
         className: className,
         style: style
@@ -263,20 +258,10 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
     // parse and validate active child index
     let activeChildIndex = def.children.length > 0 ? 0 : null;
 
-    if (typeof def.activeChildIndex === 'number') {
-        if (activeChildIndex < 0 || activeChildIndex >= def.children.length) {
-            throw new Error("Invalid active child index for new noode: " + newId);
-        }
-
-        activeChildIndex = def.activeChildIndex;
-    }
-    else {
-        // if active child index not specified, attempt to parse from isActive
-        for (let i = 0; i < def.children.length; i++) {
-            if (def.children[i].isActive) {
-                activeChildIndex = i;
-                break;
-            }
+    for (let i = 0; i < def.children.length; i++) {
+        if (def.children[i].isActive) {
+            activeChildIndex = i;
+            break;
         }
     }
 
