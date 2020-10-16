@@ -48,12 +48,12 @@ export default interface NoodelOptions {
      */
     useInspectModeDoubleTap?: boolean;
     /**
-     * Global option for disabling resize detection on ALL noodes and branches.
-     * Disabling resize detection may give a slight performance boost. Use this option if you
-     * know that the size of noodes and branches will never change after creation.
-     * Defaults to false.
+     * Global option for enabling resize detection on ALL noodes and branches.
+     * When enabled, will automatically align the positioning of elements when
+     * noode/branch resizes are detected.
+     * Defaults to true.
      */
-    skipResizeDetection?: boolean;
+    useResizeDetection?: boolean;
     /**
      * Global option for enabling overflow detection on ALL noodes. When enabled, 
      * will automatically check for content overflow on mount, noode resize

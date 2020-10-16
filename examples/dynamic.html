@@ -335,7 +335,7 @@
                                 updateOrderItem("Chicken Noodles", 15, null, newOrderItem);
                                 self.setActiveChild(5 - newOrderItem.quantity);
                             },
-                            skipResizeDetection: true
+                            useResizeDetection: false
                         }
                     },
                     {
@@ -350,7 +350,7 @@
                                 updateOrderItem("Beef Noodles", 14, null, newOrderItem);
                                 self.setActiveChild(5 - newOrderItem.quantity);
                             },
-                            skipResizeDetection: true
+                            useResizeDetection: false
                         }
                     },
                     {
@@ -365,7 +365,7 @@
                                 updateOrderItem("Seafood Noodles", 16, null, newOrderItem);
                                 self.setActiveChild(5 - newOrderItem.quantity);
                             },
-                            skipResizeDetection: true
+                            useResizeDetection: false
                         }
                     },
                     {
@@ -380,7 +380,7 @@
                                 updateOrderItem("Vegetarian Noodles", 15, null, newOrderItem);
                                 self.setActiveChild(5 - newOrderItem.quantity);
                             },
-                            skipResizeDetection: true
+                            useResizeDetection: false
                         }
                     },
                     {
@@ -389,7 +389,7 @@
                             onEnterFocus: () => {
                                 removeOrderItem(newOrderItem);
                             },
-                            skipResizeDetection: true
+                            useResizeDetection: false
                         }
                     }
                 ]
@@ -409,7 +409,7 @@
                         onEnterFocus: (self) => {
                             updateOrderItem(null, null, i, orderItem);
                         },
-                        skipResizeDetection: true
+                        useResizeDetection: false
                     }
                 });
             }
