@@ -33,14 +33,13 @@
 
 <script lang="ts">
 
-    import ResizeSensor from "../util/ResizeSensor";
     import NoodeTransitionGroup from './NoodeTransitionGroup.vue';
-
     import { getFocalHeight, getFocalWidth } from '../controllers/getters';
     import NoodeState from '../types/NoodeState';
     import NoodelState from '../types/NoodelState';
     import Vue, { PropType } from 'vue';
     import { updateBranchSize } from '../controllers/noodel-align';
+    import { attachBranchResizeSensor, detachBranchResizeSensor } from '../controllers/resize-detect';
 
     export default Vue.extend({
         
@@ -60,20 +59,11 @@
             let branchRect = this.parent.branchBoxEl.getBoundingClientRect();
             
             updateBranchSize(this.noodel, this.parent, branchRect.height, branchRect.width, true);
-
-            let skipResizeDetection = typeof this.parent.options.skipBranchResizeDetection === 'boolean' ? 
-                this.parent.options.skipBranchResizeDetection : this.noodel.options.skipResizeDetection;
-                
-            if (!skipResizeDetection) {
-                this.parent.branchResizeSensor = new ResizeSensor(this.parent.branchBoxEl, (size) => {
-                    updateBranchSize(this.noodel, this.parent, size.height, size.width);
-                });
-            };   
+            attachBranchResizeSensor(this.noodel, this.parent); 
         },
 
         beforeDestroy() {
-            if (this.parent.branchResizeSensor) this.parent.branchResizeSensor.detach();
-            this.parent.branchResizeSensor = null;
+            detachBranchResizeSensor(this.parent);
             this.parent.branchEl = null;
             this.parent.branchBoxEl = null;
         },

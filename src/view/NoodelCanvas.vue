@@ -94,13 +94,17 @@
 
 				alignTrunkToBranch(this.noodel, this.noodel.focalParent);
 
+				// use triple RAF to ensure that all side effects (e.g. resize sensor callbacks)
+				// are finished
 				requestAnimationFrame(() => {
-					this.$nextTick(() => {
-						this.noodel.isMounted = true;
+					requestAnimationFrame(() => {
+						requestAnimationFrame(() => {
+							this.noodel.isMounted = true;
 
-						if (typeof this.noodel.options.onMount === "function") {
-							this.noodel.options.onMount();
-						}
+							if (typeof this.noodel.options.onMount === "function") {
+								this.noodel.options.onMount();
+							}
+						});
 					});
 				});
 			});

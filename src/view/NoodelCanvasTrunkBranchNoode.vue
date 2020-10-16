@@ -69,7 +69,6 @@
 <!---------------------------- SCRIPT ------------------------------>
 
 <script lang="ts">
-	import ResizeSensor from "../util/ResizeSensor";
 	import NoodeState from "../types/NoodeState";
 	import { checkContentOverflow, updateNoodeSize } from "../controllers/noodel-align";
 	import NoodelState from "../types/NoodelState";
@@ -78,6 +77,7 @@
 	import Vue, { PropType } from "vue";
 	import Noode from "../main/Noode";
 	import { findNoodeViewModel } from "../controllers/id-register";
+	import { attachResizeSensor, detachResizeSensor } from '../controllers/resize-detect';
 
 	export default Vue.extend({
 		props: {
@@ -94,40 +94,10 @@
 				// do initial size capture
 				let noodeRect = this.noode.boxEl.getBoundingClientRect();
 
-				updateNoodeSize(
-					this.noodel,
-					this.noode,
-					noodeRect.height,
-					noodeRect.width,
-					true
-				);
-
+				updateNoodeSize(this.noodel, this.noode, noodeRect.height, noodeRect.width, true);
 				checkContentOverflow(this.noodel, this.noode);
 
-				// setup resize sensor, first callback will run after mounting finish on root component
-				// i.e. isMounted will be true
-				let skipResizeDetection =
-					typeof this.noode.options.skipResizeDetection === "boolean"
-						? this.noode.options.skipResizeDetection
-						: this.noodel.options.skipResizeDetection;
-
-				if (!skipResizeDetection) {
-					let first = true;
-					this.noode.resizeSensor = new ResizeSensor(this.noode.boxEl, (size) => {
-						if (first) { // skips the first callback because size capture is already done
-							first = false;
-							return;
-						}
-
-						updateNoodeSize(
-							this.noodel,
-							this.noode,
-							size.height,
-							size.width
-						);
-						checkContentOverflow(this.noodel, this.noode);
-					});
-				}
+				attachResizeSensor(this.noodel, this.noode);
 
 				// allows parent branch to fall back to display: none after first size update,
 				// using nextTick to wait for parent branch size capture to finish first
@@ -138,8 +108,7 @@
 		},
 
 		beforeDestroy() {
-			if (this.noode.resizeSensor) this.noode.resizeSensor.detach();
-			this.noode.resizeSensor = null;
+			detachResizeSensor(this.noode);
 
             // check fade flag and adjust absolute positioning as necessary
             if (this.noode['fade']) {

@@ -1,6 +1,9 @@
 import Noodel from "../src/main/Noodel";
 
-let noodel = new Noodel("#template", {visibleSubtreeDepth: 1});
+let noodel = new Noodel("#template", {
+    visibleSubtreeDepth: 1,
+    showOverflowIndicators: true
+});
 
 noodel.mount("#noodel");
 
