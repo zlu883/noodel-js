@@ -605,7 +605,8 @@ export default class Noode {
     }
 
     /**
-     * Asynchronous method to manually check for content overflow in this noode. Use when
+     * Asynchronous method to manually check for content overflow in this noode,
+     * and refresh overflow indicators if they are enabled. Use when
      * overflow detection is disabled or insufficient (e.g. when content size changed
      * but did not affect noode size). Fails silently if this is root or noodel is not mounted.
      */

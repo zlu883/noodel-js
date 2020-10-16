@@ -58,9 +58,6 @@ export default class Noodel {
         else if (contentTree instanceof Element) {
             root = parseHTMLToNoode(contentTree);
         } 
-        else if (contentTree && typeof contentTree === 'object') {
-            root = (contentTree as any);
-        }
         else {
             root = {};
         }
@@ -262,16 +259,6 @@ export default class Noodel {
      */
     moveBack(noodeCount: number = 1) {
         shiftFocalNoode(this._v, -noodeCount);
-    }
-
-    /**
-     * Performs a navigational jump to focus on the given noode.
-     * Cannot jump to the root.
-     * @param noode the noode to jump to, must be a Noode instance obtained from the noodel
-     * @deprecated use Noode.jumpToFocus() instead
-     */
-    jumpTo(noode: Noode) {
-        noode.jumpToFocus();
     }
 
     /**
