@@ -5,6 +5,9 @@ import { checkContentOverflow, updateBranchSize, updateNoodeSize } from './noode
 
 export function attachResizeSensor(noodel: NoodelState, noode: NoodeState) {
 
+    if (!noode.parent) return;
+    if (noode.resizeSensor) return;
+
     let useResizeDetection = typeof noode.options.useResizeDetection === "boolean"
         ? noode.options.useResizeDetection
         : noodel.options.useResizeDetection;
@@ -28,6 +31,9 @@ export function detachResizeSensor(noode: NoodeState) {
 
 export function attachBranchResizeSensor(noodel: NoodelState, parent: NoodeState) {
 
+    if (parent.children.length === 0) return;
+    if (parent.branchResizeSensor) return;
+
     let useResizeDetection = typeof parent.options.useBranchResizeDetection === 'boolean' 
         ? parent.options.useBranchResizeDetection 
         : noodel.options.useResizeDetection;
@@ -46,4 +52,11 @@ export function attachBranchResizeSensor(noodel: NoodelState, parent: NoodeState
 export function detachBranchResizeSensor(parent: NoodeState) {
     if (parent.branchResizeSensor) parent.branchResizeSensor.detach();
     parent.branchResizeSensor = null;
+}
+
+export function attachCanvasResizeSensor(noodel: NoodelState) {
+    new ResizeSensor(noodel.canvasEl, (size) => {
+        noodel.containerWidth = size.width,
+        noodel.containerHeight = size.height
+    });
 }

@@ -334,7 +334,7 @@ export default class Noode {
         this.throwErrorIfDeleted();
         if (this.isRoot()) return; // should not set options on root
 
-        parseAndApplyNoodeOptions(options, this._v);
+        parseAndApplyNoodeOptions(this._nv, options, this._v);
     }
 
     /**

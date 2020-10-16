@@ -2,7 +2,6 @@ import NoodeDefinition from '../types/NoodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
 import NoodeState from '../types/NoodeState';
 import NoodelState from '../types/NoodelState';
-import ResizeSensor from "../util/ResizeSensor";
 import { showActiveSubtree } from './noodel-mutate';
 import { setupRouting, unsetRouting } from './noodel-routing';
 import NoodeOptions from '../types/NoodeOptions';
@@ -11,6 +10,7 @@ import { alignNoodelOnJump } from './noodel-navigate';
 import { cancelPan } from './noodel-pan';
 import { resetAlignment } from './noodel-align';
 import { traverseDescendents } from './noodel-traverse';
+import { attachBranchResizeSensor, attachCanvasResizeSensor, attachResizeSensor, detachBranchResizeSensor, detachResizeSensor } from './resize-detect';
 
 export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelState {
 
@@ -55,7 +55,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             useTapNavigation: true,
             useInspectModeKey: true,
             useInspectModeDoubleTap: true,
-            useResizeDetection: false,
+            useResizeDetection: true,
             useOverflowDetection: false,
             showLimitIndicators: true,
             showBranchBackdrops: false,
@@ -149,16 +149,14 @@ export function setupCanvasEl(noodel: NoodelState) {
     noodel.containerWidth = rect.width;
     noodel.containerHeight = rect.height;
 
-    new ResizeSensor(noodel.canvasEl, (size) => {
-        noodel.containerWidth = size.width,
-        noodel.containerHeight = size.height
-    });
+    attachCanvasResizeSensor(noodel);
 }
 
 export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState) {
 
     let oldOrientation = noodel.options.orientation;
     let oldBranchDirection = noodel.options.branchDirection;
+    let oldUseResizeDetection = noodel.options.useResizeDetection;
 
     noodel.options = {
         ...noodel.options,
@@ -187,14 +185,59 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
             // realignAll will do it
             traverseDescendents(noodel.root, noode => noode.applyBranchMove = false, true);
         }
+
+        let newUseResizeDetection = noodel.options.useResizeDetection;
+
+        if (oldUseResizeDetection && !newUseResizeDetection) {
+            traverseDescendents(noodel.root, desc => {
+                detachBranchResizeSensor(desc); 
+                detachResizeSensor(desc);
+            }, true);
+        }
+        else if (newUseResizeDetection && !oldUseResizeDetection) {
+            traverseDescendents(noodel.root, desc => {             
+                attachBranchResizeSensor(noodel, desc); 
+                attachResizeSensor(noodel, desc);
+            }, true);
+        }
     }
 }
 
-export function parseAndApplyNoodeOptions(options: NoodeOptions, noode: NoodeState) {
+export function parseAndApplyNoodeOptions(noodel: NoodelState, options: NoodeOptions, noode: NoodeState) {
+
+    let oldUseResizeDetection = typeof noode.options.useResizeDetection === "boolean"
+        ? noode.options.useResizeDetection
+        : noodel.options.useResizeDetection;
+    let oldUseBranchResizeDetection = typeof noode.options.useBranchResizeDetection === 'boolean' 
+        ? noode.options.useBranchResizeDetection 
+        : noodel.options.useResizeDetection;
 
     noode.options = {
         ...noode.options,
         ...options
+    };
+
+    if (noodel.isMounted) {
+        let newUseResizeDetection = typeof noode.options.useResizeDetection === "boolean"
+            ? noode.options.useResizeDetection
+            : noodel.options.useResizeDetection;
+        let newUseBranchResizeDetection = typeof noode.options.useBranchResizeDetection === 'boolean' 
+            ? noode.options.useBranchResizeDetection 
+            : noodel.options.useResizeDetection;
+
+        if (oldUseResizeDetection && !newUseResizeDetection) {
+            detachResizeSensor(noode);
+        }
+        else if (newUseResizeDetection && !oldUseResizeDetection) {
+            attachResizeSensor(noodel, noode);
+        }
+
+        if (oldUseBranchResizeDetection && !newUseBranchResizeDetection) {
+            detachBranchResizeSensor(noode);
+        }
+        else if (newUseBranchResizeDetection && !oldUseBranchResizeDetection) {
+            attachBranchResizeSensor(noodel, noode);
+        }
     }
 }
 
@@ -278,7 +321,7 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
     if (def.data !== undefined) newView["data"] = def.data;
 
     if (def.options && typeof def.options === "object") {
-        parseAndApplyNoodeOptions(def.options, newView);
+        parseAndApplyNoodeOptions(noodel, def.options, newView);
     }
 
     for (let i = 0; i < def.children.length; i++) {
