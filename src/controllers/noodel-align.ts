@@ -1,7 +1,7 @@
 import NoodeState from '../types/NoodeState';
 import NoodelState from '../types/NoodelState';
 import { traverseDescendents } from './noodel-traverse';
-import Vue from 'vue';
+import { nextTick } from 'vue';
 import { findCurrentBranchOffset, findCurrentTrunkOffset, forceReflow } from './noodel-animate';
 import { cancelPan } from './noodel-pan';
 
@@ -53,7 +53,7 @@ export function updateNoodeSize(noodel: NoodelState, noode: NoodeState, newHeigh
                 parent.branchOffset = currentOffset + alignVal;                
                 parent.applyBranchMove = false;
     
-                Vue.nextTick(() => {
+                nextTick(() => {
                     forceReflow();
                     parent.branchOffset += transitDiff;
                     parent.applyBranchMove = true;
@@ -117,7 +117,7 @@ export function updateBranchSize(noodel: NoodelState, parent: NoodeState, newHei
                 noodel.applyTrunkMove = false;
 
                 // resume transition
-                Vue.nextTick(() => {
+                nextTick(() => {
                     forceReflow();
                     noodel.trunkOffset += transitDiff;
                     noodel.applyTrunkMove = true;
@@ -212,7 +212,7 @@ export function resetAlignment(noodel: NoodelState) {
         true
     );
 
-    Vue.nextTick(() => {
+    nextTick(() => {
         traverseDescendents(
             noodel.root,
             (noode) => {

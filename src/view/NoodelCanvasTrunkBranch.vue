@@ -37,11 +37,11 @@
     import { getFocalHeight, getFocalWidth } from '../controllers/getters';
     import NoodeState from '../types/NoodeState';
     import NoodelState from '../types/NoodelState';
-    import Vue, { PropType } from 'vue';
+    import { PropType, defineComponent } from 'vue';
     import { updateBranchSize } from '../controllers/noodel-align';
     import { attachBranchResizeSensor, detachBranchResizeSensor } from '../controllers/resize-detect';
 
-    export default Vue.extend({
+    export default defineComponent({
         
         components: {
             NoodeTransitionGroup
@@ -62,7 +62,7 @@
             attachBranchResizeSensor(this.noodel, this.parent); 
         },
 
-        beforeDestroy() {
+        beforeUnmount() {
             detachBranchResizeSensor(this.parent);
             this.parent.branchEl = null;
             this.parent.branchBoxEl = null;
@@ -190,7 +190,7 @@
         opacity: 1;
     }
 
-    .nd-branch-box-enter, .nd-branch-box-leave-active {
+    .nd-branch-box-enter-from, .nd-branch-box-leave-active {
         opacity: 0;
     }
 

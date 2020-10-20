@@ -2,7 +2,7 @@ import NoodeDefinition from '../types/NoodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
 import { setupNoodel, parseHTMLToNoode, parseAndApplyOptions } from '../controllers/noodel-setup';
 import NoodelCanvas from '../view/NoodelCanvas.vue';
-import Vue from 'vue';
+import { nextTick as vueNextTick, defineComponent, createApp, h, reactive } from 'vue';
 import NoodelState from '../types/NoodelState';
 import Noode from './Noode';
 import { getActiveChild } from '../controllers/getters';
@@ -22,16 +22,16 @@ export default class Noodel {
      * Takes a single prop, 'noodel', which should be a Noodel instance registered as
      * data in your Vue instance. 
      */
-    static VueComponent = Vue.extend({
+    static VueComponent = defineComponent({
         props: ['noodel'],
-        render: function(h) {
-            return h(NoodelCanvas, { props: { noodel: this.noodel._v }})
+        render() {
+            return h(NoodelCanvas as any, { noodel: this.noodel._v });
         }
     });
 
     private _v: NoodelState;
-    private vueRoot: Element;
-    private vueInstance: Vue;
+    private containerEl: Element = null;
+    private vueInstance: any = null;
 
     /**
      * Creates the view model of a noodel based on the given content tree.
@@ -66,7 +66,8 @@ export default class Noodel {
             options = {};
         }
 
-        this._v = setupNoodel(root, options);
+        // use Vue 3's reactivity API to convert global state store into a proxied object
+        this._v = reactive(setupNoodel(root, options));
 
         handleFocalNoodeChange(this._v, null, getActiveChild(this._v.focalParent));
     }
@@ -74,7 +75,7 @@ export default class Noodel {
     // LIFECYCLE
 
     /**
-     * Mounts the noodel's view at the target element, replacing it.
+     * Mounts the noodel's view into the target container element.
      */
     mount(el: string | Element) {
         if (typeof el === "string") {
@@ -82,17 +83,15 @@ export default class Noodel {
         }
 
         if (!(el instanceof Element)) {
-            throw new Error("Cannot mount noodel: invalid target element");
+            throw new Error("Cannot mount noodel: invalid container element");
         }
 
-        Vue.config.productionTip = false;
+        this.containerEl = el;
+        this.vueInstance = createApp({
+            render: () => h(NoodelCanvas as any, { noodel: this._v }),
+        });
 
-        this.vueInstance = new Vue({
-            render: h => h(NoodelCanvas, { props: { noodel: this._v }}),
-            data: this._v
-        }).$mount(el);
-
-        this.vueRoot = this.vueInstance.$el;
+        this.vueInstance.mount(el);
     }
 
     /**
@@ -100,20 +99,20 @@ export default class Noodel {
      * but keeping the current state of the view model.
      */
     unmount() {
-        if (this.vueInstance) this.vueInstance.$destroy();
-        if (this.vueRoot) this.vueRoot.remove();
-        delete this.vueInstance;
-        delete this.vueRoot;
+        if (this.vueInstance) this.vueInstance.unmount(this.containerEl)
+        if (this.containerEl) this.containerEl.remove();
+        this.vueInstance = null;
+        this.containerEl = null;
     }
 
     /**
      * Schedules a callback function to be called after Noodel's current DOM update cycle.
-     * Use this if you need to access DOM elements after performing an update.
+     * Use this to wait to DOM updates to complete after mutating the view model.
      */
     nextTick(callback: () => any) {
         // double Vue nextTick because some changes may take two update cycles to settle
-        Vue.nextTick(() => {
-            Vue.nextTick(callback);
+        vueNextTick(() => {
+            vueNextTick(callback);
         });
     }
 

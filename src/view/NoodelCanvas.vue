@@ -42,7 +42,7 @@
 			class="nd-trunk"
 			:class="trunkClass"
 			:style="trunkStyle"
-			@transitionend.native="onTransitionEnd"
+			@transitionend="onTransitionEnd"
 		>
 			<NoodelCanvasTrunkBranch
 				v-for="parent in allBranchParents"
@@ -70,9 +70,9 @@
 		alignTrunkToBranch,
 	} from "../controllers/noodel-align";
 	import NoodeState from "../types/NoodeState";
-	import Vue, { PropType } from "vue";
+	import { PropType, defineComponent } from "vue";
 
-	export default Vue.extend({
+	export default defineComponent({
 		components: {
 			NoodelCanvasTrunkBranch,
 		},
@@ -110,7 +110,7 @@
 			});
 		},
 
-		destroyed: function () {
+		unmounted: function () {
 			this.noodel.trunkOffset = 0;
 			this.noodel.containerHeight = 0;
 			this.noodel.containerWidth = 0;
@@ -320,7 +320,7 @@
 		background-color: #595959;
 	}
 
-	.nd-limit-enter,
+	.nd-limit-enter-from,
 	.nd-limit-leave-active {
 		opacity: 0;
 	}

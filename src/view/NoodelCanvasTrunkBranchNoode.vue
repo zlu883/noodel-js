@@ -74,12 +74,12 @@
 	import NoodelState from "../types/NoodelState";
 	import { traverseAncestors } from "../controllers/noodel-traverse";
 	import { getPath, getFocalHeight, getFocalWidth } from "../controllers/getters";
-	import Vue, { PropType } from "vue";
+	import { nextTick, PropType, defineComponent } from "vue";
 	import Noode from "../main/Noode";
 	import { findNoodeViewModel } from "../controllers/id-register";
 	import { attachResizeSensor, detachResizeSensor } from '../controllers/resize-detect';
 
-	export default Vue.extend({
+	export default defineComponent({
 		props: {
 			noode: Object as PropType<NoodeState>,
 			noodel: Object as PropType<NoodelState>,
@@ -90,7 +90,7 @@
 			this.noode.el = this.$refs.noode as HTMLDivElement;
 
 			// nextTick is required for vue's v-move effect to work
-			Vue.nextTick(() => {
+			nextTick(() => {
 				// do initial size capture
 				let noodeRect = this.noode.boxEl.getBoundingClientRect();
 
@@ -101,13 +101,13 @@
 
 				// allows parent branch to fall back to display: none after first size update,
 				// using nextTick to wait for parent branch size capture to finish first
-				Vue.nextTick(() => {
+				nextTick(() => {
 					this.noode.parent.isBranchTransparent = false;
 				});
 			});
 		},
 
-		beforeDestroy() {
+		beforeUnmount() {
 			detachResizeSensor(this.noode);
 
             // check fade flag and adjust absolute positioning as necessary
@@ -266,7 +266,7 @@
         z-index: -1;
 	}
 
-	.nd-noode-enter,
+	.nd-noode-enter-from,
 	.nd-noode-leave-active {
 		opacity: 0;
 	}
@@ -311,7 +311,7 @@
 		border-bottom: 0.5em solid transparent;
 	}
 
-	.nd-child-indicator-enter,
+	.nd-child-indicator-enter-from,
 	.nd-child-indicator-leave-active {
 		opacity: 0;
 	}
@@ -323,7 +323,7 @@
 		transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
 	}
 
-	.nd-inspect-backdrop-enter,
+	.nd-inspect-backdrop-enter-from,
 	.nd-inspect-backdrop-leave-active {
 		opacity: 0;
 	}

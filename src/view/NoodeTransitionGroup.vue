@@ -27,11 +27,11 @@
 
     import NoodelState from '../types/NoodelState';
     import NoodeState from '../types/NoodeState';
-    import Vue, { PropType } from 'vue';
+    import { PropType, defineComponent } from 'vue';
 
     // By extracting the transition-group into its own component addresses the issue
     // of enter/leave transitions not occuring properly as per https://github.com/vuejs/vue/issues/6946
-    export default Vue.extend({
+    export default defineComponent({
         
         components: {
             NoodelCanvasTrunkBranchNoode
@@ -74,8 +74,7 @@
 
                 return style;
             }
-        },
-
+        }
     });
     
 </script>

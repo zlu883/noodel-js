@@ -1,12 +1,12 @@
 import NoodelState from '../types/NoodelState';
 import { findNoodeViewModel } from './id-register';
 import NoodeState from '../types/NoodeState';
-import Vue from 'vue';
+import { nextTick } from 'vue';
 import { syncHashToFocalNoode } from './noodel-routing';
 
 function queueEvent(noodel: NoodelState, ev: () => any) {
     if (noodel.eventQueue.length === 0) {
-        Vue.nextTick(() => flushEventQueue(noodel));
+        nextTick(() => flushEventQueue(noodel));
     }
 
     noodel.eventQueue.push(ev);

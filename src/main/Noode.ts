@@ -9,7 +9,7 @@ import NoodelState from '../types/NoodelState';
 import { findNoodeViewModel, changeNoodeId, unregisterNoodeSubtree } from '../controllers/id-register';
 import NoodeOptions from '../types/NoodeOptions';
 import ComponentContent from '../types/ComponentContent';
-import Vue from 'vue';
+import { nextTick } from 'vue';
 import { traverseDescendents } from '../controllers/noodel-traverse';
 
 /**
@@ -294,7 +294,7 @@ export default class Noode {
 
         this._v.content = content;
         
-        Vue.nextTick(() => {
+        nextTick(() => {
             if (this._v.parent.isBranchVisible) {
                 let noodeRect = this._v.boxEl.getBoundingClientRect();
                 let branchRect = this._v.parent.branchBoxEl.getBoundingClientRect();
@@ -576,7 +576,7 @@ export default class Noode {
 
         this._v.parent.isBranchTransparent = true;
 
-        Vue.nextTick(() => {
+        nextTick(() => {
             let rect = this._v.boxEl.getBoundingClientRect();
             
             updateNoodeSize(this._nv, this._v, rect.height, rect.width);
@@ -596,7 +596,7 @@ export default class Noode {
 
         this._v.isBranchTransparent = true;
 
-        Vue.nextTick(() => {
+        nextTick(() => {
             let rect = this._v.branchBoxEl.getBoundingClientRect();
 
             updateBranchSize(this._nv, this._v, rect.height, rect.width);
@@ -617,7 +617,7 @@ export default class Noode {
 
         this._v.parent.isBranchTransparent = true;
         
-        Vue.nextTick(() => {
+        nextTick(() => {
             checkContentOverflow(this._nv, this._v);
             this._v.parent.isBranchTransparent = false;
         });
