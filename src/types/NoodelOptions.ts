@@ -1,4 +1,3 @@
-import Noode from '../main/Noode';
 import { BranchDirection } from './BranchDirection';
 import { Orientation } from './Orientation';
 
@@ -101,7 +100,7 @@ export default interface NoodelOptions {
      */
     showBranchBackdrops?: boolean;
     /**
-     * Determines the direction of the trunk axis. Defaults to ltr (left to right).
+     * Determines the direction of the trunk axis. Defaults to "ltr" (left to right).
      */
     orientation?: Orientation;
     /**
@@ -109,34 +108,4 @@ export default interface NoodelOptions {
      * Defaults to "normal".
      */
     branchDirection?: BranchDirection;
-    /**
-     * Callback after the noodel has mounted (i.e. fully rendered onto the DOM) and properly aligned
-     * after the first render. Changes to the view model from here onward
-     * will sync with the view and trigger animation effects.
-     */
-    onMount?: () => any | null;
-    /**
-     * Handler called once after noodel creation, and whenever the focal noode
-     * has changed. 
-     * @param current the current focal noode
-     * @param prev the previous focal noode, null on initial call
-     */
-    onFocalNoodeChange?: (current: Noode, prev: Noode) => any | null;
-    /**
-     * Handler called once after noodel creation, and whenever the focal parent
-     * has changed.
-     * @param current the current focal parent
-     * @param prev the previous focal parent, null on initial call
-     */
-    onFocalParentChange?: (current: Noode, prev: Noode) => any | null;
-    /**
-     * Handler called when entered inspect mode.
-     * @param noode the current focal noode
-     */
-    onEnterInspectMode?: (noode: Noode) => any | null;
-    /**
-     * Handler called when exited inspect mode.
-     * @param noode the current focal noode
-     */
-    onExitInspectMode?: (noode: Noode) => any | null;
 }

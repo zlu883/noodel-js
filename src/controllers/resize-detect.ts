@@ -6,15 +6,15 @@ import { checkContentOverflow, updateBranchSize, updateNoodeSize } from './noode
 export function attachResizeSensor(noodel: NoodelState, noode: NoodeState) {
 
     if (!noode.parent) return;
-    if (noode.resizeSensor) return;
+    if (noode.r.resizeSensor) return;
 
     let useResizeDetection = typeof noode.options.useResizeDetection === "boolean"
         ? noode.options.useResizeDetection
         : noodel.options.useResizeDetection;
 
     if (useResizeDetection) {
-        noode.resizeSensor = new ResizeSensor(noode.boxEl, (size) => {
-            if (!noodel.isMounted) { // skips the first callback before mount
+        noode.r.resizeSensor = new ResizeSensor(noode.r.boxEl, (size) => {
+            if (!noodel.r.isMounted) { // skips the first callback before mount
                 return;
             }
 
@@ -25,22 +25,22 @@ export function attachResizeSensor(noodel: NoodelState, noode: NoodeState) {
 }
 
 export function detachResizeSensor(noode: NoodeState) {
-    if (noode.resizeSensor) noode.resizeSensor.detach();
-    noode.resizeSensor = null;
+    if (noode.r.resizeSensor) noode.r.resizeSensor.detach();
+    noode.r.resizeSensor = null;
 }
 
 export function attachBranchResizeSensor(noodel: NoodelState, parent: NoodeState) {
 
     if (parent.children.length === 0) return;
-    if (parent.branchResizeSensor) return;
+    if (parent.r.branchResizeSensor) return;
 
     let useResizeDetection = typeof parent.options.useBranchResizeDetection === 'boolean' 
         ? parent.options.useBranchResizeDetection 
         : noodel.options.useResizeDetection;
 
     if (useResizeDetection) {
-        parent.branchResizeSensor = new ResizeSensor(parent.branchBoxEl, (size) => {
-            if (!noodel.isMounted) { // skips the first callback before mount
+        parent.r.branchResizeSensor = new ResizeSensor(parent.r.branchBoxEl, (size) => {
+            if (!noodel.r.isMounted) { // skips the first callback before mount
                 return;
             }
 
@@ -50,12 +50,12 @@ export function attachBranchResizeSensor(noodel: NoodelState, parent: NoodeState
 }
 
 export function detachBranchResizeSensor(parent: NoodeState) {
-    if (parent.branchResizeSensor) parent.branchResizeSensor.detach();
-    parent.branchResizeSensor = null;
+    if (parent.r.branchResizeSensor) parent.r.branchResizeSensor.detach();
+    parent.r.branchResizeSensor = null;
 }
 
 export function attachCanvasResizeSensor(noodel: NoodelState) {
-    new ResizeSensor(noodel.canvasEl, (size) => {
+    new ResizeSensor(noodel.r.canvasEl, (size) => {
         noodel.containerWidth = size.width,
         noodel.containerHeight = size.height
     });

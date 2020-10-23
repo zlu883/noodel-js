@@ -1,8 +1,43 @@
 import ResizeSensor from "../util/ResizeSensor";
 import NoodeOptions from './NoodeOptions';
 import ComponentContent from './ComponentContent';
+import Noode from '../main/Noode';
+import NoodeClassNames from './NoodeClassNames';
+import NoodeStyles from './NoodeStyles';
+import NoodeEventMap from './NoodeEventMap';
 
 export default interface NoodeState {
+
+    /**
+     * Object container for state that are not used for
+     * rendering the view and should be marked raw.
+     */
+    r: {
+        eventListeners: Map<keyof NoodeEventMap, NoodeEventMap[keyof NoodeEventMap][]>;
+
+        isRoot: boolean;
+        ignoreTransitionEnd: boolean;
+
+        el: HTMLDivElement;
+        boxEl: HTMLDivElement;
+        branchEl: HTMLDivElement;
+        branchBoxEl: HTMLDivElement;
+
+        size: number;
+        branchSize: number;
+
+        trunkRelativeOffset: number;
+        branchRelativeOffset: number;
+
+        resizeSensor: ResizeSensor;
+        branchResizeSensor: ResizeSensor;
+
+        vm: Noode;
+        /**
+         * Use to check need for fade out position adjustment during noode deletion
+         */
+        fade: boolean;
+    };
 
     id: string;
     index: number;
@@ -10,8 +45,9 @@ export default interface NoodeState {
     children: NoodeState[];
     activeChildIndex: number;
     content: string | ComponentContent;
-    className: string[];
-    style: object;
+
+    classNames: NoodeClassNames;
+    styles: NoodeStyles;
 
     parent: NoodeState;
     /**
@@ -26,14 +62,12 @@ export default interface NoodeState {
     isFocalParent: boolean;
     isActive: boolean;
 
-    trunkRelativeOffset: number;
     /**
      * This is the orientation-agnostic offset of this noode's child branch counting from
      * the *start* of the branch axis. Does not take into account the focal position.
      */
     branchOffset: number;
     applyBranchMove: boolean;
-    ignoreTransitionEnd?: boolean;
 
     /**
      * Extra variable to prevent Vue from needing to patch every single noode on change,
@@ -41,23 +75,10 @@ export default interface NoodeState {
      */
     isInInspectMode: boolean;
 
-    branchRelativeOffset: number;
-
-    size: number;
-    branchSize: number;
-
-    el?: HTMLDivElement;
-    boxEl?: HTMLDivElement;
-    branchEl?: HTMLDivElement;
-    branchBoxEl?: HTMLDivElement;
-
-    resizeSensor?: ResizeSensor;
-    branchResizeSensor?: ResizeSensor;
-
     hasOverflowTop: boolean;
     hasOverflowLeft: boolean;
     hasOverflowBottom: boolean;
     hasOverflowRight: boolean;
 
-    options?: NoodeOptions;
+    options: NoodeOptions;
 }

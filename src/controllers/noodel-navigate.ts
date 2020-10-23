@@ -14,9 +14,9 @@ import { cancelPan } from './noodel-pan';
  */
 export function shiftFocalLevel(noodel: NoodelState, levelDiff: number) {
 
-    let prevFocalNoode = noodel.panStartFocalNoode || getActiveChild(noodel.focalParent);
+    let prevFocalNoode = noodel.r.panStartFocalNoode || getActiveChild(noodel.focalParent);
     
-    noodel.panStartFocalNoode = null;
+    noodel.r.panStartFocalNoode = null;
 
     if (!prevFocalNoode) return;
 
@@ -25,7 +25,7 @@ export function shiftFocalLevel(noodel: NoodelState, levelDiff: number) {
     }
 
     // if panning, cancel it
-    if (noodel.panAxis === "trunk") {
+    if (noodel.r.panAxis === "trunk") {
         cancelPan(noodel);
     }
 
@@ -59,9 +59,9 @@ export function shiftFocalLevel(noodel: NoodelState, levelDiff: number) {
  */
 export function shiftFocalNoode(noodel: NoodelState, indexDiff: number) {
     
-    let prevFocalNoode = noodel.panStartFocalNoode || getActiveChild(noodel.focalParent);
+    let prevFocalNoode = noodel.r.panStartFocalNoode || getActiveChild(noodel.focalParent);
     
-    noodel.panStartFocalNoode = null;
+    noodel.r.panStartFocalNoode = null;
 
     if (!prevFocalNoode) return;
 
@@ -70,7 +70,7 @@ export function shiftFocalNoode(noodel: NoodelState, indexDiff: number) {
     }
 
     // if panning, cancel it
-    if (noodel.panAxis === "branch") {
+    if (noodel.r.panAxis === "branch") {
         cancelPan(noodel);
     }
 
@@ -98,7 +98,7 @@ export function shiftFocalNoode(noodel: NoodelState, indexDiff: number) {
 
     if (targetIndex !== noodel.focalParent.activeChildIndex) {
         hideActiveSubtree(getActiveChild(noodel.focalParent));
-        setActiveChild(noodel, noodel.focalParent, targetIndex);
+        setActiveChild(noodel.focalParent, targetIndex);
         showActiveSubtree(noodel, noodel.focalParent, noodel.options.visibleSubtreeDepth, noodel.options.subtreeDebounceInterval);
     }
     
@@ -115,7 +115,7 @@ export function shiftFocalNoode(noodel: NoodelState, indexDiff: number) {
 export function alignNoodelOnJump(noodel: NoodelState, target: NoodeState) {
 
     // if panning, cancel it
-    if (noodel.panAxis !== null) {
+    if (noodel.r.panAxis !== null) {
         cancelPan(noodel);
     }
 
@@ -139,7 +139,7 @@ export function alignNoodelOnJump(noodel: NoodelState, target: NoodeState) {
 
     while (true) {
         if (nextParent.activeChildIndex !== nextActiveChildIndex) {
-            setActiveChild(noodel, nextParent, nextActiveChildIndex);
+            setActiveChild(nextParent, nextActiveChildIndex);
             alignBranchToIndex(nextParent, nextActiveChildIndex);
         }
 
@@ -171,7 +171,7 @@ export function alignNoodelOnJump(noodel: NoodelState, target: NoodeState) {
  */
 export function doJumpNavigation(noodel: NoodelState, target: NoodeState) {
 
-    clearTimeout(noodel.limitIndicatorTimeout);
+    clearTimeout(noodel.r.limitIndicatorTimeout);
 
     let prevFocalNoode = getActiveChild(noodel.focalParent);
 
@@ -196,13 +196,13 @@ export function unsetLimitIndicators(noodel: NoodelState, wait: number) {
     }
 
     if (wait <= 0) {
-        clearTimeout(noodel.limitIndicatorTimeout);
-        noodel.limitIndicatorTimeout = null;
+        clearTimeout(noodel.r.limitIndicatorTimeout);
+        noodel.r.limitIndicatorTimeout = null;
         unset();
     }
     else {
-        clearTimeout(noodel.limitIndicatorTimeout);
-        noodel.limitIndicatorTimeout = setTimeout(unset, 300);
+        clearTimeout(noodel.r.limitIndicatorTimeout);
+        noodel.r.limitIndicatorTimeout = setTimeout(unset, 300);
     }
 }
 

@@ -1,17 +1,17 @@
 import NoodelState from '../types/NoodelState';
 import { doJumpNavigation } from './noodel-navigate';
-import { findNoodeViewState } from './id-register';
+import { findNoode } from './id-register';
 import { getActiveChild } from './getters';
 
 export function setupRouting(noodel: NoodelState) {
 
-    if (noodel.onHashChanged) return;
+    if (noodel.r.onHashChanged) return;
 
-    noodel.onHashChanged = () => {
+    noodel.r.onHashChanged = () => {
         let hash = window.location.hash;
 
         if (hash) {
-            let target = findNoodeViewState(noodel, hash.substr(1));
+            let target = findNoode(noodel, hash.substr(1));
 
             if (target && target.parent) {
                 doJumpNavigation(noodel, target);
@@ -19,7 +19,7 @@ export function setupRouting(noodel: NoodelState) {
         } 
     };
 
-    window.addEventListener("hashchange", noodel.onHashChanged);
+    window.addEventListener("hashchange", noodel.r.onHashChanged);
 }
 
 export function syncHashToFocalNoode(noodel: NoodelState) {
@@ -37,10 +37,10 @@ export function syncHashToFocalNoode(noodel: NoodelState) {
 
 export function unsetRouting(noodel: NoodelState) {
 
-    if(!noodel.onHashChanged) return;
+    if(!noodel.r.onHashChanged) return;
 
-    window.removeEventListener("hashchange", noodel.onHashChanged);
-    noodel.onHashChanged = null;
+    window.removeEventListener("hashchange", noodel.r.onHashChanged);
+    noodel.r.onHashChanged = null;
 }
 
 /**

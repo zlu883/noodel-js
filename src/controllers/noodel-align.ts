@@ -17,13 +17,13 @@ export function updateNoodeSize(noodel: NoodelState, noode: NoodeState, newHeigh
     }
 
     const parent = noode.parent;
-    let diff = newSize - noode.size;
+    let diff = newSize - noode.r.size;
 
-    noode.size = newSize;
+    noode.r.size = newSize;
 
     if (Math.abs(diff) > 0.01) {
         for (let i = noode.index + 1; i < parent.children.length; i++) {
-            parent.children[i].branchRelativeOffset += diff;
+            parent.children[i].r.branchRelativeOffset += diff;
         }
 
         let alignVal = 0;
@@ -36,8 +36,8 @@ export function updateNoodeSize(noodel: NoodelState, noode: NoodeState, newHeigh
         }
 
         if (alignVal !== 0) {
-            if (noodel.panAxis === "branch" && parent.isFocalParent) {
-                noodel.panOriginBranch += alignVal;
+            if (noodel.r.panAxis === "branch" && parent.isFocalParent) {
+                noodel.r.panOriginBranch += alignVal;
             }
 
             // If branch is in transition, cancel it temporarily and force an alignment.
@@ -60,7 +60,7 @@ export function updateNoodeSize(noodel: NoodelState, noode: NoodeState, newHeigh
                 });
             }
             else {
-                if (isInsert && noodel.isMounted) {
+                if (isInsert && noodel.r.isMounted) {
                     parent.applyBranchMove = true;
                     parent.branchOffset += alignVal;
                 }
@@ -83,12 +83,12 @@ export function updateBranchSize(noodel: NoodelState, parent: NoodeState, newHei
         newSize = newHeight;
     }
 
-    let diff = newSize - parent.branchSize;
+    let diff = newSize - parent.r.branchSize;
 
-    parent.branchSize = newSize;
+    parent.r.branchSize = newSize;
 
     if (Math.abs(diff) > 0.01) {
-        traverseDescendents(parent, desc => desc.trunkRelativeOffset += diff, false);
+        traverseDescendents(parent, desc => desc.r.trunkRelativeOffset += diff, false);
 
         let alignVal = 0;
 
@@ -100,8 +100,8 @@ export function updateBranchSize(noodel: NoodelState, parent: NoodeState, newHei
         }
 
         if (alignVal !== 0) {
-            if (noodel.panAxis === "trunk") {
-                noodel.panOriginTrunk += alignVal;
+            if (noodel.r.panAxis === "trunk") {
+                noodel.r.panOriginTrunk += alignVal;
             }
 
             // If trunk is in transition, cancel it temporarily and force an alignment.
@@ -140,16 +140,16 @@ export function alignBranchBeforeNoodeDelete(noode: NoodeState) {
 
     // adjust sibling offsets
     for (let i = noode.index + 1; i < parent.children.length; i++) {
-        parent.children[i].branchRelativeOffset -= noode.size;
+        parent.children[i].r.branchRelativeOffset -= noode.r.size;
     }
 
     if (noode.index === parent.activeChildIndex) {
         parent.applyBranchMove = true;
-        parent.branchOffset -= noode.size / 2;
+        parent.branchOffset -= noode.r.size / 2;
     }
     else if (noode.index < parent.activeChildIndex) {
         parent.applyBranchMove = true;
-        parent.branchOffset -= noode.size;
+        parent.branchOffset -= noode.r.size;
     }
 }
 
@@ -158,13 +158,13 @@ export function alignBranchBeforeNoodeDelete(noode: NoodeState) {
  */
 export function alignTrunkToBranch(noodel: NoodelState, branchParent: NoodeState) {
 
-    let targetOffset = branchParent.trunkRelativeOffset + (branchParent.branchSize / 2);
+    let targetOffset = branchParent.r.trunkRelativeOffset + (branchParent.r.branchSize / 2);
 
     // only apply transition effect if there's actual movement
     if (Math.abs(noodel.trunkOffset - targetOffset) >= 1) { 
         noodel.applyTrunkMove = true;
-        noodel.ignoreTransitionEnd = true;
-        requestAnimationFrame(() => noodel.ignoreTransitionEnd = false);
+        noodel.r.ignoreTransitionEnd = true;
+        requestAnimationFrame(() => noodel.r.ignoreTransitionEnd = false);
     }
 
     noodel.trunkOffset = targetOffset;
@@ -176,13 +176,13 @@ export function alignTrunkToBranch(noodel: NoodelState, branchParent: NoodeState
 export function alignBranchToIndex(parent: NoodeState, index: number) {
 
     let targetChild = parent.children[index];
-    let targetOffset = targetChild.branchRelativeOffset + (targetChild.size / 2);
+    let targetOffset = targetChild.r.branchRelativeOffset + (targetChild.r.size / 2);
 
     // only apply transition effect if there's actual movement and branch is visible
     if (parent.isBranchVisible && Math.abs(parent.branchOffset - targetOffset) >= 1) { 
         parent.applyBranchMove = true;
-        parent.ignoreTransitionEnd = true;
-        requestAnimationFrame(() => parent.ignoreTransitionEnd = false);
+        parent.r.ignoreTransitionEnd = true;
+        requestAnimationFrame(() => parent.r.ignoreTransitionEnd = false);
     }
 
     parent.branchOffset = targetOffset;
@@ -201,10 +201,10 @@ export function resetAlignment(noodel: NoodelState) {
     traverseDescendents(
         noodel.root,
         (noode) => {
-            noode.trunkRelativeOffset = 0;
-            noode.branchRelativeOffset = 0;
-            noode.size = 0;
-            noode.branchSize = 0;
+            noode.r.trunkRelativeOffset = 0;
+            noode.r.branchRelativeOffset = 0;
+            noode.r.size = 0;
+            noode.r.branchSize = 0;
             noode.applyBranchMove = false;
             noode.branchOffset = 0;
             noode.isBranchTransparent = true;
@@ -216,13 +216,13 @@ export function resetAlignment(noodel: NoodelState) {
         traverseDescendents(
             noodel.root,
             (noode) => {
-                if (noode.boxEl) {
-                    let rect = noode.boxEl.getBoundingClientRect();
+                if (noode.r.boxEl) {
+                    let rect = noode.r.boxEl.getBoundingClientRect();
                     updateNoodeSize(noodel, noode, rect.height, rect.width);
                 }
     
-                if (noode.branchBoxEl) {
-                    let rect = noode.branchBoxEl.getBoundingClientRect();
+                if (noode.r.branchBoxEl) {
+                    let rect = noode.r.branchBoxEl.getBoundingClientRect();
                     updateBranchSize(noodel, noode, rect.height, rect.width);
                 }
 
@@ -243,7 +243,7 @@ export function checkContentOverflow(noodel: NoodelState, noode: NoodeState) {
     
     if (!(noode.parent.isBranchVisible || noode.parent.isBranchTransparent)) return;
 
-    let el = noode.el;
+    let el = noode.r.el;
     let clientHeight = el.clientHeight;
     let clientWidth = el.clientWidth;
     let scrollHeight = el.scrollHeight;

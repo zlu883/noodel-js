@@ -25,8 +25,8 @@ export function findCurrentTrunkOffset(noodel: NoodelState): number {
     if (!noodel.applyTrunkMove) return noodel.trunkOffset;
 
     let orientation = noodel.options.orientation;
-    let canvasRect = noodel.canvasEl.getBoundingClientRect();
-    let trunkRect = noodel.trunkEl.getBoundingClientRect();
+    let canvasRect = noodel.r.canvasEl.getBoundingClientRect();
+    let trunkRect = noodel.r.trunkEl.getBoundingClientRect();
 
     if (orientation === 'ltr') {
         return getFocalWidth(noodel) - (trunkRect.left - canvasRect.left);
@@ -52,8 +52,8 @@ export function findCurrentBranchOffset(noodel: NoodelState, parent: NoodeState)
 
     let orientation = noodel.options.orientation;
     let branchDirection = noodel.options.branchDirection;
-    let canvasRect = noodel.canvasEl.getBoundingClientRect();
-    let focalBranchRect = parent.branchEl.getBoundingClientRect();
+    let canvasRect = noodel.r.canvasEl.getBoundingClientRect();
+    let focalBranchRect = parent.r.branchEl.getBoundingClientRect();
 
     if (orientation === 'ltr' || orientation === 'rtl') {
         if (branchDirection === 'normal') {

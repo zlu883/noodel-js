@@ -5,25 +5,47 @@ import NoodelState from '../types/NoodelState';
 import { showActiveSubtree } from './noodel-mutate';
 import { setupRouting, unsetRouting } from './noodel-routing';
 import NoodeOptions from '../types/NoodeOptions';
-import { generateNoodeId, registerNoodeSubtree, findNoodeViewState, isIdRegistered, findNoodeViewModel } from './id-register';
+import { generateNoodeId, registerNoodeSubtree, findNoode, isIdRegistered } from './id-register';
 import { alignNoodelOnJump } from './noodel-navigate';
 import { cancelPan } from './noodel-pan';
 import { resetAlignment } from './noodel-align';
 import { traverseDescendents } from './noodel-traverse';
 import { attachBranchResizeSensor, attachCanvasResizeSensor, attachResizeSensor, detachBranchResizeSensor, detachResizeSensor } from './resize-detect';
+import Noode from '../main/Noode';
 
 export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelState {
 
     let noodel: NoodelState = {
-        idCount: -1,
-        idMap: new Map([]),
-        throttleMap: new Map([]),
-        debounceMap: new Map([]),
-        eventQueue: [],
+        r: {
+            containerEl: null,
+            vueInstance: null,
+            idCount: -1,
+            idMap: new Map([]),
+            throttleMap: new Map([]),
+            debounceMap: new Map([]),
+            eventListeners: new Map([]),
+            eventQueue: [],
+            onHashChanged: null,
+            lastPanTimestamp: null,
+            panOriginTrunk: null,
+            panOriginBranch: null,
+            panAxis: null,
+            swipeVelocityBuffer: [],
+            isShiftKeyPressed: false,
+            limitIndicatorTimeout: null,
+            pointerUpSrcNoode: null,
+            panStartFocalNoode: null,
+            ignoreTransitionEnd: false,
+            isMounted: false,
+            canvasEl: null,
+            trunkEl: null,
+            hammerJsInstance: null,
+        },
+
         root: null,
         focalParent: null,
         focalLevel: 1,
-        
+
         trunkOffset: 0,
         applyTrunkMove: false,
 
@@ -32,14 +54,11 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         trunkStartReached: false,
         trunkEndReached: false,
 
-        panOriginTrunk: null,
-        panOriginBranch: null,
-        panAxis: null,
         isInInspectMode: false,
 
         containerHeight: 0,
         containerWidth: 0,
-        
+
         options: {
             visibleSubtreeDepth: 1,
             retainDepthOnTapNavigation: false,
@@ -60,17 +79,9 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             showLimitIndicators: true,
             showBranchBackdrops: false,
             showChildIndicators: true,
-            onMount: null,
-            onEnterInspectMode: null,
-            onExitInspectMode: null,
-            onFocalNoodeChange: null,
-            onFocalParentChange: null,
             orientation: "ltr",
             branchDirection: "normal"
         },
-        onHashChanged: null,
-        lastPanTimestamp: null,
-        swipeVelocityBuffer: []
     }
 
     let rootNoode = buildNoodeView(noodel, root, 0, null, true, 0);
@@ -86,12 +97,12 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         let hash = window.location.hash;
 
         if (hash) {
-            let target = findNoodeViewState(noodel, hash.substr(1));
+            let target = findNoode(noodel, hash.substr(1));
 
             if (target && target.parent) {
                 alignNoodelOnJump(noodel, target);
             }
-        } 
+        }
     }
 
     return noodel;
@@ -102,12 +113,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
  */
 export function parseHTMLToNoode(el: Element): NoodeDefinition {
 
-    let id = el.getAttribute('data-id');
-    let className = el.getAttribute('data-class');
-    let style = el.getAttribute('data-style');
-    let isActive = el.hasAttribute('data-active');
     let content = '';
-    let noodeCount = 0;
     let children: NoodeDefinition[] = [];
 
     for (let i = 0; i < el.childNodes.length; i++) {
@@ -118,7 +124,6 @@ export function parseHTMLToNoode(el: Element): NoodeDefinition {
         }
         else if (node.nodeType === Node.ELEMENT_NODE) {
             if (node.nodeName === "DIV" && (node as Element).className.split(' ').some(c => c === 'noode')) {
-                noodeCount++;
                 children.push(parseHTMLToNoode(node as Element));
             }
             else {
@@ -127,19 +132,41 @@ export function parseHTMLToNoode(el: Element): NoodeDefinition {
         }
     }
 
+    let attributes = (el as HTMLElement).dataset;
+
     return {
-        id: id,
+        id: attributes.id || null,
         content: content || null,
-        isActive: isActive,
+        isActive: 'active' in attributes,
         children: children,
-        className: className,
-        style: style
+        classNames: {
+            noode: attributes.classNoode,
+            contentBox: attributes.classContentBox,
+            childIndicator: attributes.classChildIndicator,
+            overflowIndicatorLeft: attributes.classOverflowIndicatorLeft,
+            overflowIndicatorRight: attributes.classOverflowIndicatorRight,
+            overflowIndicatorTop: attributes.classOverflowIndicatorTop,
+            overflowIndicatorBottom: attributes.classOverflowIndicatorBottom,
+            branch: attributes.classBranch,
+            branchBackdrop: attributes.classBranchBackdrop,
+        },
+        styles: {
+            noode: attributes.styleNoode,
+            contentBox: attributes.styleContentBox,
+            childIndicator: attributes.styleChildIndicator,
+            overflowIndicatorLeft: attributes.styleOverflowIndicatorLeft,
+            overflowIndicatorRight: attributes.styleOverflowIndicatorRight,
+            overflowIndicatorTop: attributes.styleOverflowIndicatorTop,
+            overflowIndicatorBottom: attributes.styleOverflowIndicatorBottom,
+            branch: attributes.styleBranch,
+            branchBackdrop: attributes.styleBranchBackdrop,
+        },
     };
 }
 
 export function setupCanvasEl(noodel: NoodelState) {
 
-    let rect = noodel.canvasEl.getBoundingClientRect();
+    let rect = noodel.r.canvasEl.getBoundingClientRect();
 
     noodel.containerWidth = rect.width;
     noodel.containerHeight = rect.height;
@@ -167,12 +194,12 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
         unsetRouting(noodel);
     }
 
-    if (noodel.isMounted) {
+    if (noodel.r.isMounted) {
         let newOrientation = noodel.options.orientation;
         let newBranchDirection = noodel.options.branchDirection;
 
         if (((oldOrientation === 'ltr' || oldOrientation === 'rtl') && (newOrientation === 'ttb' || newOrientation === 'btt')) ||
-        ((oldOrientation === 'ttb' || oldOrientation === 'btt') && (newOrientation === 'ltr' || newOrientation === 'rtl'))) {
+            ((oldOrientation === 'ttb' || oldOrientation === 'btt') && (newOrientation === 'ltr' || newOrientation === 'rtl'))) {
             resetAlignment(noodel);
         }
         else if (newBranchDirection !== oldBranchDirection) {
@@ -185,13 +212,13 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
 
         if (oldUseResizeDetection && !newUseResizeDetection) {
             traverseDescendents(noodel.root, desc => {
-                detachBranchResizeSensor(desc); 
+                detachBranchResizeSensor(desc);
                 detachResizeSensor(desc);
             }, true);
         }
         else if (newUseResizeDetection && !oldUseResizeDetection) {
-            traverseDescendents(noodel.root, desc => {             
-                attachBranchResizeSensor(noodel, desc); 
+            traverseDescendents(noodel.root, desc => {
+                attachBranchResizeSensor(noodel, desc);
                 attachResizeSensor(noodel, desc);
             }, true);
         }
@@ -203,8 +230,8 @@ export function parseAndApplyNoodeOptions(noodel: NoodelState, options: NoodeOpt
     let oldUseResizeDetection = typeof noode.options.useResizeDetection === "boolean"
         ? noode.options.useResizeDetection
         : noodel.options.useResizeDetection;
-    let oldUseBranchResizeDetection = typeof noode.options.useBranchResizeDetection === 'boolean' 
-        ? noode.options.useBranchResizeDetection 
+    let oldUseBranchResizeDetection = typeof noode.options.useBranchResizeDetection === 'boolean'
+        ? noode.options.useBranchResizeDetection
         : noodel.options.useResizeDetection;
 
     noode.options = {
@@ -212,12 +239,12 @@ export function parseAndApplyNoodeOptions(noodel: NoodelState, options: NoodeOpt
         ...options
     };
 
-    if (noodel.isMounted) {
+    if (noodel.r.isMounted) {
         let newUseResizeDetection = typeof noode.options.useResizeDetection === "boolean"
             ? noode.options.useResizeDetection
             : noodel.options.useResizeDetection;
-        let newUseBranchResizeDetection = typeof noode.options.useBranchResizeDetection === 'boolean' 
-            ? noode.options.useBranchResizeDetection 
+        let newUseBranchResizeDetection = typeof noode.options.useBranchResizeDetection === 'boolean'
+            ? noode.options.useBranchResizeDetection
             : noodel.options.useResizeDetection;
 
         if (oldUseResizeDetection && !newUseResizeDetection) {
@@ -240,20 +267,23 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
 
     let isRoot = parent === null;
     if (!def.children) def.children = [];
-    
+    if (!def.classNames) def.classNames = {};
+    if (!def.styles) def.styles = {};
+    if (!def.options) def.options = {};
+
     // parse and validate ID
     let newId = null;
-    
+
     if (typeof def.id === 'string') {
         if (isIdRegistered(noodel, def.id)) {
             throw new Error("Duplicate ID for new noode: " + def.id);
         }
 
         newId = def.id;
-    } 
+    }
     else {
         newId = generateNoodeId(noodel);
-    } 
+    }
 
     // parse and validate active child index
     let activeChildIndex = def.children.length > 0 ? 0 : null;
@@ -266,35 +296,68 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
     }
 
     let newView: NoodeState = {
+        r: {
+            eventListeners: new Map([]),
+            isRoot: isRoot,
+            branchRelativeOffset: branchRelativeOffset,
+            trunkRelativeOffset: isRoot ? 0 : parent.r.trunkRelativeOffset + parent.r.branchSize,
+            size: 0,
+            branchSize: 0,
+            ignoreTransitionEnd: false,
+            el: null,
+            boxEl: null,
+            branchEl: null,
+            branchBoxEl: null,
+            resizeSensor: null,
+            branchResizeSensor: null,
+            vm: null,
+            fade: false
+        },
         index: index,
         level: isRoot ? 0 : parent.level + 1,
         isBranchVisible: false,
         isBranchTransparent: true, // initialize to transparent state for capturing size
         isFocalParent: isRoot, // only initialze root as focal parent
         isActive: isActive,
-        size: 0,
-        trunkRelativeOffset: isRoot ? 0 : parent.trunkRelativeOffset + parent.branchSize,
+        
         branchOffset: 0,
         applyBranchMove: false,
         isInInspectMode: false,
-        branchRelativeOffset: branchRelativeOffset,
-        branchSize: 0,
+
         parent: parent,
         id: newId,
         children: [],
         content: def.content || null,
-        className: parseClassName(def.className),
-        style: parseStyle(def.style),
+        classNames: {
+            noode: parseClassName(def.classNames.noode),
+            contentBox: parseClassName(def.classNames.contentBox),
+            childIndicator: parseClassName(def.classNames.childIndicator),
+            overflowIndicatorTop: parseClassName(def.classNames.overflowIndicatorTop),
+            overflowIndicatorBottom: parseClassName(def.classNames.overflowIndicatorBottom),
+            overflowIndicatorLeft: parseClassName(def.classNames.overflowIndicatorLeft),
+            overflowIndicatorRight: parseClassName(def.classNames.overflowIndicatorRight),
+            branch: parseClassName(def.classNames.branch),
+            branchBackdrop: parseClassName(def.classNames.branchBackdrop)
+        },
+        styles: {
+            noode: parseStyle(def.styles.noode),
+            contentBox: parseStyle(def.styles.contentBox),
+            childIndicator: parseStyle(def.styles.childIndicator),
+            overflowIndicatorTop: parseStyle(def.styles.overflowIndicatorTop),
+            overflowIndicatorBottom: parseStyle(def.styles.overflowIndicatorBottom),
+            overflowIndicatorLeft: parseStyle(def.styles.overflowIndicatorLeft),
+            overflowIndicatorRight: parseStyle(def.styles.overflowIndicatorRight),
+            branch: parseStyle(def.styles.branch),
+            branchBackdrop: parseStyle(def.styles.branchBackdrop)
+        },
         activeChildIndex: activeChildIndex,
         options: {
             useResizeDetection: null,
             useBranchResizeDetection: null,
+            useOverflowDetection: null,
             showBranchBackdrop: null,
             showChildIndicator: null,
-            onChildrenEnterFocus: null,
-            onChildrenExitFocus: null,
-            onEnterFocus: null,
-            onExitFocus: null,
+            showOverflowIndicators: null,
         },
         hasOverflowTop: false,
         hasOverflowLeft: false,
@@ -302,12 +365,9 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
         hasOverflowRight: false
     }
 
-    // temporarily use the view object as a holder for custom data, will be removed later
-    if (def.data !== undefined) newView["data"] = def.data;
+    newView.r.vm = new (Noode as any)(newView, noodel);
 
-    if (def.options && typeof def.options === "object") {
-        parseAndApplyNoodeOptions(noodel, def.options, newView);
-    }
+    parseAndApplyNoodeOptions(noodel, def.options, newView);
 
     for (let i = 0; i < def.children.length; i++) {
         newView.children.push(buildNoodeView(noodel, def.children[i], i, newView, i === activeChildIndex, 0));
@@ -318,41 +378,69 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
 
 export function extractNoodeDefinition(noodel: NoodelState, noode: NoodeState): NoodeDefinition {
 
-    let data = findNoodeViewModel(noodel, noode.id).data;
     let def: NoodeDefinition = {
         id: noode.id,
         content: noode.content,
         isActive: noode.isActive,
         children: noode.children.map(c => extractNoodeDefinition(noodel, c)),
-        className: noode.className,
-        style: noode.style,
+        classNames: {
+            noode: serializeClassName(noode.classNames.noode),
+            contentBox: serializeClassName(noode.classNames.contentBox),
+            childIndicator: serializeClassName(noode.classNames.childIndicator),
+            overflowIndicatorTop: serializeClassName(noode.classNames.overflowIndicatorTop),
+            overflowIndicatorBottom: serializeClassName(noode.classNames.overflowIndicatorBottom),
+            overflowIndicatorLeft: serializeClassName(noode.classNames.overflowIndicatorLeft),
+            overflowIndicatorRight: serializeClassName(noode.classNames.overflowIndicatorRight),
+            branch: serializeClassName(noode.classNames.branch),
+            branchBackdrop: serializeClassName(noode.classNames.branchBackdrop)
+        },
+        styles: {
+            noode: serializeStyle(noode.classNames.noode),
+            contentBox: serializeStyle(noode.classNames.contentBox),
+            childIndicator: serializeStyle(noode.classNames.childIndicator),
+            overflowIndicatorTop: serializeStyle(noode.classNames.overflowIndicatorTop),
+            overflowIndicatorBottom: serializeStyle(noode.classNames.overflowIndicatorBottom),
+            overflowIndicatorLeft: serializeStyle(noode.classNames.overflowIndicatorLeft),
+            overflowIndicatorRight: serializeStyle(noode.classNames.overflowIndicatorRight),
+            branch: serializeStyle(noode.classNames.branch),
+            branchBackdrop: serializeStyle(noode.classNames.branchBackdrop)
+        },
         options: {
             ...noode.options
-        }
+        },
     };
 
-    if (data !== undefined) def.data = data;
     return def;
 }
 
-export function parseClassName(className: string | string[]): string[] {
-    if (Array.isArray(className)) return className;
-    if (className && typeof className === 'string') return className.split(' ');
-    return [];
+export function parseClassName(className: string): string[] {
+    if (!className) return [];
+    
+    return className.split(' ');
 }
 
-export function parseStyle(style: string | object): object {
-    if (style && typeof style === 'object') return style;
-    if (style && typeof style === 'string') {
-        let styles = style.split(';').map(s => s.split(':').map(t => t.trim())).filter(s => s.length === 2);
-        let styleObj = {};
+export function parseStyle(style: string): object {
+    if (!style) return {};
 
-        styles.forEach(s => {
-            styleObj[s[0]] = s[1];
-        });
+    let styleObj = {};
 
-        return styleObj;
-    } 
+    // does not validate the format of the style string - will throw error if wrong format
+    style.split(';')
+        .map(s => s.split(':').map(t => t.trim()))
+        .forEach(s => styleObj[s[0]] = s[1]);
 
-    return {};
+    return styleObj;
+}
+
+export function serializeClassName(className: string[]): string {
+    return className.length > 0 ? className.join(' ') : null;
+}
+
+export function serializeStyle(style: object): string {
+    let str = '';
+
+    Object.keys(style).forEach(k => str += (k + ': ' + style[k] + '; '));
+    str.trimEnd();
+    
+    return str || null;
 }

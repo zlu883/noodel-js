@@ -42,7 +42,7 @@ export function setFocalParent(noodel: NoodelState, newFocalParent: NoodeState) 
  * Changes the active child of the parent to the given index (can be null to unset active child).
  * Does not align the branch.
  */
-export function setActiveChild(noodel: NoodelState, parent: NoodeState, index: number | null) {
+export function setActiveChild(parent: NoodeState, index: number | null) {
     if (getActiveChild(parent)) {
         getActiveChild(parent).isActive = false;
     }
@@ -82,7 +82,7 @@ export function insertChildren(noodel: NoodelState, parent: NoodeState, index: n
 
     // find initial relative offset for the new children
     let prev = parent.children[index - 1];
-    let branchRelativeOffset = prev ? prev.branchRelativeOffset + prev.size : 0;
+    let branchRelativeOffset = prev ? prev.r.branchRelativeOffset + prev.r.size : 0;
 
     // construct view tree, this should come first as it may throw error
     let children = childDefs.map((def, pos) => {
@@ -103,7 +103,7 @@ export function insertChildren(noodel: NoodelState, parent: NoodeState, index: n
 
     // if panning focal branch, cancel it
     // unfortunately it's too difficult to align pan offsets at the moment
-    if (parent.isFocalParent && noodel.panAxis === "branch") {
+    if (parent.isFocalParent && noodel.r.panAxis === "branch") {
         cancelPan(noodel);
     }
 
@@ -131,7 +131,7 @@ export function insertChildren(noodel: NoodelState, parent: NoodeState, index: n
             }
         }
 
-        setActiveChild(noodel, parent, activeChildIndex);
+        setActiveChild(parent, activeChildIndex);
     }
 
     if (parent.isActive && (isRoot(parent) || parent.parent.isBranchVisible)) {
@@ -157,7 +157,7 @@ export function deleteChildren(noodel: NoodelState, parent: NoodeState, index: n
 
     // if panning focal branch, cancel it
     // unfortunately it's too difficult to align pan offsets at the moment
-    if (parent.isFocalParent && noodel.panAxis === "branch") {
+    if (parent.isFocalParent && noodel.r.panAxis === "branch") {
         cancelPan(noodel);
     }
 
@@ -172,7 +172,7 @@ export function deleteChildren(noodel: NoodelState, parent: NoodeState, index: n
         // align trunk to nearest parent branch if current focal branch is being deleted
         if ((parent.level + 1) <= noodel.focalLevel && parent.isBranchVisible) {
 
-            if (noodel.panAxis === "trunk") {
+            if (noodel.r.panAxis === "trunk") {
                 cancelPan(noodel);
             }
 
@@ -196,18 +196,18 @@ export function deleteChildren(noodel: NoodelState, parent: NoodeState, index: n
         }
 
         if (parent.children.length === deleteCount) { // all children deleted
-            setActiveChild(noodel, parent, null);
+            setActiveChild(parent, null);
             parent.isBranchVisible = false;
         }
         else if (index + deleteCount < parent.children.length) { // siblings exist after the deleted children
-            setActiveChild(noodel, parent, index + deleteCount); // set next sibling active
+            setActiveChild(parent, index + deleteCount); // set next sibling active
             showActiveSubtree(noodel, parent, noodel.options.visibleSubtreeDepth);            
-            parent.branchOffset += getActiveChild(parent).size / 2;
+            parent.branchOffset += getActiveChild(parent).r.size / 2;
         }
         else { // no siblings exist after deleted children
-            setActiveChild(noodel, parent, index - 1); // set prev sibling active
+            setActiveChild(parent, index - 1); // set prev sibling active
             showActiveSubtree(noodel, parent, noodel.options.visibleSubtreeDepth);
-            parent.branchOffset -= getActiveChild(parent).size / 2;
+            parent.branchOffset -= getActiveChild(parent).r.size / 2;
         }
     }
 
@@ -224,9 +224,16 @@ export function deleteChildren(noodel: NoodelState, parent: NoodeState, index: n
     // do delete
     let deletedNoodes = parent.children.splice(index, deleteCount);
 
+    // adjust properties of the deleted noodes only (not their descendants)
+    deletedNoodes.forEach(n => {
+        n.parent = null;
+        n.index = 0;
+        n.isActive = false;
+    });
+
     // add fading flag for noodes to be removed from a branch where the branch itself is not deleted
     // this is used to determine which noodes need their positions adjusted for fade out
-    if (parent.children.length > 0) deletedNoodes.forEach(noode => noode["fade"] = true);
+    if (parent.children.length > 0) deletedNoodes.forEach(noode => noode.r.fade = true);
 
     // queue events
     handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));

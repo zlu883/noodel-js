@@ -9,7 +9,7 @@ import { Axis } from 'src/types/Axis';
 
 export function setupCanvasInput(noodel: NoodelState) {
 
-    let el = noodel.canvasEl;
+    let el = noodel.r.canvasEl;
 
     el.addEventListener('keydown', (ev: KeyboardEvent) => throttle(noodel, 'keydown', () => onKeyDown(noodel, ev), 60));
     el.addEventListener('keyup', (ev: KeyboardEvent) => onKeyUp(noodel, ev));
@@ -30,7 +30,7 @@ export function setupCanvasInput(noodel: NoodelState) {
     manager.on("panend", (ev) => onPanEnd(noodel, ev));
     manager.on('tap', (ev) => onTap(noodel, ev));
 
-    noodel.hammerJsInstance = manager;
+    noodel.r.hammerJsInstance = manager;
 }
 
 /**
@@ -63,7 +63,7 @@ function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {
     if (checkInputPreventClass(noodel, ev, 'nd-prevent-key')) return;
 
     if (ev.key === "Shift") {
-        noodel.isShiftKeyPressed = true;
+        noodel.r.isShiftKeyPressed = true;
     }
     else if (ev.key === "Enter") {
         if (!noodel.options.useInspectModeKey) return;
@@ -91,7 +91,7 @@ function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {
         moveNoodel(noodel, 'x', 1);
     }
     else if (ev.key === " " || ev.key === "Spacebar") {
-        if (noodel.isShiftKeyPressed) {
+        if (noodel.r.isShiftKeyPressed) {
             moveNoodel(noodel, 'x', 3);
         }
         else {
@@ -99,7 +99,7 @@ function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {
         }
     }
     else if (ev.key === "PageDown") {
-        if (noodel.isShiftKeyPressed) {
+        if (noodel.r.isShiftKeyPressed) {
             moveNoodel(noodel, 'x', 3);
         }
         else {
@@ -107,7 +107,7 @@ function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {
         }
     }
     else if (ev.key === "PageUp") {
-        if (noodel.isShiftKeyPressed) {
+        if (noodel.r.isShiftKeyPressed) {
             moveNoodel(noodel, 'x', -3);
         }
         else {
@@ -115,7 +115,7 @@ function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {
         }
     }
     else if (ev.key === "Home") {
-        if (noodel.isShiftKeyPressed) {
+        if (noodel.r.isShiftKeyPressed) {
             moveNoodel(noodel, 'x', Number.MIN_SAFE_INTEGER);
         }
         else {
@@ -123,7 +123,7 @@ function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {
         }
     }
     else if (ev.key === "End") {
-        if (noodel.isShiftKeyPressed) {
+        if (noodel.r.isShiftKeyPressed) {
             moveNoodel(noodel, 'x', Number.MAX_SAFE_INTEGER);
         }
         else {
@@ -134,7 +134,7 @@ function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {
 
 function onKeyUp(noodel: NoodelState, event: KeyboardEvent) {
     if (event.key === "Shift") {
-        noodel.isShiftKeyPressed = false;
+        noodel.r.isShiftKeyPressed = false;
     }
 }
 
@@ -145,7 +145,7 @@ function onWheel(noodel: NoodelState, ev: WheelEvent) {
     if (checkInputPreventClass(noodel, ev, 'nd-prevent-wheel')) return;
 
     if (Math.abs(ev.deltaY) > Math.abs(ev.deltaX)) {
-        if (noodel.isShiftKeyPressed) {
+        if (noodel.r.isShiftKeyPressed) {
             if (ev.deltaY > 0) {
                 moveNoodel(noodel, 'x', 1);
             }
@@ -163,7 +163,7 @@ function onWheel(noodel: NoodelState, ev: WheelEvent) {
         }      
     }
     else if (Math.abs(ev.deltaX) > Math.abs(ev.deltaY)) {
-        if (noodel.isShiftKeyPressed) {
+        if (noodel.r.isShiftKeyPressed) {
             if (ev.deltaY > 0) {
                 moveNoodel(noodel, 'y', 1);
             }
@@ -209,14 +209,14 @@ function onPanEnd(noodel: NoodelState, ev: HammerInput) {
 
 function onTap(noodel: NoodelState, ev: HammerInput) {
 
-    if (noodel.panAxis !== null) return;
+    if (noodel.r.panAxis !== null) return;
     if (checkInputPreventClass(noodel, ev.srcEvent, 'nd-prevent-tap')) return;
 
     if ((ev as any).tapCount === 1) {
         if (!noodel.options.useTapNavigation) return;
         if (noodel.isInInspectMode) return;        
-        if (noodel.pointerUpSrcNoode) {
-            let target = noodel.pointerUpSrcNoode;
+        if (noodel.r.pointerUpSrcNoode) {
+            let target = noodel.r.pointerUpSrcNoode;
 
             if (noodel.options.retainDepthOnTapNavigation && !target.isBranchVisible) {
                 let levelDiff = getActiveChild(noodel.focalParent).level - target.level;
@@ -258,7 +258,7 @@ function checkInputPreventClass(noodel: NoodelState, ev: Event, className: strin
             return true;
         }
 
-        if (target === noodel.canvasEl) {
+        if (target === noodel.r.canvasEl) {
             return false;
         }
 

@@ -1,14 +1,14 @@
 import NoodelState from '../types/NoodelState';
 
 export function throttle(noodel: NoodelState, key: string, func: () => any, interval: number) {
-    if (noodel.throttleMap.get(key)) return;
+    if (noodel.r.throttleMap.get(key)) return;
 
     func();
 
-    noodel.throttleMap.set(key, true);
+    noodel.r.throttleMap.set(key, true);
 
     setTimeout(() => {
-        noodel.throttleMap.set(key, false);
+        noodel.r.throttleMap.set(key, false);
     }, interval);
 }
 
@@ -17,7 +17,7 @@ export function throttle(noodel: NoodelState, key: string, func: () => any, inte
  * occurrences with the same key. If interval is 0, will override and execute immediately.
  */
 export function debounce(noodel: NoodelState, key: string, func: () => any, interval: number) {
-    let timeoutId = noodel.debounceMap.get(key);
+    let timeoutId = noodel.r.debounceMap.get(key);
     
     if (timeoutId) {
         clearTimeout(timeoutId);
@@ -27,7 +27,7 @@ export function debounce(noodel: NoodelState, key: string, func: () => any, inte
         func();
     }
     else {
-        noodel.debounceMap.set(key, setTimeout(() => {
+        noodel.r.debounceMap.set(key, setTimeout(() => {
             func();
         }, interval));
     }

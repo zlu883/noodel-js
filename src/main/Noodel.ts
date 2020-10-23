@@ -2,36 +2,25 @@ import NoodeDefinition from '../types/NoodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
 import { setupNoodel, parseHTMLToNoode, parseAndApplyOptions } from '../controllers/noodel-setup';
 import NoodelCanvas from '../view/NoodelCanvas.vue';
-import { nextTick as vueNextTick, defineComponent, createApp, h, reactive } from 'vue';
+import { nextTick as vueNextTick, createApp, reactive } from 'vue';
 import NoodelState from '../types/NoodelState';
 import Noode from './Noode';
 import { getActiveChild } from '../controllers/getters';
 import { shiftFocalLevel, shiftFocalNoode } from '../controllers/noodel-navigate';
 import { findNoodeByPath as _findNoodeByPath } from '../controllers/noodel-traverse';
-import { findNoodeViewModel } from '../controllers/id-register';
 import { enterInspectMode, exitInspectMode } from '../controllers/inspect-mode';
 import { handleFocalNoodeChange } from '../controllers/event-emit';
+import { findNoode } from '../controllers/id-register';
+import NoodelEventMap from '../types/NoodelEventMap';
 
 /**
  * The view model of a noodel. Has 2-way binding with the view.
  */
 export default class Noodel {
 
-    /**
-     * A Vue component (in constructor form) for Noodel ready to be used in a Vue project.
-     * Takes a single prop, 'noodel', which should be a Noodel instance registered as
-     * data in your Vue instance. 
-     */
-    static VueComponent = defineComponent({
-        props: ['noodel'],
-        render() {
-            return h(NoodelCanvas as any, { noodel: this.noodel._v });
-        }
-    });
+    private noodelState: NoodelState;
 
-    private _v: NoodelState;
-    private containerEl: Element = null;
-    private vueInstance: any = null;
+    static VueComponent: object = NoodelCanvas;
 
     /**
      * Creates the view model of a noodel based on the given content tree.
@@ -42,6 +31,8 @@ export default class Noodel {
      * @param options Global options for the noodel
      */
     constructor(contentTree?: NoodeDefinition[] | Element | string, options?: NoodelOptions) {
+        console.log(Noodel.VueComponent);
+
         let root: NoodeDefinition = null;
     
         if (Array.isArray(contentTree)) {
@@ -67,9 +58,9 @@ export default class Noodel {
         }
 
         // use Vue 3's reactivity API to convert global state store into a proxied object
-        this._v = reactive(setupNoodel(root, options));
+        this.noodelState = reactive(setupNoodel(root, options)) as any;
 
-        handleFocalNoodeChange(this._v, null, getActiveChild(this._v.focalParent));
+        handleFocalNoodeChange(this.noodelState, null, getActiveChild(this.noodelState.focalParent));
     }
 
     // LIFECYCLE
@@ -86,12 +77,9 @@ export default class Noodel {
             throw new Error("Cannot mount noodel: invalid container element");
         }
 
-        this.containerEl = el;
-        this.vueInstance = createApp({
-            render: () => h(NoodelCanvas as any, { noodel: this._v }),
-        });
-
-        this.vueInstance.mount(el);
+        this.noodelState.r.containerEl = el;
+        this.noodelState.r.vueInstance = createApp(NoodelCanvas as any, {noodel: this.noodelState});
+        this.noodelState.r.vueInstance.mount(el);
     }
 
     /**
@@ -99,10 +87,16 @@ export default class Noodel {
      * but keeping the current state of the view model.
      */
     unmount() {
-        if (this.vueInstance) this.vueInstance.unmount(this.containerEl)
-        if (this.containerEl) this.containerEl.remove();
-        this.vueInstance = null;
-        this.containerEl = null;
+        let vueInstance = this.noodelState.r.vueInstance;
+        let containerEl = this.noodelState.r.containerEl;
+
+        if (vueInstance) {
+            vueInstance.unmount(containerEl);
+            containerEl.remove();
+        }
+        
+        this.noodelState.r.vueInstance = null;
+        this.noodelState.r.containerEl = null;
     }
 
     /**
@@ -119,25 +113,37 @@ export default class Noodel {
     // GETTERS
 
     /**
-     * Gets the container element of this noodel (i.e. nd-canvas), if mounted.
+     * Get the internal reactive state tree of this noodel. Only intended to be used
+     * as props to the Vue component in a Vue app. Should not be modified directly.
      */
-    getEl(): HTMLDivElement {
-        return this._v.canvasEl;
+    getState(): NoodelState {
+        return this.noodelState;
     }
 
     /**
-     * Gets the level of the current focal branch. The first branch has level 1.
+     * Get the options applied to this noode.
+     * Return a cloned object.
+     */
+    getOptions(): NoodelOptions {
+        return {
+            ...this.noodelState.options
+        };
+    }
+
+    /**
+     * Get the level of the current focal branch. The first branch has level 1.
      */
     getFocalLevel(): number {
-        return this._v.focalLevel;
+        return this.noodelState.focalLevel;
     }
 
     /**
-     * Gets the height (total number of levels) in the current active tree.
+     * Get the height (total number of levels) in the current active tree,
+     * excluding the root.
      */
     getActiveTreeHeight(): number {
         let count = 0;
-        let currentParent = this._v.root;
+        let currentParent = this.noodelState.root;
 
         while (currentParent.activeChildIndex !== null) {
             count++;
@@ -148,127 +154,142 @@ export default class Noodel {
     }
 
     /**
-     * Gets the number of noodes in this noodel (excluding the root).
+     * Get the number of noodes in this noodel (excluding the root).
      */
     getNoodeCount(): number {
-        return this._v.idMap.size - 1;
+        return this.noodelState.r.idMap.size - 1;
     }
 
     /**
-     * Gets the root noode. The root is an invisible noode
+     * Get the root noode. The root is an invisible noode
      * that serves as the parent of the topmost branch, and always exists.
      */
     getRoot(): Noode {
-        return findNoodeViewModel(this._v, this._v.root.id);
+        return this.noodelState.root.r.vm;
     }
 
     /**
-     * Gets the parent noode of the current focal branch.
+     * Get the parent noode of the current focal branch.
      */
     getFocalParent(): Noode {
-        return findNoodeViewModel(this._v, this._v.focalParent.id);
+        return this.noodelState.focalParent.r.vm;
     }
 
     /**
-     * Gets the current focal noode.
-     */
-    getFocalNoode(): Noode {
-        let focalNoode = getActiveChild(this._v.focalParent);
-        return focalNoode ? findNoodeViewModel(this._v, focalNoode.id) : null;
-    }
-
-    /**
-     * Gets the noode at the given path, an array of 0-based indices
-     * starting from the root (e.g [0, 2] gets the 3rd child of the first child
-     * of the root). Returns null if no noode exists on that path.
+     * Get the noode at the given path, an array of 0-based indices
+     * starting from the root. Return null if no such noode exist.
      */
     findNoodeByPath(path: number[]): Noode {
-        if (!Array.isArray(path)) {
-            console.warn("Cannot find noode: invalid path");
-            return null;
-        }
-
-        let target = _findNoodeByPath(this._v, path);
+        let target = _findNoodeByPath(this.noodelState, path);
         
-        return target ? findNoodeViewModel(this._v, target.id) : null;
+        return target ? target.r.vm : null;
     }
 
     /**
-     * Gets the noode with the given ID. Returns null if does not exist.
+     * Get the noode with the given ID. Return null if no such noode exist.
      */
     findNoodeById(id: string): Noode {
-        if (typeof id !== 'string') {
-            console.warn("Cannot find noode: invalid id");
-            return null;
-        }
+        let target = findNoode(this.noodelState, id);
         
-        return findNoodeViewModel(this._v, id);
+        return target ? target.r.vm : null;
+    }
+
+    /**
+     * Check if this noodel is in inspect mode.
+     */
+    isInInspectMode(): boolean {
+        return this.noodelState.isInInspectMode;
     }
 
     // MUTATERS
 
     /**
-     * Changes the options of the noodel. Properties of the given object
+     * Change the options of the noodel. Properties of the given object
      * will be merged into the current options.
      */
     setOptions(options: NoodelOptions) {
-        parseAndApplyOptions(options, this._v);
+        parseAndApplyOptions(options, this.noodelState);
     }
     
     /**
-     * Navigates the noodel to focus on the branch at the given level of
-     * the current active tree. If the level is greater or smaller than
+     * Navigate the noodel to focus on the branch at the given level of
+     * the active tree. If the level is greater or smaller than
      * the possible limits, will navigate to the furthest level in that direction.
      */
     setFocalLevel(level: number) {
-        shiftFocalLevel(this._v, level - this._v.focalLevel);
+        shiftFocalLevel(this.noodelState, level - this.noodelState.focalLevel);
     }
 
     /**
-     * Navigates towards the child branches of the current
+     * Navigate towards the child branches of the current
      * focal noode.
      * @param levelCount number of levels to move, defaults to 1
      */
     moveIn(levelCount: number = 1) {
-        shiftFocalLevel(this._v, levelCount);
+        shiftFocalLevel(this.noodelState, levelCount);
     }
 
     /**
-     * Navigates towards the parent branches of the current
+     * Navigate towards the parent branches of the current
      * focal noode.
      * @param levelCount number of levels to move, defaults to 1
      */
     moveOut(levelCount: number = 1) {
-        shiftFocalLevel(this._v, -levelCount);
+        shiftFocalLevel(this.noodelState, -levelCount);
     }
 
     /**
-     * Navigates towards the next siblings of the current
+     * Navigate towards the next siblings of the current
      * focal noode.
      * @param noodeCount number of noodes to move, defaults to 1
      */
     moveForward(noodeCount: number = 1) {
-        shiftFocalNoode(this._v, noodeCount);
+        shiftFocalNoode(this.noodelState, noodeCount);
     }
 
     /**
-     * Navigates towards the previous siblings of the current
+     * Navigate towards the previous siblings of the current
      * focal noode.
      * @param noodeCount number of noodes to move, defaults to 1
      */
     moveBack(noodeCount: number = 1) {
-        shiftFocalNoode(this._v, -noodeCount);
+        shiftFocalNoode(this.noodelState, -noodeCount);
     }
 
     /**
-     * Turns inspect mode on/off.
+     * Turn inspect mode on/off.
      */
     toggleInspectMode(on: boolean) {
         if (on) {
-            enterInspectMode(this._v);
+            enterInspectMode(this.noodelState);
         }
         else {
-            exitInspectMode(this._v);
+            exitInspectMode(this.noodelState);
         }
+
+        document.addEventListener
+    }
+
+    // EVENT
+
+    /**
+     * Attach an event listener on this noodel.
+     * @param ev event name
+     * @param listener event listener to attach
+     */
+    on<E extends keyof NoodelEventMap>(ev: E, listener: NoodelEventMap[E]) {
+        this.noodelState.r.eventListeners.get(ev).push(listener);
+    }
+
+    /**
+     * Remove an event listener from this noodel.
+     * @param ev event name
+     * @param listener the event listener to remove, by reference comparison
+     */
+    off<E extends keyof NoodelEventMap>(ev: E, listener: NoodelEventMap[E]) {
+        let handlers = this.noodelState.r.eventListeners.get(ev);
+        let index = handlers.indexOf(listener);
+
+        if (index > -1) handlers.splice(index, 1);
     }
 }
