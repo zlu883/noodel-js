@@ -87,7 +87,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
             return;
         }
         else if (targetOffset > noodel.trunkOffset) { // moving towards trunk axis end
-            while (targetOffset > targetFocalParent.r.trunkRelativeOffset + targetFocalParent.r.branchSize) {
+            while (targetOffset > targetFocalParent.trunkRelativeOffset + targetFocalParent.branchSize) {
                 let next = getActiveChild(targetFocalParent);
 
                 if (!getActiveChild(next)) break;
@@ -95,7 +95,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
             }
 
             if (!getActiveChild(getActiveChild(targetFocalParent))) {
-                let limit = targetFocalParent.r.trunkRelativeOffset + targetFocalParent.r.branchSize / 2;
+                let limit = targetFocalParent.trunkRelativeOffset + targetFocalParent.branchSize / 2;
 
                 if (targetOffset > limit) {
                     trunkEndReached = true;
@@ -104,7 +104,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
             }
         }
         else { // moving towards trunk axis start            
-            while (targetOffset < targetFocalParent.r.trunkRelativeOffset) {
+            while (targetOffset < targetFocalParent.trunkRelativeOffset) {
                 let prev = targetFocalParent.parent;
 
                 if (!prev) break;
@@ -112,7 +112,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
             }
 
             if (!targetFocalParent.parent) { // is root
-                let limit = targetFocalParent.r.branchSize / 2;
+                let limit = targetFocalParent.branchSize / 2;
 
                 if (targetOffset < limit) {
                     trunkStartReached = true;
@@ -167,7 +167,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
             return;
         }
         else if (targetOffset > noodel.focalParent.branchOffset) { // moving towards branch axis end
-            while (targetOffset > targetNoode.r.branchRelativeOffset + targetNoode.r.size) {
+            while (targetOffset > targetNoode.branchRelativeOffset + targetNoode.size) {
                 let nextIndex = targetIndex + 1;
 
                 if (nextIndex >= focalParent.children.length) break;
@@ -176,7 +176,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
             }
 
             if (targetIndex === focalParent.children.length - 1) {
-                let limit = targetNoode.r.branchRelativeOffset + targetNoode.r.size / 2;
+                let limit = targetNoode.branchRelativeOffset + targetNoode.size / 2;
 
                 if (targetOffset > limit) {
                     branchEndReached = true;
@@ -185,7 +185,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
             }
         }
         else { // moving towards branch axis start
-            while (targetOffset < targetNoode.r.branchRelativeOffset) {
+            while (targetOffset < targetNoode.branchRelativeOffset) {
                 let prevIndex = targetIndex - 1;
 
                 if (prevIndex < 0) break;
@@ -194,7 +194,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
             }
 
             if (targetIndex === 0) {
-                let limit = targetNoode.r.size / 2;
+                let limit = targetNoode.size / 2;
 
                 if (targetOffset < limit) {
                     branchStartReached = true;

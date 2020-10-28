@@ -18,16 +18,9 @@ export default interface NoodeState {
         isRoot: boolean;
         ignoreTransitionEnd: boolean;
 
+        contentBoxEl: HTMLDivElement;
         el: HTMLDivElement;
-        boxEl: HTMLDivElement;
         branchEl: HTMLDivElement;
-        branchBoxEl: HTMLDivElement;
-
-        size: number;
-        branchSize: number;
-
-        trunkRelativeOffset: number;
-        branchRelativeOffset: number;
 
         resizeSensor: ResizeSensor;
         branchResizeSensor: ResizeSensor;
@@ -68,6 +61,18 @@ export default interface NoodeState {
      */
     branchOffset: number;
     applyBranchMove: boolean;
+
+    size: number;
+    branchSize: number;
+
+    /**
+     * Orientation-agnostic offset of this noode's child branch relative to the start of the trunk.
+     */
+    trunkRelativeOffset: number;
+    /**
+     * Orientation-agnostic offset of this noode relative to the start of its containing branch.
+     */
+    branchRelativeOffset: number;
 
     /**
      * Extra variable to prevent Vue from needing to patch every single noode on change,

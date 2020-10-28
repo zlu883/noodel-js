@@ -1,7 +1,7 @@
 import NoodeDefinition from '../types/NoodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
 import { setupNoodel, parseHTMLToNoode, parseAndApplyOptions } from '../controllers/noodel-setup';
-import NoodelCanvas from '../view/NoodelCanvas.vue';
+import NdCanvas from '../view/NdCanvas.vue';
 import { nextTick as vueNextTick, createApp, reactive } from 'vue';
 import NoodelState from '../types/NoodelState';
 import Noode from './Noode';
@@ -20,7 +20,7 @@ export default class Noodel {
 
     private noodelState: NoodelState;
 
-    static VueComponent: object = NoodelCanvas;
+    static VueComponent: object = NdCanvas;
 
     /**
      * Creates the view model of a noodel based on the given content tree.
@@ -31,8 +31,6 @@ export default class Noodel {
      * @param options Global options for the noodel
      */
     constructor(contentTree?: NoodeDefinition[] | Element | string, options?: NoodelOptions) {
-        console.log(Noodel.VueComponent);
-
         let root: NoodeDefinition = null;
     
         if (Array.isArray(contentTree)) {
@@ -78,7 +76,7 @@ export default class Noodel {
         }
 
         this.noodelState.r.containerEl = el;
-        this.noodelState.r.vueInstance = createApp(NoodelCanvas as any, {noodel: this.noodelState});
+        this.noodelState.r.vueInstance = createApp(NdCanvas as any, {noodel: this.noodelState});
         this.noodelState.r.vueInstance.mount(el);
     }
 

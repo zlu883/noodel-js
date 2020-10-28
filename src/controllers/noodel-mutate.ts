@@ -82,7 +82,7 @@ export function insertChildren(noodel: NoodelState, parent: NoodeState, index: n
 
     // find initial relative offset for the new children
     let prev = parent.children[index - 1];
-    let branchRelativeOffset = prev ? prev.r.branchRelativeOffset + prev.r.size : 0;
+    let branchRelativeOffset = prev ? prev.branchRelativeOffset + prev.size : 0;
 
     // construct view tree, this should come first as it may throw error
     let children = childDefs.map((def, pos) => {
@@ -202,12 +202,12 @@ export function deleteChildren(noodel: NoodelState, parent: NoodeState, index: n
         else if (index + deleteCount < parent.children.length) { // siblings exist after the deleted children
             setActiveChild(parent, index + deleteCount); // set next sibling active
             showActiveSubtree(noodel, parent, noodel.options.visibleSubtreeDepth);            
-            parent.branchOffset += getActiveChild(parent).r.size / 2;
+            parent.branchOffset += getActiveChild(parent).size / 2;
         }
         else { // no siblings exist after deleted children
             setActiveChild(parent, index - 1); // set prev sibling active
             showActiveSubtree(noodel, parent, noodel.options.visibleSubtreeDepth);
-            parent.branchOffset -= getActiveChild(parent).r.size / 2;
+            parent.branchOffset -= getActiveChild(parent).size / 2;
         }
     }
 
@@ -233,7 +233,9 @@ export function deleteChildren(noodel: NoodelState, parent: NoodeState, index: n
 
     // add fading flag for noodes to be removed from a branch where the branch itself is not deleted
     // this is used to determine which noodes need their positions adjusted for fade out
-    if (parent.children.length > 0) deletedNoodes.forEach(noode => noode.r.fade = true);
+    if (noodel.r.isMounted && parent.children.length > 0) {
+        deletedNoodes.forEach(noode => noode.r.fade = true);
+    }
 
     // queue events
     handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));

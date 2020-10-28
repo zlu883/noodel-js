@@ -1,12 +1,10 @@
 const path = require('path');
 const VueLoaderPlugin = require('vue-loader/dist/plugin').default;
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const TerserJSPlugin = require('terser-webpack-plugin');
-const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
 
 const PACKAGE = require('./package.json');
 const webpack = require('webpack');
-const banner = 'Noodel.js - v' + PACKAGE.version + '\n' +
+const banner = 'Noodel.js v' + PACKAGE.version + '\n' +
     '(c) 2019-' + new Date().getFullYear() + ' ' + PACKAGE.author.name + '\n' +
     PACKAGE.license + ' License' + '\n' + PACKAGE.homepage;
 
@@ -16,14 +14,6 @@ function prodConfig() {
         entry: './src/main/Noodel.ts',
         resolve: {
             extensions: ['.ts', '.js', '.vue', '.json'],
-        },
-        externals: {
-            'vue': {
-                commonjs: 'vue',
-                commonjs2: 'vue',
-                amd: 'vue',
-                root: 'Vue'
-            }
         },
         module: {
             rules: [
@@ -152,38 +142,40 @@ function testManualConfig() {
     }
 }
 
-function baseUmdMinConfig() {
+function noVueUmdMinConfig() {
     let config = prodConfig();
 
-    config.module.rules[1].use = [
-        MiniCssExtractPlugin.loader,
-        'css-loader'
-    ];
-    config.plugins.splice(1, 0, new MiniCssExtractPlugin({
-        filename: 'noodel.min.css'
-    }));
-    config.output.filename = 'noodel.umd.min.js';
+    config.externals = {
+        'vue': {
+            commonjs: 'vue',
+            commonjs2: 'vue',
+            amd: 'vue',
+            root: 'Vue'
+        }
+    };
+    config.output.filename = 'noodel-no-vue.umd.min.js';
     config.optimization = {
         minimize: true,
         minimizer: [new TerserJSPlugin({
             extractComments: false
-        }), new OptimizeCSSAssetsPlugin({})]
+        })]
     };
 
     return config;
 }
 
-function baseUmdConfig() {
+function noVueUmdConfig() {
     let config = prodConfig();
 
-    config.module.rules[1].use = [
-        MiniCssExtractPlugin.loader,
-        'css-loader'
-    ];
-    config.plugins.splice(1, 0, new MiniCssExtractPlugin({
-        filename: 'noodel.css'
-    }));
-    config.output.filename = 'noodel.umd.js';
+    config.externals = {
+        'vue': {
+            commonjs: 'vue',
+            commonjs2: 'vue',
+            amd: 'vue',
+            root: 'Vue'
+        }
+    };
+    config.output.filename = 'noodel-no-vue.umd.js';
     config.optimization = {
         minimize: false,
     };
@@ -191,20 +183,24 @@ function baseUmdConfig() {
     return config;
 }
 
-function fullUmdMinConfig() {
+function umdMinConfig() {
     let config = prodConfig();
 
-    delete config.externals;
-    config.output.filename = 'noodel-full.umd.min.js';
+    config.output.filename = 'noodel.umd.min.js';
+    config.optimization = {
+        minimize: true,
+        minimizer: [new TerserJSPlugin({
+            extractComments: false
+        })]
+    };
 
     return config;
 }
 
-function fullUmdConfig() {
+function umdConfig() {
     let config = prodConfig();
 
-    delete config.externals;
-    config.output.filename = 'noodel-full.umd.js';
+    config.output.filename = 'noodel.umd.js';
     config.optimization = {
         minimize: false,
     };
@@ -217,9 +213,9 @@ module.exports = env => {
         testUnitConfig(),
         testManualConfig()
     ] : [
-        baseUmdMinConfig(),
-        baseUmdConfig(),
-        fullUmdMinConfig(),
-        fullUmdConfig(),
+        noVueUmdMinConfig(),
+        noVueUmdConfig(),
+        umdMinConfig(),
+        umdConfig(),
     ];
 }

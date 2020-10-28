@@ -1,0 +1,261 @@
+/* All timing function use easeOutCubic from Penner equations */
+
+.nd-canvas {
+	cursor: grab;
+	background-color: #a6a6a6;
+}
+
+.nd-limit {
+	border: solid 0px;
+	background-color: #595959;
+}
+
+.nd-limit-enter-from, .nd-limit-leave-active {
+	opacity: 0;
+}
+
+.nd-limit-enter-active, .nd-limit-leave-active {
+	transition-property: opacity;
+	transition-duration: 0.5s;
+	transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.nd-limit-left {
+	top: 0;
+	left: 0;
+	height: 100%;
+	width: 1em;
+}
+
+.nd-limit-right {
+	top: 0;
+	right: 0;
+	height: 100%;
+	width: 1em;
+}
+
+.nd-limit-top {
+	top: 0;
+	left: 0;
+	height: 1em;
+	width: 100%;
+}
+
+.nd-limit-bottom {
+	bottom: 0;
+	left: 0;
+	height: 1em;
+	width: 100%;
+}
+
+.nd-trunk-move {
+	transition-property: transform;
+	transition-duration: 0.5s;
+	transition-timing-function: cubic-bezier( 0.215, 0.61, 0.355, 1);
+}
+
+.nd-branch-leave {
+	opacity: 1;
+}
+
+.nd-branch-enter-from, .nd-branch-leave-active {
+	opacity: 0;
+}
+
+.nd-branch-enter-active, .nd-branch-leave-active {
+	transition-property: opacity, transform;
+	transition-timing-function: cubic-bezier( 0.215, 0.61, 0.355, 1);
+	transition-duration: 0.5s;
+}
+
+.nd-branch-move {
+	transition-property: opacity, transform;
+	transition-timing-function: cubic-bezier( 0.215, 0.61, 0.355, 1);
+	transition-duration: 0.5s;
+}
+
+.nd-canvas-ltr .nd-noode, .nd-canvas-rtl .nd-noode {
+	padding: .2em .6em;
+}
+
+.nd-canvas-ttb .nd-noode, .nd-canvas-btt .nd-noode {
+	padding: .6em .2em;
+}
+
+.nd-inspect-backdrop {
+	background-color: rgba(0, 0, 0, 0.4);
+	cursor: auto;
+}
+
+.nd-content-box {
+	padding: .8em;
+	max-height: 600px;
+	max-width: 800px;
+	box-sizing: border-box;
+	background-color: #e6e6e6;
+	transition-property: background-color;
+	transition-duration: 0.5s;
+	transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.nd-noode-active>.nd-content-box {
+	background-color: #ffffff;
+}
+
+.nd-noode-inspect>.nd-content-box {
+	cursor: auto;
+}
+
+.nd-noode-leave-active {
+	position: absolute;
+	overflow: hidden;
+	z-index: -1;
+}
+
+.nd-noode-enter-from, .nd-noode-leave-active {
+	opacity: 0;
+}
+
+.nd-noode-enter-active, .nd-noode-leave-active {
+	transition-property: opacity, transform;
+	transition-duration: 0.5s;
+	transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.nd-noode-move {
+	transition-property: opacity, transform;
+	transition-duration: 0.5s;
+	transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.nd-overflow-indicator {
+	position: absolute;
+}
+
+.nd-overflow-indicator-left {
+	left: 0;
+	top: 0;
+	height: 100%;
+	width: 2em;
+}
+
+.nd-overflow-indicator-right {
+	right: 0;
+	top: 0;
+	height: 100%;
+	width: 2em;
+}
+
+.nd-overflow-indicator-top {
+	left: 0;
+	top: 0;
+	width: 100%;
+	height: 2em;
+}
+
+.nd-overflow-indicator-bottom {
+	left: 0;
+	bottom: 0;
+	width: 100%;
+	height: 2em;
+}
+
+.nd-child-indicator {
+	position: absolute;
+	background-color: #e6e6e6;
+}
+
+.nd-noode-active>.nd-child-indicator {
+	background-color: #ffffff;
+}
+
+.nd-canvas-ltr .nd-child-indicator {
+	height: 1em;
+	width: 0.7em;
+	right: 0;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.nd-canvas-rtl .nd-child-indicator {
+	height: 1em;
+	width: 0.7em;
+	left: 0;
+	top: 50%;
+	transform: translateY(-50%);
+}
+
+.nd-canvas-ttb .nd-child-indicator {
+	width: 1em;
+	height: 0.7em;
+	bottom: 0;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.nd-canvas-btt .nd-child-indicator {
+	width: 1em;
+	height: 0.7em;
+	top: 0;
+	left: 50%;
+	transform: translateX(-50%);
+}
+
+.nd-child-indicator-expanded::after {
+	content: "";
+	position: absolute;
+	width: 0;
+	height: 0;
+}
+
+.nd-canvas-ltr .nd-child-indicator-expanded::after {
+	left: 0.7em;
+	top: 0;
+	border-left: 0.5em solid #ffffff;
+	border-top: 0.5em solid transparent;
+	border-bottom: 0.5em solid transparent;
+}
+
+.nd-canvas-rtl .nd-child-indicator-expanded::after {
+	right: 0.7em;
+	top: 0;
+	border-right: 0.5em solid #ffffff;
+	border-top: 0.5em solid transparent;
+	border-bottom: 0.5em solid transparent;
+}
+
+.nd-canvas-ttb .nd-child-indicator-expanded::after {
+	top: 0.7em;
+	left: 0;
+	border-left: 0.5em solid transparent;
+	border-right: 0.5em solid transparent;
+	border-top: 0.5em solid #ffffff;
+}
+
+.nd-canvas-btt .nd-child-indicator-expanded::after {
+	bottom: 0.7em;
+	left: 0;
+	border-left: 0.5em solid transparent;
+	border-right: 0.5em solid transparent;
+	border-bottom: 0.5em solid #ffffff;
+}
+
+.nd-child-indicator-enter-from, .nd-child-indicator-leave-active {
+	opacity: 0;
+}
+
+.nd-child-indicator-enter-active, .nd-child-indicator-leave-active {
+	transition-property: opacity;
+	transition-duration: 0.5s;
+	transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.nd-inspect-backdrop-enter-from, .nd-inspect-backdrop-leave-active {
+	opacity: 0;
+}
+
+.nd-inspect-backdrop-enter-active, .nd-inspect-backdrop-leave-active {
+	transition-property: opacity;
+	transition-duration: 0.5s;
+	transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}

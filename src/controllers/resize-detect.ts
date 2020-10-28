@@ -13,7 +13,7 @@ export function attachResizeSensor(noodel: NoodelState, noode: NoodeState) {
         : noodel.options.useResizeDetection;
 
     if (useResizeDetection) {
-        noode.r.resizeSensor = new ResizeSensor(noode.r.boxEl, (size) => {
+        noode.r.resizeSensor = new ResizeSensor(noode.r.el, (size) => {
             if (!noodel.r.isMounted) { // skips the first callback before mount
                 return;
             }
@@ -39,7 +39,7 @@ export function attachBranchResizeSensor(noodel: NoodelState, parent: NoodeState
         : noodel.options.useResizeDetection;
 
     if (useResizeDetection) {
-        parent.r.branchResizeSensor = new ResizeSensor(parent.r.branchBoxEl, (size) => {
+        parent.r.branchResizeSensor = new ResizeSensor(parent.r.branchEl, (size) => {
             if (!noodel.r.isMounted) { // skips the first callback before mount
                 return;
             }

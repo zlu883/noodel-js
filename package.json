@@ -5,7 +5,8 @@
     "scripts": {
         "test": "webpack-dev-server --env.test --open",
         "clean": "rimraf dist && rimraf typings",
-        "build": "npm run clean && webpack --env.prod"
+        "build:css": "postcss ./src/styles --no-map -d ./dist && postcss ./src/styles/noodel.css --no-map -u cssnano -o ./dist/noodel.min.css && postcss ./src/styles/noodel-default.css --no-map -u cssnano -o ./dist/noodel-default.min.css",
+        "build": "npm run clean && npm run build:css && webpack --env.prod"
     },
     "main": "dist/noodel.umd.js",
     "types": "typings/main/Noodel.d.ts",
@@ -31,10 +32,12 @@
         "chai": "^4.2.0",
         "css-element-queries": "^1.2.3",
         "css-loader": "^4.2.1",
+        "cssnano": "^4.1.10",
         "mini-css-extract-plugin": "^0.10.0",
         "mocha": "^8.1.1",
         "null-loader": "^4.0.0",
         "optimize-css-assets-webpack-plugin": "^5.0.3",
+        "postcss-cli": "^8.1.0",
         "rimraf": "^3.0.2",
         "style-loader": "^1.2.1",
         "terser-webpack-plugin": "^4.1.0",

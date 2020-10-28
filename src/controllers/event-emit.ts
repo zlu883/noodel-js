@@ -19,6 +19,10 @@ function flushEventQueue(noodel: NoodelState) {
     noodel.r.eventQueue = [];
 }
 
+export function queueMount(noodel: NoodelState) {
+    noodel.r.eventListeners.get('mount').forEach(l => queueEvent(noodel, l));        
+}
+
 export function queueEnterInspectMode(noodel: NoodelState) {
     noodel.r.eventListeners.get('enterInspectMode').forEach(l => queueEvent(noodel, l));        
 }

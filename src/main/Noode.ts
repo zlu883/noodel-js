@@ -1,7 +1,7 @@
 import NoodeState from '../types/NoodeState';
 import NoodeDefinition from '../types/NoodeDefinition';
 import { setActiveChild as _setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
-import { extractNoodeDefinition, parseAndApplyNoodeOptions, parseClassName, parseStyle, serializeClassName, serializeStyle } from '../controllers/noodel-setup';
+import { parseAndApplyNoodeOptions } from '../controllers/noodel-setup';
 import { getPath as _getPath } from '../controllers/getters';
 import { alignBranchToIndex, updateNoodeSize, updateBranchSize, checkContentOverflow } from '../controllers/noodel-align';
 import { shiftFocalNoode, doJumpNavigation } from '../controllers/noodel-navigate';
@@ -13,6 +13,7 @@ import { nextTick } from 'vue';
 import { traverseDescendents } from '../controllers/noodel-traverse';
 import NoodeSerializedCss from '../types/NoodeSerializedCss';
 import NoodeEventMap from '../types/NoodeEventMap';
+import { extractNoodeDefinition, parseClassName, parseStyle, serializeClassNames, serializeStyles } from '../controllers/noodel-serialize';
 
 /**
  * The view model of a noode. Has 2-way binding with the view.
@@ -115,19 +116,7 @@ export default class Noode {
      * Return a cloned object.
      */
     getClassNames(): NoodeSerializedCss {
-        let c = this.state.classNames;
-
-        return {
-            noode: serializeClassName(c.noode),
-            contentBox: serializeClassName(c.contentBox),
-            childIndicator: serializeClassName(c.childIndicator),
-            overflowIndicatorTop: serializeClassName(c.overflowIndicatorTop),
-            overflowIndicatorBottom: serializeClassName(c.overflowIndicatorBottom),
-            overflowIndicatorLeft: serializeClassName(c.overflowIndicatorLeft),
-            overflowIndicatorRight: serializeClassName(c.overflowIndicatorRight),
-            branch: serializeClassName(c.branch),
-            branchBackdrop: serializeClassName(c.branchBackdrop)
-        }
+        return serializeClassNames(this.state.classNames);
     }
 
     /**
@@ -135,19 +124,7 @@ export default class Noode {
      * Return a cloned object.
      */
     getStyles(): NoodeSerializedCss {
-        let s = this.state.styles;
-
-        return {
-            noode: serializeStyle(s.noode),
-            contentBox: serializeStyle(s.contentBox),
-            childIndicator: serializeStyle(s.childIndicator),
-            overflowIndicatorTop: serializeStyle(s.overflowIndicatorTop),
-            overflowIndicatorBottom: serializeStyle(s.overflowIndicatorBottom),
-            overflowIndicatorLeft: serializeStyle(s.overflowIndicatorLeft),
-            overflowIndicatorRight: serializeStyle(s.overflowIndicatorRight),
-            branch: serializeStyle(s.branch),
-            branchBackdrop: serializeStyle(s.branchBackdrop)
-        }
+        return serializeStyles(this.state.styles);
     }
 
     /**
@@ -246,16 +223,10 @@ export default class Noode {
         this.throwErrorIfDeleted();
 
         let c = this.state.classNames;
-        
-        c.noode = parseClassName(classNames.noode);
-        c.contentBox = parseClassName(classNames.contentBox);
-        c.childIndicator = parseClassName(classNames.childIndicator);
-        c.overflowIndicatorLeft = parseClassName(classNames.overflowIndicatorLeft);
-        c.overflowIndicatorRight = parseClassName(classNames.overflowIndicatorRight);
-        c.overflowIndicatorTop = parseClassName(classNames.overflowIndicatorTop);
-        c.overflowIndicatorBottom = parseClassName(classNames.overflowIndicatorBottom);
-        c.branch = parseClassName(classNames.branch);
-        c.branchBackdrop = parseClassName(classNames.branchBackdrop);
+
+        Object.keys(classNames).forEach(key => {
+            c[key] = parseClassName(classNames[key]);
+        });
     }
 
     /**
@@ -268,15 +239,9 @@ export default class Noode {
 
         let s = this.state.styles;
         
-        s.noode = parseStyle(styles.noode);
-        s.contentBox = parseStyle(styles.contentBox);
-        s.childIndicator = parseStyle(styles.childIndicator);
-        s.overflowIndicatorLeft = parseStyle(styles.overflowIndicatorLeft);
-        s.overflowIndicatorRight = parseStyle(styles.overflowIndicatorRight);
-        s.overflowIndicatorTop = parseStyle(styles.overflowIndicatorTop);
-        s.overflowIndicatorBottom = parseStyle(styles.overflowIndicatorBottom);
-        s.branch = parseStyle(styles.branch);
-        s.branchBackdrop = parseStyle(styles.branchBackdrop);
+        Object.keys(styles).forEach(key => {
+            s[key] = parseClassName(styles[key]);
+        });
     }
 
     /**
@@ -409,7 +374,7 @@ export default class Noode {
         this.state.parent.isBranchTransparent = true;
 
         nextTick(() => {
-            let rect = this.state.r.boxEl.getBoundingClientRect();
+            let rect = this.state.r.el.getBoundingClientRect();
             
             updateNoodeSize(this.noodelState, this.state, rect.height, rect.width);
             this.state.parent.isBranchTransparent = false;
@@ -429,7 +394,7 @@ export default class Noode {
         this.state.isBranchTransparent = true;
 
         nextTick(() => {
-            let rect = this.state.r.branchBoxEl.getBoundingClientRect();
+            let rect = this.state.r.branchEl.getBoundingClientRect();
 
             updateBranchSize(this.noodelState, this.state, rect.height, rect.width);
             this.state.isBranchTransparent = false;
