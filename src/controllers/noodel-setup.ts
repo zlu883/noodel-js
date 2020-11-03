@@ -315,6 +315,7 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
             contentBoxEl: null,
             el: null,
             branchEl: null,
+            branchBackdropEl: null,
             resizeSensor: null,
             branchResizeSensor: null,
             vm: null,

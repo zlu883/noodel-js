@@ -94,9 +94,8 @@ export function serializeStyles(styles: NoodeStyles): NoodeSerializedCss {
     };
 }
 
-export function extractNoodeDefinition(noodel: NoodelState, noode: NoodeState): NoodeDefinition {
-
-    let serializedContent = noode.content;
+export function serializeContent(content: string | ComponentContent): string | ComponentContent {
+    let serializedContent = content;
 
     if (serializedContent && typeof serializedContent === 'object') {
         serializedContent = {
@@ -110,9 +109,14 @@ export function extractNoodeDefinition(noodel: NoodelState, noode: NoodeState): 
         }
     }
 
+    return serializedContent;
+}
+
+export function extractNoodeDefinition(noodel: NoodelState, noode: NoodeState): NoodeDefinition {
+
     let def: NoodeDefinition = {
         id: noode.id,
-        content: serializedContent,
+        content: serializeContent(noode.content),
         isActive: noode.isActive,
         children: noode.children.map(c => extractNoodeDefinition(noodel, c)),
         classNames: serializeClassNames(noode.classNames),

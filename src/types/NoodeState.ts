@@ -21,6 +21,7 @@ export default interface NoodeState {
         contentBoxEl: HTMLDivElement;
         el: HTMLDivElement;
         branchEl: HTMLDivElement;
+        branchBackdropEl: HTMLDivElement;
 
         resizeSensor: ResizeSensor;
         branchResizeSensor: ResizeSensor;

@@ -119,6 +119,13 @@ export default class Noodel {
     }
 
     /**
+     * Get the DOM element of the noodel's outmost container, i.e. nd-canvas.
+     */
+    getEl(): HTMLDivElement {
+        return this.noodelState.r.canvasEl;
+    }
+
+    /**
      * Get the options applied to this noode.
      * Return a cloned object.
      */

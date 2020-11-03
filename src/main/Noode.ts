@@ -13,7 +13,7 @@ import { nextTick } from 'vue';
 import { traverseDescendents } from '../controllers/noodel-traverse';
 import NoodeSerializedCss from '../types/NoodeSerializedCss';
 import NoodeEventMap from '../types/NoodeEventMap';
-import { extractNoodeDefinition, parseClassName, serializeClassNames, serializeStyles } from '../controllers/noodel-serialize';
+import { extractNoodeDefinition, parseClassName, serializeClassNames, serializeContent, serializeStyles } from '../controllers/noodel-serialize';
 
 /**
  * The view model of a noode. Has 2-way binding with the view.
@@ -38,6 +38,25 @@ export default class Noode {
     }
 
     // GETTERS
+
+    /**
+     * Get the specified DOM element associated with this noode. Can be either the
+     * nd-noode, nd-branch or nd-branch-backdrop element. Return null if
+     * noodel is not mounted or element doesn't exist.
+     * @param target the target element, defaults to 'noode' if omitted
+     */
+    getEl(target: 'noode' | 'branch' | 'branchBackdrop' = 'noode'): HTMLDivElement {
+        switch (target) {
+            case 'noode': 
+                return this.state.r.el;
+            case 'branch': 
+                return this.state.r.branchEl;
+            case 'branchBackdrop':
+                return this.state.r.branchBackdropEl;
+            default:
+                return null;
+        }
+    }
 
     /**
      * Get the parent of this noode. Return null if this is the root or
@@ -115,31 +134,30 @@ export default class Noode {
     }
 
     /**
-     * Get the content of this noode.
+     * Get the content of this noode. If content is a ComponentContent object,
+     * will return an deeply cloned object except the 'component' property which is
+     * shallowly copied.
      */
     getContent(): string | ComponentContent {
-        return this.state.content;
+        return serializeContent(this.state.content);
     }
 
     /**
-     * Get the custom class names applied to this noode.
-     * Return a cloned object.
+     * Get a cloned object containing the custom CSS classes applied to this noode.
      */
     getClassNames(): NoodeSerializedCss {
         return serializeClassNames(this.state.classNames);
     }
 
     /**
-     * Get the custom styles applied to this noode.
-     * Return a cloned object.
+     * Get a cloned object containing the custom styles applied to this noode.
      */
     getStyles(): NoodeSerializedCss {
         return serializeStyles(this.state.styles);
     }
 
     /**
-     * Get the options applied to this noode.
-     * Return a cloned object.
+     * Get a cloned object containing the options applied to this noode.
      */
     getOptions(): NoodeOptions {
         return {

@@ -28,6 +28,14 @@ export default defineComponent({
 		noodel: Object as PropType<NoodelState>,
 	},
 
+	mounted: function() {
+		this.parent.r.branchBackdropEl = this.$el;
+	},
+
+	unmounted: function() {
+		this.parent.r.branchBackdropEl = null;
+	},
+
 	computed: {
 		branchBackdropClass(): any[] {
 			return [
