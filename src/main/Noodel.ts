@@ -167,10 +167,21 @@ export default class Noodel {
     }
 
     /**
-     * Get the parent noode of the current focal branch.
+     * Get the parent noode of the current focal branch. Return the root
+     * if there's no focal branch (i.e. noodel is empty).
      */
     getFocalParent(): Noode {
         return this.noodelState.focalParent.r.vm;
+    }
+
+    /**
+     * Get the focal noode. Return null if noodel is empty.
+     */
+    getFocalNoode(): Noode {
+        let index = this.noodelState.focalParent.activeChildIndex;
+
+        if (index === null) return null;
+        return this.noodelState.focalParent.children[index].r.vm;
     }
 
     /**

@@ -1,3 +1,4 @@
+import ComponentContent from '../types/ComponentContent';
 import NoodeClassNames from '../types/NoodeClassNames';
 import NoodeDefinition from '../types/NoodeDefinition';
 import NoodelState from '../types/NoodelState';
@@ -95,9 +96,23 @@ export function serializeStyles(styles: NoodeStyles): NoodeSerializedCss {
 
 export function extractNoodeDefinition(noodel: NoodelState, noode: NoodeState): NoodeDefinition {
 
+    let serializedContent = noode.content;
+
+    if (serializedContent && typeof serializedContent === 'object') {
+        serializedContent = {
+            component: serializedContent.component,
+            props: serializedContent.props ? {
+                ...serializedContent.props
+            } : null,
+            eventListeners: serializedContent.eventListeners ? {
+                ...serializedContent.eventListeners
+            } : null
+        }
+    }
+
     let def: NoodeDefinition = {
         id: noode.id,
-        content: noode.content,
+        content: serializedContent,
         isActive: noode.isActive,
         children: noode.children.map(c => extractNoodeDefinition(noodel, c)),
         classNames: serializeClassNames(noode.classNames),

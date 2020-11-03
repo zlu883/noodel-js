@@ -165,6 +165,14 @@ export function parseHTMLToNoode(el: Element): NoodeDefinition {
             branch: attributes.styleBranch,
             branchBackdrop: attributes.styleBranchBackdrop,
         },
+        options: {
+            useResizeDetection: 'useResizeDetection' in attributes || null,
+            useBranchResizeDetection: 'useBranchResizeDetection' in attributes || null,
+            useOverflowDetection: 'useOverflowDetection' in attributes || null,
+            showBranchBackdrop: 'showBranchBackdrop' in attributes || null,
+            showChildIndicator: 'showChildIndicator' in attributes || null,
+            showOverflowIndicators: 'showOverflowIndicators' in attributes || null
+        }
     };
 }
 

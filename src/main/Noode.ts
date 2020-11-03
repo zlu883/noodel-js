@@ -1,6 +1,6 @@
 import NoodeState from '../types/NoodeState';
 import NoodeDefinition from '../types/NoodeDefinition';
-import { setActiveChild as _setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
+import { setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
 import { parseAndApplyNoodeOptions } from '../controllers/noodel-setup';
 import { getPath as _getPath } from '../controllers/getters';
 import { alignBranchToIndex, updateNoodeSize, updateBranchSize, checkContentOverflow } from '../controllers/noodel-align';
@@ -13,7 +13,7 @@ import { nextTick } from 'vue';
 import { traverseDescendents } from '../controllers/noodel-traverse';
 import NoodeSerializedCss from '../types/NoodeSerializedCss';
 import NoodeEventMap from '../types/NoodeEventMap';
-import { extractNoodeDefinition, parseClassName, parseStyle, serializeClassNames, serializeStyles } from '../controllers/noodel-serialize';
+import { extractNoodeDefinition, parseClassName, serializeClassNames, serializeStyles } from '../controllers/noodel-serialize';
 
 /**
  * The view model of a noode. Has 2-way binding with the view.
@@ -32,7 +32,7 @@ export default class Noode {
     }
 
     private throwErrorIfDeleted() {
-        if (!this.noodelState) {
+        if (this.isDeleted()) {
             throw new Error("Invalid operation because this noode has been deleted.");
         }
     }
@@ -40,8 +40,8 @@ export default class Noode {
     // GETTERS
 
     /**
-     * Get the parent of this noode. All noodes should have a parent
-     * unless it has been deleted from its immediate parent or if it is the root.
+     * Get the parent of this noode. Return null if this is the root or
+     * if this is detached from its parent by a delete operation.
      */
     getParent(): Noode {
         if (!this.state.parent) return null;
@@ -65,7 +65,7 @@ export default class Noode {
     }
 
     /**
-     * Get the child of this noode at the given index. Returns null if does not exist.
+     * Get the child of this noode at the given index. Return null if does not exist.
      * @param index 0-based index of the child
      */
     getChild(index: number): Noode {
@@ -77,10 +77,20 @@ export default class Noode {
     }
 
     /**
-     * Get the index of the active child of this noode. Returns null if there's no children.
+     * Get the index of the active child of this noode. Return null if there's no children.
      */
     getActiveChildIndex(): number {
         return this.state.activeChildIndex;
+    }
+
+    /**
+     * Get the active child of this noode. Return null if there's no children.
+     */
+    getActiveChild(): Noode {
+        let index = this.state.activeChildIndex;
+
+        if (index === null) return null;
+        return this.state.children[index].r.vm;
     }
 
     /**
@@ -139,7 +149,7 @@ export default class Noode {
 
     /**
      * Get the 0-based index (position among siblings) of this noode.
-     * If detached from its immediate parent, index will be 0.
+     * Will return 0 if detached from its parent by a delete operation.
      */
     getIndex(): number {
         return this.state.index;
@@ -147,40 +157,75 @@ export default class Noode {
 
     /**
      * Get the level of this noode. The root has level 0,
-     * noodes in the first branch has level 1, and so on.
+     * children of the root has level 1, and so on.
      * If this noode has been deleted, will return null.
      */
     getLevel(): number {
-        if (!this.noodelState) return null;
+        if (this.isDeleted()) return null;
         return this.state.level;
     }
 
     /**
-     * Return true if this noode is the root.
+     * Check whether this noode is the root.
      */
     isRoot(): boolean {
         return this.state.r.isRoot;
     }
 
     /**
-     * Return true if this noode is active.
+     * Check whether this noode is active.
      */
     isActive(): boolean {
         return this.state.isActive;
     }
 
     /**
-     * Return true if this noode is the parent of the focal branch.
+     * Check whether this noode is the parent of the focal branch.
      */
     isFocalParent(): boolean {
-        if (!this.noodelState) return false;
+        if (this.isDeleted()) return false;
         return this.state.isFocalParent;
+    }
+
+    /**
+     * Check whether this noode is inside the focal branch.
+     */
+    isInFocalBranch(): boolean {
+        if (this.isDeleted()) return false;
+        if (this.isRoot()) return false;
+        return this.state.parent.isFocalParent;
+    }
+
+    /**
+     * Check whether this noode is the focal noode.
+     */
+    isFocalNoode(): boolean {
+        return this.isActive() && this.isInFocalBranch();
+    }
+
+    /**
+     * Check whether this noode is logically visible (i.e is part of the active tree 
+     * in display). Note that visibility may be affected by debounce effects.
+     */
+    isVisible(): boolean {
+        if (this.isDeleted()) return false;
+        if (this.isRoot()) return false;
+        return this.state.parent.isBranchVisible;
+    }
+
+    /**
+     * Check whether this noode's child branch is logically visible (i.e is part of the active tree 
+     * in display). Note that visibility may be affected by debounce effects.
+     */
+    isChildrenVisible(): boolean {
+        if (this.isDeleted()) return false;
+        return this.state.isBranchVisible;
     }
 
     /**
      * Return an object that specifies whether this noode has
      * content overflow in each of the 4 directions. Only valid if overflow 
-     * status is detected/manually checked before hand.
+     * is detected/manually checked before hand.
      */
     hasOverflow(): {top: boolean, bottom: boolean, left: boolean, right: boolean} {
         return {
@@ -189,6 +234,13 @@ export default class Noode {
             left: this.state.hasOverflowLeft,
             right: this.state.hasOverflowRight
         }
+    }
+
+    /**
+     * Check whether this noode has been deleted from its noodel.
+     */
+    isDeleted(): boolean {
+        return !this.noodelState;
     }
 
     // MUTATERS
@@ -261,7 +313,7 @@ export default class Noode {
      * of the focal branch), the view will jump to focus on the new active child.
      * @param index 0-based index of the new active child
      */
-    setActiveChildIndex(index: number) {
+    setActiveChild(index: number) {
         this.throwErrorIfDeleted();
 
         if (index < 0 || index >= this.state.children.length) {
@@ -275,7 +327,7 @@ export default class Noode {
             doJumpNavigation(this.noodelState, this.state.children[index]);
         }
         else {
-            _setActiveChild(this.state, index);
+            setActiveChild(this.state, index);
             alignBranchToIndex(this.state, index);
         }
     }
@@ -296,11 +348,12 @@ export default class Noode {
 
     /**
      * Insert one or more new noodes (and their descendents) as children of this noode.
-     * Will always preserve the current active child if possible.
+     * Will always preserve the current active child if possible. Return the 
+     * list of inserted noodes.
      * @param defs definition trees of the new noode(s)
-     * @param index index to insert at, will insert to the end of existing children if not provided
+     * @param index index to insert at, will append to the end of existing children if omitted
      */
-    insertChildren(defs: NoodeDefinition[], index?: number) {
+    insertChildren(defs: NoodeDefinition[], index?: number): Noode[] {
         this.throwErrorIfDeleted();
 
         if (index === undefined) {
@@ -311,9 +364,39 @@ export default class Noode {
             throw new Error("Cannot insert children: invalid index");
         }
 
-        if (defs.length === 0) return;
+        if (defs.length === 0) return [];
 
         insertChildren(this.noodelState, this.state, index, defs);
+    }
+
+    /**
+     * Convenience method for inserting sibling noode(s) before this noode. 
+     * Return the list of inserted noodes.
+     * @param defs noode definitions to add
+     */
+    insertBefore(defs: NoodeDefinition[]): Noode[] {
+        this.throwErrorIfDeleted();
+
+        if (this.isRoot()) {
+            throw new Error("Cannot insert sibling noodes before root");
+        }
+
+        return this.getParent().insertChildren(defs, this.getIndex());
+    }
+
+    /**
+     * Convenience method for inserting sibling noode(s) after this noode.
+     * Return the list of inserted noodes.
+     * @param defs noode definitions to add
+     */
+    insertAfter(defs: NoodeDefinition[]): Noode[] {
+        this.throwErrorIfDeleted();
+
+        if (this.isRoot()) {
+            throw new Error("Cannot insert sibling noodes after root");
+        }
+
+        return this.getParent().insertChildren(defs, this.getIndex() + 1);
     }
 
     /**
@@ -321,15 +404,15 @@ export default class Noode {
      * If the active child is removed, will set the next child active,
      * unless the child is the last in the list, where the previous child
      * will be set active. If the focal branch is deleted, will move focus
-     * to the nearest ancestor branch.
+     * to the nearest ancestor branch. Return the list of deleted noodes.
      * @param index index to start the deletion from
      * @param count number of children to delete, will adjust to maximum if greater than possible range
      */
-    deleteChildren(index: number, count: number) {
+    deleteChildren(index: number, count: number): Noode[] {
         this.throwErrorIfDeleted();
 
         if (index < 0 || count < 0 || index >= this.state.children.length) {
-            throw new Error("Cannot remove child noode(s): invalid index or count");
+            throw new Error("Cannot delete child noode(s): invalid index or count");
         }
 
         if (index + count > this.state.children.length) {
@@ -345,6 +428,65 @@ export default class Noode {
             noode.parent = null;
             unregisterNoodeSubtree(this.noodelState, noode);
         });
+
+        return deletedNoodes.map(n => n.r.vm);
+    }
+
+    /**
+     * Convenience method for deleting sibling noode(s) before this noode. 
+     * Return the list of deleted noodes.
+     * @param count number of noodes to remove, will adjust to maximum if greater than possible range
+     */
+    deleteBefore(count: number): Noode[] {
+        this.throwErrorIfDeleted();
+
+        if (count < 0) {
+            throw new Error("Cannot delete before: invalid count");
+        }
+
+        if (this.isRoot()) return [];
+
+        let targetIndex = this.getIndex() - count;
+
+        if (targetIndex < 0) targetIndex = 0;
+
+        let targetCount = this.getIndex() - targetIndex;
+
+        if (targetCount <= 0) return [];
+
+        return this.getParent().deleteChildren(targetIndex, targetCount);
+    }
+
+    /**
+     * Convenience method for deleting sibling noode(s) after this noode.
+     * Return the list of deleted noodes.
+     * @param count number of noodes to remove, will adjust to maximum if greater than possible range
+     */
+    deleteAfter(count: number): Noode[] {
+        this.throwErrorIfDeleted();
+
+        if (count < 0) {
+            throw new Error("Cannot delete after: invalid count");
+        }
+
+        if (this.isRoot()) return [];
+
+        if (this.getIndex() === this.getParent().getChildCount() - 1) return [];
+
+        return this.getParent().deleteChildren(this.getIndex() + 1, count);
+    }
+
+    /**
+     * Convenience method for deleting this noode itself. 
+     */
+    deleteSelf() {
+        this.throwErrorIfDeleted();
+
+        if (this.isRoot()) {
+            throw new Error("Cannot delete the root");
+        }
+
+        this.getParent().deleteChildren(this.getIndex(), 1);
     }
 
     // TRAVERSAL
