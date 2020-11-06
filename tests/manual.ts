@@ -1,7 +1,9 @@
 import Noodel from "../src/main/Noodel";
+import '../src/styles/noodel.css';
+import '../src/styles/noodel-default.css';
 
 let noodel = new Noodel("#template", {
-    visibleSubtreeDepth: 1,
+    visibleSubtreeDepth: 3,
     showOverflowIndicators: true
 });
 
@@ -44,32 +46,32 @@ document.getElementById("setReversed").addEventListener("click", () => {
 });
 
 document.getElementById("deleteFocalNoode").addEventListener("click", () => {
-    noodel.getFocalNoode().removeSelf();
+    noodel.getFocalNoode().deleteSelf();
 });
 
 document.getElementById("deleteFocalBranch").addEventListener("click", () => {
-    noodel.getFocalParent().removeChildren(0, Number.MAX_SAFE_INTEGER);
+    noodel.getFocalParent().deleteChildren(0, Number.MAX_SAFE_INTEGER);
 });
 
 document.getElementById("deleteNoodeBefore").addEventListener("click", () => {
-    noodel.getFocalNoode().removeBefore(1);
+    noodel.getFocalNoode().deleteBefore(1);
 });
 
 document.getElementById("deleteNoodeAfter").addEventListener("click", () => {
-    noodel.getFocalNoode().removeAfter(1);
+    noodel.getFocalNoode().deleteAfter(1);
 });
 
 document.getElementById("deleteActiveChild").addEventListener("click", () => {
     let c = noodel.getFocalNoode().getActiveChild();
-    if (c) c.removeSelf();
+    if (c) c.deleteSelf();
 });
 
 document.getElementById("deleteMultipleBefore").addEventListener("click", () => {
-    noodel.getFocalNoode().removeBefore(3);
+    noodel.getFocalNoode().deleteBefore(3);
 });
 
 document.getElementById("deleteMultipleAfter").addEventListener("click", () => {
-    noodel.getFocalNoode().removeAfter(3);
+    noodel.getFocalNoode().deleteAfter(3);
 });
 
 // animation behaviour for deleting multiple items is slightly different depending on
@@ -79,5 +81,5 @@ document.getElementById("deleteMultipleChild").addEventListener("click", () => {
     // let c = noodel.getFocalNoode().getActiveChild();
     // c.removeAfter(2);
     // if (c) c.removeSelf();
-    noodel.getFocalNoode().removeChildren(0, 3);
+    noodel.getFocalNoode().deleteChildren(0, 3);
 });

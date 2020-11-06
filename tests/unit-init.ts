@@ -44,11 +44,17 @@ describe('Noodel init', function () {
         it('should parse specified active child of noode', function () {
             assert.strictEqual(noodel.getRoot().getChild(1).getActiveChildIndex(), 1);
         });
-        it('should parse custom classes (string) of a noode', function () {
-            assert.deepStrictEqual(noodel.getRoot().getChild(2).getClass(), ['super', 'great', 'awesome']);
+        it('should parse custom classes of a noode', function () {
+            let classNames = noodel.getRoot().getChild(2).getClassNames();
+            assert.strictEqual(classNames.contentBox, 'super great awesome');
+            assert.strictEqual(classNames.branch, 'super great fancy');
+            assert.strictEqual(classNames.childIndicator, 'super great nice');
         });
-        it('should parse custom style (string) of a noode', function () {
-            assert.deepStrictEqual(noodel.getRoot().getChild(2).getStyle(), {'color': 'red', 'border': 'solid blue 2px'});
+        it('should parse custom styles of a noode', function () {
+            let styles = noodel.getRoot().getChild(2).getStyles();
+            assert.strictEqual(styles.contentBox, "color: red; border: solid blue 2px");
+            assert.strictEqual(styles.branch, "color: blue; border: solid red 2px");
+            assert.strictEqual(styles.childIndicator, "color: green; border: solid green 2px");
         });
     });
 
@@ -59,8 +65,12 @@ describe('Noodel init', function () {
             noodel = new Noodel([
                 {
                     content: "<h3>1</h3>",
-                    className: ["super", "great", "awesome"],
-                    style: { color: 'red', border: 'solid blue 2px' }
+                    classNames: {
+                        contentBox: 'super great awesome'
+                    },
+                    styles: {
+                        contentBox: 'color: red; border: solid blue 2px'
+                    }
                 }, 
                 {
                     id: "#2",
@@ -68,7 +78,6 @@ describe('Noodel init', function () {
                     children: [
                         {
                             content: "<h3>2/1</h3>",
-                            data: "customData"
                         },
                         {
                             content: "<h3>2/2</h3>",
@@ -78,8 +87,16 @@ describe('Noodel init', function () {
                 }, 
                 {
                     content: "<h3>3</h3>",
-                    className: "super great awesome",
-                    style: "color: red; border: solid blue 2px"
+                    classNames: {
+                        contentBox: "super great awesome",
+                        branch: "super great fancy",
+                        childIndicator: "super great nice"
+                    },
+                    styles: {
+                        contentBox: "color: red; border: solid blue 2px",
+                        branch: "color: blue; border: solid red 2px",
+                        childIndicator: "color: green; border: solid green 2px"
+                    } 
                 }
             ]);
         });
@@ -105,20 +122,17 @@ describe('Noodel init', function () {
         it('should parse specified active child of noode', function () {
             assert.strictEqual(noodel.getRoot().getChild(1).getActiveChildIndex(), 1);
         });
-        it('should parse custom classes (string) of a noode', function () {
-            assert.deepStrictEqual(noodel.getRoot().getChild(2).getClass(), ['super', 'great', 'awesome']);
+        it('should parse custom classes of a noode', function () {
+            let classNames = noodel.getRoot().getChild(2).getClassNames();
+            assert.strictEqual(classNames.contentBox, 'super great awesome');
+            assert.strictEqual(classNames.branch, 'super great fancy');
+            assert.strictEqual(classNames.childIndicator, 'super great nice');
         });
-        it('should parse custom style (string) of a noode', function () {
-            assert.deepStrictEqual(noodel.getRoot().getChild(2).getStyle(), {'color': 'red', 'border': 'solid blue 2px'});
-        });
-        it('should parse custom classes (array) of a noode', function () {
-            assert.deepStrictEqual(noodel.getRoot().getChild(0).getClass(), ['super', 'great', 'awesome']);
-        });
-        it('should parse custom style (object) of a noode', function () {
-            assert.deepStrictEqual(noodel.getRoot().getChild(0).getStyle(), {'color': 'red', 'border': 'solid blue 2px'});
-        });
-        it('should parse custom data for a noode', function () {
-            assert.deepStrictEqual(noodel.getRoot().getChild(1).getChild(0).data, "customData");
+        it('should parse custom styles of a noode', function () {
+            let styles = noodel.getRoot().getChild(2).getStyles();
+            assert.strictEqual(styles.contentBox, "color: red; border: solid blue 2px");
+            assert.strictEqual(styles.branch, "color: blue; border: solid red 2px");
+            assert.strictEqual(styles.childIndicator, "color: green; border: solid green 2px");
         });
     });
 });

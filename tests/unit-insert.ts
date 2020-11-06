@@ -20,33 +20,33 @@ describe('Noode insert', function () {
 
     describe('insert at invalid index', function () {  
         it('should fail with error', function () {
-            assert.throw(function(){noodel.getRoot().addChild({}, 6)});
+            assert.throw(function(){noodel.getRoot().insertChildren([{}], 6)});
         });
     });
 
     describe('insert single at active index', function () {  
         it('should insert properly', function () {
-            noodel.getRoot().addChild({
+            noodel.getRoot().insertChildren([{
                 id: "insert"
-            }, 1);
+            }], 1);
 
             assert.strictEqual(noodel.getRoot().getChild(1).getId(), "insert");
             assert.strictEqual(noodel.getRoot().getChildCount(), 4);
         });
         it('should shift indices appropriately', function () {
 
-            noodel.getRoot().addChild({
+            noodel.getRoot().insertChildren([{
                 id: "insert"
-            }, 1);
+            }], 1);
 
             assert.strictEqual(firstNoode.getIndex(), 0);
             assert.strictEqual(secondNoode.getIndex(), 2);
             assert.strictEqual(thirdNoode.getIndex(), 3);
         });
         it('should retain focal noode', function () {
-            noodel.getRoot().addChild({
+            noodel.getRoot().insertChildren([{
                 id: "insert"
-            }, 1);
+            }], 1);
 
             assert.strictEqual(secondNoode, noodel.getFocalNoode());
         });
@@ -55,24 +55,24 @@ describe('Noode insert', function () {
     describe('insert single before active index', function () {   
 
         it('should insert properly', function () {
-            noodel.getRoot().addChild({
+            noodel.getRoot().insertChildren([{
                 id: "insert"
-            }, 0);
+            }], 0);
             assert.strictEqual(noodel.getRoot().getChild(0).getId(), "insert");
             assert.strictEqual(noodel.getRoot().getChildCount(), 4);
         });
         it('should shift indices appropriately', function () {
-            noodel.getRoot().addChild({
+            noodel.getRoot().insertChildren([{
                 id: "insert"
-            }, 0);
+            }], 0);
             assert.strictEqual(firstNoode.getIndex(), 1);
             assert.strictEqual(secondNoode.getIndex(), 2);
             assert.strictEqual(thirdNoode.getIndex(), 3);
         });
         it('should retain focal noode', function () {
-            noodel.getRoot().addChild({
+            noodel.getRoot().insertChildren([{
                 id: "insert"
-            }, 0);
+            }], 0);
             assert.strictEqual(secondNoode, noodel.getFocalNoode());
         });
     });
@@ -80,24 +80,24 @@ describe('Noode insert', function () {
     describe('insert single after active index', function () {   
 
         it('should insert properly', function () {
-            noodel.getRoot().addChild({
+            noodel.getRoot().insertChildren([{
                 id: "insert"
-            }, 3);
+            }], 3);
             assert.strictEqual(noodel.getRoot().getChild(3).getId(), "insert");
             assert.strictEqual(noodel.getRoot().getChildCount(), 4);
         });
         it('should shift indices appropriately', function () {
-            noodel.getRoot().addChild({
+            noodel.getRoot().insertChildren([{
                 id: "insert"
-            }, 3);
+            }], 3);
             assert.strictEqual(firstNoode.getIndex(), 0);
             assert.strictEqual(secondNoode.getIndex(), 1);
             assert.strictEqual(thirdNoode.getIndex(), 2);
         });
         it('should retain focal noode', function () {
-            noodel.getRoot().addChild({
+            noodel.getRoot().insertChildren([{
                 id: "insert"
-            }, 3);
+            }], 3);
             assert.strictEqual(secondNoode, noodel.getFocalNoode());
         });
     });
