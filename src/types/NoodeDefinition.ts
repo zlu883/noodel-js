@@ -1,6 +1,6 @@
 import NoodeOptions from './NoodeOptions';
 import ComponentContent from './ComponentContent';
-import NoodeSerializedCss from './NoodeSerializedCss';
+import NoodeCss from './NoodeCss';
 
 /**
  * Object template used for noode creation and insertion.
@@ -28,12 +28,12 @@ export default interface NoodeDefinition {
      * An object specifying custom CSS class(es) to apply to various elements associated with a
      * noode. Each property should be a string of one or more classes delimited by spaces. 
      */
-    classNames?: NoodeSerializedCss;
+    classNames?: NoodeCss;
     /**
      * An object specifying custom CSS styles to apply to various elements associated with a
      * noode. Each property should be a string in inline style format. 
      */
-    styles?: NoodeSerializedCss;
+    styles?: NoodeCss;
     /**
      * Options for this noode.
      */

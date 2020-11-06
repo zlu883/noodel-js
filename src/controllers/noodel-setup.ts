@@ -12,20 +12,25 @@ import { resetAlignment } from './noodel-align';
 import { traverseDescendents } from './noodel-traverse';
 import { attachBranchResizeSensor, attachCanvasResizeSensor, attachResizeSensor, detachBranchResizeSensor, detachResizeSensor } from './resize-detect';
 import Noode from '../main/Noode';
-import { markRaw } from 'vue';
-import { parseClassNames, parseStyles } from './noodel-serialize';
+import { reactive, markRaw } from 'vue';
 
 export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelState {
 
-    let noodelState: NoodelState = {
-        r: {
+    let noodelState: NoodelState = reactive({
+        r: markRaw({
             containerEl: null,
             vueInstance: null,
             idCount: -1,
             idMap: new Map([]),
             throttleMap: new Map([]),
             debounceMap: new Map([]),
-            eventListeners: new Map([]),
+            eventListeners: new Map([
+                ['mount', []], 
+                ['focalNoodeChange', []],
+                ['focalParentChange', []],
+                ['enterInspectMode', []],
+                ['exitInspectMode', []],
+            ]),
             eventQueue: [],
             onHashChanged: null,
             lastPanTimestamp: null,
@@ -42,7 +47,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             canvasEl: null,
             trunkEl: null,
             hammerJsInstance: null,
-        },
+        }),
 
         root: null,
         focalParent: null,
@@ -84,9 +89,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             orientation: "ltr",
             branchDirection: "normal"
         },
-    }
-
-    markRaw(noodelState.r);
+    });
 
     let rootNoode = buildNoodeView(noodelState, root, 0, null, true, 0);
 
@@ -307,9 +310,14 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
         }
     }
 
-    let noodeState: NoodeState = {
-        r: {
-            eventListeners: new Map([]),
+    let noodeState: NoodeState = reactive({
+        r: markRaw({
+            eventListeners: new Map([
+                ['enterFocus', []], 
+                ['exitFocus', []],
+                ['childrenEnterFocus', []],
+                ['childrenExitFocus', []],
+            ]),
             isRoot: isRoot,           
             ignoreTransitionEnd: false,
             contentBoxEl: null,
@@ -320,7 +328,7 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
             branchResizeSensor: null,
             vm: null,
             fade: false
-        },
+        }),
         index: index,
         level: isRoot ? 0 : parent.level + 1,
         isBranchVisible: false,
@@ -338,12 +346,16 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
         size: 0,
         branchSize: 0,
         
-        parent: parent,
+        parent: parent as any,
         id: newId,
         children: [],
         content: def.content || null,
-        classNames: parseClassNames(def.classNames),
-        styles: parseStyles(def.styles),
+        classNames: {
+            ...def.classNames
+        },
+        styles: {
+            ...def.styles
+        },
         activeChildIndex: activeChildIndex,
         options: {
             useResizeDetection: null,
@@ -357,9 +369,8 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
         hasOverflowLeft: false,
         hasOverflowBottom: false,
         hasOverflowRight: false
-    }
+    });
 
-    markRaw(noodeState.r);
     noodeState.r.vm = new (Noode as any)(noodeState, noodel);
     parseAndApplyNoodeOptions(noodel, def.options, noodeState);
 

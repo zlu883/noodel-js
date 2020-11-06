@@ -1,6 +1,6 @@
 import NoodeState from '../types/NoodeState';
 import { traverseActiveDescendents } from './noodel-traverse';
-import { getActiveChild, isRoot } from './getters';
+import { getActiveChild } from './getters';
 import NoodelState from '../types/NoodelState';
 import { alignTrunkToBranch, alignBranchBeforeNoodeDelete } from './noodel-align';
 import { forceReflow } from './noodel-animate';
@@ -134,7 +134,7 @@ export function insertChildren(noodel: NoodelState, parent: NoodeState, index: n
         setActiveChild(parent, activeChildIndex);
     }
 
-    if (parent.isActive && (isRoot(parent) || parent.parent.isBranchVisible)) {
+    if (parent.isActive && (parent.r.isRoot || parent.parent.isBranchVisible)) {
         showActiveSubtree(noodel, noodel.focalParent, noodel.options.visibleSubtreeDepth);
     }
 
@@ -177,7 +177,7 @@ export function deleteChildren(noodel: NoodelState, parent: NoodeState, index: n
             }
 
             if (parent.children.length === deleteCount) {
-                if (isRoot(parent)) {
+                if (parent.r.isRoot) {
                     setFocalParent(noodel, parent);
                     alignTrunkToBranch(noodel, parent);
                     forceReflow();

@@ -10,10 +10,6 @@ export function getFocalWidth(noodel: NoodelState) {
     return noodel.containerWidth / 2;
 }
 
-export function isRoot(noode: NoodeState): boolean {
-    return !noode.parent;
-}
-
 export function getActiveChild(noode: NoodeState) {
     if (noode.activeChildIndex === null) return null;
     return noode.children[noode.activeChildIndex];

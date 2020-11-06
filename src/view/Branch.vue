@@ -1,23 +1,26 @@
 <!--------------------------- TEMPLATE ----------------------------->
 
 <template>
-	<div
-		class="nd-branch"
-		:class="branchClass"
-		:style="branchStyle"
-		@transitionend="onTransitionEnd"
-	>
-		<NdBranchInner 
-			:noodel="noodel" 
-			:parent="parent" 
-		/>
-	</div>
+	<transition name="nd-branch">
+		<div
+			v-show="parent.isBranchVisible || parent.isBranchTransparent"
+			class="nd-branch"
+			:class="branchClass"
+			:style="branchStyle"
+			@transitionend="onTransitionEnd"	
+		>
+			<NoodeTransitionGroup 
+				:noodel="noodel" 
+				:parent="parent" 
+			/>
+		</div>
+	</transition>
 </template>
 
 <!---------------------------- SCRIPT ------------------------------>
 
 <script lang="ts">
-import NdBranchInner from "./NdBranchInner.vue";
+import NoodeTransitionGroup from "./NoodeTransitionGroup.vue";
 import { getFocalHeight, getFocalWidth } from "../controllers/getters";
 import NoodeState from "../types/NoodeState";
 import NoodelState from "../types/NoodelState";
@@ -30,7 +33,7 @@ import {
 
 export default defineComponent({
 	components: {
-		NdBranchInner,
+		NoodeTransitionGroup,
 	},
 
 	props: {
@@ -59,59 +62,62 @@ export default defineComponent({
 	},
 
 	computed: {
-		branchStyle(): {} {
+		branchStyle(): string {
 			let orientation = this.noodel.options.orientation;
 			let branchDirection = this.noodel.options.branchDirection;
-			let style = this.parent.styles.branch;
+			let style = '';
 
 			if (orientation === "ltr") {
-				style["left"] = `${this.parent.trunkRelativeOffset}px`;
-			} 
+				style += `left: ${this.parent.trunkRelativeOffset}px;`;
+			}
 			else if (orientation === "rtl") {
-				style["right"] = `${this.parent.trunkRelativeOffset}px`;
-			} 
+				style += `right: ${this.parent.trunkRelativeOffset}px;`;
+			}
 			else if (orientation === "ttb") {
-				style["top"] = `${this.parent.trunkRelativeOffset}px`;
-			} 
+				style += `top: ${this.parent.trunkRelativeOffset}px;`;
+			}
 			else if (orientation === "btt") {
-				style["bottom"] = `${this.parent.trunkRelativeOffset}px`;
+				style += `bottom: ${this.parent.trunkRelativeOffset}px;`;
 			}
 
 			if (orientation === "ltr" || orientation === "rtl") {
 				if (branchDirection === "normal") {
-					style["transform"] = `translateY(${-this.parent.branchOffset + getFocalHeight(this.noodel)}px)`;
-				} 
+					style += `transform: translateY(${-this.parent.branchOffset + getFocalHeight(this.noodel)}px);`;
+				}
 				else if (branchDirection === "reverse") {
-					style["transform"] = `translateY(${ this.parent.branchOffset - getFocalHeight(this.noodel)}px)`;
+					style += `transform: translateY(${this.parent.branchOffset - getFocalHeight(this.noodel)}px);`;
 				}
 			} else if (orientation === "ttb" || orientation === "btt") {
 				if (branchDirection === "normal") {
-					style["transform"] = `translateX(${-this.parent.branchOffset + getFocalWidth(this.noodel)}px)`;
-				} 
+					style += `transform: translateX(${-this.parent.branchOffset + getFocalWidth(this.noodel)}px);`;
+				}
 				else if (branchDirection === "reverse") {
-					style["transform"] = `translateX(${this.parent.branchOffset - getFocalWidth(this.noodel)}px)`;
+					style += `transform: translateX(${this.parent.branchOffset - getFocalWidth(this.noodel)}px);`;
 				}
 			}
 
 			if (!this.parent.isBranchVisible) {
-				style["pointer-events"] = "none";
+				style += 'pointer-events: none;';
 
 				if (this.parent.isBranchTransparent) {
-					style["opacity"] = 0;
+					style += 'opacity: 0;';
 				}
 			}
+
+			style += this.parent.styles.branch || '';
 
 			return style;
 		},
 
-		branchClass(): any[] {
-			return [
-				{
-					"nd-branch-move": this.parent.applyBranchMove,
-					"nd-branch-focal": this.parent.isFocalParent,
-				},
-				...this.parent.classNames.branch
-			];
+		branchClass(): string {
+			let className = '';
+
+			if (this.parent.applyBranchMove) className += 'nd-branch-move ';
+			if (this.parent.isFocalParent) className += 'nd-branch-focal ';
+
+			className += this.parent.classNames.branch || '';
+
+			return className;
 		},
 	},
 

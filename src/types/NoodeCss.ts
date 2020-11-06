@@ -1,4 +1,4 @@
-export default interface NoodeSerializedCss {
+export default interface NoodeCss {
     noode?: string;
     contentBox?: string;
     childIndicator?: string;

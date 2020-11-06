@@ -45,13 +45,17 @@ export function handleFocalNoodeChange(noodel: NoodelState, prev: NoodeState, cu
     let prevNoode = prev ? prev.r.vm : null;
     let currentNoode = current ? current.r.vm : null;
 
-    prev.r.eventListeners.get('exitFocus').forEach(l => {
-        queueEvent(noodel, () => l(currentNoode));
-    });
+    if (prev) {
+        prev.r.eventListeners.get('exitFocus').forEach(l => {
+            queueEvent(noodel, () => l(currentNoode));
+        });
+    }
 
-    current.r.eventListeners.get('enterFocus').forEach(l => {
-        queueEvent(noodel, () => l(prevNoode));
-    });
+    if (current) {
+        current.r.eventListeners.get('enterFocus').forEach(l => {
+            queueEvent(noodel, () => l(prevNoode));
+        });
+    }
 
     noodel.r.eventListeners.get('focalNoodeChange').forEach(l => {
         queueEvent(noodel, () => l(currentNoode, prevNoode));
@@ -66,13 +70,17 @@ export function handleFocalNoodeChange(noodel: NoodelState, prev: NoodeState, cu
     let prevParentNoode = prevParent ? prevParent.r.vm : null;
     let currentParentNoode = currentParent ? currentParent.r.vm : null;
 
-    prevParent.r.eventListeners.get('childrenExitFocus').forEach(l => {
-        queueEvent(noodel, () => l(currentParentNoode));
-    });
+    if (prevParent) {
+        prevParent.r.eventListeners.get('childrenExitFocus').forEach(l => {
+            queueEvent(noodel, () => l(currentParentNoode));
+        });
+    }
 
-    currentParent.r.eventListeners.get('childrenEnterFocus').forEach(l => {
-        queueEvent(noodel, () => l(prevParentNoode));
-    });
+    if (currentParent) {
+        currentParent.r.eventListeners.get('childrenEnterFocus').forEach(l => {
+            queueEvent(noodel, () => l(prevParentNoode));
+        });
+    }
 
     noodel.r.eventListeners.get('focalParentChange').forEach(l => {
         queueEvent(noodel, () => l(currentParentNoode, prevParentNoode));

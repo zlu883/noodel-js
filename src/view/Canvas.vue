@@ -35,47 +35,34 @@
 				v-show="showBottomLimit"
 			/>
 		</transition>
-		<transition-group
-			name="nd-branch-box"
-			tag="div"
+		<div
 			ref="trunk"
 			class="nd-trunk"
 			:class="trunkClass"
 			:style="trunkStyle"
 			@transitionend="onTrunkTransitionEnd"
 		>
-			<NdBranch
-				v-for="parent in allBranchParents"
-				v-show="parent.isBranchVisible || parent.isBranchTransparent"
-				:key="parent.id"
-				:parent="parent"
-				:noodel="noodel"
-			/>
-		</transition-group>
-		<transition-group
-			v-if="allBranchBackdropParents.length > 0"
-			name="nd-branch-backdrop"
-			tag="div"
-			class="nd-trunk-backdrop"
-			:class="trunkClass"
-			:style="trunkStyle"
-		>
-			<NdBranchBackdrop
-				v-for="parent in allBranchBackdropParents"
-				v-show="parent.isBranchVisible"
-				:key="parent.id"
-				:parent="parent"
-				:noodel="noodel"
-			/>
-		</transition-group>
+				<Branch
+					v-for="parent in allBranchParents"
+					:key="parent.id"
+					:parent="parent"
+					:noodel="noodel"
+				/>
+				<BranchBackdrop
+					v-for="parent in allBranchBackdropParents"
+					:key="parent.id"
+					:parent="parent"
+					:noodel="noodel"
+				/>
+		</div>
 	</div>
 </template>
 
 <!---------------------------- SCRIPT ------------------------------>
 
 <script lang="ts">
-import NdBranch from "./NdBranch.vue";
-import NdBranchBackdrop from "./NdBranchBackdrop.vue";
+import Branch from "./Branch.vue";
+import BranchBackdrop from "./BranchBackdrop.vue";
 import { getFocalHeight, getFocalWidth } from "../controllers/getters";
 import { setupCanvasEl } from "../controllers/noodel-setup";
 import { setupCanvasInput } from "../controllers/input-binding";
@@ -88,8 +75,8 @@ import { queueMount } from "../controllers/event-emit";
 
 export default defineComponent({
 	components: {
-		NdBranch,
-		NdBranchBackdrop
+		Branch,
+		BranchBackdrop
 	},
 
 	props: {
@@ -98,7 +85,7 @@ export default defineComponent({
 
 	mounted: function () {
 		this.noodel.r.canvasEl = this.$el as HTMLDivElement;
-		this.noodel.r.trunkEl = (this.$refs.trunk as any).$el as HTMLDivElement;
+		this.noodel.r.trunkEl = (this.$refs.trunk as any) as HTMLDivElement;
 		setupCanvasEl(this.noodel);
 		setupCanvasInput(this.noodel);
 

@@ -88,6 +88,7 @@
 }
 
 .nd-content-box {
+	position: relative;
 	padding: .8em;
 	max-height: 600px;
 	max-width: 800px;

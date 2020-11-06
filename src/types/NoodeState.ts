@@ -2,9 +2,8 @@ import ResizeSensor from "../util/ResizeSensor";
 import NoodeOptions from './NoodeOptions';
 import ComponentContent from './ComponentContent';
 import Noode from '../main/Noode';
-import NoodeClassNames from './NoodeClassNames';
-import NoodeStyles from './NoodeStyles';
 import NoodeEventMap from './NoodeEventMap';
+import NoodeCss from './NoodeCss';
 
 export default interface NoodeState {
 
@@ -40,8 +39,8 @@ export default interface NoodeState {
     activeChildIndex: number;
     content: string | ComponentContent;
 
-    classNames: NoodeClassNames;
-    styles: NoodeStyles;
+    classNames: NoodeCss;
+    styles: NoodeCss;
 
     parent: NoodeState;
     /**

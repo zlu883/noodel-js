@@ -1,0 +1,75 @@
+<!--------------------------- TEMPLATE ----------------------------->
+
+<template>
+	<transition name="nd-branch-backdrop">
+		<div
+			v-show="parent.isBranchVisible"
+			class="nd-branch-backdrop"
+			:class="branchBackdropClass"
+			:style="branchBackdropStyle"
+		/>
+	</transition>
+</template>
+
+<!---------------------------- SCRIPT ------------------------------>
+
+<script lang="ts">
+import NoodelState from "../types/NoodelState";
+import NoodeState from "../types/NoodeState";
+import { PropType, defineComponent } from "vue";
+
+// By extracting the transition-group into its own component addresses the issue
+// of enter/leave transitions not occuring properly as per https://github.com/vuejs/vue/issues/6946
+export default defineComponent({
+	props: {
+		parent: Object as PropType<NoodeState>,
+		noodel: Object as PropType<NoodelState>,
+	},
+
+	mounted: function () {
+		this.parent.r.branchBackdropEl = this.$el;
+	},
+
+	unmounted: function () {
+		this.parent.r.branchBackdropEl = null;
+	},
+
+	computed: {
+		branchBackdropClass(): string {
+			let className = '';
+
+			if (this.parent.isFocalParent) className += 'nd-branch-backdrop-focal ';
+
+			className += this.parent.classNames.branchBackdrop || '';
+
+			return className;
+		},
+
+		branchBackdropStyle(): string {
+			let orientation = this.noodel.options.orientation;
+			let style = '';
+
+			if (orientation === "ltr") {
+				style += `left: ${this.parent.trunkRelativeOffset}px;`;
+				style += `width: ${this.parent.branchSize}px;`;
+			}
+			else if (orientation === "rtl") {
+				style += `right: ${this.parent.trunkRelativeOffset}px;`;
+				style += `width: ${this.parent.branchSize}px;`;
+			}
+			else if (orientation === "ttb") {
+				style += `top: ${this.parent.trunkRelativeOffset}px;`;
+				style += `height: ${this.parent.branchSize}px;`;
+			}
+			else if (orientation === "btt") {
+				style += `bottom: ${this.parent.trunkRelativeOffset}px;`;
+				style += `height: ${this.parent.branchSize}px;`;
+			}
+
+			style += this.parent.styles.branchBackdrop || '';
+
+			return style;
+		},
+	}
+});
+</script>

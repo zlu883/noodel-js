@@ -1,15 +1,14 @@
 import NoodeDefinition from '../types/NoodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
 import { setupNoodel, parseHTMLToNoode, parseAndApplyOptions } from '../controllers/noodel-setup';
-import NdCanvas from '../view/NdCanvas.vue';
-import { nextTick as vueNextTick, createApp, reactive } from 'vue';
+import Canvas from '../view/Canvas.vue';
+import { nextTick as vueNextTick, createApp } from 'vue';
 import NoodelState from '../types/NoodelState';
 import Noode from './Noode';
 import { getActiveChild } from '../controllers/getters';
 import { shiftFocalLevel, shiftFocalNoode } from '../controllers/noodel-navigate';
 import { findNoodeByPath as _findNoodeByPath } from '../controllers/noodel-traverse';
 import { enterInspectMode, exitInspectMode } from '../controllers/inspect-mode';
-import { handleFocalNoodeChange } from '../controllers/event-emit';
 import { findNoode } from '../controllers/id-register';
 import NoodelEventMap from '../types/NoodelEventMap';
 
@@ -20,7 +19,7 @@ export default class Noodel {
 
     private noodelState: NoodelState;
 
-    static VueComponent: object = NdCanvas;
+    static VueComponent: object = Canvas;
 
     /**
      * Creates the view model of a noodel based on the given content tree.
@@ -56,9 +55,7 @@ export default class Noodel {
         }
 
         // use Vue 3's reactivity API to convert global state store into a proxied object
-        this.noodelState = reactive(setupNoodel(root, options)) as any;
-
-        handleFocalNoodeChange(this.noodelState, null, getActiveChild(this.noodelState.focalParent));
+        this.noodelState = setupNoodel(root, options);
     }
 
     // LIFECYCLE
@@ -76,7 +73,7 @@ export default class Noodel {
         }
 
         this.noodelState.r.containerEl = el;
-        this.noodelState.r.vueInstance = createApp(NdCanvas as any, {noodel: this.noodelState});
+        this.noodelState.r.vueInstance = createApp(Canvas as any, {noodel: this.noodelState});
         this.noodelState.r.vueInstance.mount(el);
     }
 

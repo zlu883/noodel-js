@@ -11,9 +11,9 @@ import NoodeOptions from '../types/NoodeOptions';
 import ComponentContent from '../types/ComponentContent';
 import { nextTick } from 'vue';
 import { traverseDescendents } from '../controllers/noodel-traverse';
-import NoodeSerializedCss from '../types/NoodeSerializedCss';
+import NoodeCss from '../types/NoodeCss';
 import NoodeEventMap from '../types/NoodeEventMap';
-import { extractNoodeDefinition, parseClassName, serializeClassNames, serializeContent, serializeStyles } from '../controllers/noodel-serialize';
+import { extractNoodeDefinition, serializeContent } from '../controllers/noodel-serialize';
 
 /**
  * The view model of a noode. Has 2-way binding with the view.
@@ -145,15 +145,19 @@ export default class Noode {
     /**
      * Get a cloned object containing the custom CSS classes applied to this noode.
      */
-    getClassNames(): NoodeSerializedCss {
-        return serializeClassNames(this.state.classNames);
+    getClassNames(): NoodeCss {
+        return {
+            ...this.state.classNames
+        };
     }
 
     /**
      * Get a cloned object containing the custom styles applied to this noode.
      */
-    getStyles(): NoodeSerializedCss {
-        return serializeStyles(this.state.styles);
+    getStyles(): NoodeCss {
+        return {
+            ...this.state.styles
+        };
     }
 
     /**
@@ -289,14 +293,13 @@ export default class Noode {
      * will be merged into the existing object.
      * @param classNames
      */
-    setClassNames(classNames: NoodeSerializedCss) {
+    setClassNames(classNames: NoodeCss) {
         this.throwErrorIfDeleted();
 
-        let c = this.state.classNames;
-
-        Object.keys(classNames).forEach(key => {
-            c[key] = parseClassName(classNames[key]);
-        });
+        this.state.classNames = {
+            ...this.state.classNames,
+            ...classNames
+        }
     }
 
     /**
@@ -304,14 +307,13 @@ export default class Noode {
      * will be merged into the existing object.
      * @param styles
      */
-    setStyles(styles: NoodeSerializedCss) {
+    setStyles(styles: NoodeCss) {
         this.throwErrorIfDeleted();
 
-        let s = this.state.styles;
-        
-        Object.keys(styles).forEach(key => {
-            s[key] = parseClassName(styles[key]);
-        });
+        this.state.classNames = {
+            ...this.state.styles,
+            ...styles
+        }
     }
 
     /**

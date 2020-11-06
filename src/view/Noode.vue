@@ -170,25 +170,26 @@ export default defineComponent({
 	},
 
 	computed: {
-		noodeClass(): any[] {
-			return [
-				{
-					"nd-noode-active": this.noode.isActive,
-					"nd-noode-inspect": this.noode.isInInspectMode,
-				},
-				...this.noode.classNames.noode
-			];
+		noodeClass(): string {
+			let className = '';
+
+			if (this.noode.isActive) className += 'nd-noode-active ';
+			if (this.noode.isInInspectMode) className += 'nd-noode-inspect ';
+
+			className += this.noode.classNames.noode || '';
+
+			return className;
 		},
 
-		noodeStyle(): {} {
+		noodeStyle(): string {
 			return this.noode.styles.noode;
 		},
 
-		contentBoxClass(): any[] {
+		contentBoxClass(): string {
 			return this.noode.classNames.contentBox;
 		},
 
-		contentBoxStyle(): {} {
+		contentBoxStyle(): string {
 			return this.noode.styles.contentBox;
 		},
 
@@ -201,14 +202,14 @@ export default defineComponent({
 			return showOption && this.noode.children.length > 0;
 		},
 
-		childIndicatorClass(): any[] {
-			return [
-				{
-					"nd-child-indicator-active": this.noode.isActive,
-					"nd-child-indicator-expanded": this.noode.isBranchVisible,
-				},
-				...this.noode.classNames.childIndicator
-			];
+		childIndicatorClass(): string {
+			let className = '';
+
+			if (this.noode.isBranchVisible) className += 'nd-child-indicator-expanded ';
+
+			className += this.noode.classNames.childIndicator || '';
+
+			return className;
 		},
 
 		childIndicatorStyle(): {} {
@@ -221,35 +222,35 @@ export default defineComponent({
 				: this.noodel.options.showOverflowIndicators;
 		},
 
-		overflowIndicatorLeftClass(): any[] {
+		overflowIndicatorLeftClass(): string {
 			return this.noode.classNames.overflowIndicatorLeft;
 		},
 
-		overflowIndicatorLeftStyle(): {} {
+		overflowIndicatorLeftStyle(): string {
 			return this.noode.styles.overflowIndicatorLeft;
 		},
 
-		overflowIndicatorRightClass(): any[] {
+		overflowIndicatorRightClass(): string {
 			return this.noode.classNames.overflowIndicatorRight;
 		},
 
-		overflowIndicatorRightStyle(): {} {
+		overflowIndicatorRightStyle(): string {
 			return this.noode.styles.overflowIndicatorRight;
 		},
 
-		overflowIndicatorTopClass(): any[] {
+		overflowIndicatorTopClass(): string {
 			return this.noode.classNames.overflowIndicatorTop;
 		},
 
-		overflowIndicatorTopStyle(): {} {
+		overflowIndicatorTopStyle(): string {
 			return this.noode.styles.overflowIndicatorTop;
 		},
 
-		overflowIndicatorBottomClass(): any[] {
+		overflowIndicatorBottomClass(): string {
 			return this.noode.classNames.overflowIndicatorBottom;
 		},
 
-		overflowIndicatorBottomStyle(): {} {
+		overflowIndicatorBottomStyle(): string {
 			return this.noode.styles.overflowIndicatorBottom;
 		}
 	},
