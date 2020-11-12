@@ -43,11 +43,12 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             pointerUpSrcNoode: null,
             panStartFocalNoode: null,
             ignoreTransitionEnd: false,
-            isMounted: false,
             canvasEl: null,
             trunkEl: null,
             hammerJsInstance: null,
         }),
+
+        isMounted: false,
 
         root: null,
         focalParent: null,
@@ -169,12 +170,12 @@ export function parseHTMLToNoode(el: Element): NoodeDefinition {
             branchBackdrop: attributes.styleBranchBackdrop,
         },
         options: {
-            useResizeDetection: 'useResizeDetection' in attributes || null,
-            useBranchResizeDetection: 'useBranchResizeDetection' in attributes || null,
-            useOverflowDetection: 'useOverflowDetection' in attributes || null,
-            showBranchBackdrop: 'showBranchBackdrop' in attributes || null,
-            showChildIndicator: 'showChildIndicator' in attributes || null,
-            showOverflowIndicators: 'showOverflowIndicators' in attributes || null
+            useResizeDetection: attributes.useResizeDetection === 'true' ? true : attributes.useResizeDetection === 'false' ? false : null,
+            useBranchResizeDetection: attributes.useBranchResizeDetection === 'true' ? true : attributes.useBranchResizeDetection === 'false' ? false : null,
+            useOverflowDetection: attributes.useOverflowDetection === 'true' ? true : attributes.useOverflowDetection === 'false' ? false : null,
+            showBranchBackdrop: attributes.showBranchBackdrop === 'true' ? true : attributes.showBranchBackdrop === 'false' ? false : null,
+            showChildIndicator: attributes.showChildIndicator === 'true' ? true : attributes.showChildIndicator === 'false' ? false : null,
+            showOverflowIndicators: attributes.showOverflowIndicators === 'true' ? true : attributes.showOverflowIndicators === 'false' ? false : null
         }
     };
 }
@@ -209,7 +210,7 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
         unsetRouting(noodel);
     }
 
-    if (noodel.r.isMounted) {
+    if (noodel.isMounted) {
         let newOrientation = noodel.options.orientation;
         let newBranchDirection = noodel.options.branchDirection;
 
@@ -254,7 +255,7 @@ export function parseAndApplyNoodeOptions(noodel: NoodelState, options: NoodeOpt
         ...options
     };
 
-    if (noodel.r.isMounted) {
+    if (noodel.isMounted) {
         let newUseResizeDetection = typeof noode.options.useResizeDetection === "boolean"
             ? noode.options.useResizeDetection
             : noodel.options.useResizeDetection;

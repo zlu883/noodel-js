@@ -60,7 +60,7 @@ export function updateNoodeSize(noodel: NoodelState, noode: NoodeState, newHeigh
                 });
             }
             else {
-                if (isInsert && noodel.r.isMounted) {
+                if (isInsert && noodel.isMounted) {
                     parent.applyBranchMove = true;
                     parent.branchOffset += alignVal;
                 }

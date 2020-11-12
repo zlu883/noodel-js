@@ -18,8 +18,6 @@ import NoodelState from "../types/NoodelState";
 import NoodeState from "../types/NoodeState";
 import { PropType, defineComponent } from "vue";
 
-// By extracting the transition-group into its own component addresses the issue
-// of enter/leave transitions not occuring properly as per https://github.com/vuejs/vue/issues/6946
 export default defineComponent({
 	props: {
 		parent: Object as PropType<NoodeState>,
@@ -45,9 +43,9 @@ export default defineComponent({
 			return className;
 		},
 
-		branchBackdropStyle(): string {
+		branchBackdropStyle(): {} {
 			let orientation = this.noodel.options.orientation;
-			let style = '';
+			let style = {};
 
 			if (orientation === "ltr") {
 				style += `left: ${this.parent.trunkRelativeOffset}px;`;

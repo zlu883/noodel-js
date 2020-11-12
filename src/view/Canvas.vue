@@ -101,7 +101,7 @@ export default defineComponent({
 			requestAnimationFrame(() => {
 				requestAnimationFrame(() => {
 					requestAnimationFrame(() => {
-						this.noodel.r.isMounted = true;
+						this.noodel.isMounted = true;
 						queueMount(this.noodel);
 					});
 				});
@@ -113,7 +113,7 @@ export default defineComponent({
 		this.noodel.trunkOffset = 0;
 		this.noodel.containerHeight = 0;
 		this.noodel.containerWidth = 0;
-		this.noodel.r.isMounted = false;
+		this.noodel.isMounted = false;
 
 		delete this.noodel.r.canvasEl;
 		delete this.noodel.r.trunkEl;
@@ -274,10 +274,11 @@ export default defineComponent({
 
 		allBranchBackdropParents(): NoodeState[] {
 			return this.allBranchParents.filter(p => {
-				typeof p.options.showBranchBackdrop === 'boolean' ?
+				return typeof p.options.showBranchBackdrop === 'boolean' ?
 					p.options.showBranchBackdrop :
 					this.noodel.options.showBranchBackdrops
 			});
+
 		},
 	},
 

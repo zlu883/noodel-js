@@ -37,8 +37,6 @@ export default interface NoodelState {
         trunkEl: HTMLDivElement;
 
         hammerJsInstance: HammerManager;
-
-        isMounted: boolean;
         /**
          * This is the offset of the trunk when panning begins.
          */
@@ -55,6 +53,8 @@ export default interface NoodelState {
         swipeVelocityBuffer: number[];
         onHashChanged: () => any;
     };
+
+    isMounted: boolean;
 
     root: NoodeState;
     focalParent: NoodeState;

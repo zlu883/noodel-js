@@ -530,7 +530,7 @@ export default class Noode {
      */
     realign() {
         this.throwErrorIfDeleted();
-        if (!this.noodelState.r.isMounted) return;
+        if (!this.noodelState.isMounted) return;
         if (!this.state.parent) return;
 
         this.state.parent.isBranchTransparent = true;
@@ -550,7 +550,7 @@ export default class Noode {
      */
     realignBranch() {
         this.throwErrorIfDeleted();
-        if (!this.noodelState.r.isMounted) return;
+        if (!this.noodelState.isMounted) return;
         if (this.state.children.length === 0) return;
 
         this.state.isBranchTransparent = true;
@@ -571,7 +571,7 @@ export default class Noode {
      */
     checkOverflow() {
         this.throwErrorIfDeleted();
-        if (!this.noodelState.r.isMounted) return;
+        if (!this.noodelState.isMounted) return;
         if (!this.state.parent) return;
 
         this.state.parent.isBranchTransparent = true;

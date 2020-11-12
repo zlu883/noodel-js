@@ -54,7 +54,6 @@ export default class Noodel {
             options = {};
         }
 
-        // use Vue 3's reactivity API to convert global state store into a proxied object
         this.noodelState = setupNoodel(root, options);
     }
 
@@ -87,7 +86,6 @@ export default class Noodel {
 
         if (vueInstance) {
             vueInstance.unmount(containerEl);
-            containerEl.remove();
         }
         
         this.noodelState.r.vueInstance = null;
@@ -279,8 +277,6 @@ export default class Noodel {
         else {
             exitInspectMode(this.noodelState);
         }
-
-        document.addEventListener
     }
 
     // EVENT

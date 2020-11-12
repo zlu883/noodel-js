@@ -233,7 +233,7 @@ export function deleteChildren(noodel: NoodelState, parent: NoodeState, index: n
 
     // add fading flag for noodes to be removed from a branch where the branch itself is not deleted
     // this is used to determine which noodes need their positions adjusted for fade out
-    if (noodel.r.isMounted && parent.children.length > 0) {
+    if (noodel.isMounted && parent.children.length > 0) {
         deletedNoodes.forEach(noode => noode.r.fade = true);
     }
 
