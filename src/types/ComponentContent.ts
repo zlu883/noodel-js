@@ -1,5 +1,5 @@
 /**
- * Object template used for passing a Vue component as noode content.
+ * Object template used for passing a Vue component as node content.
  */
 export default interface ComponentContent {
     /**

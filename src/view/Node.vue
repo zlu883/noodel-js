@@ -2,13 +2,13 @@
 
 <template>
 	<div 
-		class="nd-noode" 
-		:class="noodeClass"
-		:style="noodeStyle"
+		class="nd-node" 
+		:class="nodeClass"
+		:style="nodeStyle"
 	>
 		<transition name="nd-inspect-backdrop">
 			<div
-				v-if="noode.isInInspectMode"
+				v-if="node.isInInspectMode"
 				class="nd-inspect-backdrop"
 			></div>
 		</transition>
@@ -17,16 +17,16 @@
 			class="nd-content-box"
 			:class="contentBoxClass"
 			:style="contentBoxStyle"
-			v-bind.prop="typeof noode.content === 'string' ? { innerHTML: noode.content } : null"
+			v-bind.prop="typeof node.content === 'string' ? { innerHTML: node.content } : null"
 			@pointerup="onPointerUp"
 			@mouseup="onPointerUp"
 			@touchend="onPointerUp"
 		>
 			<component
-				v-if="noode.content && typeof noode.content === 'object'"
-				:is="noode.content.component"
-				v-bind="noode.content.props"
-				v-on="noode.content.eventListeners"
+				v-if="node.content && typeof node.content === 'object'"
+				:is="node.content.component"
+				v-bind="node.content.props"
+				v-on="node.content.eventListeners"
 			/>
 		</div>
 		<transition name="nd-child-indicator">
@@ -39,7 +39,7 @@
 		</transition>
 		<transition name="nd-overflow-indicator">
 			<div
-				v-if="showOverflowIndicators && noode.hasOverflowTop"
+				v-if="showOverflowIndicators && node.hasOverflowTop"
 				class="nd-overflow-indicator nd-overflow-indicator-top"
 				:class="overflowIndicatorTopClass"
 				:style="overflowIndicatorTopStyle"
@@ -47,7 +47,7 @@
 		</transition>
 		<transition name="nd-overflow-indicator">
 			<div
-				v-if="showOverflowIndicators && noode.hasOverflowLeft"
+				v-if="showOverflowIndicators && node.hasOverflowLeft"
 				class="nd-overflow-indicator nd-overflow-indicator-left"
 				:class="overflowIndicatorLeftClass"
 				:style="overflowIndicatorLeftStyle"
@@ -55,7 +55,7 @@
 		</transition>
 		<transition name="nd-overflow-indicator">
 			<div
-				v-if="showOverflowIndicators && noode.hasOverflowBottom"
+				v-if="showOverflowIndicators && node.hasOverflowBottom"
 				class="nd-overflow-indicator nd-overflow-indicator-bottom"
 				:class="overflowIndicatorBottomClass"
 				:style="overflowIndicatorBottomStyle"
@@ -63,7 +63,7 @@
 		</transition>
 		<transition name="nd-overflow-indicator">
 			<div
-				v-if="showOverflowIndicators && noode.hasOverflowRight"
+				v-if="showOverflowIndicators && node.hasOverflowRight"
 				class="nd-overflow-indicator nd-overflow-indicator-right"
 				:class="overflowIndicatorRightClass"
 				:style="overflowIndicatorRightStyle"
@@ -75,16 +75,15 @@
 <!---------------------------- SCRIPT ------------------------------>
 
 <script lang="ts">
-import NoodeState from "../types/NoodeState";
+import NodeState from "../types/NodeState";
 import {
 	checkContentOverflow,
-	updateNoodeSize,
+	updateNodeSize,
 } from "../controllers/noodel-align";
 import NoodelState from "../types/NoodelState";
 import { traverseAncestors } from "../controllers/noodel-traverse";
 import { getPath, getFocalHeight, getFocalWidth } from "../controllers/getters";
 import { nextTick, PropType, defineComponent } from "vue";
-import Noode from "../main/Noode";
 import {
 	attachResizeSensor,
 	detachResizeSensor,
@@ -92,166 +91,166 @@ import {
 
 export default defineComponent({
 	props: {
-		noode: Object as PropType<NoodeState>,
+		node: Object as PropType<NodeState>,
 		noodel: Object as PropType<NoodelState>,
 	},
 
 	mounted() {
-		this.noode.r.el = this.$el as HTMLDivElement;
-		this.noode.r.contentBoxEl = this.$refs.contentBox as HTMLDivElement;
+		this.node.r.el = this.$el as HTMLDivElement;
+		this.node.r.contentBoxEl = this.$refs.contentBox as HTMLDivElement;
 
 		// nextTick is required for vue's v-move effect to work
 		nextTick(() => {
 			// do initial size capture
-			let noodeRect = this.noode.r.el.getBoundingClientRect();
+			let nodeRect = this.node.r.el.getBoundingClientRect();
 
-			updateNoodeSize(
+			updateNodeSize(
 				this.noodel,
-				this.noode,
-				noodeRect.height,
-				noodeRect.width,
+				this.node,
+				nodeRect.height,
+				nodeRect.width,
 				true
 			);
-			checkContentOverflow(this.noodel, this.noode);
+			checkContentOverflow(this.noodel, this.node);
 
-			attachResizeSensor(this.noodel, this.noode);
+			attachResizeSensor(this.noodel, this.node);
 
 			// allows parent branch to fall back to display: none after first size update,
 			// using nextTick to wait for parent branch size capture to finish first
 			nextTick(() => {
-				this.noode.parent.isBranchTransparent = false;
+				this.node.parent.isBranchTransparent = false;
 			});
 		});
 	},
 
 	beforeUnmount() {
-		detachResizeSensor(this.noode);
+		detachResizeSensor(this.node);
 
 		// check fade flag and adjust absolute positioning as necessary
-		if (this.noode.r.fade) {
-			this.noode.r.fade = false;
+		if (this.node.r.fade) {
+			this.node.r.fade = false;
 			let orientation = this.noodel.options.orientation;
 			let branchDirection = this.noodel.options.branchDirection;
-			let offset = this.noode.branchRelativeOffset + "px";
+			let offset = this.node.branchRelativeOffset + "px";
 
-			this.noode.r.el.classList.remove("nd-noode-active");
+			this.node.r.el.classList.remove("nd-node-active");
 
 			if (orientation === "ltr" || orientation === "rtl") {
-				this.noode.r.el.style.width = "100%";
+				this.node.r.el.style.width = "100%";
 
 				if (branchDirection === "normal") {
-					this.noode.r.el.style.top = offset;
+					this.node.r.el.style.top = offset;
 				} else {
-					this.noode.r.el.style.bottom = offset;
+					this.node.r.el.style.bottom = offset;
 				}
 			} else {
-				this.noode.r.el.style.height = "100%";
+				this.node.r.el.style.height = "100%";
 
 				if (branchDirection === "normal") {
-					this.noode.r.el.style.left = offset;
+					this.node.r.el.style.left = offset;
 				} else {
-					this.noode.r.el.style.right = offset;
+					this.node.r.el.style.right = offset;
 				}
 			}
 		}
 
-		this.noode.r.contentBoxEl = null;
-		this.noode.r.el = null;
+		this.node.r.contentBoxEl = null;
+		this.node.r.el = null;
 	},
 
 	methods: {
 		onPointerUp() {
-			if (this.noodel.r.pointerUpSrcNoode) return;
-			this.noodel.r.pointerUpSrcNoode = this.noode;
+			if (this.noodel.r.pointerUpSrcNode) return;
+			this.noodel.r.pointerUpSrcNode = this.node;
 			requestAnimationFrame(
-				() => (this.noodel.r.pointerUpSrcNoode = null)
+				() => (this.noodel.r.pointerUpSrcNode = null)
 			);
 		},
 	},
 
 	computed: {
-		noodeClass(): string {
+		nodeClass(): string {
 			let className = '';
 
-			if (this.noode.isActive) className += 'nd-noode-active ';
-			if (this.noode.isInInspectMode) className += 'nd-noode-inspect ';
+			if (this.node.isActive) className += 'nd-node-active ';
+			if (this.node.isInInspectMode) className += 'nd-node-inspect ';
 
-			className += this.noode.classNames.noode || '';
+			className += this.node.classNames.node || '';
 
 			return className;
 		},
 
-		noodeStyle(): string {
-			return this.noode.styles.noode;
+		nodeStyle(): string {
+			return this.node.styles.node;
 		},
 
 		contentBoxClass(): string {
-			return this.noode.classNames.contentBox;
+			return this.node.classNames.contentBox;
 		},
 
 		contentBoxStyle(): string {
-			return this.noode.styles.contentBox;
+			return this.node.styles.contentBox;
 		},
 
 		showChildIndicator(): boolean {
 			let showOption =
-				typeof this.noode.options.showChildIndicator === "boolean"
-					? this.noode.options.showChildIndicator
+				typeof this.node.options.showChildIndicator === "boolean"
+					? this.node.options.showChildIndicator
 					: this.noodel.options.showChildIndicators;
 
-			return showOption && this.noode.children.length > 0;
+			return showOption && this.node.children.length > 0;
 		},
 
 		childIndicatorClass(): string {
 			let className = '';
 
-			if (this.noode.isBranchVisible) className += 'nd-child-indicator-expanded ';
+			if (this.node.isBranchVisible) className += 'nd-child-indicator-expanded ';
 
-			className += this.noode.classNames.childIndicator || '';
+			className += this.node.classNames.childIndicator || '';
 
 			return className;
 		},
 
 		childIndicatorStyle(): {} {
-			return this.noode.styles.childIndicator;
+			return this.node.styles.childIndicator;
 		},
 
 		showOverflowIndicators(): boolean {
-			return typeof this.noode.options.showOverflowIndicators === "boolean"
-				? this.noode.options.showOverflowIndicators
+			return typeof this.node.options.showOverflowIndicators === "boolean"
+				? this.node.options.showOverflowIndicators
 				: this.noodel.options.showOverflowIndicators;
 		},
 
 		overflowIndicatorLeftClass(): string {
-			return this.noode.classNames.overflowIndicatorLeft;
+			return this.node.classNames.overflowIndicatorLeft;
 		},
 
 		overflowIndicatorLeftStyle(): string {
-			return this.noode.styles.overflowIndicatorLeft;
+			return this.node.styles.overflowIndicatorLeft;
 		},
 
 		overflowIndicatorRightClass(): string {
-			return this.noode.classNames.overflowIndicatorRight;
+			return this.node.classNames.overflowIndicatorRight;
 		},
 
 		overflowIndicatorRightStyle(): string {
-			return this.noode.styles.overflowIndicatorRight;
+			return this.node.styles.overflowIndicatorRight;
 		},
 
 		overflowIndicatorTopClass(): string {
-			return this.noode.classNames.overflowIndicatorTop;
+			return this.node.classNames.overflowIndicatorTop;
 		},
 
 		overflowIndicatorTopStyle(): string {
-			return this.noode.styles.overflowIndicatorTop;
+			return this.node.styles.overflowIndicatorTop;
 		},
 
 		overflowIndicatorBottomClass(): string {
-			return this.noode.classNames.overflowIndicatorBottom;
+			return this.node.classNames.overflowIndicatorBottom;
 		},
 
 		overflowIndicatorBottomStyle(): string {
-			return this.noode.styles.overflowIndicatorBottom;
+			return this.node.styles.overflowIndicatorBottom;
 		}
 	},
 });

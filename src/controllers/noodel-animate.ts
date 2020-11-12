@@ -1,5 +1,5 @@
 import NoodelState from 'src/types/NoodelState';
-import NoodeState from 'src/types/NoodeState';
+import NodeState from 'src/types/NodeState';
 import { getFocalHeight, getFocalWidth } from './getters';
 
 /**
@@ -46,7 +46,7 @@ export function findCurrentTrunkOffset(noodel: NoodelState): number {
  * Finds the current rendered focal branch offset, taking into account the possibility
  * of it being in transition.
  */
-export function findCurrentBranchOffset(noodel: NoodelState, parent: NoodeState): number {
+export function findCurrentBranchOffset(noodel: NoodelState, parent: NodeState): number {
 
     if (!parent.applyBranchMove) return parent.branchOffset;
 

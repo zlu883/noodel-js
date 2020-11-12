@@ -69,7 +69,7 @@ import { setupCanvasInput } from "../controllers/input-binding";
 import { traverseDescendents } from "../controllers/noodel-traverse";
 import NoodelState from "../types/NoodelState";
 import { alignBranchToIndex, alignTrunkToBranch } from "../controllers/noodel-align";
-import NoodeState from "../types/NoodeState";
+import NodeState from "../types/NodeState";
 import { PropType, defineComponent } from "vue";
 import { queueMount } from "../controllers/event-emit";
 
@@ -120,19 +120,19 @@ export default defineComponent({
 
 		traverseDescendents(
 			this.noodel.root,
-			(noode) => {
-				noode.trunkRelativeOffset = 0;
-				noode.branchRelativeOffset = 0;
-				noode.isBranchTransparent = true;
-				noode.size = 0;
-				noode.branchSize = 0;
-				noode.branchOffset = 0;
+			(node) => {
+				node.trunkRelativeOffset = 0;
+				node.branchRelativeOffset = 0;
+				node.isBranchTransparent = true;
+				node.size = 0;
+				node.branchSize = 0;
+				node.branchOffset = 0;
 
-				delete noode.r.branchEl;
-				delete noode.r.el;
-				delete noode.r.contentBoxEl;
-				delete noode.r.resizeSensor;
-				delete noode.r.branchResizeSensor;
+				delete node.r.branchEl;
+				delete node.r.el;
+				delete node.r.contentBoxEl;
+				delete node.r.resizeSensor;
+				delete node.r.branchResizeSensor;
 			},
 			true
 		);
@@ -256,8 +256,8 @@ export default defineComponent({
 			};
 		},
 
-		allBranchParents(): NoodeState[] {
-			let allBranchParents: NoodeState[] = [];
+		allBranchParents(): NodeState[] {
+			let allBranchParents: NodeState[] = [];
 
 			traverseDescendents(
 				this.noodel.root,
@@ -272,7 +272,7 @@ export default defineComponent({
 			return allBranchParents;
 		},
 
-		allBranchBackdropParents(): NoodeState[] {
+		allBranchBackdropParents(): NodeState[] {
 			return this.allBranchParents.filter(p => {
 				return typeof p.options.showBranchBackdrop === 'boolean' ?
 					p.options.showBranchBackdrop :

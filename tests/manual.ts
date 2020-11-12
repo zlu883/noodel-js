@@ -46,49 +46,49 @@ document.getElementById("setReversed").addEventListener("click", () => {
     })
 });
 
-document.getElementById("deleteFocalNoode").addEventListener("click", () => {
-    noodel.getFocalNoode().deleteSelf();
+document.getElementById("deleteFocalNode").addEventListener("click", () => {
+    noodel.getFocalNode().deleteSelf();
 });
 
 document.getElementById("deleteFocalBranch").addEventListener("click", () => {
     noodel.getFocalParent().deleteChildren(0, Number.MAX_SAFE_INTEGER);
 });
 
-document.getElementById("deleteNoodeBefore").addEventListener("click", () => {
-    noodel.getFocalNoode().deleteBefore(1);
+document.getElementById("deleteNodeBefore").addEventListener("click", () => {
+    noodel.getFocalNode().deleteBefore(1);
 });
 
-document.getElementById("deleteNoodeAfter").addEventListener("click", () => {
-    noodel.getFocalNoode().deleteAfter(1);
+document.getElementById("deleteNodeAfter").addEventListener("click", () => {
+    noodel.getFocalNode().deleteAfter(1);
 });
 
 document.getElementById("deleteActiveChild").addEventListener("click", () => {
-    let c = noodel.getFocalNoode().getActiveChild();
+    let c = noodel.getFocalNode().getActiveChild();
     if (c) c.deleteSelf();
 });
 
 document.getElementById("deleteMultipleBefore").addEventListener("click", () => {
-    noodel.getFocalNoode().deleteBefore(3);
+    noodel.getFocalNode().deleteBefore(3);
 });
 
 document.getElementById("deleteMultipleAfter").addEventListener("click", () => {
-    noodel.getFocalNoode().deleteAfter(3);
+    noodel.getFocalNode().deleteAfter(3);
 });
 
 // animation behaviour for deleting multiple items is slightly different depending on
 // whether the call is singular or broken down into multiple calls
 // due to the fact that branchRelativeOffset cannot be adjusted for deleted items
 document.getElementById("deleteMultipleChild").addEventListener("click", () => {
-    // let c = noodel.getFocalNoode().getActiveChild();
+    // let c = noodel.getFocalNode().getActiveChild();
     // c.removeAfter(2);
     // if (c) c.removeSelf();
-    noodel.getFocalNoode().deleteChildren(0, 3);
+    noodel.getFocalNode().deleteChildren(0, 3);
 });
 
 document.getElementById("appendMultipleChild").addEventListener("click", () => {
-    noodel.getFocalNoode().insertChildren([{}, {}, {}]);
+    noodel.getFocalNode().insertChildren([{}, {}, {}]);
 });
 
 document.getElementById("insertMultipleChild").addEventListener("click", () => {
-    noodel.getFocalNoode().insertChildren([{}, {}, {}], 2);
+    noodel.getFocalNode().insertChildren([{}, {}, {}], 2);
 });

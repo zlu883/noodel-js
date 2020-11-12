@@ -1,5 +1,5 @@
-export default interface NoodeCss {
-    noode?: string;
+export default interface NodeCss {
+    node?: string;
     contentBox?: string;
     childIndicator?: string;
     overflowIndicatorLeft?: string;

@@ -1,4 +1,4 @@
-import { doJumpNavigation, shiftFocalNoode, shiftFocalLevel } from './noodel-navigate';
+import { doJumpNavigation, shiftFocalNode, shiftFocalLevel } from './noodel-navigate';
 import { startPan, updatePan, releasePan } from './noodel-pan';
 import Hammer from 'hammerjs';
 import NoodelState from '../types/NoodelState';
@@ -50,10 +50,10 @@ function moveNoodel(noodel: NoodelState, axis: Axis, diff: number) {
     }
     else {
         if (branchDirection === 'normal') {
-            shiftFocalNoode(noodel, diff);
+            shiftFocalNode(noodel, diff);
         }
         else {
-            shiftFocalNoode(noodel, -diff);
+            shiftFocalNode(noodel, -diff);
         }  
     }
 }
@@ -215,8 +215,8 @@ function onTap(noodel: NoodelState, ev: HammerInput) {
     if ((ev as any).tapCount === 1) {
         if (!noodel.options.useTapNavigation) return;
         if (noodel.isInInspectMode) return;        
-        if (noodel.r.pointerUpSrcNoode) {
-            let target = noodel.r.pointerUpSrcNoode;
+        if (noodel.r.pointerUpSrcNode) {
+            let target = noodel.r.pointerUpSrcNode;
 
             if (noodel.options.retainDepthOnTapNavigation && !target.isBranchVisible) {
                 let levelDiff = getActiveChild(noodel.focalParent).level - target.level;

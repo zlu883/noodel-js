@@ -94,10 +94,10 @@ describe('Lifecycle', function () {
                 }
             });
         });
-        it('should have noode element for a noode', function (done) {
+        it('should have node element for a node', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.isTrue(noodel.getFocalNoode().getEl().classList.contains('nd-noode'));
+                    assert.isTrue(noodel.getFocalNode().getEl().classList.contains('nd-node'));
                     done();
                 }
                 catch (err) {
@@ -117,10 +117,10 @@ describe('Lifecycle', function () {
                 }
             });
         });
-        it('should have active class on active noode', function (done) {
+        it('should have active class on active node', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.isTrue(noodel.getFocalParent().getActiveChild().getEl().classList.contains('nd-noode-active'));
+                    assert.isTrue(noodel.getFocalParent().getActiveChild().getEl().classList.contains('nd-node-active'));
                     done();
                 }
                 catch (err) {
@@ -128,7 +128,7 @@ describe('Lifecycle', function () {
                 }
             });
         });
-        it('should render noode content inside content box', function (done) {
+        it('should render node content inside content box', function (done) {
             noodel.on('mount', function () {
                 try {
                     assert.strictEqual(noodel.getRoot().getChild(0).getEl().querySelector(".nd-content-box").innerHTML.trim(), "<h2>Heading</h2>Some text node");
@@ -180,7 +180,7 @@ describe('Lifecycle', function () {
 
         it('should keep state after unmount', function (done) {
             let def = noodel.getRoot().getDefinition();
-            let focalNoode = noodel.getFocalNoode();
+            let focalNode = noodel.getFocalNode();
 
             noodel.on('mount', function () {
                 try {
@@ -188,7 +188,7 @@ describe('Lifecycle', function () {
                     setTimeout(() => {
                         try {
                             assert.deepStrictEqual(noodel.getRoot().getDefinition(), def);
-                            assert.deepStrictEqual(noodel.getFocalNoode(), focalNoode);
+                            assert.deepStrictEqual(noodel.getFocalNode(), focalNode);
                             done();
                         }
                         catch (err) {
@@ -219,10 +219,10 @@ describe('Lifecycle', function () {
         it('should obtain updated DOM on nextTick', function (done) {
             noodel.on('mount', function () {
                 try {
-                    noodel.getFocalNoode().setContent("aabbcc");
+                    noodel.getFocalNode().setContent("aabbcc");
                     noodel.nextTick(() => {
                         try {
-                            assert.strictEqual(noodel.getFocalNoode().getEl().querySelector('.nd-content-box').innerHTML, 'aabbcc');
+                            assert.strictEqual(noodel.getFocalNode().getEl().querySelector('.nd-content-box').innerHTML, 'aabbcc');
                             done();
                         }
                         catch(err) {

@@ -1,7 +1,7 @@
 import NoodelState from '../types/NoodelState';
-import NoodeState from '../types/NoodeState';
+import NodeState from '../types/NodeState';
 import { nextTick } from 'vue';
-import { syncHashToFocalNoode } from './noodel-routing';
+import { syncHashToFocalNode } from './noodel-routing';
 
 function queueEvent(noodel: NoodelState, ev: Function) {
     if (noodel.r.eventQueue.length === 0) {
@@ -32,33 +32,33 @@ export function queueExitInspectMode(noodel: NoodelState) {
 }
 
 /**
- * Triggers events and sync hash if the focal noode (and maybe also focal parent) have changed.
+ * Triggers events and sync hash if the focal node (and maybe also focal parent) have changed.
  * Does nothing if prev equals current.
  */
-export function handleFocalNoodeChange(noodel: NoodelState, prev: NoodeState, current: NoodeState) {
+export function handleFocalNodeChange(noodel: NoodelState, prev: NodeState, current: NodeState) {
 
     if (!prev && !current) return;
     if (prev && current && prev.id === current.id) return;
 
-    syncHashToFocalNoode(noodel);
+    syncHashToFocalNode(noodel);
 
-    let prevNoode = prev ? prev.r.vm : null;
-    let currentNoode = current ? current.r.vm : null;
+    let prevNode = prev ? prev.r.vm : null;
+    let currentNode = current ? current.r.vm : null;
 
     if (prev) {
         prev.r.eventListeners.get('exitFocus').forEach(l => {
-            queueEvent(noodel, () => l(currentNoode));
+            queueEvent(noodel, () => l(currentNode));
         });
     }
 
     if (current) {
         current.r.eventListeners.get('enterFocus').forEach(l => {
-            queueEvent(noodel, () => l(prevNoode));
+            queueEvent(noodel, () => l(prevNode));
         });
     }
 
-    noodel.r.eventListeners.get('focalNoodeChange').forEach(l => {
-        queueEvent(noodel, () => l(currentNoode, prevNoode));
+    noodel.r.eventListeners.get('focalNodeChange').forEach(l => {
+        queueEvent(noodel, () => l(currentNode, prevNode));
     });
 
     let prevParent = prev ? prev.parent : null;
@@ -67,22 +67,22 @@ export function handleFocalNoodeChange(noodel: NoodelState, prev: NoodeState, cu
     if (!prevParent && !currentParent) return;
     if (prevParent && currentParent && prevParent.id === currentParent.id) return;
 
-    let prevParentNoode = prevParent ? prevParent.r.vm : null;
-    let currentParentNoode = currentParent ? currentParent.r.vm : null;
+    let prevParentNode = prevParent ? prevParent.r.vm : null;
+    let currentParentNode = currentParent ? currentParent.r.vm : null;
 
     if (prevParent) {
         prevParent.r.eventListeners.get('childrenExitFocus').forEach(l => {
-            queueEvent(noodel, () => l(currentParentNoode));
+            queueEvent(noodel, () => l(currentParentNode));
         });
     }
 
     if (currentParent) {
         currentParent.r.eventListeners.get('childrenEnterFocus').forEach(l => {
-            queueEvent(noodel, () => l(prevParentNoode));
+            queueEvent(noodel, () => l(prevParentNode));
         });
     }
 
     noodel.r.eventListeners.get('focalParentChange').forEach(l => {
-        queueEvent(noodel, () => l(currentParentNoode, prevParentNoode));
+        queueEvent(noodel, () => l(currentParentNode, prevParentNode));
     });
 }

@@ -1,21 +1,21 @@
-import Noode from "../src/main/Noode";
+import NoodelNode from "../src/main/NoodelNode";
 import Noodel from "../src/main/Noodel";
 
 const assert = chai.assert;
 
-describe('Noode insert', function () {
+describe('Node insert', function () {
 
     let noodel: Noodel;
-    let firstNoode: Noode;
-    let secondNoode: Noode;
-    let thirdNoode: Noode;
+    let firstNode: NoodelNode;
+    let secondNode: NoodelNode;
+    let thirdNode: NoodelNode;
 
     beforeEach(function() {
         noodel = new Noodel("#template");
         noodel.getRoot().setActiveChild(1);
-        firstNoode = noodel.getRoot().getChild(0);
-        secondNoode = noodel.getRoot().getChild(1);
-        thirdNoode = noodel.getRoot().getChild(2);
+        firstNode = noodel.getRoot().getChild(0);
+        secondNode = noodel.getRoot().getChild(1);
+        thirdNode = noodel.getRoot().getChild(2);
     });
 
     afterEach(function() {
@@ -43,16 +43,16 @@ describe('Noode insert', function () {
                 id: "insert"
             }], 1);
 
-            assert.strictEqual(firstNoode.getIndex(), 0);
-            assert.strictEqual(secondNoode.getIndex(), 2);
-            assert.strictEqual(thirdNoode.getIndex(), 3);
+            assert.strictEqual(firstNode.getIndex(), 0);
+            assert.strictEqual(secondNode.getIndex(), 2);
+            assert.strictEqual(thirdNode.getIndex(), 3);
         });
-        it('should retain focal noode', function () {
+        it('should retain focal node', function () {
             noodel.getRoot().insertChildren([{
                 id: "insert"
             }], 1);
 
-            assert.strictEqual(secondNoode, noodel.getFocalNoode());
+            assert.strictEqual(secondNode, noodel.getFocalNode());
         });
     });
 
@@ -69,15 +69,15 @@ describe('Noode insert', function () {
             noodel.getRoot().insertChildren([{
                 id: "insert"
             }], 0);
-            assert.strictEqual(firstNoode.getIndex(), 1);
-            assert.strictEqual(secondNoode.getIndex(), 2);
-            assert.strictEqual(thirdNoode.getIndex(), 3);
+            assert.strictEqual(firstNode.getIndex(), 1);
+            assert.strictEqual(secondNode.getIndex(), 2);
+            assert.strictEqual(thirdNode.getIndex(), 3);
         });
-        it('should retain focal noode', function () {
+        it('should retain focal node', function () {
             noodel.getRoot().insertChildren([{
                 id: "insert"
             }], 0);
-            assert.strictEqual(secondNoode, noodel.getFocalNoode());
+            assert.strictEqual(secondNode, noodel.getFocalNode());
         });
     });
 
@@ -94,15 +94,15 @@ describe('Noode insert', function () {
             noodel.getRoot().insertChildren([{
                 id: "insert"
             }], 3);
-            assert.strictEqual(firstNoode.getIndex(), 0);
-            assert.strictEqual(secondNoode.getIndex(), 1);
-            assert.strictEqual(thirdNoode.getIndex(), 2);
+            assert.strictEqual(firstNode.getIndex(), 0);
+            assert.strictEqual(secondNode.getIndex(), 1);
+            assert.strictEqual(thirdNode.getIndex(), 2);
         });
-        it('should retain focal noode', function () {
+        it('should retain focal node', function () {
             noodel.getRoot().insertChildren([{
                 id: "insert"
             }], 3);
-            assert.strictEqual(secondNoode, noodel.getFocalNoode());
+            assert.strictEqual(secondNode, noodel.getFocalNode());
         });
     });
 });

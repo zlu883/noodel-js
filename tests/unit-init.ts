@@ -1,6 +1,6 @@
 import Noodel from "../src/main/Noodel";
-import NoodeCss from "../src/types/NoodeCss";
-import NoodeOptions from "../src/types/NoodeOptions";
+import NodeCss from "../src/types/NodeCss";
+import NodeOptions from "../src/types/NodeOptions";
 
 const assert = chai.assert;
 
@@ -9,8 +9,8 @@ const assert = chai.assert;
 describe('Init', function () {
 
     describe('with no content tree', function () {
-        it('should create empty noodel with 0 noodes', function () {
-            assert.strictEqual(new Noodel().getNoodeCount(), 0);
+        it('should create empty noodel with 0 nodes', function () {
+            assert.strictEqual(new Noodel().getNodeCount(), 0);
         });
         it('should create empty noodel with root', function () {
             assert.isObject(new Noodel().getRoot());
@@ -30,25 +30,25 @@ describe('Init', function () {
             noodel = new Noodel("#template");
         });
 
-        it('should parse all noodes', function () {
-            assert.strictEqual(noodel.getNoodeCount(), 14);
+        it('should parse all nodes', function () {
+            assert.strictEqual(noodel.getNodeCount(), 14);
         });
-        it('should parse all noodes on a level', function () {
+        it('should parse all nodes on a level', function () {
             assert.strictEqual(noodel.getRoot().getChildCount(), 8);
         });
-        it('should parse children noodes', function () {
+        it('should parse children nodes', function () {
             assert.strictEqual(noodel.getRoot().getChild(1).getChildCount(), 3);
         });
-        it('should parse deep children noodes', function () {
+        it('should parse deep children nodes', function () {
             assert.strictEqual(noodel.getRoot().getChild(1).getChild(2).getChildCount(), 3);
         });
-        it('should parse noode content from inner HTML', function () {
+        it('should parse node content from inner HTML', function () {
             assert.strictEqual((noodel.getRoot().getChild(0).getContent() as string).trim(), '<h2>Heading</h2>Some text node');
         });
         it('should parse custom class names', function () {
             let classNames = noodel.getRoot().getChild(2).getClassNames();
-            let expected: NoodeCss = {
-                noode: "custom noode", 
+            let expected: NodeCss = {
+                node: "custom node", 
                 contentBox: "custom content box",
                 branch: "custom branch", 
                 branchBackdrop: "custom branch backdrop",
@@ -62,8 +62,8 @@ describe('Init', function () {
         });
         it('should parse custom styles', function () {
             let styles = noodel.getRoot().getChild(3).getStyles();
-            let expected: NoodeCss = {
-                noode: "color: red; border: solid blue 0px", 
+            let expected: NodeCss = {
+                node: "color: red; border: solid blue 0px", 
                 contentBox: "color: red; border: solid blue 1px",
                 branch: "color: red; border: solid blue 2px", 
                 branchBackdrop: "color: red; border: solid blue 3px",
@@ -84,24 +84,24 @@ describe('Init', function () {
             assert.isTrue(noodel.getRoot().getChild(4).isActive());
             assert.isFalse(noodel.getRoot().getChild(5).isActive());
         });
-        it('should default active child to 0 for noode with children', function () {
+        it('should default active child to 0 for node with children', function () {
             assert.strictEqual(noodel.getRoot().getChild(1).getActiveChildIndex(), 0);
             assert.strictEqual(noodel.getRoot().getChild(1).getActiveChild().getIndex(), 0);
             assert.isTrue(noodel.getRoot().getChild(1).getChild(0).isActive());
         });
-        it('should default active child to null for noode without children', function () {
+        it('should default active child to null for node without children', function () {
             assert.strictEqual(noodel.getRoot().getChild(0).getActiveChildIndex(), null);
             assert.strictEqual(noodel.getRoot().getChild(0).getActiveChild(), null);
         });
         it('should return null for non-existent child', function () {
             assert.strictEqual(noodel.getRoot().getChild(12), null);
         });
-        it('should focus on active noode of first level', function () {
-            assert.strictEqual(noodel.getFocalNoode(), noodel.getRoot().getActiveChild());
+        it('should focus on active node of first level', function () {
+            assert.strictEqual(noodel.getFocalNode(), noodel.getRoot().getActiveChild());
             assert.strictEqual(noodel.getFocalParent(), noodel.getRoot());
         });
-        it('should parse noode options', function () {
-            let expected: NoodeOptions = {
+        it('should parse node options', function () {
+            let expected: NodeOptions = {
                 useResizeDetection: true,
                 useBranchResizeDetection: false,
                 useOverflowDetection: true,
@@ -115,9 +115,9 @@ describe('Init', function () {
     });
 
     describe('from valid element', function () {
-        it('should parse all noodes', function () {
+        it('should parse all nodes', function () {
             let noodel = new Noodel(document.getElementById("template"));
-            assert.strictEqual(noodel.getNoodeCount(), 14);
+            assert.strictEqual(noodel.getNodeCount(), 14);
         });
     });
 
@@ -140,7 +140,7 @@ describe('Init', function () {
                 }, 
                 {
                     classNames: {
-                        noode: "custom noode", 
+                        node: "custom node", 
                         contentBox: "custom content box",
                         branch: "custom branch", 
                         branchBackdrop: "custom branch backdrop",
@@ -153,7 +153,7 @@ describe('Init', function () {
                 },
                 {
                     styles: {
-                        noode: "color: red; border: solid blue 0px", 
+                        node: "color: red; border: solid blue 0px", 
                         contentBox: "color: red; border: solid blue 1px",
                         branch: "color: red; border: solid blue 2px", 
                         branchBackdrop: "color: red; border: solid blue 3px",
@@ -186,25 +186,25 @@ describe('Init', function () {
             ]);
         });
 
-        it('should parse all noodes', function () {
-            assert.strictEqual(noodel.getNoodeCount(), 14);
+        it('should parse all nodes', function () {
+            assert.strictEqual(noodel.getNodeCount(), 14);
         });
-        it('should parse all noodes on a level', function () {
+        it('should parse all nodes on a level', function () {
             assert.strictEqual(noodel.getRoot().getChildCount(), 8);
         });
-        it('should parse children noodes', function () {
+        it('should parse children nodes', function () {
             assert.strictEqual(noodel.getRoot().getChild(1).getChildCount(), 3);
         });
-        it('should parse deep children noodes', function () {
+        it('should parse deep children nodes', function () {
             assert.strictEqual(noodel.getRoot().getChild(1).getChild(2).getChildCount(), 3);
         });
-        it('should parse noode content from inner HTML', function () {
+        it('should parse node content from inner HTML', function () {
             assert.strictEqual((noodel.getRoot().getChild(0).getContent() as string).trim(), '<h2>Heading</h2>Some text node');
         });
         it('should parse custom class names', function () {
             let classNames = noodel.getRoot().getChild(2).getClassNames();
-            let expected: NoodeCss = {
-                noode: "custom noode", 
+            let expected: NodeCss = {
+                node: "custom node", 
                 contentBox: "custom content box",
                 branch: "custom branch", 
                 branchBackdrop: "custom branch backdrop",
@@ -218,8 +218,8 @@ describe('Init', function () {
         });
         it('should parse custom styles', function () {
             let styles = noodel.getRoot().getChild(3).getStyles();
-            let expected: NoodeCss = {
-                noode: "color: red; border: solid blue 0px", 
+            let expected: NodeCss = {
+                node: "color: red; border: solid blue 0px", 
                 contentBox: "color: red; border: solid blue 1px",
                 branch: "color: red; border: solid blue 2px", 
                 branchBackdrop: "color: red; border: solid blue 3px",
@@ -239,24 +239,24 @@ describe('Init', function () {
             assert.isTrue(noodel.getRoot().getChild(4).isActive());
             assert.isFalse(noodel.getRoot().getChild(5).isActive());
         });
-        it('should default active child to 0 for noode with children', function () {
+        it('should default active child to 0 for node with children', function () {
             assert.strictEqual(noodel.getRoot().getChild(1).getActiveChildIndex(), 0);
             assert.strictEqual(noodel.getRoot().getChild(1).getActiveChild().getIndex(), 0);
             assert.isTrue(noodel.getRoot().getChild(1).getChild(0).isActive());
         });
-        it('should default active child to null for noode without children', function () {
+        it('should default active child to null for node without children', function () {
             assert.strictEqual(noodel.getRoot().getChild(0).getActiveChildIndex(), null);
             assert.strictEqual(noodel.getRoot().getChild(0).getActiveChild(), null);
         });
         it('should return null for non-existent child', function () {
             assert.strictEqual(noodel.getRoot().getChild(12), null);
         });
-        it('should focus on active noode of first level', function () {
-            assert.strictEqual(noodel.getFocalNoode(), noodel.getRoot().getActiveChild());
+        it('should focus on active node of first level', function () {
+            assert.strictEqual(noodel.getFocalNode(), noodel.getRoot().getActiveChild());
             assert.strictEqual(noodel.getFocalParent(), noodel.getRoot());
         });
-        it('should parse noode options', function () {
-            let expected: NoodeOptions = {
+        it('should parse node options', function () {
+            let expected: NodeOptions = {
                 useResizeDetection: true,
                 useBranchResizeDetection: false,
                 useOverflowDetection: true,

@@ -1,53 +1,53 @@
-import NoodeState from '../types/NoodeState';
-import NoodeDefinition from '../types/NoodeDefinition';
+import NodeState from '../types/NodeState';
+import NodeDefinition from '../types/NodeDefinition';
 import { setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
-import { parseAndApplyNoodeOptions } from '../controllers/noodel-setup';
+import { parseAndApplyNodeOptions } from '../controllers/noodel-setup';
 import { getPath as _getPath } from '../controllers/getters';
-import { alignBranchToIndex, updateNoodeSize, updateBranchSize, checkContentOverflow } from '../controllers/noodel-align';
-import { shiftFocalNoode, doJumpNavigation } from '../controllers/noodel-navigate';
+import { alignBranchToIndex, updateNodeSize, updateBranchSize, checkContentOverflow } from '../controllers/noodel-align';
+import { shiftFocalNode, doJumpNavigation } from '../controllers/noodel-navigate';
 import NoodelState from '../types/NoodelState';
-import { changeNoodeId, unregisterNoodeSubtree } from '../controllers/id-register';
-import NoodeOptions from '../types/NoodeOptions';
+import { changeNodeId, unregisterNodeSubtree } from '../controllers/id-register';
+import NodeOptions from '../types/NodeOptions';
 import ComponentContent from '../types/ComponentContent';
 import { nextTick } from 'vue';
 import { traverseDescendents } from '../controllers/noodel-traverse';
-import NoodeCss from '../types/NoodeCss';
-import NoodeEventMap from '../types/NoodeEventMap';
-import { extractNoodeDefinition, serializeContent } from '../controllers/noodel-serialize';
+import NodeCss from '../types/NodeCss';
+import NodeEventMap from '../types/NodeEventMap';
+import { extractNodeDefinition, serializeContent } from '../controllers/noodel-serialize';
 
 /**
- * The view model of a noode. Has 2-way binding with the view.
+ * The view model of a node in a noodel. Has 2-way binding with the view.
  */
-export default class Noode {
+export default class NoodelNode {
 
-    private state: NoodeState;
+    private state: NodeState;
     private noodelState: NoodelState;
 
     /**
-     * Internal use only. To get the view model for specific noodes, use methods on the Noodel class instead.
+     * Internal use only. To get the view model for specific nodes, use methods on the Noodel class instead.
      */
-    private constructor(state: NoodeState, noodelState: NoodelState) { // set to private to avoid including internal types in the declarations
+    private constructor(state: NodeState, noodelState: NoodelState) { // set to private to avoid including internal types in the declarations
         this.state = state;
         this.noodelState = noodelState;
     }
 
     private throwErrorIfDeleted() {
         if (this.isDeleted()) {
-            throw new Error("Invalid operation because this noode has been deleted.");
+            throw new Error("Invalid operation because this node has been deleted.");
         }
     }
 
     // GETTERS
 
     /**
-     * Get the specified DOM element associated with this noode. Can be either the
-     * nd-noode, nd-branch or nd-branch-backdrop element. Return null if
+     * Get the specified DOM element associated with this node. Can be either the
+     * nd-node, nd-branch or nd-branch-backdrop element. Return null if
      * noodel is not mounted or element doesn't exist.
-     * @param target the target element, defaults to 'noode' if omitted
+     * @param target the target element, defaults to 'node' if omitted
      */
-    getEl(target: 'noode' | 'branch' | 'branchBackdrop' = 'noode'): HTMLDivElement {
+    getEl(target: 'node' | 'branch' | 'branchBackdrop' = 'node'): HTMLDivElement {
         switch (target) {
-            case 'noode': 
+            case 'node': 
                 return this.state.r.el;
             case 'branch': 
                 return this.state.r.branchEl;
@@ -59,16 +59,16 @@ export default class Noode {
     }
 
     /**
-     * Get the parent of this noode. Return null if this is the root or
+     * Get the parent of this node. Return null if this is the root or
      * if this is detached from its parent by a delete operation.
      */
-    getParent(): Noode {
+    getParent(): NoodelNode {
         if (!this.state.parent) return null;
         return this.state.parent.r.vm;
     }
 
     /**
-     * Get the path (an array of zero-based indices counting from the root) of this noode.
+     * Get the path (an array of zero-based indices counting from the root) of this node.
      */
     getPath(): number[] {
         if (!this.noodelState) return null;
@@ -76,18 +76,18 @@ export default class Noode {
     }
 
     /**
-     * Extract the definition tree of this noode (including its descendants).
+     * Extract the definition tree of this node (including its descendants).
      * Useful for operations such as serialization or cloning.
      */
-    getDefinition(): NoodeDefinition {
-        return extractNoodeDefinition(this.noodelState, this.state);
+    getDefinition(): NodeDefinition {
+        return extractNodeDefinition(this.noodelState, this.state);
     }
 
     /**
-     * Get the child of this noode at the given index. Return null if does not exist.
+     * Get the child of this node at the given index. Return null if does not exist.
      * @param index 0-based index of the child
      */
-    getChild(index: number): Noode {
+    getChild(index: number): NoodelNode {
         if (index < 0 || index >= this.state.children.length) {
             return null;
         }
@@ -96,16 +96,16 @@ export default class Noode {
     }
 
     /**
-     * Get the index of the active child of this noode. Return null if there's no children.
+     * Get the index of the active child of this node. Return null if there's no children.
      */
     getActiveChildIndex(): number {
         return this.state.activeChildIndex;
     }
 
     /**
-     * Get the active child of this noode. Return null if there's no children.
+     * Get the active child of this node. Return null if there's no children.
      */
-    getActiveChild(): Noode {
+    getActiveChild(): NoodelNode {
         let index = this.state.activeChildIndex;
 
         if (index === null) return null;
@@ -113,28 +113,28 @@ export default class Noode {
     }
 
     /**
-     * Get a copied array of this noode's list of children.
+     * Get a copied array of this node's list of children.
      */
-    getChildren(): Noode[] {
+    getChildren(): NoodelNode[] {
         return this.state.children.map(c => c.r.vm);
     }
 
     /**
-     * Get the number of children of this noode.
+     * Get the number of children of this node.
      */
     getChildCount(): number {
         return this.state.children.length;
     }
 
     /**
-     * Get the ID of this noode.
+     * Get the ID of this node.
      */
     getId(): string {
         return this.state.id;
     }
 
     /**
-     * Get the content of this noode. If content is a ComponentContent object,
+     * Get the content of this node. If content is a ComponentContent object,
      * will return an deeply cloned object except the 'component' property which is
      * shallowly copied.
      */
@@ -143,34 +143,34 @@ export default class Noode {
     }
 
     /**
-     * Get a cloned object containing the custom CSS classes applied to this noode.
+     * Get a cloned object containing the custom CSS classes applied to this node.
      */
-    getClassNames(): NoodeCss {
+    getClassNames(): NodeCss {
         return {
             ...this.state.classNames
         };
     }
 
     /**
-     * Get a cloned object containing the custom styles applied to this noode.
+     * Get a cloned object containing the custom styles applied to this node.
      */
-    getStyles(): NoodeCss {
+    getStyles(): NodeCss {
         return {
             ...this.state.styles
         };
     }
 
     /**
-     * Get a cloned object containing the options applied to this noode.
+     * Get a cloned object containing the options applied to this node.
      */
-    getOptions(): NoodeOptions {
+    getOptions(): NodeOptions {
         return {
             ...this.state.options
         };
     }
 
     /**
-     * Get the 0-based index (position among siblings) of this noode.
+     * Get the 0-based index (position among siblings) of this node.
      * Will return 0 if detached from its parent by a delete operation.
      */
     getIndex(): number {
@@ -178,9 +178,9 @@ export default class Noode {
     }
 
     /**
-     * Get the level of this noode. The root has level 0,
+     * Get the level of this node. The root has level 0,
      * children of the root has level 1, and so on.
-     * If this noode has been deleted, will return null.
+     * If this node has been deleted, will return null.
      */
     getLevel(): number {
         if (this.isDeleted()) return null;
@@ -188,21 +188,21 @@ export default class Noode {
     }
 
     /**
-     * Check whether this noode is the root.
+     * Check whether this node is the root.
      */
     isRoot(): boolean {
         return this.state.r.isRoot;
     }
 
     /**
-     * Check whether this noode is active.
+     * Check whether this node is active.
      */
     isActive(): boolean {
         return this.state.isActive;
     }
 
     /**
-     * Check whether this noode is the parent of the focal branch.
+     * Check whether this node is the parent of the focal branch.
      */
     isFocalParent(): boolean {
         if (this.isDeleted()) return false;
@@ -210,7 +210,7 @@ export default class Noode {
     }
 
     /**
-     * Check whether this noode is inside the focal branch.
+     * Check whether this node is inside the focal branch.
      */
     isInFocalBranch(): boolean {
         if (this.isDeleted()) return false;
@@ -219,14 +219,14 @@ export default class Noode {
     }
 
     /**
-     * Check whether this noode is the focal noode.
+     * Check whether this node is the focal node.
      */
-    isFocalNoode(): boolean {
+    isFocalNode(): boolean {
         return this.isActive() && this.isInFocalBranch();
     }
 
     /**
-     * Check whether this noode is logically visible (i.e is part of the active tree 
+     * Check whether this node is logically visible (i.e is part of the active tree 
      * in display). Note that visibility may be affected by debounce effects.
      */
     isVisible(): boolean {
@@ -236,7 +236,7 @@ export default class Noode {
     }
 
     /**
-     * Check whether this noode's child branch is logically visible (i.e is part of the active tree 
+     * Check whether this node's child branch is logically visible (i.e is part of the active tree 
      * in display). Note that visibility may be affected by debounce effects.
      */
     isChildrenVisible(): boolean {
@@ -245,7 +245,7 @@ export default class Noode {
     }
 
     /**
-     * Return an object that specifies whether this noode has
+     * Return an object that specifies whether this node has
      * content overflow in each of the 4 directions. Only valid if overflow 
      * is detected/manually checked before hand.
      */
@@ -259,7 +259,7 @@ export default class Noode {
     }
 
     /**
-     * Check whether this noode has been deleted from its noodel.
+     * Check whether this node has been deleted from its noodel.
      */
     isDeleted(): boolean {
         return !this.noodelState;
@@ -268,19 +268,19 @@ export default class Noode {
     // MUTATERS
 
     /**
-     * Set the ID of this noode.
-     * @param id new ID for this noode, should not start with '_'
+     * Set the ID of this node.
+     * @param id new ID for this node, should not start with '_'
      */
     setId(id: string) {
         this.throwErrorIfDeleted();
 
         if (id === this.state.id) return;
-        changeNoodeId(this.noodelState, this.state.id, id);
+        changeNodeId(this.noodelState, this.state.id, id);
     }
 
     /**
-     * Set the content of this noode.
-     * @param content new content for this noode, either an HTML string or Vue component wrapper
+     * Set the content of this node.
+     * @param content new content for this node, either an HTML string or Vue component wrapper
      */
     setContent(content: string | ComponentContent) {
         this.throwErrorIfDeleted();
@@ -289,11 +289,11 @@ export default class Noode {
     }
 
     /**
-     * Set the custom class names for this noode. Properties of the provided object
+     * Set the custom class names for this node. Properties of the provided object
      * will be merged into the existing object.
      * @param classNames
      */
-    setClassNames(classNames: NoodeCss) {
+    setClassNames(classNames: NodeCss) {
         this.throwErrorIfDeleted();
 
         this.state.classNames = {
@@ -303,11 +303,11 @@ export default class Noode {
     }
 
     /**
-     * Set the custom inline styles for this noode. Properties of the provided object
+     * Set the custom inline styles for this node. Properties of the provided object
      * will be merged into the existing object.
      * @param styles
      */
-    setStyles(styles: NoodeCss) {
+    setStyles(styles: NodeCss) {
         this.throwErrorIfDeleted();
 
         this.state.classNames = {
@@ -317,19 +317,19 @@ export default class Noode {
     }
 
     /**
-     * Set the options for this noode. Properties of the provided object
+     * Set the options for this node. Properties of the provided object
      * will be merged into the existing object.
      * @param options
      */
-    setOptions(options: NoodeOptions) {
+    setOptions(options: NodeOptions) {
         this.throwErrorIfDeleted();
 
-        parseAndApplyNoodeOptions(this.noodelState, options, this.state);
+        parseAndApplyNodeOptions(this.noodelState, options, this.state);
     }
 
     /**
-     * Change the active child of this noode. If doing so will toggle
-     * the visibility of the focal branch (i.e this noode is an ancestor
+     * Change the active child of this node. If doing so will toggle
+     * the visibility of the focal branch (i.e this node is an ancestor
      * of the focal branch), the view will jump to focus on the new active child.
      * @param index 0-based index of the new active child
      */
@@ -337,11 +337,11 @@ export default class Noode {
         this.throwErrorIfDeleted();
 
         if (index < 0 || index >= this.state.children.length) {
-            throw new Error("Cannot set active child: noode has no children or invalid index");
+            throw new Error("Cannot set active child: node has no children or invalid index");
         }
 
         if (this.state.isFocalParent) {
-            shiftFocalNoode(this.noodelState, index - this.state.activeChildIndex);
+            shiftFocalNode(this.noodelState, index - this.state.activeChildIndex);
         }
         else if (this.state.isBranchVisible && (this.state.level + 1) < this.noodelState.focalLevel) {
             doJumpNavigation(this.noodelState, this.state.children[index]);
@@ -353,7 +353,7 @@ export default class Noode {
     }
 
     /**
-     * Performs a navigational jump to focus on this noode.
+     * Performs a navigational jump to focus on this node.
      * Cannot jump to the root.
      */
     jumpToFocus() {
@@ -367,13 +367,13 @@ export default class Noode {
     }
 
     /**
-     * Insert one or more new noodes (and their descendents) as children of this noode.
+     * Insert one or more new nodes (and their descendents) as children of this node.
      * Will always preserve the current active child if possible. Return the 
-     * list of inserted noodes.
-     * @param defs definition trees of the new noode(s)
+     * list of inserted nodes.
+     * @param defs definition trees of the new node(s)
      * @param index index to insert at, will append to the end of existing children if omitted
      */
-    insertChildren(defs: NoodeDefinition[], index?: number): Noode[] {
+    insertChildren(defs: NodeDefinition[], index?: number): NoodelNode[] {
         this.throwErrorIfDeleted();
 
         if (index === undefined) {
@@ -390,49 +390,49 @@ export default class Noode {
     }
 
     /**
-     * Convenience method for inserting sibling noode(s) before this noode. 
-     * Return the list of inserted noodes.
-     * @param defs noode definitions to add
+     * Convenience method for inserting sibling node(s) before this node. 
+     * Return the list of inserted nodes.
+     * @param defs node definitions to add
      */
-    insertBefore(defs: NoodeDefinition[]): Noode[] {
+    insertBefore(defs: NodeDefinition[]): NoodelNode[] {
         this.throwErrorIfDeleted();
 
         if (this.isRoot()) {
-            throw new Error("Cannot insert sibling noodes before root");
+            throw new Error("Cannot insert sibling nodes before root");
         }
 
         return this.getParent().insertChildren(defs, this.getIndex());
     }
 
     /**
-     * Convenience method for inserting sibling noode(s) after this noode.
-     * Return the list of inserted noodes.
-     * @param defs noode definitions to add
+     * Convenience method for inserting sibling node(s) after this node.
+     * Return the list of inserted nodes.
+     * @param defs node definitions to add
      */
-    insertAfter(defs: NoodeDefinition[]): Noode[] {
+    insertAfter(defs: NodeDefinition[]): NoodelNode[] {
         this.throwErrorIfDeleted();
 
         if (this.isRoot()) {
-            throw new Error("Cannot insert sibling noodes after root");
+            throw new Error("Cannot insert sibling nodes after root");
         }
 
         return this.getParent().insertChildren(defs, this.getIndex() + 1);
     }
 
     /**
-     * Delete one or more children (and their descendents) of this noode.
+     * Delete one or more children (and their descendents) of this node.
      * If the active child is removed, will set the next child active,
      * unless the child is the last in the list, where the previous child
      * will be set active. If the focal branch is deleted, will move focus
-     * to the nearest ancestor branch. Return the list of deleted noodes.
+     * to the nearest ancestor branch. Return the list of deleted nodes.
      * @param index index to start the deletion from
      * @param count number of children to delete, will adjust to maximum if greater than possible range
      */
-    deleteChildren(index: number, count: number): Noode[] {
+    deleteChildren(index: number, count: number): NoodelNode[] {
         this.throwErrorIfDeleted();
 
         if (index < 0 || count < 0 || index >= this.state.children.length) {
-            throw new Error("Cannot delete child noode(s): invalid index or count");
+            throw new Error("Cannot delete child node(s): invalid index or count");
         }
 
         if (index + count > this.state.children.length) {
@@ -441,23 +441,23 @@ export default class Noode {
 
         if (count <= 0) return;
 
-        let deletedNoodes = deleteChildren(this.noodelState, this.state, index, count);
+        let deletedNodes = deleteChildren(this.noodelState, this.state, index, count);
 
         // unregister
-        deletedNoodes.forEach(noode => {
-            noode.parent = null;
-            unregisterNoodeSubtree(this.noodelState, noode);
+        deletedNodes.forEach(node => {
+            node.parent = null;
+            unregisterNodeSubtree(this.noodelState, node);
         });
 
-        return deletedNoodes.map(n => n.r.vm);
+        return deletedNodes.map(n => n.r.vm);
     }
 
     /**
-     * Convenience method for deleting sibling noode(s) before this noode. 
-     * Return the list of deleted noodes.
-     * @param count number of noodes to remove, will adjust to maximum if greater than possible range
+     * Convenience method for deleting sibling node(s) before this node. 
+     * Return the list of deleted nodes.
+     * @param count number of nodes to remove, will adjust to maximum if greater than possible range
      */
-    deleteBefore(count: number): Noode[] {
+    deleteBefore(count: number): NoodelNode[] {
         this.throwErrorIfDeleted();
 
         if (count < 0) {
@@ -478,11 +478,11 @@ export default class Noode {
     }
 
     /**
-     * Convenience method for deleting sibling noode(s) after this noode.
-     * Return the list of deleted noodes.
-     * @param count number of noodes to remove, will adjust to maximum if greater than possible range
+     * Convenience method for deleting sibling node(s) after this node.
+     * Return the list of deleted nodes.
+     * @param count number of nodes to remove, will adjust to maximum if greater than possible range
      */
-    deleteAfter(count: number): Noode[] {
+    deleteAfter(count: number): NoodelNode[] {
         this.throwErrorIfDeleted();
 
         if (count < 0) {
@@ -497,7 +497,7 @@ export default class Noode {
     }
 
     /**
-     * Convenience method for deleting this noode itself. 
+     * Convenience method for deleting this node itself. 
      */
     deleteSelf() {
         this.throwErrorIfDeleted();
@@ -512,21 +512,21 @@ export default class Noode {
     // TRAVERSAL
 
     /**
-     * Do a preorder traversal of this noode's subtree and perform the specified action
+     * Do a preorder traversal of this node's subtree and perform the specified action
      * on each descendent.
      * @param func the action to perform
-     * @param includeSelf whether to include this noode in the traversal
+     * @param includeSelf whether to include this node in the traversal
      */
-    traverseSubtree(func: (noode: Noode) => any, includeSelf: boolean) {
+    traverseSubtree(func: (node: NoodelNode) => any, includeSelf: boolean) {
         traverseDescendents(this.state, desc => func(desc.r.vm), includeSelf);
     }
 
     // ALIGNMENT
     
     /**
-     * Asynchronous method to capture the length of this noode (on the branch axis) and adjust 
+     * Asynchronous method to capture the length of this node (on the branch axis) and adjust 
      * the branch's position if necessary. Use when resize detection is disabled to manually
-     * trigger realignment on noode resize. Fails silently if this is root or noodel is not mounted.
+     * trigger realignment on node resize. Fails silently if this is root or noodel is not mounted.
      */
     realign() {
         this.throwErrorIfDeleted();
@@ -538,13 +538,13 @@ export default class Noode {
         nextTick(() => {
             let rect = this.state.r.el.getBoundingClientRect();
             
-            updateNoodeSize(this.noodelState, this.state, rect.height, rect.width);
+            updateNodeSize(this.noodelState, this.state, rect.height, rect.width);
             this.state.parent.isBranchTransparent = false;
         });
     }
 
     /**
-     * Asynchronous method to capture the length of this noode's child branch (on the trunk axis) and adjust 
+     * Asynchronous method to capture the length of this node's child branch (on the trunk axis) and adjust 
      * the trunk's position if necessary. Use when resize detection is disabled to manually
      * trigger realignment on branch resize. Fails silently if this has no children or noodel is not mounted.
      */
@@ -564,10 +564,10 @@ export default class Noode {
     }
 
     /**
-     * Asynchronous method to manually check for content overflow in this noode,
+     * Asynchronous method to manually check for content overflow in this node,
      * and refresh overflow indicators if they are enabled. Use when
      * overflow detection is disabled or insufficient (e.g. when content size changed
-     * but did not affect noode size). Fails silently if this is root or noodel is not mounted.
+     * but did not affect node size). Fails silently if this is root or noodel is not mounted.
      */
     checkOverflow() {
         this.throwErrorIfDeleted();
@@ -585,20 +585,20 @@ export default class Noode {
     // EVENT
 
     /**
-     * Attach an event listener on this noode.
+     * Attach an event listener on this node.
      * @param ev event name
      * @param listener event listener to attach
      */
-    on<E extends keyof NoodeEventMap>(ev: E, listener: NoodeEventMap[E]) {
+    on<E extends keyof NodeEventMap>(ev: E, listener: NodeEventMap[E]) {
         this.state.r.eventListeners.get(ev).push(listener);
     }
 
     /**
-     * Remove an event listener from this noode.
+     * Remove an event listener from this node.
      * @param ev event name
      * @param listener the event listener to remove, by reference comparison
      */
-    off<E extends keyof NoodeEventMap>(ev: E, listener: NoodeEventMap[E]) {
+    off<E extends keyof NodeEventMap>(ev: E, listener: NodeEventMap[E]) {
         let handlers = this.state.r.eventListeners.get(ev);
         let index = handlers.indexOf(listener);
 

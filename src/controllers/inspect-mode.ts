@@ -11,17 +11,17 @@ export function enterInspectMode(noodel: NoodelState) {
     
     cancelPan(noodel);
 
-    // touch-action: auto on focal noode under inspect mode
+    // touch-action: auto on focal node under inspect mode
     // interferes with Hammer's recognizers, so they must be disabled first
     noodel.r.hammerJsInstance.get('pan').set({enable: false});
     
-    let focalNoode = getActiveChild(noodel.focalParent);
+    let focalNode = getActiveChild(noodel.focalParent);
     
-    focalNoode.hasOverflowLeft = false;
-    focalNoode.hasOverflowRight = false;
-    focalNoode.hasOverflowTop = false;
-    focalNoode.hasOverflowBottom = false;
-    focalNoode.isInInspectMode = true;
+    focalNode.hasOverflowLeft = false;
+    focalNode.hasOverflowRight = false;
+    focalNode.hasOverflowTop = false;
+    focalNode.hasOverflowBottom = false;
+    focalNode.isInInspectMode = true;
     noodel.isInInspectMode = true;
 
     queueEnterInspectMode(noodel);
@@ -45,10 +45,10 @@ export function exitInspectMode(noodel: NoodelState) {
         }
     }
 
-    let focalNoode = getActiveChild(noodel.focalParent);
+    let focalNode = getActiveChild(noodel.focalParent);
     
-    nextTick(() => checkContentOverflow(noodel, focalNoode));
-    focalNoode.isInInspectMode = false;
+    nextTick(() => checkContentOverflow(noodel, focalNode));
+    focalNode.isInInspectMode = false;
     noodel.isInInspectMode = false;
 
     queueExitInspectMode(noodel);

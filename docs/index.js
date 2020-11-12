@@ -7,13 +7,13 @@ window.addEventListener("load", function() {
             swipeMultiplierTrunk: 0.9,
             swipeMultiplierBranch: 0.7,
             snapMultiplierTrunk: 0.8,
-            onFocalNoodeChange: function(current) {
+            onFocalNodeChange: function(current) {
                 const index = current.getIndex() + 1;
                 const total = current.getParent().getChildCount();
-                document.getElementById("noodeCount").textContent = index + " / " + total; 
+                document.getElementById("nodeCount").textContent = index + " / " + total; 
             },
             onMount: function() {
-                document.getElementById("noodeCount").classList.remove("hidden");
+                document.getElementById("nodeCount").classList.remove("hidden");
 
                 const search = new NoodelSearch(noodel, "searchFocus");
                 const searchInput = document.getElementById("searchInput");

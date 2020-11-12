@@ -1,11 +1,11 @@
 import { setActiveChild, setFocalParent, hideActiveSubtree, showActiveSubtree } from "../controllers/noodel-mutate";
-import NoodeState from '../types/NoodeState';
+import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
 import { getActiveChild } from './getters';
 import { alignTrunkToBranch, alignBranchToIndex } from './noodel-align';
 import { forceReflow } from '../controllers/noodel-animate';
 import { exitInspectMode } from './inspect-mode';
-import { handleFocalNoodeChange } from './event-emit';
+import { handleFocalNodeChange } from './event-emit';
 import { cancelPan } from './noodel-pan';
 
 /**
@@ -14,11 +14,11 @@ import { cancelPan } from './noodel-pan';
  */
 export function shiftFocalLevel(noodel: NoodelState, levelDiff: number) {
 
-    let prevFocalNoode = noodel.r.panStartFocalNoode || getActiveChild(noodel.focalParent);
+    let prevFocalNode = noodel.r.panStartFocalNode || getActiveChild(noodel.focalParent);
     
-    noodel.r.panStartFocalNoode = null;
+    noodel.r.panStartFocalNode = null;
 
-    if (!prevFocalNoode) return;
+    if (!prevFocalNode) return;
 
     if (noodel.isInInspectMode) {
         exitInspectMode(noodel);
@@ -50,20 +50,20 @@ export function shiftFocalLevel(noodel: NoodelState, levelDiff: number) {
     alignTrunkToBranch(noodel, newFocalParent);
     forceReflow();
 
-    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
+    handleFocalNodeChange(noodel, prevFocalNode, getActiveChild(noodel.focalParent));
 }
 
 /**
- * Shifts the active noode in the focal branch by an index difference. If the difference
- * is 0, will align the branch to the current active noode.
+ * Shifts the active node in the focal branch by an index difference. If the difference
+ * is 0, will align the branch to the current active node.
  */
-export function shiftFocalNoode(noodel: NoodelState, indexDiff: number) {
+export function shiftFocalNode(noodel: NoodelState, indexDiff: number) {
     
-    let prevFocalNoode = noodel.r.panStartFocalNoode || getActiveChild(noodel.focalParent);
+    let prevFocalNode = noodel.r.panStartFocalNode || getActiveChild(noodel.focalParent);
     
-    noodel.r.panStartFocalNoode = null;
+    noodel.r.panStartFocalNode = null;
 
-    if (!prevFocalNoode) return;
+    if (!prevFocalNode) return;
 
     if (noodel.isInInspectMode) {
         exitInspectMode(noodel);
@@ -105,21 +105,21 @@ export function shiftFocalNoode(noodel: NoodelState, indexDiff: number) {
     alignBranchToIndex(noodel.focalParent, targetIndex);
     forceReflow();
 
-    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
+    handleFocalNodeChange(noodel, prevFocalNode, getActiveChild(noodel.focalParent));
 }
 
 /**
- * Jumps to a specific noode in the tree, realigning all affected branches and trunk
+ * Jumps to a specific node in the tree, realigning all affected branches and trunk
  * if necessary. Should not expose to input handlers/API methods, use doJumpNavigation instead.
  */
-export function alignNoodelOnJump(noodel: NoodelState, target: NoodeState) {
+export function alignNoodelOnJump(noodel: NoodelState, target: NodeState) {
 
     // if panning, cancel it
     if (noodel.r.panAxis !== null) {
         cancelPan(noodel);
     }
 
-    // No need to jump if target is already focal noode
+    // No need to jump if target is already focal node
     if (target.id === noodel.focalParent.children[noodel.focalParent.activeChildIndex].id) {
         return;
     }
@@ -169,20 +169,20 @@ export function alignNoodelOnJump(noodel: NoodelState, target: NoodeState) {
  * Jump navigation wrapper for use by input handlers/API methods, taking 
  * care of side effects.
  */
-export function doJumpNavigation(noodel: NoodelState, target: NoodeState) {
+export function doJumpNavigation(noodel: NoodelState, target: NodeState) {
 
     clearTimeout(noodel.r.limitIndicatorTimeout);
 
-    let prevFocalNoode = getActiveChild(noodel.focalParent);
+    let prevFocalNode = getActiveChild(noodel.focalParent);
 
-    if (!prevFocalNoode) return;
+    if (!prevFocalNode) return;
 
     if (noodel.isInInspectMode) {
         exitInspectMode(noodel);
     }
 
     alignNoodelOnJump(noodel, target);
-    handleFocalNoodeChange(noodel, prevFocalNoode, getActiveChild(noodel.focalParent));
+    handleFocalNodeChange(noodel, prevFocalNode, getActiveChild(noodel.focalParent));
 }
 
 export function unsetLimitIndicators(noodel: NoodelState, wait: number) {
@@ -211,7 +211,7 @@ export function unsetLimitIndicators(noodel: NoodelState, wait: number) {
  * on the current active tree. If levelDiff goes beyond the existing
  * branches, will return the furthest branch possible, i.e. the root or the deepest branch.
  */
-function findNewFocalParent(noodel: NoodelState, levelDiff: number): NoodeState {
+function findNewFocalParent(noodel: NoodelState, levelDiff: number): NodeState {
 
     let nextParent = noodel.focalParent;
 

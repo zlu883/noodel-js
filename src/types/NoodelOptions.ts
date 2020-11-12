@@ -18,7 +18,7 @@ export default interface NoodelOptions {
     retainDepthOnTapNavigation?: boolean;
     /**
      * Amount of time to wait in ms (until no more consecutive hits) before showing the 
-     * subtree of the focal noode, when moving the focal branch. Mainly a performance hack
+     * subtree of the focal node, when moving the focal branch. Mainly a performance hack
      * to prevent rapid toggling of subtree elements. Defaults to 360.
      */
     subtreeDebounceInterval?: number;
@@ -47,15 +47,15 @@ export default interface NoodelOptions {
      */
     useInspectModeDoubleTap?: boolean;
     /**
-     * Global option for enabling resize detection on ALL noodes and branches.
+     * Global option for enabling resize detection on ALL nodes and branches.
      * When enabled, will automatically align the positioning of elements when
-     * noode/branch resizes are detected.
+     * node/branch resizes are detected.
      * Defaults to true.
      */
     useResizeDetection?: boolean;
     /**
-     * Global option for enabling overflow detection on ALL noodes. When enabled, 
-     * will automatically check for content overflow on mount, noode resize
+     * Global option for enabling overflow detection on ALL nodes. When enabled, 
+     * will automatically check for content overflow on mount, node resize
      * (if resize detection is enabled), and when exiting inspect mode.
      * Defaults to false.
      */
@@ -69,7 +69,7 @@ export default interface NoodelOptions {
      */
     swipeMultiplierTrunk?: number;
     /**
-     * Number of noodes (per unit of velocity) to snap across after a swipe is released.
+     * Number of nodes (per unit of velocity) to snap across after a swipe is released.
      * Defaults to 1.
      */
     snapMultiplierBranch?: number;
@@ -87,11 +87,11 @@ export default interface NoodelOptions {
      */
     showLimitIndicators?: boolean;
     /**
-     * Whether to render the child indicators of noodes. Defaults to true.
+     * Whether to render the child indicators of nodes. Defaults to true.
      */
     showChildIndicators?: boolean;
     /**
-     * Whether to show noode overflow indicators if overflow is detected. Defaults
+     * Whether to show node overflow indicators if overflow is detected. Defaults
      * to false.
      */
     showOverflowIndicators?: boolean;

@@ -1,35 +1,35 @@
 import NoodelState from 'src/types/NoodelState';
-import NoodeState from 'src/types/NoodeState';
+import NodeState from 'src/types/NodeState';
 import ResizeSensor from "../util/ResizeSensor";
-import { checkContentOverflow, updateBranchSize, updateNoodeSize } from './noodel-align';
+import { checkContentOverflow, updateBranchSize, updateNodeSize } from './noodel-align';
 
-export function attachResizeSensor(noodel: NoodelState, noode: NoodeState) {
+export function attachResizeSensor(noodel: NoodelState, node: NodeState) {
 
-    if (!noode.parent) return;
-    if (noode.r.resizeSensor) return;
+    if (!node.parent) return;
+    if (node.r.resizeSensor) return;
 
-    let useResizeDetection = typeof noode.options.useResizeDetection === "boolean"
-        ? noode.options.useResizeDetection
+    let useResizeDetection = typeof node.options.useResizeDetection === "boolean"
+        ? node.options.useResizeDetection
         : noodel.options.useResizeDetection;
 
     if (useResizeDetection) {
-        noode.r.resizeSensor = new ResizeSensor(noode.r.el, (size) => {
+        node.r.resizeSensor = new ResizeSensor(node.r.el, (size) => {
             if (!noodel.isMounted) { // skips the first callback before mount
                 return;
             }
 
-            updateNoodeSize(noodel, noode, size.height, size.width);
-            checkContentOverflow(noodel, noode);
+            updateNodeSize(noodel, node, size.height, size.width);
+            checkContentOverflow(noodel, node);
         });
     }
 }
 
-export function detachResizeSensor(noode: NoodeState) {
-    if (noode.r.resizeSensor) noode.r.resizeSensor.detach();
-    noode.r.resizeSensor = null;
+export function detachResizeSensor(node: NodeState) {
+    if (node.r.resizeSensor) node.r.resizeSensor.detach();
+    node.r.resizeSensor = null;
 }
 
-export function attachBranchResizeSensor(noodel: NoodelState, parent: NoodeState) {
+export function attachBranchResizeSensor(noodel: NoodelState, parent: NodeState) {
 
     if (parent.children.length === 0) return;
     if (parent.r.branchResizeSensor) return;
@@ -49,7 +49,7 @@ export function attachBranchResizeSensor(noodel: NoodelState, parent: NoodeState
     };
 }
 
-export function detachBranchResizeSensor(parent: NoodeState) {
+export function detachBranchResizeSensor(parent: NodeState) {
     if (parent.r.branchResizeSensor) parent.r.branchResizeSensor.detach();
     parent.r.branchResizeSensor = null;
 }

@@ -1,18 +1,18 @@
 import ResizeSensor from "../util/ResizeSensor";
-import NoodeOptions from './NoodeOptions';
+import NodeOptions from './NodeOptions';
 import ComponentContent from './ComponentContent';
-import Noode from '../main/Noode';
-import NoodeEventMap from './NoodeEventMap';
-import NoodeCss from './NoodeCss';
+import NoodelNode from '../main/NoodelNode';
+import NodeEventMap from './NodeEventMap';
+import NodeCss from './NodeCss';
 
-export default interface NoodeState {
+export default interface NodeState {
 
     /**
      * Object container for state that are not used for
      * rendering the view and should be marked raw.
      */
     r: {
-        eventListeners: Map<keyof NoodeEventMap, NoodeEventMap[keyof NoodeEventMap][]>;
+        eventListeners: Map<keyof NodeEventMap, NodeEventMap[keyof NodeEventMap][]>;
 
         isRoot: boolean;
         ignoreTransitionEnd: boolean;
@@ -25,9 +25,9 @@ export default interface NoodeState {
         resizeSensor: ResizeSensor;
         branchResizeSensor: ResizeSensor;
 
-        vm: Noode;
+        vm: NoodelNode;
         /**
-         * Use to check need for fade out position adjustment during noode deletion
+         * Use to check need for fade out position adjustment during node deletion
          */
         fade: boolean;
     };
@@ -35,14 +35,14 @@ export default interface NoodeState {
     id: string;
     index: number;
     level: number;
-    children: NoodeState[];
+    children: NodeState[];
     activeChildIndex: number;
     content: string | ComponentContent;
 
-    classNames: NoodeCss;
-    styles: NoodeCss;
+    classNames: NodeCss;
+    styles: NodeCss;
 
-    parent: NoodeState;
+    parent: NodeState;
     /**
      * Toggles visibility of child branch via display: none.
      */
@@ -56,7 +56,7 @@ export default interface NoodeState {
     isActive: boolean;
 
     /**
-     * This is the orientation-agnostic offset of this noode's child branch counting from
+     * This is the orientation-agnostic offset of this node's child branch counting from
      * the *start* of the branch axis. Does not take into account the focal position.
      */
     branchOffset: number;
@@ -66,16 +66,16 @@ export default interface NoodeState {
     branchSize: number;
 
     /**
-     * Orientation-agnostic offset of this noode's child branch relative to the start of the trunk.
+     * Orientation-agnostic offset of this node's child branch relative to the start of the trunk.
      */
     trunkRelativeOffset: number;
     /**
-     * Orientation-agnostic offset of this noode relative to the start of its containing branch.
+     * Orientation-agnostic offset of this node relative to the start of its containing branch.
      */
     branchRelativeOffset: number;
 
     /**
-     * Extra variable to prevent Vue from needing to patch every single noode on change,
+     * Extra variable to prevent Vue from needing to patch every single node on change,
      * as a performance hack.
      */
     isInInspectMode: boolean;
@@ -85,5 +85,5 @@ export default interface NoodeState {
     hasOverflowBottom: boolean;
     hasOverflowRight: boolean;
 
-    options: NoodeOptions;
+    options: NodeOptions;
 }

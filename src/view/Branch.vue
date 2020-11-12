@@ -9,7 +9,7 @@
 			:style="branchStyle"
 			@transitionend="onTransitionEnd"	
 		>
-			<NoodeTransitionGroup 
+			<NodeTransitionGroup 
 				:noodel="noodel" 
 				:parent="parent" 
 			/>
@@ -20,9 +20,9 @@
 <!---------------------------- SCRIPT ------------------------------>
 
 <script lang="ts">
-import NoodeTransitionGroup from "./NoodeTransitionGroup.vue";
+import NodeTransitionGroup from "./NodeTransitionGroup.vue";
 import { getFocalHeight, getFocalWidth } from "../controllers/getters";
-import NoodeState from "../types/NoodeState";
+import NodeState from "../types/NodeState";
 import NoodelState from "../types/NoodelState";
 import { PropType, defineComponent } from "vue";
 import { updateBranchSize } from "../controllers/noodel-align";
@@ -33,11 +33,11 @@ import {
 
 export default defineComponent({
 	components: {
-		NoodeTransitionGroup,
+		NodeTransitionGroup,
 	},
 
 	props: {
-		parent: Object as PropType<NoodeState>,
+		parent: Object as PropType<NodeState>,
 		noodel: Object as PropType<NoodelState>,
 	},
 

@@ -3,18 +3,18 @@ import { getActiveChild } from './getters';
 import { hideActiveSubtree, setActiveChild, setFocalParent, showActiveSubtree } from './noodel-mutate';
 import { NoodelAxis } from 'src/types/NoodelAxis';
 import { Axis } from 'src/types/Axis';
-import { shiftFocalLevel, shiftFocalNoode, unsetLimitIndicators } from './noodel-navigate';
+import { shiftFocalLevel, shiftFocalNode, unsetLimitIndicators } from './noodel-navigate';
 import { findCurrentBranchOffset, findCurrentTrunkOffset } from './noodel-animate';
 
 export function startPan(noodel: NoodelState, realAxis: Axis) {
 
     clearTimeout(noodel.r.limitIndicatorTimeout);
 
-    let currentFocalNoode = getActiveChild(noodel.focalParent);
+    let currentFocalNode = getActiveChild(noodel.focalParent);
 
-    if (!currentFocalNoode) return;
+    if (!currentFocalNode) return;
 
-    noodel.r.panStartFocalNoode = currentFocalNoode;
+    noodel.r.panStartFocalNode = currentFocalNode;
 
     let panAxis: NoodelAxis = null;
     let orientation = noodel.options.orientation;
@@ -45,7 +45,7 @@ export function startPan(noodel: NoodelState, realAxis: Axis) {
 }
 
 /**
- * Make pan movement based on the given delta, changing the focal noode/parent
+ * Make pan movement based on the given delta, changing the focal node/parent
  * and set limit indicators as necessary. Makes no assumption on the magnitude of the movement, 
  * and aims to be correct regardless of the target offset, bounding the movement to the possible limits.
  */
@@ -159,7 +159,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
         let targetOffset = noodel.r.panOriginBranch + (delta * noodel.options.swipeMultiplierBranch);
         let focalParent = noodel.focalParent;
         let targetIndex = focalParent.activeChildIndex;
-        let targetNoode = focalParent.children[targetIndex];
+        let targetNode = focalParent.children[targetIndex];
         let branchStartReached = false;
         let branchEndReached = false;
 
@@ -167,16 +167,16 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
             return;
         }
         else if (targetOffset > noodel.focalParent.branchOffset) { // moving towards branch axis end
-            while (targetOffset > targetNoode.branchRelativeOffset + targetNoode.size) {
+            while (targetOffset > targetNode.branchRelativeOffset + targetNode.size) {
                 let nextIndex = targetIndex + 1;
 
                 if (nextIndex >= focalParent.children.length) break;
                 targetIndex = nextIndex;
-                targetNoode = focalParent.children[targetIndex];
+                targetNode = focalParent.children[targetIndex];
             }
 
             if (targetIndex === focalParent.children.length - 1) {
-                let limit = targetNoode.branchRelativeOffset + targetNoode.size / 2;
+                let limit = targetNode.branchRelativeOffset + targetNode.size / 2;
 
                 if (targetOffset > limit) {
                     branchEndReached = true;
@@ -185,16 +185,16 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
             }
         }
         else { // moving towards branch axis start
-            while (targetOffset < targetNoode.branchRelativeOffset) {
+            while (targetOffset < targetNode.branchRelativeOffset) {
                 let prevIndex = targetIndex - 1;
 
                 if (prevIndex < 0) break;
                 targetIndex = prevIndex;
-                targetNoode = focalParent.children[targetIndex];
+                targetNode = focalParent.children[targetIndex];
             }
 
             if (targetIndex === 0) {
-                let limit = targetNoode.size / 2;
+                let limit = targetNode.size / 2;
 
                 if (targetOffset < limit) {
                     branchStartReached = true;
@@ -226,8 +226,8 @@ export function releasePan(noodel: NoodelState) {
     }
     else if (noodel.r.panAxis === "branch") {
         noodel.r.panOriginBranch = null;
-        noodel.r.panAxis = null; // before shiftFocalNoode to prevent extra cancelPan check
-        shiftFocalNoode(noodel, computeSnapCount(computeSwipeVelocity(noodel), noodel.options.snapMultiplierBranch));
+        noodel.r.panAxis = null; // before shiftFocalNode to prevent extra cancelPan check
+        shiftFocalNode(noodel, computeSnapCount(computeSwipeVelocity(noodel), noodel.options.snapMultiplierBranch));
     }
 
     unsetLimitIndicators(noodel, 0);
@@ -246,7 +246,7 @@ export function cancelPan(noodel: NoodelState) {
     else if (noodel.r.panAxis === "branch") {
         noodel.r.panOriginBranch = null;
         noodel.r.panAxis = null;
-        shiftFocalNoode(noodel, 0);
+        shiftFocalNode(noodel, 0);
     }
 
     unsetLimitIndicators(noodel, 0);
@@ -296,7 +296,7 @@ function clearSwipeVelocityBuffer(noodel: NoodelState) {
 }
 
 /**
- * Calculate how many noodes to snap across depending on swipe velocity.
+ * Calculate how many nodes to snap across depending on swipe velocity.
  * The current algorithm is adjusted based on velocities obtained 
  * from manual tests of swipe motions on mobile and desktop.
  * Can be further fine-tuned if necessary.

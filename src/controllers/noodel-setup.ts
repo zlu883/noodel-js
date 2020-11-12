@@ -1,20 +1,20 @@
-import NoodeDefinition from '../types/NoodeDefinition';
+import NodeDefinition from '../types/NodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
-import NoodeState from '../types/NoodeState';
+import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
 import { showActiveSubtree } from './noodel-mutate';
 import { setupRouting, unsetRouting } from './noodel-routing';
-import NoodeOptions from '../types/NoodeOptions';
-import { generateNoodeId, registerNoodeSubtree, findNoode, isIdRegistered } from './id-register';
+import NodeOptions from '../types/NodeOptions';
+import { generateNodeId, registerNodeSubtree, findNode, isIdRegistered } from './id-register';
 import { alignNoodelOnJump } from './noodel-navigate';
 import { cancelPan } from './noodel-pan';
 import { resetAlignment } from './noodel-align';
 import { traverseDescendents } from './noodel-traverse';
 import { attachBranchResizeSensor, attachCanvasResizeSensor, attachResizeSensor, detachBranchResizeSensor, detachResizeSensor } from './resize-detect';
-import Noode from '../main/Noode';
+import NoodelNode from '../main/NoodelNode';
 import { reactive, markRaw } from 'vue';
 
-export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): NoodelState {
+export function setupNoodel(root: NodeDefinition, options: NoodelOptions): NoodelState {
 
     let noodelState: NoodelState = reactive({
         r: markRaw({
@@ -26,7 +26,7 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             debounceMap: new Map([]),
             eventListeners: new Map([
                 ['mount', []], 
-                ['focalNoodeChange', []],
+                ['focalNodeChange', []],
                 ['focalParentChange', []],
                 ['enterInspectMode', []],
                 ['exitInspectMode', []],
@@ -40,8 +40,8 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
             swipeVelocityBuffer: [],
             isShiftKeyPressed: false,
             limitIndicatorTimeout: null,
-            pointerUpSrcNoode: null,
-            panStartFocalNoode: null,
+            pointerUpSrcNode: null,
+            panStartFocalNode: null,
             ignoreTransitionEnd: false,
             canvasEl: null,
             trunkEl: null,
@@ -92,20 +92,20 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
         },
     });
 
-    let rootNoode = buildNoodeView(noodelState, root, 0, null, true, 0);
+    let rootNode = buildNodeView(noodelState, root, 0, null, true, 0);
 
-    noodelState.root = rootNoode;
-    noodelState.focalParent = rootNoode;
+    noodelState.root = rootNode;
+    noodelState.focalParent = rootNode;
 
-    registerNoodeSubtree(noodelState, rootNoode);
+    registerNodeSubtree(noodelState, rootNode);
     parseAndApplyOptions(options, noodelState);
-    showActiveSubtree(noodelState, rootNoode, noodelState.options.visibleSubtreeDepth);
+    showActiveSubtree(noodelState, rootNode, noodelState.options.visibleSubtreeDepth);
 
     if (noodelState.options.useRouting) {
         let hash = window.location.hash;
 
         if (hash) {
-            let target = findNoode(noodelState, hash.substr(1));
+            let target = findNode(noodelState, hash.substr(1));
 
             if (target && target.parent) {
                 alignNoodelOnJump(noodelState, target);
@@ -117,12 +117,12 @@ export function setupNoodel(root: NoodeDefinition, options: NoodelOptions): Nood
 }
 
 /**
- * Recursively parses the given HTML element into a noode tree. 
+ * Recursively parses the given HTML element into a tree of noodel nodes. 
  */
-export function parseHTMLToNoode(el: Element): NoodeDefinition {
+export function parseHTMLToNode(el: Element): NodeDefinition {
 
     let content = '';
-    let children: NoodeDefinition[] = [];
+    let children: NodeDefinition[] = [];
 
     for (let i = 0; i < el.childNodes.length; i++) {
         const node = el.childNodes[i];
@@ -131,8 +131,8 @@ export function parseHTMLToNoode(el: Element): NoodeDefinition {
             content += node.textContent; // Depends on css white-space property for ignoring white spaces
         }
         else if (node.nodeType === Node.ELEMENT_NODE) {
-            if (node.nodeName === "DIV" && (node as Element).className.split(' ').some(c => c === 'noode')) {
-                children.push(parseHTMLToNoode(node as Element));
+            if (node.nodeName === "DIV" && (node as Element).className.split(' ').some(c => c === 'node')) {
+                children.push(parseHTMLToNode(node as Element));
             }
             else {
                 content += (node as Element).outerHTML; // Depends on css white-space property for ignoring white spaces
@@ -148,7 +148,7 @@ export function parseHTMLToNoode(el: Element): NoodeDefinition {
         isActive: 'active' in attributes,
         children: children,
         classNames: {
-            noode: attributes.classNoode,
+            node: attributes.classNode,
             contentBox: attributes.classContentBox,
             childIndicator: attributes.classChildIndicator,
             overflowIndicatorLeft: attributes.classOverflowIndicatorLeft,
@@ -159,7 +159,7 @@ export function parseHTMLToNoode(el: Element): NoodeDefinition {
             branchBackdrop: attributes.classBranchBackdrop,
         },
         styles: {
-            noode: attributes.styleNoode,
+            node: attributes.styleNode,
             contentBox: attributes.styleContentBox,
             childIndicator: attributes.styleChildIndicator,
             overflowIndicatorLeft: attributes.styleOverflowIndicatorLeft,
@@ -221,7 +221,7 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
         else if (newBranchDirection !== oldBranchDirection) {
             // prevents transition going haywire, not necessary if orientation also changes since
             // realignAll will do it
-            traverseDescendents(noodel.root, noode => noode.applyBranchMove = false, true);
+            traverseDescendents(noodel.root, node => node.applyBranchMove = false, true);
         }
 
         let newUseResizeDetection = noodel.options.useResizeDetection;
@@ -241,45 +241,45 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
     }
 }
 
-export function parseAndApplyNoodeOptions(noodel: NoodelState, options: NoodeOptions, noode: NoodeState) {
+export function parseAndApplyNodeOptions(noodel: NoodelState, options: NodeOptions, node: NodeState) {
 
-    let oldUseResizeDetection = typeof noode.options.useResizeDetection === "boolean"
-        ? noode.options.useResizeDetection
+    let oldUseResizeDetection = typeof node.options.useResizeDetection === "boolean"
+        ? node.options.useResizeDetection
         : noodel.options.useResizeDetection;
-    let oldUseBranchResizeDetection = typeof noode.options.useBranchResizeDetection === 'boolean'
-        ? noode.options.useBranchResizeDetection
+    let oldUseBranchResizeDetection = typeof node.options.useBranchResizeDetection === 'boolean'
+        ? node.options.useBranchResizeDetection
         : noodel.options.useResizeDetection;
 
-    noode.options = {
-        ...noode.options,
+    node.options = {
+        ...node.options,
         ...options
     };
 
     if (noodel.isMounted) {
-        let newUseResizeDetection = typeof noode.options.useResizeDetection === "boolean"
-            ? noode.options.useResizeDetection
+        let newUseResizeDetection = typeof node.options.useResizeDetection === "boolean"
+            ? node.options.useResizeDetection
             : noodel.options.useResizeDetection;
-        let newUseBranchResizeDetection = typeof noode.options.useBranchResizeDetection === 'boolean'
-            ? noode.options.useBranchResizeDetection
+        let newUseBranchResizeDetection = typeof node.options.useBranchResizeDetection === 'boolean'
+            ? node.options.useBranchResizeDetection
             : noodel.options.useResizeDetection;
 
         if (oldUseResizeDetection && !newUseResizeDetection) {
-            detachResizeSensor(noode);
+            detachResizeSensor(node);
         }
         else if (newUseResizeDetection && !oldUseResizeDetection) {
-            attachResizeSensor(noodel, noode);
+            attachResizeSensor(noodel, node);
         }
 
         if (oldUseBranchResizeDetection && !newUseBranchResizeDetection) {
-            detachBranchResizeSensor(noode);
+            detachBranchResizeSensor(node);
         }
         else if (newUseBranchResizeDetection && !oldUseBranchResizeDetection) {
-            attachBranchResizeSensor(noodel, noode);
+            attachBranchResizeSensor(noodel, node);
         }
     }
 }
 
-export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index: number, parent: NoodeState, isActive: boolean, branchRelativeOffset: number): NoodeState {
+export function buildNodeView(noodel: NoodelState, def: NodeDefinition, index: number, parent: NodeState, isActive: boolean, branchRelativeOffset: number): NodeState {
 
     let isRoot = parent === null;
     if (!def.children) def.children = [];
@@ -292,13 +292,13 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
 
     if (typeof def.id === 'string') {
         if (isIdRegistered(noodel, def.id)) {
-            throw new Error("Duplicate ID for new noode: " + def.id);
+            throw new Error("Duplicate ID for new node: " + def.id);
         }
 
         newId = def.id;
     }
     else {
-        newId = generateNoodeId(noodel);
+        newId = generateNodeId(noodel);
     }
 
     // parse and validate active child index
@@ -311,7 +311,7 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
         }
     }
 
-    let noodeState: NoodeState = reactive({
+    let nodeState: NodeState = reactive({
         r: markRaw({
             eventListeners: new Map([
                 ['enterFocus', []], 
@@ -372,12 +372,12 @@ export function buildNoodeView(noodel: NoodelState, def: NoodeDefinition, index:
         hasOverflowRight: false
     });
 
-    noodeState.r.vm = new (Noode as any)(noodeState, noodel);
-    parseAndApplyNoodeOptions(noodel, def.options, noodeState);
+    nodeState.r.vm = new (NoodelNode as any)(nodeState, noodel);
+    parseAndApplyNodeOptions(noodel, def.options, nodeState);
 
     for (let i = 0; i < def.children.length; i++) {
-        noodeState.children.push(buildNoodeView(noodel, def.children[i], i, noodeState, i === activeChildIndex, 0));
+        nodeState.children.push(buildNodeView(noodel, def.children[i], i, nodeState, i === activeChildIndex, 0));
     }
 
-    return noodeState;
+    return nodeState;
 }

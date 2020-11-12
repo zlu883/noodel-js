@@ -106,14 +106,14 @@
     flex-direction: row-reverse;
 }
 
-.nd-noode {
+.nd-node {
     box-sizing: border-box !important;
     margin: 0 !important;
     position: relative;
     z-index: 1;
 }
 
-.nd-noode-active {
+.nd-node-active {
     z-index: 10;
 }
 
@@ -134,7 +134,7 @@
     touch-action: none;
 }
 
-.nd-noode-inspect > .nd-content-box {
+.nd-node-inspect > .nd-content-box {
     overflow: auto;
     user-select: text;
     -webkit-user-select: text;

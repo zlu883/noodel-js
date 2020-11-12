@@ -32,7 +32,7 @@ code[class*="language-"] {
     font-size: .9em;
 }
 
-.nd-noode-inspect pre[class*="language-"] {
+.nd-node-inspect pre[class*="language-"] {
     overflow: auto;
 }
 
@@ -101,16 +101,16 @@ code[class*="language-"] {
     height: 100%;
 }
 
-.nd-noode, .nd-child-indicator {
+.nd-node, .nd-child-indicator {
     background-color: #ffedd9;
 }
 
-.nd-noode {
+.nd-node {
     border-radius: .7em;
     position: relative;
 }
 
-.nd-noode-active, .nd-child-indicator-active {
+.nd-node-active, .nd-child-indicator-active {
     background-color: white;
 }
 
@@ -125,17 +125,17 @@ code[class*="language-"] {
     opacity: 1;
 }
 
-.landing-noode {
+.landing-node {
     text-align: center;
     padding: 2em;
     font-size: 18px;
 }
 
-.nd-noode > *:first-child {
+.nd-node > *:first-child {
     margin-top: .2em;
 }
 
-.nd-noode > *:last-child {
+.nd-node > *:last-child {
     margin-bottom: .2em;
 }
 
@@ -158,7 +158,7 @@ code[class*="language-"] {
 }
 
 @media (max-width: 800px) {
-    .nd-noode {
+    .nd-node {
         max-width: 80vw;
     }
 
@@ -172,13 +172,13 @@ code[class*="language-"] {
 }
 
 @media (max-height: 800px) {
-    .nd-noode {
+    .nd-node {
         max-height: 80vh;
     }
 }
 
 @media (min-width: 801px) {
-    .nd-noode {
+    .nd-node {
         max-width: 700px;
     }
 
@@ -188,14 +188,14 @@ code[class*="language-"] {
 }
 
 @media (min-height: 801px) {
-    .nd-noode {
+    .nd-node {
         max-height: 700px;
     }
 }
 
 /** Extra UI elements **/
 
-#noodeCount {
+#nodeCount {
     position: absolute;
     z-index: 10000;
     top: 0;

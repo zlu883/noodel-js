@@ -25,7 +25,7 @@
             height: 100vh;
         }
 
-        .nd-noode {
+        .nd-node {
             max-width: 100vw;
             max-height: 100vh;
             display: flex;
@@ -36,7 +36,7 @@
             border-radius: 1em;
         }
 
-        .nd-branch-focal .nd-noode-active {
+        .nd-branch-focal .nd-node-active {
             box-shadow: 0 0 1em black;
         }
 
@@ -63,7 +63,7 @@
             display: none;
         }
 
-        .title-noode {
+        .title-node {
             width: 700px;
             height: 500px;
             background-image: url(https://images.unsplash.com/photo-1569718212165-3a8278d5f624?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=2000&q=80);
@@ -118,47 +118,47 @@
 
 <body>
     <div id="root" style="display: none;">
-        <div class="noode" data-class="title-noode">
+        <div class="node" data-class="title-node">
             <div class="overlay"></div>
             <h1 class="title-item">The Noodle Shop</h1>
             <p class="title-item">Swipe, scroll, or tap on individual nodes!</p>
-            <div class="noode" data-class="title-branch">
+            <div class="node" data-class="title-branch">
                 <h2>Our Menu</h2>
-                <div class="noode" data-class="food-noode">
+                <div class="node" data-class="food-node">
                     <div class="overlay overlay-yellow"></div>
                     <img class="food-icon" src="https://image.flaticon.com/icons/svg/890/890043.svg">
                     <h3>Chicken Noodles</h3>
                     <p>$15</p>
                 </div>
-                <div class="noode" data-class="food-noode">
+                <div class="node" data-class="food-node">
                     <div class="overlay overlay-red"></div>
                     <img class="food-icon" src="https://image.flaticon.com/icons/svg/890/890043.svg">
                     <h3>Beef Noodles</h3>
                     <p>$14</p>
                 </div>
-                <div class="noode" data-class="food-noode">
+                <div class="node" data-class="food-node">
                     <div class="overlay overlay-blue"></div>
                     <img class="food-icon" src="https://image.flaticon.com/icons/svg/890/890043.svg">
                     <h3>Seafood Noodles</h3>
                     <p>$16</p>
                 </div>
-                <div class="noode" data-class="food-noode">
+                <div class="node" data-class="food-node">
                     <div class="overlay overlay-green"></div>
                     <img class="food-icon" src="https://image.flaticon.com/icons/svg/890/890043.svg">
                     <h3>Vegetarian Noodles</h3>
                     <p>$15</p>
                 </div>
             </div>
-            <div class="noode" data-class="title-branch" data-id="orderNow">
+            <div class="node" data-class="title-branch" data-id="orderNow">
                 <h2>Order Now</h2>
-                <div class="noode" data-id="orderSummary">
+                <div class="node" data-id="orderSummary">
                     <h3>Total: $0</h3>
                     <p>Please order at least 1 item</p>
                 </div>
             </div>
-            <div class="noode" data-class="title-branch">
+            <div class="node" data-class="title-branch">
                 <h2>About Us</h2>
-                <div class="noode">
+                <div class="node">
                     <h3>Location</h3>
                     <p>123 Example Street, City, Region, Country</p>
                     <h3>Opening Hours</h3>
@@ -171,8 +171,8 @@
     </div>
     <script>
         const noodel = new Noodel("#root");
-        const orderNowNoode = noodel.findNoodeById("orderNow");
-        const orderSummaryNoode = noodel.findNoodeById("orderSummary");
+        const orderNowNode = noodel.findNodeById("orderNow");
+        const orderSummaryNode = noodel.findNodeById("orderSummary");
         let orderItems = [];
         let isOrderFinalized = false;
 
@@ -195,7 +195,7 @@
                 overlayClass = "overlay-green";
             }
 
-            item.noode.setContent(`
+            item.node.setContent(`
                 <div class="overlay ${overlayClass}"></div>
                 <h3>${item.name} x ${item.quantity}</h3>
                 <p>Subtotal: $${item.subtotal}</p>
@@ -213,7 +213,7 @@
             }
 
             if (isOrderFinalized) {
-                orderSummaryNoode.setContent(`
+                orderSummaryNode.setContent(`
                     <h3>Total: $${total}</h3>
                     <p>Your order is confirmed!</p>
                     <p>Move left to restart</p>
@@ -222,13 +222,13 @@
             }
 
             if (total > 0) {
-                orderSummaryNoode.setContent(`
+                orderSummaryNode.setContent(`
                     <h3>Total: $${total}</h3>
                     <p>Move right to confirm order</p>
                 `);
 
-                if (orderSummaryNoode.getChildren().length === 0) {
-                    orderSummaryNoode.addChild({
+                if (orderSummaryNode.getChildren().length === 0) {
+                    orderSummaryNode.addChild({
                         content: `<h2>Confirm Order</h2>`,
                         options: {
                             onEnterFocus: () => {
@@ -238,19 +238,19 @@
                     });
                 }
             } else {
-                orderSummaryNoode.setContent(`
+                orderSummaryNode.setContent(`
                     <h3>Total: $${total}</h3>
                     <p>Please order at least 1 item</p>
                 `);
-                if (orderSummaryNoode.getChildren().length > 0) {
-                    orderSummaryNoode.removeChild(0);
+                if (orderSummaryNode.getChildren().length > 0) {
+                    orderSummaryNode.removeChild(0);
                 }
             }
         }
 
         function removeOrderItem(item) {
             item.subtotal = 0;
-            item.noode.setContent("<p>Add new item</p>");
+            item.node.setContent("<p>Add new item</p>");
             updateOrderTotal();
         }
 
@@ -262,14 +262,14 @@
                     if (i === orderItems.length - 1) {
                         hasEmpty = true;
                     } else {
-                        orderNowNoode.removeChild(i);
+                        orderNowNode.removeChild(i);
                         orderItems.splice(i, 1);
                     }
                 } 
             }
 
             if (!hasEmpty) {
-                createNewItemNoode();
+                createNewItemNode();
             }
         }
 
@@ -280,7 +280,7 @@
                 useWheelNavigation: false,
                 useTapNavigation: false
             });
-            orderSummaryNoode.getChild(0).setContent("<h2>Processing your order, please wait...</h2>");
+            orderSummaryNode.getChild(0).setContent("<h2>Processing your order, please wait...</h2>");
 
             setTimeout(() => {
                 noodel.setOptions({
@@ -295,32 +295,32 @@
 
         function finalizeOrder() {
             isOrderFinalized = true;
-            orderSummaryNoode.removeChild(0);
+            orderSummaryNode.removeChild(0);
             updateOrderTotal();
 
             for (let i = 0; i < orderItems.length; i++) {
-                orderItems[i].noode.removeChildren(0, 5);
+                orderItems[i].node.removeChildren(0, 5);
             }
 
-            orderNowNoode.removeChild(orderItems.length - 1);
+            orderNowNode.removeChild(orderItems.length - 1);
         }
 
         function resetOrder() {
-            orderNowNoode.removeChildren(0, orderItems.length - 1);
+            orderNowNode.removeChildren(0, orderItems.length - 1);
             orderItems = [];
             updateOrderTotal();
-            createNewItemNoode();
-            orderNowNoode.setActiveChild(0);
+            createNewItemNode();
+            orderNowNode.setActiveChild(0);
         }
 
-        function createNewItemNoode() {
+        function createNewItemNode() {
             const newOrderItem = {
                 name: "",
                 price: 0,
                 quantity: 1,
                 subtotal: 0
             };
-            const newItemNoodeDef = {
+            const newItemNodeDef = {
                 content: "<p>Add new item</p>",
                 children: [
                     {
@@ -328,7 +328,7 @@
                             <img class="food-icon" src="https://image.flaticon.com/icons/svg/890/890043.svg">
                             <h3>Chicken Noodles</h3>
                             <p>$15</p>`,
-                        children: getNumberPickerNoodeDefs(newOrderItem),
+                        children: getNumberPickerNodeDefs(newOrderItem),
                         activeChildIndex: 4,
                         options: {
                             onEnterFocus: (self) => {
@@ -343,7 +343,7 @@
                             <img class="food-icon" src="https://image.flaticon.com/icons/svg/890/890043.svg">
                             <h3>Beef Noodles</h3>
                             <p>$14</p>`,
-                        children: getNumberPickerNoodeDefs(newOrderItem),
+                        children: getNumberPickerNodeDefs(newOrderItem),
                         activeChildIndex: 4,
                         options: {
                             onEnterFocus: (self) => {
@@ -358,7 +358,7 @@
                             <img class="food-icon" src="https://image.flaticon.com/icons/svg/890/890043.svg">
                             <h3>Seafood Noodles</h3>
                             <p>$16</p>`,
-                        children: getNumberPickerNoodeDefs(newOrderItem),
+                        children: getNumberPickerNodeDefs(newOrderItem),
                         activeChildIndex: 4,
                         options: {
                             onEnterFocus: (self) => {
@@ -373,7 +373,7 @@
                             <img class="food-icon" src="https://image.flaticon.com/icons/svg/890/890043.svg">
                             <h3>Vegetarian Noodles</h3>
                             <p>$15</p>`,
-                        children: getNumberPickerNoodeDefs(newOrderItem),
+                        children: getNumberPickerNodeDefs(newOrderItem),
                         activeChildIndex: 4,
                         options: {
                             onEnterFocus: (self) => {
@@ -395,15 +395,15 @@
                 ]
             }
 
-            newOrderItem.noode = orderNowNoode.addChild(newItemNoodeDef, orderItems.length);
+            newOrderItem.node = orderNowNode.addChild(newItemNodeDef, orderItems.length);
             orderItems.push(newOrderItem);
         }
 
-        function getNumberPickerNoodeDefs(orderItem) {
-            const noodeDefs = [];
+        function getNumberPickerNodeDefs(orderItem) {
+            const nodeDefs = [];
 
             for (let i = 5; i >= 1; i--) {
-                noodeDefs.push({
+                nodeDefs.push({
                     content: `<p>x ${i}</p>`,
                     options: {
                         onEnterFocus: (self) => {
@@ -414,10 +414,10 @@
                 });
             }
 
-            return noodeDefs;
+            return nodeDefs;
         }
 
-        orderNowNoode.setOptions({
+        orderNowNode.setOptions({
             onChildrenEnterFocus: () => {
                 refreshOrderItems();
             },
@@ -428,8 +428,8 @@
                 }
             }
         });
-        createNewItemNoode();
-        orderNowNoode.setActiveChild(0);
+        createNewItemNode();
+        orderNowNode.setActiveChild(0);
         noodel.mount("#root");
     </script>
 </body>

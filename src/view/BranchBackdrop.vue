@@ -15,12 +15,12 @@
 
 <script lang="ts">
 import NoodelState from "../types/NoodelState";
-import NoodeState from "../types/NoodeState";
+import NodeState from "../types/NodeState";
 import { PropType, defineComponent } from "vue";
 
 export default defineComponent({
 	props: {
-		parent: Object as PropType<NoodeState>,
+		parent: Object as PropType<NodeState>,
 		noodel: Object as PropType<NoodelState>,
 	},
 
@@ -45,7 +45,7 @@ export default defineComponent({
 
 		branchBackdropStyle(): {} {
 			let orientation = this.noodel.options.orientation;
-			let style = {};
+			let style = '';
 
 			if (orientation === "ltr") {
 				style += `left: ${this.parent.trunkRelativeOffset}px;`;

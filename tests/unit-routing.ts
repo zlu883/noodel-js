@@ -17,7 +17,7 @@ describe('Routing', function () {
 
             let noodel = new Noodel("#template", { useRouting : true });
 
-            assert.strictEqual(noodel.getFocalNoode().getId(), "customId");
+            assert.strictEqual(noodel.getFocalNode().getId(), "customId");
         });
         it('should change focus if hash changes', function (done) {
             let noodel = new Noodel("#template", { useRouting : true });
@@ -25,7 +25,7 @@ describe('Routing', function () {
             window.location.hash = "#customId";
             setTimeout(() => {
                 try {
-                    assert.strictEqual(noodel.getFocalNoode().getId(), "customId");
+                    assert.strictEqual(noodel.getFocalNode().getId(), "customId");
                     done();
                 }
                 catch (err) {
@@ -36,7 +36,7 @@ describe('Routing', function () {
         it('should change hash if focus changes', function () {
             let noodel = new Noodel("#template", { useRouting : true });
 
-            noodel.findNoodeById("customId").jumpToFocus();
+            noodel.findNodeById("customId").jumpToFocus();
             assert.strictEqual(window.location.hash, "#customId");
         });
     });
@@ -48,7 +48,7 @@ describe('Routing', function () {
 
             let noodel = new Noodel("#template", { useRouting : false });
 
-            assert.notStrictEqual(noodel.getFocalNoode().getId(), "customId");
+            assert.notStrictEqual(noodel.getFocalNode().getId(), "customId");
         });
         it('should not change focus if hash changes', function (done) {
             let noodel = new Noodel("#template", { useRouting : false });
@@ -56,7 +56,7 @@ describe('Routing', function () {
             window.location.hash = "#customId";
             setTimeout(() => {
                 try {
-                    assert.notStrictEqual(noodel.getFocalNoode().getId(), "customId");
+                    assert.notStrictEqual(noodel.getFocalNode().getId(), "customId");
                     done();
                 }
                 catch (err) {
@@ -67,7 +67,7 @@ describe('Routing', function () {
         it('should not change hash if focus changes', function () {
             let noodel = new Noodel("#template", { useRouting : false });
 
-            noodel.findNoodeById("customId").jumpToFocus();
+            noodel.findNodeById("customId").jumpToFocus();
             assert.notStrictEqual(window.location.hash, "#customId");
         });
     });
@@ -81,7 +81,7 @@ describe('Routing', function () {
             noodel.setOptions({useRouting: true});
             setTimeout(() => {
                 try {
-                    assert.strictEqual(noodel.getFocalNoode().getId(), "customId");
+                    assert.strictEqual(noodel.getFocalNode().getId(), "customId");
                     done();
                 }
                 catch (err) {

@@ -2,12 +2,12 @@
 
 <template>
 	<transition-group
-		name="nd-noode"
+		name="nd-node"
 	>
-		<Noode
+		<Node
 			v-for="child in parent.children"
 			:key="child.id"
-			:noode="child"
+			:node="child"
 			:noodel="noodel"
 		/>
 	</transition-group>
@@ -16,20 +16,20 @@
 <!---------------------------- SCRIPT ------------------------------>
 
 <script lang="ts">
-import Noode from "./Noode.vue";
+import Node from "./Node.vue";
 import NoodelState from "../types/NoodelState";
-import NoodeState from "../types/NoodeState";
+import NodeState from "../types/NodeState";
 import { PropType, defineComponent } from "vue";
 
 // By extracting the transition-group into its own component addresses the issue
 // of enter/leave transitions not occuring properly as per https://github.com/vuejs/vue/issues/6946
 export default defineComponent({
 	components: {
-		Noode,
+		Node,
 	},
 
 	props: {
-		parent: Object as PropType<NoodeState>,
+		parent: Object as PropType<NodeState>,
 		noodel: Object as PropType<NoodelState>,
 	}
 });

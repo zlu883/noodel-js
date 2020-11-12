@@ -1,4 +1,4 @@
-import NoodeState from '../types/NoodeState';
+import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
 import { traverseAncestors } from './noodel-traverse';
 
@@ -10,16 +10,16 @@ export function getFocalWidth(noodel: NoodelState) {
     return noodel.containerWidth / 2;
 }
 
-export function getActiveChild(noode: NoodeState) {
-    if (noode.activeChildIndex === null) return null;
-    return noode.children[noode.activeChildIndex];
+export function getActiveChild(node: NodeState) {
+    if (node.activeChildIndex === null) return null;
+    return node.children[node.activeChildIndex];
 }
 
-export function getPath(noode: NoodeState): number[] {
+export function getPath(node: NodeState): number[] {
     let path = [];
 
-    traverseAncestors(noode, noode => {
-        path.push(noode.index);
+    traverseAncestors(node, node => {
+        path.push(node.index);
     }, true, false);
 
     return path.reverse();
