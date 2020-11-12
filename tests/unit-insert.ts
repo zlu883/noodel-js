@@ -18,6 +18,10 @@ describe('Noode insert', function () {
         thirdNoode = noodel.getRoot().getChild(2);
     });
 
+    afterEach(function() {
+        window.history.replaceState(null, '', window.location.href.split("#")[0]);
+    });
+
     describe('insert at invalid index', function () {  
         it('should fail with error', function () {
             assert.throw(function(){noodel.getRoot().insertChildren([{}], 6)});

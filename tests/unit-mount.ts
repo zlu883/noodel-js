@@ -2,7 +2,7 @@ import Noodel from "../src/main/Noodel";
 
 const assert = chai.assert;
 
-describe('Noodel lifecycle', function () {
+describe('Lifecycle', function () {
 
     describe('mount with invalid selector', function () {
         it('should fail with error', function () {
@@ -15,51 +15,35 @@ describe('Noodel lifecycle', function () {
 
         beforeEach(function() {
             noodel = new Noodel();
+            noodel.mount("#noodel");
         });
 
         afterEach(function() {
             noodel.unmount();
-            let div = document.createElement('div');
-            div.id = 'noodel';
-            document.getElementById("mocha").before(div);
             window.history.replaceState(null, '', window.location.href.split("#")[0]);
         });
 
         it('should create canvas element', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.strictEqual(document.querySelectorAll(".nd-canvas").length, 1);
+                    assert.isTrue(noodel.getEl().classList.contains('nd-canvas'));
                     done();
                 }
                 catch (err) {
                     done(err);
                 }
             });
-            noodel.mount("#noodel");
         });
-        it('should have no noode element', function (done) {
+        it('should have no branch element on root', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.strictEqual(document.querySelectorAll(".nd-noode").length, 0);
+                    assert.notExists(noodel.getRoot().getEl('branch'));
                     done();
                 }
                 catch (err) {
                     done(err);
                 }
             });
-            noodel.mount("#noodel");
-        });
-        it('should have no branch element', function (done) {
-            noodel.on('mount', function () {
-                try {
-                    assert.strictEqual(document.querySelectorAll(".nd-branch").length, 0);
-                    done();
-                }
-                catch (err) {
-                    done(err);
-                }
-            });
-            noodel.mount("#noodel");
         });
     });
 
@@ -68,164 +52,188 @@ describe('Noodel lifecycle', function () {
 
         beforeEach(function() {
             noodel = new Noodel("#template");
+            noodel.mount("#noodel");
         });
 
         afterEach(function() {
             noodel.unmount();
-            let div = document.createElement('div');
-            div.id = 'noodel';
-            document.getElementById("mocha").before(div);
             window.history.replaceState(null, '', window.location.href.split("#")[0]);
         });
 
         it('should create canvas element', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.strictEqual(document.querySelectorAll(".nd-canvas").length, 1);
+                    assert.isTrue(noodel.getEl().classList.contains('nd-canvas'));
                     done();
                 }
                 catch (err) {
                     done(err);
                 }
             });
-            noodel.mount("#noodel");
         });
-        it('should have 7 noode elements', function (done) {
+        it('should have layout classes on canvas element', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.strictEqual(document.querySelectorAll(".nd-noode").length, 7);
+                    assert.isTrue(noodel.getEl().classList.contains('nd-canvas-ltr'));
+                    assert.isTrue(noodel.getEl().classList.contains('nd-canvas-normal'));
                     done();
                 }
                 catch (err) {
                     done(err);
                 }
             });
-            noodel.mount("#noodel");
         });
-        it('should have 4 branch elements', function (done) {
+        it('should have branch element on root', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.strictEqual(document.querySelectorAll(".nd-branch").length, 4);
+                    assert.isTrue(noodel.getRoot().getEl('branch').classList.contains('nd-branch'));
                     done();
                 }
                 catch (err) {
                     done(err);
                 }
             });
-            noodel.mount("#noodel");
         });
-        it('should have 1 focal branch element', function (done) {
+        it('should have noode element for a noode', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.strictEqual(document.querySelectorAll(".nd-branch-focal").length, 1);
+                    assert.isTrue(noodel.getFocalNoode().getEl().classList.contains('nd-noode'));
                     done();
                 }
                 catch (err) {
                     done(err);
                 }
             });
-            noodel.mount("#noodel");
         });
-        it('should have 4 active noode elements', function (done) {
+
+        it('should have focal class on focal branch', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.strictEqual(document.querySelectorAll(".nd-noode-active").length, 4);
+                    assert.isTrue(noodel.getFocalParent().getEl('branch').classList.contains('nd-branch-focal'));
                     done();
                 }
                 catch (err) {
                     done(err);
                 }
             });
-            noodel.mount("#noodel");
         });
-        it('should render noode content', function (done) {
+        it('should have active class on active noode', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.strictEqual(document.querySelector(".nd-noode").innerHTML.trim(), "<h2>1</h2>");
+                    assert.isTrue(noodel.getFocalParent().getActiveChild().getEl().classList.contains('nd-noode-active'));
                     done();
                 }
                 catch (err) {
                     done(err);
                 }
             });
-            noodel.mount("#noodel");
+        });
+        it('should render noode content inside content box', function (done) {
+            noodel.on('mount', function () {
+                try {
+                    assert.strictEqual(noodel.getRoot().getChild(0).getEl().querySelector(".nd-content-box").innerHTML.trim(), "<h2>Heading</h2>Some text node");
+                    done();
+                }
+                catch (err) {
+                    done(err);
+                }
+            });
         });
         it('should show visible branch', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.notStrictEqual(getComputedStyle(document.querySelectorAll(".nd-branch")[0]).display, 'none');
+                    assert.isTrue(noodel.getFocalParent().isChildrenVisible());
+                    assert.isTrue(getComputedStyle(noodel.getFocalParent().getEl('branch')).display === 'flex');
                     done();
                 }
                 catch (err) {
                     done(err);
                 }
             });
-            noodel.mount("#noodel");
         });
         it('should not show hidden branch', function (done) {
             noodel.on('mount', function () {
                 try {
-                    // at this moment in time the hidden branches are actually in "disappear" transition due to initial render
-                    // so actually does not have display: none - maybe improve this behaviour in future
-                    assert.strictEqual(getComputedStyle(noodel.findNoodeById("#2").getEl('branch')).opacity, '0');
+                    assert.isFalse(noodel.getRoot().getChild(1).isChildrenVisible());
+                    assert.isTrue(getComputedStyle(noodel.getRoot().getChild(1).getEl('branch')).display === 'none');
                     done();
                 }
                 catch (err) {
                     done(err);
                 }                    
             });
-            noodel.mount("#noodel");
         });
     });
 
-    describe('unmount/remount noodel', function () {
+    describe('unmount', function () {
         let noodel: Noodel;
 
         beforeEach(function() {
             noodel = new Noodel("#template");
+            noodel.mount("#noodel");
         });
 
         afterEach(function() {
             noodel.unmount();
-            let div = document.createElement('div');
-            div.id = 'noodel';
-            document.getElementById("mocha").before(div);
             window.history.replaceState(null, '', window.location.href.split("#")[0]);
         });
 
-        it('should unmount and remount while keeping state', function (done) {
-            let isRemount = false;
+        it('should keep state after unmount', function (done) {
+            let def = noodel.getRoot().getDefinition();
+            let focalNoode = noodel.getFocalNoode();
 
             noodel.on('mount', function () {
-                if (isRemount) {
-                    try {
-                        assert.strictEqual(document.querySelectorAll(".nd-canvas").length, 1);
-                        assert.strictEqual(noodel.getFocalNoode().getId(), "#2");
-                        done();
-                    }
-                    catch (err) {
-                        done(err);
-                    }
+                try {
+                    noodel.unmount();
+                    setTimeout(() => {
+                        try {
+                            assert.deepStrictEqual(noodel.getRoot().getDefinition(), def);
+                            assert.deepStrictEqual(noodel.getFocalNoode(), focalNoode);
+                            done();
+                        }
+                        catch (err) {
+                            done(err);
+                        }
+                    });
                 }
-                else {
-                    try {
-                        noodel.findNoodeById("#2").jumpToFocus();
-                        noodel.unmount();
-                        assert.strictEqual(document.querySelectorAll(".nd-canvas").length, 0);
-                        
-                        let div = document.createElement('div');
-                        div.id = 'noodel';
-                        document.getElementById("mocha").before(div);
-                        
-                        isRemount = true;
-                        noodel.mount("#noodel");
-                    }
-                    catch (err) {
-                        done(err);
-                    }
+                catch (err) {
+                    done(err);
                 }
             });
+        });
+    });
+
+    describe('next tick', function () {
+        let noodel: Noodel;
+
+        beforeEach(function() {
+            noodel = new Noodel('#template');
             noodel.mount("#noodel");
+        });
+
+        afterEach(function() {
+            noodel.unmount();
+            window.history.replaceState(null, '', window.location.href.split("#")[0]);
+        });
+
+        it('should obtain updated DOM on nextTick', function (done) {
+            noodel.on('mount', function () {
+                try {
+                    noodel.getFocalNoode().setContent("aabbcc");
+                    noodel.nextTick(() => {
+                        try {
+                            assert.strictEqual(noodel.getFocalNoode().getEl().querySelector('.nd-content-box').innerHTML, 'aabbcc');
+                            done();
+                        }
+                        catch(err) {
+                            done(err);
+                        }
+                    });
+                }
+                catch (err) {
+                    done(err);
+                }
+            });
         });
     });
 });

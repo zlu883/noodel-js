@@ -4,7 +4,8 @@ import '../src/styles/noodel-default.css';
 
 let noodel = new Noodel("#template", {
     visibleSubtreeDepth: 3,
-    showOverflowIndicators: true
+    showOverflowIndicators: true,
+    showBranchBackdrops: true
 });
 
 noodel.mount("#noodel");
@@ -82,4 +83,12 @@ document.getElementById("deleteMultipleChild").addEventListener("click", () => {
     // c.removeAfter(2);
     // if (c) c.removeSelf();
     noodel.getFocalNoode().deleteChildren(0, 3);
+});
+
+document.getElementById("appendMultipleChild").addEventListener("click", () => {
+    noodel.getFocalNoode().insertChildren([{}, {}, {}]);
+});
+
+document.getElementById("insertMultipleChild").addEventListener("click", () => {
+    noodel.getFocalNoode().insertChildren([{}, {}, {}], 2);
 });

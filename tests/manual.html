@@ -14,11 +14,19 @@
             width: 800px;
             height: 600px;
         }
+
+        .green {
+            background-color: green;
+        }
+
+        .yellow {
+            background-color: yellow;
+        }
     </style>
     <div id="template" style="display: none;">
-        <div class="noode">
+        <div class="noode" data-class-branch-backdrop="green">
             <h2>1</h2>
-            <div class="noode">
+            <div class="noode" >
                 <h3>1/1</h3>
                 <div class="noode">
                     <h3>1/1/1</h3>
@@ -28,7 +36,7 @@
                 </div>
             </div>
         </div>
-        <div class="noode" data-id="#2">
+        <div class="noode" data-class-branch-backdrop="yellow">
             <h3>2</h3>
             <div class="noode">
                 <h3>2/1</h3>
@@ -84,6 +92,8 @@
     <button id="deleteMultipleBefore">Delete multiple before</button>
     <button id="deleteMultipleAfter">Delete multiple after</button>
     <button id="deleteMultipleChild">Delete multiple child</button>
+    <button id="appendMultipleChild">Append multiple child</button>
+    <button id="insertMultipleChild">Insert multiple child at index 2</button>
     <script src="../manual-test.js"></script>
 </body>
 

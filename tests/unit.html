@@ -6,12 +6,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
     <title>Noodel Unit Tests</title>
-    <link rel="stylesheet" href="../node_modules/mocha/mocha.css"></script>
+    <link rel="stylesheet" href="../node_modules/mocha/mocha.css">
+    </script>
     <script src="../node_modules/mocha/mocha.js"></script>
     <script src="../node_modules/chai/chai.js"></script>
     <script>
         mocha.setup('bdd');
-        window.addEventListener('load', function() {
+        window.addEventListener('load', function () {
             mocha.run();
         });
     </script>
@@ -19,35 +20,97 @@
 </head>
 
 <body>
+    <style>
+        body {
+            display: flex;
+            flex-direction: row;
+            width: 100vw;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        #mocha,
+        #noodel {
+            width: 50vw;
+            overflow: auto;
+        }
+
+        #mocha .test pre {
+            overflow: auto;
+        }
+
+        .nd-canvas {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
     <div id="template" style="display: none;">
         <div class="noode">
-            <h2>1</h2>
+            <h2>Heading</h2>Some text node
+        </div>
+        <div class="noode">
+            parent
             <div class="noode">
-                <h3>1/1</h3>
+                child
+            </div>
+            <div class="noode">
+                child
+            </div>
+            <div class="noode">
+                child
                 <div class="noode">
-                    <h3>1/1/1</h3>
+                    grandchild
+                </div>
+                <div class="noode">
+                    grandchild
+                </div>
+                <div class="noode">
+                    grandchild
                 </div>
             </div>
         </div>
-        <div class="noode" data-id="#2">
-            <h3>2</h3>
-            <div class="noode">
-                <h3>2/1</h3>
-            </div>
-            <div class="noode" data-active>
-                <h3>1/2</h3>
-            </div>
+        <div class="noode"
+            data-class-noode="custom noode" 
+            data-class-content-box="custom content box"
+            data-class-branch="custom branch" 
+            data-class-branch-backdrop="custom branch backdrop"
+            data-class-child-indicator="custom child indicator"
+            data-class-overflow-indicator-left="custom overflow indicator left"
+            data-class-overflow-indicator-right="custom overflow indicator right"
+            data-class-overflow-indicator-top="custom overflow indicator top"
+            data-class-overflow-indicator-bottom="custom child indicator bottom">
+            noode with custom classes
         </div>
-        <div 
-            class="noode" 
-            data-class-content-box="super great awesome" 
-            data-style-content-box="color: red; border: solid blue 2px"
-            data-class-branch="super great fancy" 
-            data-style-branch="color: blue; border: solid red 2px"
-            data-class-child-indicator="super great nice" 
-            data-style-child-indicator="color: green; border: solid green 2px"
+        <div class="noode" 
+            data-style-noode="color: red; border: solid blue 0px"
+            data-style-content-box="color: red; border: solid blue 1px"
+            data-style-branch="color: red; border: solid blue 2px"
+            data-style-branch-backdrop="color: red; border: solid blue 3px"
+            data-style-child-indicator="color: red; border: solid blue 4px"
+            data-style-overflow-indicator-left="color: red; border: solid blue 5px"
+            data-style-overflow-indicator-right="color: red; border: solid blue 6px"
+            data-style-overflow-indicator-top="color: red; border: solid blue 7px"
+            data-style-overflow-indicator-bottom="color: red; border: solid blue 8px">
+            noode with custom styles
+        </div>
+        <div class="noode" data-active>
+            custom active noode
+        </div>
+        <div class="noode" data-active>
+            invalid active noode
+        </div>
+        <div class="noode" data-id="customId">
+            custom noode id
+        </div>
+        <div class="noode"
+            data-use-resize-detection="true" 
+            data-use-branch-resize-detection="false"
+            data-use-overflow-detection="true" 
+            data-show-branch-backdrop="false" 
+            data-show-child-indicator="true"
+            data-show-overflow-indicators="false"
         >
-            <h3>3</h3>
+            custom noode options
         </div>
     </div>
 
