@@ -22,6 +22,16 @@
         .yellow {
             background-color: yellow;
         }
+
+        .nd-branch-backdrop-enter-from, .nd-branch-backdrop-leave-active {
+            opacity: 0;
+        }
+
+        .nd-branch-backdrop-enter-active, .nd-branch-backdrop-leave-active {
+            transition-property: opacity;
+            transition-timing-function: cubic-bezier( 0.215, 0.61, 0.355, 1);
+            transition-duration: 0.5s;
+        }
     </style>
     <div id="template" style="display: none;">
         <div class="node" data-class-branch-backdrop="green">

@@ -42,27 +42,14 @@
 			:style="trunkStyle"
 			@transitionend="onTrunkTransitionEnd"
 		>
-			<transition-group
-				name="nd-branch" 
-				:css="noodel.isMounted"
-			>
-				<Branch
-					v-for="parent in allBranchParents"
-					:key="parent.id"
-					:parent="parent"
-					:noodel="noodel"
-				/>
-			</transition-group>
-			<transition-group
-				name="nd-branch-backdrop" 
-			>
-				<BranchBackdrop
-					v-for="parent in allBranchBackdropParents"
-					:key="parent.id"
-					:parent="parent"
-					:noodel="noodel"
-				/>
-			</transition-group>
+			<BranchTransitionGroup
+				:allParents="allBranchParents"
+				:noodel="noodel"
+			/>
+			<BranchBackdropTransitionGroup
+				:allParents="allBranchBackdropParents"
+				:noodel="noodel"
+			/>
 		</div>
 	</div>
 </template>
@@ -70,8 +57,8 @@
 <!---------------------------- SCRIPT ------------------------------>
 
 <script lang="ts">
-import Branch from "./Branch.vue";
-import BranchBackdrop from "./BranchBackdrop.vue";
+import BranchTransitionGroup from "./BranchTransitionGroup.vue";
+import BranchBackdropTransitionGroup from "./BranchBackdropTransitionGroup.vue";
 import { getFocalHeight, getFocalWidth } from "../controllers/getters";
 import { setupCanvasEl } from "../controllers/noodel-setup";
 import { setupCanvasInput } from "../controllers/input-binding";
@@ -84,8 +71,8 @@ import { queueMount } from "../controllers/event-emit";
 
 export default defineComponent({
 	components: {
-		Branch,
-		BranchBackdrop
+		BranchTransitionGroup,
+		BranchBackdropTransitionGroup
 	},
 
 	props: {
