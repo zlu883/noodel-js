@@ -206,7 +206,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
         if (targetIndex !== focalParent.activeChildIndex) {
             hideActiveSubtree(getActiveChild(focalParent));
             setActiveChild(focalParent, targetIndex);
-            showActiveSubtree(noodel, focalParent, noodel.options.visibleSubtreeDepth, noodel.options.subtreeDebounceInterval);
+            showActiveSubtree(focalParent, noodel.options.visibleSubtreeDepth);
         }
 
         noodel.branchStartReached = branchStartReached;

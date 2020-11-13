@@ -60,12 +60,11 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
                 });
             }
             else {
-                if (isInsert && noodel.isMounted) {
+                parent.branchOffset += alignVal;
+
+                if (isInsert && parent.isBranchMounted) {
+                    console.log(parent.isBranchMounted)
                     parent.applyBranchMove = true;
-                    parent.branchOffset += alignVal;
-                }
-                else {
-                    parent.branchOffset += alignVal;
                 }
             }
         }
@@ -221,8 +220,8 @@ export function resetAlignment(noodel: NoodelState) {
                     updateNodeSize(noodel, node, rect.height, rect.width);
                 }
     
-                if (node.r.branchEl) {
-                    let rect = node.r.branchEl.getBoundingClientRect();
+                if (node.r.branchSliderEl) {
+                    let rect = node.r.branchSliderEl.getBoundingClientRect();
                     updateBranchSize(noodel, node, rect.height, rect.width);
                 }
 

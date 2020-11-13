@@ -99,7 +99,7 @@ export function shiftFocalNode(noodel: NoodelState, indexDiff: number) {
     if (targetIndex !== noodel.focalParent.activeChildIndex) {
         hideActiveSubtree(getActiveChild(noodel.focalParent));
         setActiveChild(noodel.focalParent, targetIndex);
-        showActiveSubtree(noodel, noodel.focalParent, noodel.options.visibleSubtreeDepth, noodel.options.subtreeDebounceInterval);
+        showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
     }
     
     alignBranchToIndex(noodel.focalParent, targetIndex);
@@ -155,7 +155,7 @@ export function alignNoodelOnJump(noodel: NoodelState, target: NodeState) {
         nextParent = nextParent.parent;
     }
 
-    showActiveSubtree(noodel, target.parent, noodel.options.visibleSubtreeDepth);
+    showActiveSubtree(target.parent, noodel.options.visibleSubtreeDepth);
 
     if (target.parent.id !== noodel.focalParent.id) {
         setFocalParent(noodel, target.parent);

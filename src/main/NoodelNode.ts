@@ -33,7 +33,7 @@ export default class NoodelNode {
 
     private throwErrorIfDeleted() {
         if (this.isDeleted()) {
-            throw new Error("Invalid operation because this node has been deleted.");
+            throw new Error("Invalid operation because this node has been deleted from its noodel.");
         }
     }
 
@@ -556,7 +556,7 @@ export default class NoodelNode {
         this.state.isBranchTransparent = true;
 
         nextTick(() => {
-            let rect = this.state.r.branchEl.getBoundingClientRect();
+            let rect = this.state.r.branchSliderEl.getBoundingClientRect();
 
             updateBranchSize(this.noodelState, this.state, rect.height, rect.width);
             this.state.isBranchTransparent = false;

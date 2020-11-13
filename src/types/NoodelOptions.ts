@@ -12,16 +12,10 @@ export default interface NoodelOptions {
     visibleSubtreeDepth?: number;
     /**
      * If true, will keep the current branch depth (if possible) when
-     * tapping on the sibling of an ancestor. Useful to create an effect similar to conventional
-     * navigation menus. Defaults to false.
+     * tapping on the sibling of an ancestor. Can be used to create an effect
+     * resembling conventional navigation menus. Defaults to false.
      */
     retainDepthOnTapNavigation?: boolean;
-    /**
-     * Amount of time to wait in ms (until no more consecutive hits) before showing the 
-     * subtree of the focal node, when moving the focal branch. Mainly a performance hack
-     * to prevent rapid toggling of subtree elements. Defaults to 360.
-     */
-    subtreeDebounceInterval?: number;
     /**
      * Whether to apply the default keyboard navigation. Defaults to true.
      */

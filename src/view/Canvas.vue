@@ -42,18 +42,27 @@
 			:style="trunkStyle"
 			@transitionend="onTrunkTransitionEnd"
 		>
+			<transition-group
+				name="nd-branch" 
+				:css="noodel.isMounted"
+			>
 				<Branch
 					v-for="parent in allBranchParents"
 					:key="parent.id"
 					:parent="parent"
 					:noodel="noodel"
 				/>
+			</transition-group>
+			<transition-group
+				name="nd-branch-backdrop" 
+			>
 				<BranchBackdrop
 					v-for="parent in allBranchBackdropParents"
 					:key="parent.id"
 					:parent="parent"
 					:noodel="noodel"
 				/>
+			</transition-group>
 		</div>
 	</div>
 </template>
@@ -114,28 +123,9 @@ export default defineComponent({
 		this.noodel.containerHeight = 0;
 		this.noodel.containerWidth = 0;
 		this.noodel.isMounted = false;
-
-		delete this.noodel.r.canvasEl;
-		delete this.noodel.r.trunkEl;
-
-		traverseDescendents(
-			this.noodel.root,
-			(node) => {
-				node.trunkRelativeOffset = 0;
-				node.branchRelativeOffset = 0;
-				node.isBranchTransparent = true;
-				node.size = 0;
-				node.branchSize = 0;
-				node.branchOffset = 0;
-
-				delete node.r.branchEl;
-				delete node.r.el;
-				delete node.r.contentBoxEl;
-				delete node.r.resizeSensor;
-				delete node.r.branchResizeSensor;
-			},
-			true
-		);
+		this.noodel.applyTrunkMove = false;
+		this.noodel.r.canvasEl = null;
+		this.noodel.r.trunkEl = null;
 	},
 
 	computed: {

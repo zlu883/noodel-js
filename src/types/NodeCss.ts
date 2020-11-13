@@ -7,5 +7,6 @@ export default interface NodeCss {
     overflowIndicatorTop?: string;
     overflowIndicatorBottom?: string;
     branch?: string;
+    branchSlider?: string;
     branchBackdrop?: string;
 }

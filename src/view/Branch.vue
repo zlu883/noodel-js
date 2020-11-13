@@ -1,12 +1,17 @@
 <!--------------------------- TEMPLATE ----------------------------->
 
 <template>
-	<transition name="nd-branch">
+	<div
+		v-show="parent.isBranchVisible || parent.isBranchTransparent"
+		class="nd-branch"
+		:class="branchClass"
+		:style="branchStyle"
+	>
 		<div
-			v-show="parent.isBranchVisible || parent.isBranchTransparent"
-			class="nd-branch"
-			:class="branchClass"
-			:style="branchStyle"
+			class="nd-branch-slider"
+			ref="slider"	
+			:class="branchSliderClass"
+			:style="branchSliderStyle"		
 			@transitionend="onTransitionEnd"	
 		>
 			<NodeTransitionGroup 
@@ -14,7 +19,7 @@
 				:parent="parent" 
 			/>
 		</div>
-	</transition>
+	</div>
 </template>
 
 <!---------------------------- SCRIPT ------------------------------>
@@ -24,7 +29,7 @@ import NodeTransitionGroup from "./NodeTransitionGroup.vue";
 import { getFocalHeight, getFocalWidth } from "../controllers/getters";
 import NodeState from "../types/NodeState";
 import NoodelState from "../types/NoodelState";
-import { PropType, defineComponent } from "vue";
+import { PropType, defineComponent, nextTick } from "vue";
 import { updateBranchSize } from "../controllers/noodel-align";
 import {
 	attachBranchResizeSensor,
@@ -42,9 +47,10 @@ export default defineComponent({
 	},
 
 	mounted() {
-		this.parent.r.branchEl = this.$el as HTMLDivElement;
+		this.parent.r.branchEl = this.$el;
+		this.parent.r.branchSliderEl = this.$refs.slider as HTMLDivElement;
 
-		let branchRect = this.parent.r.branchEl.getBoundingClientRect();
+		let branchRect = this.parent.r.branchSliderEl.getBoundingClientRect();
 
 		updateBranchSize(
 			this.noodel,
@@ -54,14 +60,37 @@ export default defineComponent({
 			true
 		);
 		attachBranchResizeSensor(this.noodel, this.parent);
+
+		nextTick(() => {
+			this.parent.isBranchMounted = true;
+		});
 	},
 
 	beforeUnmount() {
 		detachBranchResizeSensor(this.parent);
+	},
+
+	unmounted() {
 		this.parent.r.branchEl = null;
+		this.parent.r.branchSliderEl = null;
+		this.parent.isBranchMounted = false;
+		this.parent.applyBranchMove = false;
+		this.parent.isBranchTransparent = true;
+		this.parent.branchSize = 0;
+		this.parent.branchOffset = 0;
 	},
 
 	computed: {
+		branchClass(): string {
+			let className = '';
+
+			if (this.parent.isFocalParent) className += 'nd-branch-focal ';
+
+			className += this.parent.classNames.branch || '';
+
+			return className;
+		},
+
 		branchStyle(): string {
 			let orientation = this.noodel.options.orientation;
 			let branchDirection = this.noodel.options.branchDirection;
@@ -80,6 +109,34 @@ export default defineComponent({
 				style += `bottom: ${this.parent.trunkRelativeOffset}px;`;
 			}
 
+			if (!this.parent.isBranchVisible) {
+				style += 'pointer-events: none;';
+
+				if (this.parent.isBranchTransparent) {
+					style += 'opacity: 0;';
+				}
+			}
+
+			style += this.parent.styles.branch || '';
+
+			return style;
+		},
+
+		branchSliderClass(): string {
+			let className = '';
+
+			if (this.parent.applyBranchMove) className += 'nd-branch-slider-move ';
+
+			className += this.parent.classNames.branchSlider || '';
+
+			return className;
+		},
+
+		branchSliderStyle(): string {
+			let orientation = this.noodel.options.orientation;
+			let branchDirection = this.noodel.options.branchDirection;
+			let style = '';
+
 			if (orientation === "ltr" || orientation === "rtl") {
 				if (branchDirection === "normal") {
 					style += `transform: translateY(${-this.parent.branchOffset + getFocalHeight(this.noodel)}px);`;
@@ -96,28 +153,9 @@ export default defineComponent({
 				}
 			}
 
-			if (!this.parent.isBranchVisible) {
-				style += 'pointer-events: none;';
-
-				if (this.parent.isBranchTransparent) {
-					style += 'opacity: 0;';
-				}
-			}
-
-			style += this.parent.styles.branch || '';
+			style += this.parent.styles.branchSlider || '';
 
 			return style;
-		},
-
-		branchClass(): string {
-			let className = '';
-
-			if (this.parent.applyBranchMove) className += 'nd-branch-move ';
-			if (this.parent.isFocalParent) className += 'nd-branch-focal ';
-
-			className += this.parent.classNames.branch || '';
-
-			return className;
 		},
 	},
 
@@ -125,7 +163,7 @@ export default defineComponent({
 		onTransitionEnd(ev: TransitionEvent) {
 			if (
 				ev.propertyName === "transform" &&
-				ev.target === this.parent.r.branchEl
+				ev.target === this.parent.r.branchSliderEl
 			) {
 				if (this.parent.r.ignoreTransitionEnd) return;
 				this.parent.applyBranchMove = false;

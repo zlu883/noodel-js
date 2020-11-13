@@ -20,6 +20,7 @@ export default interface NodeState {
         contentBoxEl: HTMLDivElement;
         el: HTMLDivElement;
         branchEl: HTMLDivElement;
+        branchSliderEl: HTMLDivElement;
         branchBackdropEl: HTMLDivElement;
 
         resizeSensor: ResizeSensor;
@@ -43,6 +44,8 @@ export default interface NodeState {
     styles: NodeCss;
 
     parent: NodeState;
+
+    isBranchMounted: boolean;
     /**
      * Toggles visibility of child branch via display: none.
      */

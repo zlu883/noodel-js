@@ -74,7 +74,6 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
             swipeMultiplierTrunk: 1,
             snapMultiplierBranch: 1,
             snapMultiplierTrunk: 1,
-            subtreeDebounceInterval: 360,
             useRouting: true,
             useKeyNavigation: true,
             useWheelNavigation: true,
@@ -99,7 +98,7 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
 
     registerNodeSubtree(noodelState, rootNode);
     parseAndApplyOptions(options, noodelState);
-    showActiveSubtree(noodelState, rootNode, noodelState.options.visibleSubtreeDepth);
+    showActiveSubtree(rootNode, noodelState.options.visibleSubtreeDepth);
 
     if (noodelState.options.useRouting) {
         let hash = window.location.hash;
@@ -156,6 +155,7 @@ export function parseHTMLToNode(el: Element): NodeDefinition {
             overflowIndicatorTop: attributes.classOverflowIndicatorTop,
             overflowIndicatorBottom: attributes.classOverflowIndicatorBottom,
             branch: attributes.classBranch,
+            branchSlider: attributes.branchSlider,
             branchBackdrop: attributes.classBranchBackdrop,
         },
         styles: {
@@ -167,6 +167,7 @@ export function parseHTMLToNode(el: Element): NodeDefinition {
             overflowIndicatorTop: attributes.styleOverflowIndicatorTop,
             overflowIndicatorBottom: attributes.styleOverflowIndicatorBottom,
             branch: attributes.styleBranch,
+            branchSlider: attributes.branchSlider,
             branchBackdrop: attributes.styleBranchBackdrop,
         },
         options: {
@@ -324,6 +325,7 @@ export function buildNodeView(noodel: NoodelState, def: NodeDefinition, index: n
             contentBoxEl: null,
             el: null,
             branchEl: null,
+            branchSliderEl: null,
             branchBackdropEl: null,
             resizeSensor: null,
             branchResizeSensor: null,
@@ -332,6 +334,7 @@ export function buildNodeView(noodel: NoodelState, def: NodeDefinition, index: n
         }),
         index: index,
         level: isRoot ? 0 : parent.level + 1,
+        isBranchMounted: false,
         isBranchVisible: false,
         isBranchTransparent: true, // initialize to transparent state for capturing size
         isFocalParent: isRoot, // only initialze root as focal parent

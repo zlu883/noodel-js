@@ -99,27 +99,24 @@ export default defineComponent({
 		this.node.r.el = this.$el as HTMLDivElement;
 		this.node.r.contentBoxEl = this.$refs.contentBox as HTMLDivElement;
 
-		// nextTick is required for vue's v-move effect to work
+		// do initial size capture
+		let nodeRect = this.node.r.el.getBoundingClientRect();
+
+		updateNodeSize(
+			this.noodel,
+			this.node,
+			nodeRect.height,
+			nodeRect.width,
+			true
+		);
+		checkContentOverflow(this.noodel, this.node);
+
+		attachResizeSensor(this.noodel, this.node);
+
+		// allows parent branch to fall back to display: none after first size update,
+		// using nextTick to wait for parent branch size capture to finish first
 		nextTick(() => {
-			// do initial size capture
-			let nodeRect = this.node.r.el.getBoundingClientRect();
-
-			updateNodeSize(
-				this.noodel,
-				this.node,
-				nodeRect.height,
-				nodeRect.width,
-				true
-			);
-			checkContentOverflow(this.noodel, this.node);
-
-			attachResizeSensor(this.noodel, this.node);
-
-			// allows parent branch to fall back to display: none after first size update,
-			// using nextTick to wait for parent branch size capture to finish first
-			nextTick(() => {
-				this.node.parent.isBranchTransparent = false;
-			});
+			this.node.parent.isBranchTransparent = false;
 		});
 	},
 
@@ -156,6 +153,14 @@ export default defineComponent({
 
 		this.node.r.contentBoxEl = null;
 		this.node.r.el = null;
+	},
+
+	unmounted() {
+		this.node.branchRelativeOffset = 0;
+		this.node.trunkRelativeOffset = 0;
+		this.node.size = 0;
+		this.node.r.el = null;
+		this.node.r.contentBoxEl = null;
 	},
 
 	methods: {

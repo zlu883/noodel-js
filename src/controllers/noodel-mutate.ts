@@ -35,7 +35,7 @@ export function setFocalParent(noodel: NoodelState, newFocalParent: NodeState) {
     newFocalParent.isFocalParent = true;
     noodel.focalParent = newFocalParent;
     noodel.focalLevel = newFocalParent.level + 1;
-    showActiveSubtree(noodel, noodel.root, newFocalParent.level + noodel.options.visibleSubtreeDepth, 0);
+    showActiveSubtree(noodel.root, newFocalParent.level + noodel.options.visibleSubtreeDepth);
 }
 
 /**
@@ -54,23 +54,15 @@ export function setActiveChild(parent: NodeState, index: number | null) {
     }
 }
 
-export function showActiveSubtree(noodel: NoodelState, origin: NodeState, depth?: number, debounceInterval = 0) {
-    debounce(noodel, 'showActiveSubtree', () => {
-        traverseActiveDescendents(origin, desc => {
-            // check necessary to reduce Vue node patching
-            if (!desc.isBranchVisible) {
-                desc.isBranchVisible = true;
-            }
-        }, true, false, depth);
-    }, debounceInterval)
+export function showActiveSubtree(origin: NodeState, depth?: number) {
+    traverseActiveDescendents(origin, desc => {
+        desc.isBranchVisible = true;
+    }, true, false, depth);
 }
 
 export function hideActiveSubtree(origin: NodeState, depth?: number) {
     traverseActiveDescendents(origin, desc => {
-        // check necessary to reduce Vue node patching
-        if (desc.isBranchVisible) {
-            desc.isBranchVisible = false;
-        }
+        desc.isBranchVisible = false;
     }, true, false, depth);
 }
 
@@ -135,7 +127,7 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
     }
 
     if (parent.isActive && (parent.r.isRoot || parent.parent.isBranchVisible)) {
-        showActiveSubtree(noodel, noodel.focalParent, noodel.options.visibleSubtreeDepth);
+        showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
     }
 
     // Allows resize sensors to be attached properly, preventing possible performance issue.
@@ -201,12 +193,12 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
         }
         else if (index + deleteCount < parent.children.length) { // siblings exist after the deleted children
             setActiveChild(parent, index + deleteCount); // set next sibling active
-            showActiveSubtree(noodel, parent, noodel.options.visibleSubtreeDepth);            
+            showActiveSubtree(parent, noodel.options.visibleSubtreeDepth);            
             parent.branchOffset += getActiveChild(parent).size / 2;
         }
         else { // no siblings exist after deleted children
             setActiveChild(parent, index - 1); // set prev sibling active
-            showActiveSubtree(noodel, parent, noodel.options.visibleSubtreeDepth);
+            showActiveSubtree(parent, noodel.options.visibleSubtreeDepth);
             parent.branchOffset -= getActiveChild(parent).size / 2;
         }
     }

@@ -44,22 +44,53 @@
 
 .nd-canvas-ltr.nd-canvas-normal .nd-branch, .nd-canvas-rtl.nd-canvas-normal .nd-branch {
     top: 0;
+    height: 100%;
+    flex-direction: column;
 }
 
 .nd-canvas-ltr.nd-canvas-reverse .nd-branch, .nd-canvas-rtl.nd-canvas-reverse .nd-branch {
-    bottom: 0;
+    top: 0;
+    height: 100%;
+    flex-direction: column-reverse;
 }
 
 .nd-canvas-ttb.nd-canvas-normal .nd-branch, .nd-canvas-btt.nd-canvas-normal .nd-branch {
     left: 0;
+    width: 100%;
+    flex-direction: row;
 }
 
 .nd-canvas-ttb.nd-canvas-reverse .nd-branch, .nd-canvas-btt.nd-canvas-reverse .nd-branch {
-    right: 0;
+    left: 0;
+    width: 100%;
+    flex-direction: row-reverse;
 }
 
 .nd-branch-focal {
     z-index: 100;
+}
+
+.nd-branch-slider {
+    display: flex;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: none !important;
+}
+
+.nd-canvas-ltr.nd-canvas-normal .nd-branch-slider, .nd-canvas-rtl.nd-canvas-normal .nd-branch-slider {
+    flex-direction: column;
+}
+
+.nd-canvas-ltr.nd-canvas-reverse .nd-branch-slider, .nd-canvas-rtl.nd-canvas-reverse .nd-branch-slider {
+    flex-direction: column-reverse;
+}
+
+.nd-canvas-ttb.nd-canvas-normal .nd-branch-slider, .nd-canvas-btt.nd-canvas-normal .nd-branch-slider {
+    flex-direction: row;
+}
+
+.nd-canvas-ttb.nd-canvas-reverse .nd-branch-slider, .nd-canvas-btt.nd-canvas-reverse .nd-branch-slider {
+    flex-direction: row-reverse;
 }
 
 .nd-branch-backdrop {

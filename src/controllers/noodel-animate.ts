@@ -53,7 +53,7 @@ export function findCurrentBranchOffset(noodel: NoodelState, parent: NodeState):
     let orientation = noodel.options.orientation;
     let branchDirection = noodel.options.branchDirection;
     let canvasRect = noodel.r.canvasEl.getBoundingClientRect();
-    let focalBranchRect = parent.r.branchEl.getBoundingClientRect();
+    let focalBranchRect = parent.r.branchSliderEl.getBoundingClientRect();
 
     if (orientation === 'ltr' || orientation === 'rtl') {
         if (branchDirection === 'normal') {

@@ -63,13 +63,13 @@
 }
 
 .nd-branch-enter-active, .nd-branch-leave-active {
-	transition-property: opacity, transform;
+	transition-property: opacity;
 	transition-timing-function: cubic-bezier( 0.215, 0.61, 0.355, 1);
 	transition-duration: 0.5s;
 }
 
-.nd-branch-move {
-	transition-property: opacity, transform;
+.nd-branch-slider-move {
+	transition-property: transform;
 	transition-timing-function: cubic-bezier( 0.215, 0.61, 0.355, 1);
 	transition-duration: 0.5s;
 }
