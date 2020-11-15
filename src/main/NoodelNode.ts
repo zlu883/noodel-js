@@ -1,7 +1,7 @@
 import NodeState from '../types/NodeState';
 import NodeDefinition from '../types/NodeDefinition';
 import { setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
-import { parseAndApplyNodeOptions } from '../controllers/noodel-setup';
+import { parseAndApplyNodeOptions, parseContent } from '../controllers/noodel-setup';
 import { getPath as _getPath } from '../controllers/getters';
 import { alignBranchToIndex, updateNodeSize, updateBranchSize, checkContentOverflow } from '../controllers/noodel-align';
 import { shiftFocalNode, doJumpNavigation } from '../controllers/noodel-navigate';
@@ -135,7 +135,7 @@ export default class NoodelNode {
 
     /**
      * Get the content of this node. If content is a ComponentContent object,
-     * will return an deeply cloned object except the 'component' property which is
+     * will return a deeply cloned object except the 'component' property which is
      * shallowly copied.
      */
     getContent(): string | ComponentContent {
@@ -227,7 +227,7 @@ export default class NoodelNode {
 
     /**
      * Check whether this node is logically visible (i.e is part of the active tree 
-     * in display). Note that visibility may be affected by debounce effects.
+     * in display).
      */
     isVisible(): boolean {
         if (this.isDeleted()) return false;
@@ -237,7 +237,7 @@ export default class NoodelNode {
 
     /**
      * Check whether this node's child branch is logically visible (i.e is part of the active tree 
-     * in display). Note that visibility may be affected by debounce effects.
+     * in display).
      */
     isChildrenVisible(): boolean {
         if (this.isDeleted()) return false;
@@ -285,7 +285,7 @@ export default class NoodelNode {
     setContent(content: string | ComponentContent) {
         this.throwErrorIfDeleted();
 
-        this.state.content = content;
+        this.state.content = parseContent(content);
     }
 
     /**
@@ -353,7 +353,7 @@ export default class NoodelNode {
     }
 
     /**
-     * Performs a navigational jump to focus on this node.
+     * Perform a navigational jump to focus on this node.
      * Cannot jump to the root.
      */
     jumpToFocus() {

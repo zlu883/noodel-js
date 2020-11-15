@@ -5,7 +5,7 @@ import NoodelState from '../types/NoodelState';
 import { showActiveSubtree } from './noodel-mutate';
 import { setupRouting, unsetRouting } from './noodel-routing';
 import NodeOptions from '../types/NodeOptions';
-import { generateNodeId, registerNodeSubtree, findNode, isIdRegistered } from './id-register';
+import { generateNodeId, registerNodeSubtree, findNode, isIdRegistered, changeNodeId } from './id-register';
 import { alignNoodelOnJump } from './noodel-navigate';
 import { cancelPan } from './noodel-pan';
 import { resetAlignment } from './noodel-align';
@@ -13,6 +13,7 @@ import { traverseDescendents } from './noodel-traverse';
 import { attachBranchResizeSensor, attachCanvasResizeSensor, attachResizeSensor, detachBranchResizeSensor, detachResizeSensor } from './resize-detect';
 import NoodelNode from '../main/NoodelNode';
 import { reactive, markRaw } from 'vue';
+import ComponentContent from '../types/ComponentContent';
 
 export function setupNoodel(root: NodeDefinition, options: NoodelOptions): NoodelState {
 
@@ -155,7 +156,7 @@ export function parseHTMLToNode(el: Element): NodeDefinition {
             overflowIndicatorTop: attributes.classOverflowIndicatorTop,
             overflowIndicatorBottom: attributes.classOverflowIndicatorBottom,
             branch: attributes.classBranch,
-            branchSlider: attributes.branchSlider,
+            branchSlider: attributes.classBranchSlider,
             branchBackdrop: attributes.classBranchBackdrop,
         },
         styles: {
@@ -167,7 +168,7 @@ export function parseHTMLToNode(el: Element): NodeDefinition {
             overflowIndicatorTop: attributes.styleOverflowIndicatorTop,
             overflowIndicatorBottom: attributes.styleOverflowIndicatorBottom,
             branch: attributes.styleBranch,
-            branchSlider: attributes.branchSlider,
+            branchSlider: attributes.styleBranchSlider,
             branchBackdrop: attributes.styleBranchBackdrop,
         },
         options: {
@@ -353,7 +354,7 @@ export function buildNodeView(noodel: NoodelState, def: NodeDefinition, index: n
         parent: parent as any,
         id: newId,
         children: [],
-        content: def.content || null,
+        content: parseContent(def.content) || null,
         classNames: {
             ...def.classNames
         },
@@ -383,4 +384,16 @@ export function buildNodeView(noodel: NoodelState, def: NodeDefinition, index: n
     }
 
     return nodeState;
+}
+
+export function parseContent(content: string | ComponentContent): string | ComponentContent {
+    if (!content) return content;
+    if (typeof content === 'string') return content;
+    if (typeof content === 'object') {
+        return {
+            component: typeof content.component === 'object' ? markRaw(content.component) : content.component,
+            props: {...content.props},
+            eventListeners: {...content.eventListeners}
+        }
+    }
 }
