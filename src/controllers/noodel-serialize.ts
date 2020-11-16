@@ -1,6 +1,5 @@
 import ComponentContent from '../types/ComponentContent';
 import NodeDefinition from '../types/NodeDefinition';
-import NoodelState from '../types/NoodelState';
 import NodeState from '../types/NodeState';
 
 export function serializeContent(content: string | ComponentContent): string | ComponentContent {
@@ -21,13 +20,11 @@ export function serializeContent(content: string | ComponentContent): string | C
     return serializedContent;
 }
 
-export function extractNodeDefinition(noodel: NoodelState, node: NodeState): NodeDefinition {
-
-    let def: NodeDefinition = {
+export function serializeNode(node: NodeState): NodeDefinition {
+    return {
         id: node.id,
         content: serializeContent(node.content),
         isActive: node.isActive,
-        children: node.children.map(c => extractNodeDefinition(noodel, c)),
         classNames: {
             ...node.classNames
         },
@@ -37,7 +34,13 @@ export function extractNodeDefinition(noodel: NoodelState, node: NodeState): Nod
         options: {
             ...node.options
         },
-    };
+    }
+}
 
+export function serializeNodeDeep(node: NodeState): NodeDefinition {
+
+    let def = serializeNode(node);
+
+    def.children = node.children.map(c => serializeNodeDeep(c));
     return def;
 }

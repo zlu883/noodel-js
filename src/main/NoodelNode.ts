@@ -13,7 +13,7 @@ import { nextTick } from 'vue';
 import { traverseDescendents } from '../controllers/noodel-traverse';
 import NodeCss from '../types/NodeCss';
 import NodeEventMap from '../types/NodeEventMap';
-import { extractNodeDefinition, serializeContent } from '../controllers/noodel-serialize';
+import { serializeNodeDeep, serializeContent, serializeNode } from '../controllers/noodel-serialize';
 
 /**
  * The view model of a node in a noodel. Has 2-way binding with the view.
@@ -73,11 +73,12 @@ export default class NoodelNode {
     }
 
     /**
-     * Extract the definition tree of this node (including its descendants).
-     * Useful for operations such as serialization or cloning.
+     * Extract the definition of this node, returning a NodeDefinition object containing this
+     * node's base properties. Useful for serialization or cloning.
+     * @param deep whether to extract a deep definition tree including descendants, default false
      */
-    getDefinition(): NodeDefinition {
-        return extractNodeDefinition(this.noodelState, this.state);
+    extractDefinition(deep = false): NodeDefinition {
+        return deep ? serializeNodeDeep(this.state) : serializeNode(this.state);
     }
 
     /**
@@ -369,7 +370,7 @@ export default class NoodelNode {
 
         if (defs.length === 0) return [];
 
-        insertChildren(this.noodelState, this.state, index, defs);
+        return insertChildren(this.noodelState, this.state, index, defs).map(n => n.r.vm);
     }
 
     /**
