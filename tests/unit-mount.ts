@@ -37,7 +37,7 @@ describe('Lifecycle', function () {
         it('should have no branch element on root', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.notExists(noodel.getRoot().getEl('branch'));
+                    assert.notExists(noodel.getRoot().getBranchEl());
                     done();
                 }
                 catch (err) {
@@ -86,7 +86,7 @@ describe('Lifecycle', function () {
         it('should have branch element on root', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.isTrue(noodel.getRoot().getEl('branch').classList.contains('nd-branch'));
+                    assert.isTrue(noodel.getRoot().getBranchEl().classList.contains('nd-branch'));
                     done();
                 }
                 catch (err) {
@@ -109,7 +109,7 @@ describe('Lifecycle', function () {
         it('should have focal class on focal branch', function (done) {
             noodel.on('mount', function () {
                 try {
-                    assert.isTrue(noodel.getFocalParent().getEl('branch').classList.contains('nd-branch-focal'));
+                    assert.isTrue(noodel.getFocalParent().getBranchEl().classList.contains('nd-branch-focal'));
                     done();
                 }
                 catch (err) {
@@ -143,7 +143,7 @@ describe('Lifecycle', function () {
             noodel.on('mount', function () {
                 try {
                     assert.isTrue(noodel.getFocalParent().isChildrenVisible());
-                    assert.isTrue(getComputedStyle(noodel.getFocalParent().getEl('branch')).display === 'flex');
+                    assert.isTrue(getComputedStyle(noodel.getFocalParent().getBranchEl()).display === 'flex');
                     done();
                 }
                 catch (err) {
@@ -155,7 +155,7 @@ describe('Lifecycle', function () {
             noodel.on('mount', function () {
                 try {
                     assert.isFalse(noodel.getRoot().getChild(1).isChildrenVisible());
-                    assert.isTrue(getComputedStyle(noodel.getRoot().getChild(1).getEl('branch')).display === 'none');
+                    assert.isTrue(getComputedStyle(noodel.getRoot().getChild(1).getBranchEl()).display === 'none');
                     done();
                 }
                 catch (err) {
@@ -179,7 +179,7 @@ describe('Lifecycle', function () {
         });
 
         it('should keep state after unmount', function (done) {
-            let def = noodel.getRoot().getDefinition();
+            let def = noodel.getRoot().extractDefinition(true);
             let focalNode = noodel.getFocalNode();
 
             noodel.on('mount', function () {
@@ -187,7 +187,7 @@ describe('Lifecycle', function () {
                     noodel.unmount();
                     setTimeout(() => {
                         try {
-                            assert.deepStrictEqual(noodel.getRoot().getDefinition(), def);
+                            assert.deepStrictEqual(noodel.getRoot().extractDefinition(true), def);
                             assert.deepStrictEqual(noodel.getFocalNode(), focalNode);
                             done();
                         }
