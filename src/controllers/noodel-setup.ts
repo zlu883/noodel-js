@@ -5,7 +5,7 @@ import NoodelState from '../types/NoodelState';
 import { showActiveSubtree } from './noodel-mutate';
 import { setupRouting, unsetRouting } from './noodel-routing';
 import NodeOptions from '../types/NodeOptions';
-import { generateNodeId, registerNodeSubtree, findNode, isIdRegistered, changeNodeId } from './id-register';
+import { generateNodeId, registerNodeSubtree, findNode, isIdRegistered } from './id-register';
 import { alignNoodelOnJump } from './noodel-navigate';
 import { cancelPan } from './noodel-pan';
 import { resetAlignment } from './noodel-align';

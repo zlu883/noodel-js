@@ -6,7 +6,7 @@ import { Orientation } from './Orientation';
  */
 export default interface NoodelOptions {
     /**
-     * The number of levels of descendent branches to show
+     * The number of levels of descendant branches to show
      * after the current focal branch. Defaults to 1.
      */
     visibleSubtreeDepth?: number;
@@ -43,10 +43,13 @@ export default interface NoodelOptions {
     /**
      * Global option for enabling resize detection on ALL nodes and branches.
      * When enabled, will automatically align the positioning of elements when
-     * node/branch resizes are detected.
-     * Defaults to true.
+     * node/branch resizes are detected. Defaults to true.
      */
     useResizeDetection?: boolean;
+    /**
+     * Determines whether routing should be enabled for this noodel. Defaults to true.
+     */
+    useRouting?: boolean;
     /**
      * Number of pixels to move for every pixel swiped in the branch axis. Defaults to 1.
      */
@@ -65,10 +68,6 @@ export default interface NoodelOptions {
      * Defaults to 1.
      */
     snapMultiplierTrunk?: number;
-    /**
-     * Determines whether routing should be enabled for this noodel. Defaults to true.
-     */
-    useRouting?: boolean;
     /**
      * Whether to render the limit indicators of the canvas. Defaults to true.
      */

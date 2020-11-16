@@ -40,7 +40,7 @@ export default class Noodel {
         else if (typeof contentTree === "string") {
             let el = document.querySelector(contentTree);
             
-            if (!el) throw new Error("Cannot create noodel: invalid root param");
+            if (!el) throw new Error("Cannot create noodel: invalid selector");
             root = parseHTMLToNode(el);
         }
         else if (contentTree instanceof Element) {
