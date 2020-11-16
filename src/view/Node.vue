@@ -39,7 +39,7 @@
 		</transition>
 		<transition name="nd-overflow-indicator">
 			<div
-				v-if="showOverflowIndicators && node.hasOverflowTop"
+				v-if="showOverflowIndicators && node.hasOverflowTop && !node.isInInspectMode"
 				class="nd-overflow-indicator nd-overflow-indicator-top"
 				:class="overflowIndicatorTopClass"
 				:style="overflowIndicatorTopStyle"
@@ -47,7 +47,7 @@
 		</transition>
 		<transition name="nd-overflow-indicator">
 			<div
-				v-if="showOverflowIndicators && node.hasOverflowLeft"
+				v-if="showOverflowIndicators && node.hasOverflowLeft && !node.isInInspectMode"
 				class="nd-overflow-indicator nd-overflow-indicator-left"
 				:class="overflowIndicatorLeftClass"
 				:style="overflowIndicatorLeftStyle"
@@ -55,7 +55,7 @@
 		</transition>
 		<transition name="nd-overflow-indicator">
 			<div
-				v-if="showOverflowIndicators && node.hasOverflowBottom"
+				v-if="showOverflowIndicators && node.hasOverflowBottom && !node.isInInspectMode"
 				class="nd-overflow-indicator nd-overflow-indicator-bottom"
 				:class="overflowIndicatorBottomClass"
 				:style="overflowIndicatorBottomStyle"
@@ -63,7 +63,7 @@
 		</transition>
 		<transition name="nd-overflow-indicator">
 			<div
-				v-if="showOverflowIndicators && node.hasOverflowRight"
+				v-if="showOverflowIndicators && node.hasOverflowRight && !node.isInInspectMode"
 				class="nd-overflow-indicator nd-overflow-indicator-right"
 				:class="overflowIndicatorRightClass"
 				:style="overflowIndicatorRightStyle"

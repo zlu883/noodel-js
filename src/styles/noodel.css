@@ -16,17 +16,10 @@
 
 .nd-limit {
     position: absolute;
-    z-index: 100;
-}
-
-.nd-trunk {
-    position: absolute;
-    height: 100%;
-    width: 100%;
     z-index: 10;
 }
 
-.nd-trunk-backdrop {
+.nd-trunk {
     position: absolute;
     height: 100%;
     width: 100%;
@@ -39,6 +32,10 @@
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;
+    z-index: 1;
+}
+
+.nd-branch-focal {
     z-index: 10;
 }
 
@@ -64,10 +61,6 @@
     left: 0;
     width: 100%;
     flex-direction: row-reverse;
-}
-
-.nd-branch-focal {
-    z-index: 100;
 }
 
 .nd-branch-slider {

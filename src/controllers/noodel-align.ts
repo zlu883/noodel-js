@@ -233,13 +233,13 @@ export function resetAlignment(noodel: NoodelState) {
 }
 
 export function checkContentOverflow(noodel: NoodelState, node: NodeState) {
-
-    if (!(typeof node.options.showOverflowIndicators === "boolean"
-    ? node.options.showOverflowIndicators
-    : noodel.options.showOverflowIndicators)) {
+    
+    if (!(typeof node.options.useOverflowDetection === "boolean"
+    ? node.options.useOverflowDetection
+    : noodel.options.useOverflowDetection)) {
         return;
     }
-    
+
     if (!(node.parent.isBranchVisible || node.parent.isBranchTransparent)) return;
 
     let el = node.r.contentBoxEl;
@@ -252,14 +252,14 @@ export function checkContentOverflow(noodel: NoodelState, node: NodeState) {
     let direction = getComputedStyle(el).direction;
 
     node.hasOverflowTop = scrollHeight > clientHeight && scrollTop >= 1;
-    node.hasOverflowBottom = scrollHeight > clientHeight && scrollTop + clientHeight <= scrollHeight - 1;
+    node.hasOverflowBottom = scrollHeight > clientHeight && scrollTop + clientHeight < scrollHeight - 1;
 
     if (direction === 'ltr') {
         node.hasOverflowLeft = scrollWidth > clientWidth && scrollLeft >= 1;
-        node.hasOverflowRight = scrollWidth > clientWidth && scrollLeft + clientWidth <= scrollWidth - 1;
+        node.hasOverflowRight = scrollWidth > clientWidth && scrollLeft + clientWidth < scrollWidth - 1;
     }
     else {
-        node.hasOverflowLeft = scrollWidth > clientWidth && Math.abs(scrollLeft) + clientWidth <= scrollWidth - 1;
+        node.hasOverflowLeft = scrollWidth > clientWidth && Math.abs(scrollLeft) + clientWidth < scrollWidth - 1;
         node.hasOverflowRight = scrollWidth > clientWidth && scrollLeft <= -1;
     }
 }

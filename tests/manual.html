@@ -22,21 +22,11 @@
         .yellow {
             background-color: yellow;
         }
-
-        .nd-branch-backdrop-enter-from, .nd-branch-backdrop-leave-active {
-            opacity: 0;
-        }
-
-        .nd-branch-backdrop-enter-active, .nd-branch-backdrop-leave-active {
-            transition-property: opacity;
-            transition-timing-function: cubic-bezier( 0.215, 0.61, 0.355, 1);
-            transition-duration: 0.5s;
-        }
     </style>
     <div id="template" style="display: none;">
-        <div class="node" data-class-branch-backdrop="green">
+        <div class="node">
             <h2>1</h2>
-            <div class="node" >
+            <div class="node">
                 <h3>1/1</h3>
                 <div class="node">
                     <h3>1/1/1</h3>
@@ -46,7 +36,7 @@
                 </div>
             </div>
         </div>
-        <div class="node" data-class-branch-backdrop="yellow">
+        <div class="node">
             <h3>2</h3>
             <div class="node">
                 <h3>2/1</h3>
@@ -83,8 +73,7 @@
             <h3>4</h3>
         </div>
         <div class="node" data-id="overflow" data-style-content-box="width: 200px; height: 200px;">
-            <div style="background-color: aquamarine; width: 400px; height: 400px;">
-            </div>
+            <p>Long text Long text Long textLong text Long text Long text Long text Long textLong textLong textLong textLong text Long text Long text Long textLong text Long text Long textLong text Long text Long text Long text</p>
         </div>
     </div>
     <div id="noodel"></div>
