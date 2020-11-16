@@ -148,39 +148,6 @@
 	transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 
-.nd-overflow-indicator {
-	position: absolute;
-	background-color: rgba(0, 0, 0, 0.5);
-}
-
-.nd-overflow-indicator-left {
-	left: .2em;
-	top: .2em;
-	bottom: .2em;
-	width: .8em;
-}
-
-.nd-overflow-indicator-right {
-	right: .2em;
-	top: .2em;
-	bottom: .2em;
-	width: .8em;
-}
-
-.nd-overflow-indicator-top {
-	left: .2em;
-	right: .2em;
-	top: .2em;
-	height: .8em;
-}
-
-.nd-overflow-indicator-bottom {
-	left: .2em;
-	right: .2em;
-	bottom: .2em;
-	height: .8em;
-}
-
 .nd-child-indicator {
 	position: absolute;
 	box-sizing: border-box;

@@ -83,9 +83,7 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
             useInspectModeKey: true,
             useInspectModeDoubleTap: true,
             useResizeDetection: true,
-            useOverflowDetection: false,
             showLimitIndicators: true,
-            showBranchBackdrops: false,
             showChildIndicators: true,
             orientation: "ltr",
             branchDirection: "normal"
@@ -151,33 +149,20 @@ export function parseHTMLToNode(el: Element): NodeDefinition {
             node: attributes.classNode,
             contentBox: attributes.classContentBox,
             childIndicator: attributes.classChildIndicator,
-            overflowIndicatorLeft: attributes.classOverflowIndicatorLeft,
-            overflowIndicatorRight: attributes.classOverflowIndicatorRight,
-            overflowIndicatorTop: attributes.classOverflowIndicatorTop,
-            overflowIndicatorBottom: attributes.classOverflowIndicatorBottom,
             branch: attributes.classBranch,
             branchSlider: attributes.classBranchSlider,
-            branchBackdrop: attributes.classBranchBackdrop,
         },
         styles: {
             node: attributes.styleNode,
             contentBox: attributes.styleContentBox,
             childIndicator: attributes.styleChildIndicator,
-            overflowIndicatorLeft: attributes.styleOverflowIndicatorLeft,
-            overflowIndicatorRight: attributes.styleOverflowIndicatorRight,
-            overflowIndicatorTop: attributes.styleOverflowIndicatorTop,
-            overflowIndicatorBottom: attributes.styleOverflowIndicatorBottom,
             branch: attributes.styleBranch,
             branchSlider: attributes.styleBranchSlider,
-            branchBackdrop: attributes.styleBranchBackdrop,
         },
         options: {
             useResizeDetection: attributes.useResizeDetection === 'true' ? true : attributes.useResizeDetection === 'false' ? false : null,
             useBranchResizeDetection: attributes.useBranchResizeDetection === 'true' ? true : attributes.useBranchResizeDetection === 'false' ? false : null,
-            useOverflowDetection: attributes.useOverflowDetection === 'true' ? true : attributes.useOverflowDetection === 'false' ? false : null,
-            showBranchBackdrop: attributes.showBranchBackdrop === 'true' ? true : attributes.showBranchBackdrop === 'false' ? false : null,
             showChildIndicator: attributes.showChildIndicator === 'true' ? true : attributes.showChildIndicator === 'false' ? false : null,
-            showOverflowIndicators: attributes.showOverflowIndicators === 'true' ? true : attributes.showOverflowIndicators === 'false' ? false : null
         }
     };
 }
@@ -327,7 +312,6 @@ export function buildNodeView(noodel: NoodelState, def: NodeDefinition, index: n
             el: null,
             branchEl: null,
             branchSliderEl: null,
-            branchBackdropEl: null,
             resizeSensor: null,
             branchResizeSensor: null,
             vm: null,
@@ -365,15 +349,8 @@ export function buildNodeView(noodel: NoodelState, def: NodeDefinition, index: n
         options: {
             useResizeDetection: null,
             useBranchResizeDetection: null,
-            useOverflowDetection: null,
-            showBranchBackdrop: null,
             showChildIndicator: null,
-            showOverflowIndicators: null,
         },
-        hasOverflowTop: false,
-        hasOverflowLeft: false,
-        hasOverflowBottom: false,
-        hasOverflowRight: false
     });
 
     nodeState.r.vm = new (NoodelNode as any)(nodeState, noodel);

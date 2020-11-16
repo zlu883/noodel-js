@@ -1,7 +1,7 @@
 import NoodelState from 'src/types/NoodelState';
 import NodeState from 'src/types/NodeState';
 import ResizeSensor from "../util/ResizeSensor";
-import { checkContentOverflow, updateBranchSize, updateNodeSize } from './noodel-align';
+import { updateBranchSize, updateNodeSize } from './noodel-align';
 
 export function attachResizeSensor(noodel: NoodelState, node: NodeState) {
 
@@ -19,7 +19,6 @@ export function attachResizeSensor(noodel: NoodelState, node: NodeState) {
             }
 
             updateNodeSize(noodel, node, size.height, size.width);
-            checkContentOverflow(noodel, node);
         });
     }
 }

@@ -46,10 +46,6 @@
 				:allParents="allBranchParents"
 				:noodel="noodel"
 			/>
-			<BranchBackdropTransitionGroup
-				:allParents="allBranchBackdropParents"
-				:noodel="noodel"
-			/>
 		</div>
 	</div>
 </template>
@@ -58,7 +54,6 @@
 
 <script lang="ts">
 import BranchTransitionGroup from "./BranchTransitionGroup.vue";
-import BranchBackdropTransitionGroup from "./BranchBackdropTransitionGroup.vue";
 import { getFocalHeight, getFocalWidth } from "../controllers/getters";
 import { setupCanvasEl } from "../controllers/noodel-setup";
 import { setupCanvasInput } from "../controllers/input-binding";
@@ -72,7 +67,6 @@ import { queueMount } from "../controllers/event-emit";
 export default defineComponent({
 	components: {
 		BranchTransitionGroup,
-		BranchBackdropTransitionGroup
 	},
 
 	props: {
@@ -247,16 +241,7 @@ export default defineComponent({
 			);
 
 			return allBranchParents;
-		},
-
-		allBranchBackdropParents(): NodeState[] {
-			return this.allBranchParents.filter(p => {
-				return typeof p.options.showBranchBackdrop === 'boolean' ?
-					p.options.showBranchBackdrop :
-					this.noodel.options.showBranchBackdrops
-			});
-
-		},
+		}
 	},
 
 	methods: {

@@ -52,12 +52,7 @@ describe('Init', function () {
                 contentBox: "custom content box",
                 branch: "custom branch",
                 branchSlider: "custom branch slider",
-                branchBackdrop: "custom branch backdrop",
                 childIndicator: "custom child indicator",
-                overflowIndicatorLeft: "custom overflow indicator left",
-                overflowIndicatorRight: "custom overflow indicator right",
-                overflowIndicatorTop: "custom overflow indicator top",
-                overflowIndicatorBottom: "custom child indicator bottom"
             }
             assert.deepStrictEqual(classNames, expected);
         });
@@ -68,12 +63,7 @@ describe('Init', function () {
                 contentBox: "color: red; border: solid blue 1px",
                 branch: "color: red; border: solid blue 2px", 
                 branchSlider: "color: red; border: solid blue 9px",
-                branchBackdrop: "color: red; border: solid blue 3px",
                 childIndicator: "color: red; border: solid blue 4px",
-                overflowIndicatorLeft: "color: red; border: solid blue 5px",
-                overflowIndicatorRight: "color: red; border: solid blue 6px",
-                overflowIndicatorTop: "color: red; border: solid blue 7px",
-                overflowIndicatorBottom: "color: red; border: solid blue 8px"
             }
             assert.deepStrictEqual(styles, expected);
         });
@@ -106,10 +96,7 @@ describe('Init', function () {
             let expected: NodeOptions = {
                 useResizeDetection: true,
                 useBranchResizeDetection: false,
-                useOverflowDetection: true,
-                showBranchBackdrop: false,
                 showChildIndicator: true,
-                showOverflowIndicators: false
             };
 
             assert.deepStrictEqual(noodel.getRoot().getChild(7).getOptions(), expected);
@@ -146,12 +133,7 @@ describe('Init', function () {
                         contentBox: "custom content box",
                         branch: "custom branch", 
                         branchSlider: "custom branch slider",
-                        branchBackdrop: "custom branch backdrop",
                         childIndicator: "custom child indicator",
-                        overflowIndicatorLeft: "custom overflow indicator left",
-                        overflowIndicatorRight: "custom overflow indicator right",
-                        overflowIndicatorTop: "custom overflow indicator top",
-                        overflowIndicatorBottom: "custom child indicator bottom"
                     }
                 },
                 {
@@ -160,12 +142,7 @@ describe('Init', function () {
                         contentBox: "color: red; border: solid blue 1px",
                         branch: "color: red; border: solid blue 2px", 
                         branchSlider: "color: red; border: solid blue 9px",
-                        branchBackdrop: "color: red; border: solid blue 3px",
                         childIndicator: "color: red; border: solid blue 4px",
-                        overflowIndicatorLeft: "color: red; border: solid blue 5px",
-                        overflowIndicatorRight: "color: red; border: solid blue 6px",
-                        overflowIndicatorTop: "color: red; border: solid blue 7px",
-                        overflowIndicatorBottom: "color: red; border: solid blue 8px"
                     }
                 },
                 {
@@ -181,10 +158,7 @@ describe('Init', function () {
                     options: {
                         useResizeDetection: true,
                         useBranchResizeDetection: false,
-                        useOverflowDetection: true,
-                        showBranchBackdrop: false,
                         showChildIndicator: true,
-                        showOverflowIndicators: false
                     }
                 }
             ]);
@@ -212,12 +186,7 @@ describe('Init', function () {
                 contentBox: "custom content box",
                 branch: "custom branch", 
                 branchSlider: "custom branch slider",
-                branchBackdrop: "custom branch backdrop",
                 childIndicator: "custom child indicator",
-                overflowIndicatorLeft: "custom overflow indicator left",
-                overflowIndicatorRight: "custom overflow indicator right",
-                overflowIndicatorTop: "custom overflow indicator top",
-                overflowIndicatorBottom: "custom child indicator bottom"
             }
             assert.deepStrictEqual(classNames, expected);
         });
@@ -228,12 +197,7 @@ describe('Init', function () {
                 contentBox: "color: red; border: solid blue 1px",
                 branch: "color: red; border: solid blue 2px", 
                 branchSlider: "color: red; border: solid blue 9px",
-                branchBackdrop: "color: red; border: solid blue 3px",
                 childIndicator: "color: red; border: solid blue 4px",
-                overflowIndicatorLeft: "color: red; border: solid blue 5px",
-                overflowIndicatorRight: "color: red; border: solid blue 6px",
-                overflowIndicatorTop: "color: red; border: solid blue 7px",
-                overflowIndicatorBottom: "color: red; border: solid blue 8px"
             }
             assert.deepStrictEqual(styles, expected);
         });
@@ -265,10 +229,7 @@ describe('Init', function () {
             let expected: NodeOptions = {
                 useResizeDetection: true,
                 useBranchResizeDetection: false,
-                useOverflowDetection: true,
-                showBranchBackdrop: false,
                 showChildIndicator: true,
-                showOverflowIndicators: false
             };
 
             assert.deepStrictEqual(noodel.getRoot().getChild(7).getOptions(), expected);
@@ -293,9 +254,7 @@ describe('Init', function () {
                 useInspectModeKey: true,
                 useInspectModeDoubleTap: true,
                 useResizeDetection: true,
-                useOverflowDetection: false,
                 showLimitIndicators: true,
-                showBranchBackdrops: false,
                 showChildIndicators: true,
                 orientation: "ltr",
                 branchDirection: "normal"
@@ -320,9 +279,7 @@ describe('Init', function () {
                 useInspectModeKey: false,
                 useInspectModeDoubleTap: false,
                 useResizeDetection: false,
-                useOverflowDetection: true,
                 showLimitIndicators: false,
-                showBranchBackdrops: true,
                 showChildIndicators: false,
                 orientation: "rtl",
                 branchDirection: "reverse"
@@ -343,9 +300,7 @@ describe('Init', function () {
                 useInspectModeKey: false,
                 useInspectModeDoubleTap: false,
                 useResizeDetection: false,
-                useOverflowDetection: true,
                 showLimitIndicators: false,
-                showBranchBackdrops: true,
                 showChildIndicators: false,
                 orientation: "rtl",
                 branchDirection: "reverse"

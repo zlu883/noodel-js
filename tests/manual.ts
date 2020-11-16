@@ -4,9 +4,6 @@ import '../src/styles/noodel-default.css';
 
 let noodel = new Noodel("#template", {
     visibleSubtreeDepth: 3,
-    showOverflowIndicators: true,
-    showBranchBackdrops: true,
-    useOverflowDetection: true,
 });
 
 noodel.mount("#noodel");

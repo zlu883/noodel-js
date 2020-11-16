@@ -37,38 +37,6 @@
 				:style="childIndicatorStyle"
 			/>
 		</transition>
-		<transition name="nd-overflow-indicator">
-			<div
-				v-if="showOverflowIndicators && node.hasOverflowTop && !node.isInInspectMode"
-				class="nd-overflow-indicator nd-overflow-indicator-top"
-				:class="overflowIndicatorTopClass"
-				:style="overflowIndicatorTopStyle"
-			/>
-		</transition>
-		<transition name="nd-overflow-indicator">
-			<div
-				v-if="showOverflowIndicators && node.hasOverflowLeft && !node.isInInspectMode"
-				class="nd-overflow-indicator nd-overflow-indicator-left"
-				:class="overflowIndicatorLeftClass"
-				:style="overflowIndicatorLeftStyle"
-			/>
-		</transition>
-		<transition name="nd-overflow-indicator">
-			<div
-				v-if="showOverflowIndicators && node.hasOverflowBottom && !node.isInInspectMode"
-				class="nd-overflow-indicator nd-overflow-indicator-bottom"
-				:class="overflowIndicatorBottomClass"
-				:style="overflowIndicatorBottomStyle"
-			/>
-		</transition>
-		<transition name="nd-overflow-indicator">
-			<div
-				v-if="showOverflowIndicators && node.hasOverflowRight && !node.isInInspectMode"
-				class="nd-overflow-indicator nd-overflow-indicator-right"
-				:class="overflowIndicatorRightClass"
-				:style="overflowIndicatorRightStyle"
-			/>
-		</transition>
 	</div>
 </template>
 
@@ -76,10 +44,7 @@
 
 <script lang="ts">
 import NodeState from "../types/NodeState";
-import {
-	checkContentOverflow,
-	updateNodeSize,
-} from "../controllers/noodel-align";
+import { updateNodeSize } from "../controllers/noodel-align";
 import NoodelState from "../types/NoodelState";
 import { traverseAncestors } from "../controllers/noodel-traverse";
 import { getPath, getFocalHeight, getFocalWidth } from "../controllers/getters";
@@ -109,7 +74,6 @@ export default defineComponent({
 			nodeRect.width,
 			true
 		);
-		checkContentOverflow(this.noodel, this.node);
 
 		attachResizeSensor(this.noodel, this.node);
 
@@ -219,44 +183,6 @@ export default defineComponent({
 		childIndicatorStyle(): {} {
 			return this.node.styles.childIndicator;
 		},
-
-		showOverflowIndicators(): boolean {
-			return typeof this.node.options.showOverflowIndicators === "boolean"
-				? this.node.options.showOverflowIndicators
-				: this.noodel.options.showOverflowIndicators;
-		},
-
-		overflowIndicatorLeftClass(): string {
-			return this.node.classNames.overflowIndicatorLeft;
-		},
-
-		overflowIndicatorLeftStyle(): string {
-			return this.node.styles.overflowIndicatorLeft;
-		},
-
-		overflowIndicatorRightClass(): string {
-			return this.node.classNames.overflowIndicatorRight;
-		},
-
-		overflowIndicatorRightStyle(): string {
-			return this.node.styles.overflowIndicatorRight;
-		},
-
-		overflowIndicatorTopClass(): string {
-			return this.node.classNames.overflowIndicatorTop;
-		},
-
-		overflowIndicatorTopStyle(): string {
-			return this.node.styles.overflowIndicatorTop;
-		},
-
-		overflowIndicatorBottomClass(): string {
-			return this.node.classNames.overflowIndicatorBottom;
-		},
-
-		overflowIndicatorBottomStyle(): string {
-			return this.node.styles.overflowIndicatorBottom;
-		}
 	},
 });
 </script>

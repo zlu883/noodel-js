@@ -3,7 +3,7 @@ import NodeDefinition from '../types/NodeDefinition';
 import { setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
 import { parseAndApplyNodeOptions, parseContent } from '../controllers/noodel-setup';
 import { getPath as _getPath } from '../controllers/getters';
-import { alignBranchToIndex, updateNodeSize, updateBranchSize, checkContentOverflow } from '../controllers/noodel-align';
+import { alignBranchToIndex, updateNodeSize, updateBranchSize } from '../controllers/noodel-align';
 import { shiftFocalNode, doJumpNavigation } from '../controllers/noodel-navigate';
 import NoodelState from '../types/NoodelState';
 import { changeNodeId, unregisterNodeSubtree } from '../controllers/id-register';
@@ -40,22 +40,19 @@ export default class NoodelNode {
     // GETTERS
 
     /**
-     * Get the specified DOM element associated with this node. Can be either the
-     * nd-node, nd-branch or nd-branch-backdrop element. Return null if
-     * noodel is not mounted or element doesn't exist.
-     * @param target the target element, defaults to 'node' if omitted
+     * Get the nd-node element associated with this node. Return null if
+     * noodel is not mounted.
      */
-    getEl(target: 'node' | 'branch' | 'branchBackdrop' = 'node'): HTMLDivElement {
-        switch (target) {
-            case 'node': 
-                return this.state.r.el;
-            case 'branch': 
-                return this.state.r.branchEl;
-            case 'branchBackdrop':
-                return this.state.r.branchBackdropEl;
-            default:
-                return null;
-        }
+    getEl(): HTMLDivElement {
+        return this.state.r.el;
+    }
+
+    /**
+     * Get the nd-branch element associated with this node's child branch. Return null if
+     * noodel is not mounted or branch does not exist.
+     */
+    getBranchEl(): HTMLDivElement {
+        return this.state.r.branchEl;
     }
 
     /**
@@ -242,20 +239,6 @@ export default class NoodelNode {
     isChildrenVisible(): boolean {
         if (this.isDeleted()) return false;
         return this.state.isBranchVisible;
-    }
-
-    /**
-     * Return an object that specifies whether this node has
-     * content overflow in each of the 4 directions. Only valid if overflow 
-     * is detected/manually checked before hand.
-     */
-    hasOverflow(): {top: boolean, bottom: boolean, left: boolean, right: boolean} {
-        return {
-            top: this.state.hasOverflowTop,
-            bottom: this.state.hasOverflowBottom,
-            left: this.state.hasOverflowLeft,
-            right: this.state.hasOverflowRight
-        }
     }
 
     /**
@@ -560,25 +543,6 @@ export default class NoodelNode {
 
             updateBranchSize(this.noodelState, this.state, rect.height, rect.width);
             this.state.isBranchTransparent = false;
-        });
-    }
-
-    /**
-     * Asynchronous method to manually check for content overflow in this node,
-     * and refresh overflow indicators if they are enabled. Use when
-     * overflow detection is disabled or insufficient (e.g. when content size changed
-     * but did not affect node size). Fails silently if this is root or noodel is not mounted.
-     */
-    checkOverflow() {
-        this.throwErrorIfDeleted();
-        if (!this.noodelState.isMounted) return;
-        if (!this.state.parent) return;
-
-        this.state.parent.isBranchTransparent = true;
-        
-        nextTick(() => {
-            checkContentOverflow(this.noodelState, this.state);
-            this.state.parent.isBranchTransparent = false;
         });
     }
 

@@ -48,13 +48,6 @@ export default interface NoodelOptions {
      */
     useResizeDetection?: boolean;
     /**
-     * Global option for enabling overflow detection on ALL nodes. When enabled, 
-     * will automatically check for content overflow on mount, node resize
-     * (if resize detection is enabled), and when exiting inspect mode.
-     * Defaults to false.
-     */
-    useOverflowDetection?: boolean;
-    /**
      * Number of pixels to move for every pixel swiped in the branch axis. Defaults to 1.
      */
     swipeMultiplierBranch?: number;
@@ -84,15 +77,6 @@ export default interface NoodelOptions {
      * Whether to render the child indicators of nodes. Defaults to true.
      */
     showChildIndicators?: boolean;
-    /**
-     * Whether to show node overflow indicators if overflow is detected. Defaults
-     * to false.
-     */
-    showOverflowIndicators?: boolean;
-    /**
-     * Whether to render the branch backdrop elements. Defaults to false.
-     */
-    showBranchBackdrops?: boolean;
     /**
      * Determines the direction of the trunk axis. Defaults to "ltr" (left to right).
      */

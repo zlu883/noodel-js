@@ -169,10 +169,6 @@
     overscroll-behavior: none;
 }
 
-.nd-overflow-indicator {
-    z-index: 100;
-}
-
 .nd-child-indicator {
     z-index: 1000;
 }

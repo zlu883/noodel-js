@@ -21,7 +21,6 @@ export default interface NodeState {
         el: HTMLDivElement;
         branchEl: HTMLDivElement;
         branchSliderEl: HTMLDivElement;
-        branchBackdropEl: HTMLDivElement;
 
         resizeSensor: ResizeSensor;
         branchResizeSensor: ResizeSensor;
@@ -82,11 +81,6 @@ export default interface NodeState {
      * as a performance hack.
      */
     isInInspectMode: boolean;
-
-    hasOverflowTop: boolean;
-    hasOverflowLeft: boolean;
-    hasOverflowBottom: boolean;
-    hasOverflowRight: boolean;
 
     options: NodeOptions;
 }
