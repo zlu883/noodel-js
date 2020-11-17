@@ -1,3 +1,4 @@
+import { AlignmentX, AlignmentY } from './Alignment';
 import { BranchDirection } from './BranchDirection';
 import { Orientation } from './Orientation';
 
@@ -85,4 +86,28 @@ export default interface NoodelOptions {
      * Defaults to "normal".
      */
     branchDirection?: BranchDirection;
+    /**
+     * The horizontal coordinate of the point on the canvas where the focal
+     * node is aligned to. Can be a number of pixels counting from the left edge of the
+     * canvas, or a function of the canvas dimensions that returns such a number.
+     * Defaults to 1/2 of the canvas width.
+     */
+    focalPositionX?: number | ((canvasWidth: number, canvasHeight: number) => number);
+    /**
+     * The vertical coordinate of the point on the canvas where the focal
+     * node is aligned to. Can be a number of pixels counting from the top edge of the
+     * canvas, or a function of the canvas dimensions that returns such a number.
+     * Defaults to 1/2 of the canvas height.
+     */
+    focalPositionY?: number | ((canvasWidth: number, canvasHeight: number) => number);
+    /**
+     * Determines how the focal node aligns to the focal position in the horizontal axis.
+     * Defaults to 'center'.
+     */
+    focalAlignmentX?: AlignmentX;
+    /**
+     * Determines how the focal node aligns to the focal position in the vertical axis.
+     * Defaults to 'center'.
+     */
+    focalAlignmentY?: AlignmentY;
 }

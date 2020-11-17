@@ -55,7 +55,7 @@ export function detachBranchResizeSensor(parent: NodeState) {
 
 export function attachCanvasResizeSensor(noodel: NoodelState) {
     new ResizeSensor(noodel.r.canvasEl, (size) => {
-        noodel.containerWidth = size.width,
-        noodel.containerHeight = size.height
+        noodel.canvasWidth = size.width,
+        noodel.canvasHeight = size.height
     });
 }

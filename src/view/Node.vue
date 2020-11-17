@@ -47,7 +47,6 @@ import NodeState from "../types/NodeState";
 import { updateNodeSize } from "../controllers/noodel-align";
 import NoodelState from "../types/NoodelState";
 import { traverseAncestors } from "../controllers/noodel-traverse";
-import { getPath, getFocalHeight, getFocalWidth } from "../controllers/getters";
 import { nextTick, PropType, defineComponent } from "vue";
 import {
 	attachResizeSensor,

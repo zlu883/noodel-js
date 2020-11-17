@@ -44,6 +44,13 @@ document.getElementById("setReversed").addEventListener("click", () => {
     })
 });
 
+document.getElementById("setFocalPosition").addEventListener("click", () => {
+    noodel.setOptions({
+        focalPositionX: (w, h) => w * 0.25,
+        focalPositionY: (w, h) => h * 0.25
+    })
+});
+
 document.getElementById("deleteFocalNode").addEventListener("click", () => {
     noodel.getFocalNode().deleteSelf();
 });

@@ -74,7 +74,7 @@ export default interface NoodelState {
 
     isInInspectMode: boolean;
 
-    containerHeight: number;
-    containerWidth: number;
+    canvasHeight: number;
+    canvasWidth: number;
     options: NoodelOptions;
 }

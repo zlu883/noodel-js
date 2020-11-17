@@ -1,6 +1,6 @@
 import NoodelState from 'src/types/NoodelState';
 import NodeState from 'src/types/NodeState';
-import { getFocalHeight, getFocalWidth } from './getters';
+import { getFocalPositionY, getFocalPositionX } from './getters';
 
 /**
  * Forces a layout reflow on browsers by doing a computed property access.
@@ -29,16 +29,16 @@ export function findCurrentTrunkOffset(noodel: NoodelState): number {
     let trunkRect = noodel.r.trunkEl.getBoundingClientRect();
 
     if (orientation === 'ltr') {
-        return getFocalWidth(noodel) - (trunkRect.left - canvasRect.left);
+        return getFocalPositionX(noodel) - (trunkRect.left - canvasRect.left);
     }
     else if (orientation === 'rtl') {
-        return getFocalWidth(noodel) - (canvasRect.right - trunkRect.right);
+        return getFocalPositionX(noodel) - (canvasRect.right - trunkRect.right);
     }
     else if (orientation === 'ttb') {
-        return getFocalHeight(noodel) - (trunkRect.top - canvasRect.top);
+        return getFocalPositionY(noodel) - (trunkRect.top - canvasRect.top);
     }
     else if (orientation === 'btt') {
-        return getFocalHeight(noodel) - (canvasRect.bottom - trunkRect.bottom);
+        return getFocalPositionY(noodel) - (canvasRect.bottom - trunkRect.bottom);
     }
 }
 
@@ -57,18 +57,18 @@ export function findCurrentBranchOffset(noodel: NoodelState, parent: NodeState):
 
     if (orientation === 'ltr' || orientation === 'rtl') {
         if (branchDirection === 'normal') {
-            return getFocalHeight(noodel) - (focalBranchRect.top - canvasRect.top);
+            return getFocalPositionY(noodel) - (focalBranchRect.top - canvasRect.top);
         }
         else if (branchDirection === 'reverse') {
-            return getFocalHeight(noodel) - (canvasRect.bottom - focalBranchRect.bottom);
+            return getFocalPositionY(noodel) - (canvasRect.bottom - focalBranchRect.bottom);
         }
     }
     else if (orientation === 'ttb' || orientation === 'btt') {
         if (branchDirection === 'normal') {
-            return getFocalWidth(noodel) - (focalBranchRect.left - canvasRect.left);
+            return getFocalPositionX(noodel) - (focalBranchRect.left - canvasRect.left);
         }
         else if (branchDirection === 'reverse') {
-            return getFocalWidth(noodel) - (canvasRect.right - focalBranchRect.right);
+            return getFocalPositionX(noodel) - (canvasRect.right - focalBranchRect.right);
         }
     }
 }

@@ -65,8 +65,8 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
 
         isInInspectMode: false,
 
-        containerHeight: 0,
-        containerWidth: 0,
+        canvasHeight: 0,
+        canvasWidth: 0,
 
         options: {
             visibleSubtreeDepth: 1,
@@ -86,7 +86,11 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
             showLimitIndicators: true,
             showChildIndicators: true,
             orientation: "ltr",
-            branchDirection: "normal"
+            branchDirection: "normal",
+            focalPositionX: (w, h) => 0.5 * w,
+            focalPositionY: (w, h) => 0.5 * h,
+            focalAlignmentX: 'center',
+            focalAlignmentY: 'center'
         },
     });
 
@@ -182,8 +186,8 @@ export function setupCanvasEl(noodel: NoodelState) {
 
     let rect = noodel.r.canvasEl.getBoundingClientRect();
 
-    noodel.containerWidth = rect.width;
-    noodel.containerHeight = rect.height;
+    noodel.canvasWidth = rect.width;
+    noodel.canvasHeight = rect.height;
 
     attachCanvasResizeSensor(noodel);
 }

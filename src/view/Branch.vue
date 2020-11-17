@@ -40,7 +40,7 @@
 
 <script lang="ts">
 import NodeTransitionGroup from "./NodeTransitionGroup.vue";
-import { getFocalHeight, getFocalWidth } from "../controllers/getters";
+import { getFocalPositionY, getFocalPositionX } from "../controllers/getters";
 import NodeState from "../types/NodeState";
 import NoodelState from "../types/NoodelState";
 import { PropType, defineComponent, nextTick } from "vue";
@@ -153,17 +153,17 @@ export default defineComponent({
 
 			if (orientation === "ltr" || orientation === "rtl") {
 				if (branchDirection === "normal") {
-					style += `transform: translateY(${-this.parent.branchOffset + getFocalHeight(this.noodel)}px);`;
+					style += `transform: translateY(${-this.parent.branchOffset + getFocalPositionY(this.noodel)}px);`;
 				}
 				else if (branchDirection === "reverse") {
-					style += `transform: translateY(${this.parent.branchOffset - getFocalHeight(this.noodel)}px);`;
+					style += `transform: translateY(${this.parent.branchOffset - getFocalPositionY(this.noodel)}px);`;
 				}
 			} else if (orientation === "ttb" || orientation === "btt") {
 				if (branchDirection === "normal") {
-					style += `transform: translateX(${-this.parent.branchOffset + getFocalWidth(this.noodel)}px);`;
+					style += `transform: translateX(${-this.parent.branchOffset + getFocalPositionX(this.noodel)}px);`;
 				}
 				else if (branchDirection === "reverse") {
-					style += `transform: translateX(${this.parent.branchOffset - getFocalWidth(this.noodel)}px);`;
+					style += `transform: translateX(${this.parent.branchOffset - getFocalPositionX(this.noodel)}px);`;
 				}
 			}
 

@@ -54,7 +54,7 @@
 
 <script lang="ts">
 import BranchTransitionGroup from "./BranchTransitionGroup.vue";
-import { getFocalHeight, getFocalWidth } from "../controllers/getters";
+import { getFocalPositionY, getFocalPositionX } from "../controllers/getters";
 import { setupCanvasEl } from "../controllers/noodel-setup";
 import { setupCanvasInput } from "../controllers/input-binding";
 import { traverseDescendents } from "../controllers/noodel-traverse";
@@ -101,8 +101,8 @@ export default defineComponent({
 
 	unmounted: function () {
 		this.noodel.trunkOffset = 0;
-		this.noodel.containerHeight = 0;
-		this.noodel.containerWidth = 0;
+		this.noodel.canvasHeight = 0;
+		this.noodel.canvasWidth = 0;
 		this.noodel.isMounted = false;
 		this.noodel.applyTrunkMove = false;
 		this.noodel.r.canvasEl = null;
@@ -206,16 +206,16 @@ export default defineComponent({
 			let transform: string = null;
 
 			if (orientation === "ltr") {
-				transform = `translateX(${getFocalWidth(this.noodel) - this.noodel.trunkOffset}px)`;
+				transform = `translateX(${getFocalPositionX(this.noodel) - this.noodel.trunkOffset}px)`;
 			}
 			else if (orientation === "rtl") {
-				transform = `translateX(${-getFocalWidth(this.noodel) + this.noodel.trunkOffset}px)`;
+				transform = `translateX(${-getFocalPositionX(this.noodel) + this.noodel.trunkOffset}px)`;
 			}
 			else if (orientation === "ttb") {
-				transform = `translateY(${getFocalHeight(this.noodel) - this.noodel.trunkOffset}px)`;
+				transform = `translateY(${getFocalPositionY(this.noodel) - this.noodel.trunkOffset}px)`;
 			}
 			else if (orientation === "btt") {
-				transform = `translateY(${-getFocalHeight(this.noodel) + this.noodel.trunkOffset}px)`;
+				transform = `translateY(${-getFocalPositionY(this.noodel) + this.noodel.trunkOffset}px)`;
 			}
 
 			return { transform };
