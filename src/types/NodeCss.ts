@@ -3,5 +3,6 @@ export default interface NodeCss {
     contentBox?: string;
     childIndicator?: string;
     branch?: string;
+    branchContentBox?: string;
     branchSlider?: string;
 }

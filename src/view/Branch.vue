@@ -8,6 +8,20 @@
 		:style="branchStyle"
 	>
 		<div
+			v-if="parent.branchContent"
+			class="nd-branch-content-box"
+			:class="branchContentBoxClass"
+			:style="branchContentBoxStyle"
+			v-bind.prop="typeof parent.branchContent === 'string' ? { innerHTML: parent.branchContent } : null"			
+		>
+			<component
+				v-if="typeof parent.branchContent === 'object'"
+				:is="parent.branchContent.component"
+				v-bind="parent.branchContent.props"
+				v-on="parent.branchContent.eventListeners"
+			/>
+		</div>
+		<div
 			class="nd-branch-slider"
 			ref="slider"	
 			:class="branchSliderClass"
@@ -156,6 +170,14 @@ export default defineComponent({
 			style += this.parent.styles.branchSlider || '';
 
 			return style;
+		},
+
+		branchContentBoxClass(): string {
+			return this.parent.classNames.branchContentBox;
+		},
+
+		branchContentBoxStyle(): string {
+			return this.parent.styles.branchContentBox;
 		},
 	},
 

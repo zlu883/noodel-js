@@ -20,10 +20,16 @@ export default interface NodeDefinition {
      */
     isActive?: boolean;
     /**
-     * Content of this node. If is a string, will be inserted as innerHTML of the nd-node element.
+     * Content for this node. If is a string, will be inserted as innerHTML of the nd-content-box element.
      * Can also be a ComponentContent object that wraps a Vue component.
      */
     content?: string | ComponentContent;
+    /**
+     * Content for this node's child branch. If is a string, will be inserted as innerHTML 
+     * of the nd-branch-content-box element. Can also be a ComponentContent object that wraps a Vue component.
+     * Only rendered if this node has a child branch (i.e. has at least 1 child).
+     */
+    branchContent?: string | ComponentContent;
     /**
      * An object specifying custom CSS class(es) to apply to various elements associated with a
      * node. Each property should be a string of one or more classes delimited by spaces. 

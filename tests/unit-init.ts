@@ -31,10 +31,10 @@ describe('Init', function () {
         });
 
         it('should parse all nodes', function () {
-            assert.strictEqual(noodel.getNodeCount(), 14);
+            assert.strictEqual(noodel.getNodeCount(), 15);
         });
         it('should parse all nodes on a level', function () {
-            assert.strictEqual(noodel.getRoot().getChildCount(), 8);
+            assert.strictEqual(noodel.getRoot().getChildCount(), 9);
         });
         it('should parse children nodes', function () {
             assert.strictEqual(noodel.getRoot().getChild(1).getChildCount(), 3);
@@ -51,6 +51,7 @@ describe('Init', function () {
                 node: "custom node", 
                 contentBox: "custom content box",
                 branch: "custom branch",
+                branchContentBox: "custom branch content box",
                 branchSlider: "custom branch slider",
                 childIndicator: "custom child indicator",
             }
@@ -61,7 +62,8 @@ describe('Init', function () {
             let expected: NodeCss = {
                 node: "color: red; border: solid blue 0px", 
                 contentBox: "color: red; border: solid blue 1px",
-                branch: "color: red; border: solid blue 2px", 
+                branch: "color: red; border: solid blue 2px",
+                branchContentBox: "color: red; border: solid blue 8px",
                 branchSlider: "color: red; border: solid blue 9px",
                 childIndicator: "color: red; border: solid blue 4px",
             }
@@ -106,7 +108,7 @@ describe('Init', function () {
     describe('from valid element', function () {
         it('should parse all nodes', function () {
             let noodel = new Noodel(document.getElementById("template"));
-            assert.strictEqual(noodel.getNodeCount(), 14);
+            assert.strictEqual(noodel.getNodeCount(), 15);
         });
     });
 
@@ -132,6 +134,7 @@ describe('Init', function () {
                         node: "custom node", 
                         contentBox: "custom content box",
                         branch: "custom branch", 
+                        branchContentBox: "custom branch content box",
                         branchSlider: "custom branch slider",
                         childIndicator: "custom child indicator",
                     }
@@ -141,6 +144,7 @@ describe('Init', function () {
                         node: "color: red; border: solid blue 0px", 
                         contentBox: "color: red; border: solid blue 1px",
                         branch: "color: red; border: solid blue 2px", 
+                        branchContentBox: "color: red; border: solid blue 8px",
                         branchSlider: "color: red; border: solid blue 9px",
                         childIndicator: "color: red; border: solid blue 4px",
                     }
@@ -185,6 +189,7 @@ describe('Init', function () {
                 node: "custom node", 
                 contentBox: "custom content box",
                 branch: "custom branch", 
+                branchContentBox: "custom branch content box",
                 branchSlider: "custom branch slider",
                 childIndicator: "custom child indicator",
             }
@@ -196,6 +201,7 @@ describe('Init', function () {
                 node: "color: red; border: solid blue 0px", 
                 contentBox: "color: red; border: solid blue 1px",
                 branch: "color: red; border: solid blue 2px", 
+                branchContentBox: "color: red; border: solid blue 8px",
                 branchSlider: "color: red; border: solid blue 9px",
                 childIndicator: "color: red; border: solid blue 4px",
             }

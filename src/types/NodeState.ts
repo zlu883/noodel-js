@@ -38,7 +38,7 @@ export default interface NodeState {
     children: NodeState[];
     activeChildIndex: number;
     content: string | ComponentContent;
-
+    branchContent: string | ComponentContent;
     classNames: NodeCss;
     styles: NodeCss;
 

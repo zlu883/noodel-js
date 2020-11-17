@@ -24,6 +24,7 @@ export function serializeNode(node: NodeState): NodeDefinition {
     return {
         id: node.id,
         content: serializeContent(node.content),
+        branchContent: serializeContent(node.branchContent),
         isActive: node.isActive,
         classNames: {
             ...node.classNames

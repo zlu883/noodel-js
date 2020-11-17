@@ -63,6 +63,10 @@
     flex-direction: row-reverse;
 }
 
+.nd-branch-content-box {
+    position: absolute !important; /* Must be absolute to prevent interfering with nd-slider*/
+}
+
 .nd-branch-slider {
     display: flex;
     margin: 0 !important;

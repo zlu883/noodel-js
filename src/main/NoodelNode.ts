@@ -141,6 +141,15 @@ export default class NoodelNode {
     }
 
     /**
+     * Get the branch content of this node. If content is a ComponentContent object,
+     * will return a deeply cloned object except the 'component' property which is
+     * shallowly copied.
+     */
+    getBranchContent(): string | ComponentContent {
+        return serializeContent(this.state.branchContent);
+    }
+
+    /**
      * Get a cloned object containing the custom CSS classes applied to this node.
      */
     getClassNames(): NodeCss {

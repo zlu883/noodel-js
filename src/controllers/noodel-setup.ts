@@ -120,6 +120,7 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
 export function parseHTMLToNode(el: Element): NodeDefinition {
 
     let content = '';
+    let branchContent = '';
     let children: NodeDefinition[] = [];
 
     for (let i = 0; i < el.childNodes.length; i++) {
@@ -129,8 +130,15 @@ export function parseHTMLToNode(el: Element): NodeDefinition {
             content += node.textContent; // Depends on css white-space property for ignoring white spaces
         }
         else if (node.nodeType === Node.ELEMENT_NODE) {
-            if (node.nodeName === "DIV" && (node as Element).className.split(' ').some(c => c === 'node')) {
-                children.push(parseHTMLToNode(node as Element));
+            if (node.nodeName === "DIV") {
+                let classNames = (node as Element).className.split(' ');
+
+                if (classNames.some(c => c === 'node')) {
+                    children.push(parseHTMLToNode(node as Element));
+                }
+                else if (classNames.some(c => c === 'branch-content')) {
+                    branchContent = (node as Element).innerHTML;
+                }
             }
             else {
                 content += (node as Element).outerHTML; // Depends on css white-space property for ignoring white spaces
@@ -143,6 +151,7 @@ export function parseHTMLToNode(el: Element): NodeDefinition {
     return {
         id: attributes.id || null,
         content: content || null,
+        branchContent: branchContent || null,
         isActive: 'active' in attributes,
         children: children,
         classNames: {
@@ -150,6 +159,7 @@ export function parseHTMLToNode(el: Element): NodeDefinition {
             contentBox: attributes.classContentBox,
             childIndicator: attributes.classChildIndicator,
             branch: attributes.classBranch,
+            branchContentBox: attributes.classBranchContentBox,
             branchSlider: attributes.classBranchSlider,
         },
         styles: {
@@ -157,6 +167,7 @@ export function parseHTMLToNode(el: Element): NodeDefinition {
             contentBox: attributes.styleContentBox,
             childIndicator: attributes.styleChildIndicator,
             branch: attributes.styleBranch,
+            branchContentBox: attributes.styleBranchContentBox,
             branchSlider: attributes.styleBranchSlider,
         },
         options: {
@@ -339,6 +350,7 @@ export function buildNodeView(noodel: NoodelState, def: NodeDefinition, index: n
         id: newId,
         children: [],
         content: parseContent(def.content) || null,
+        branchContent: parseContent(def.branchContent) || null,
         classNames: {
             ...def.classNames
         },
