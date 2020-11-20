@@ -1,7 +1,7 @@
 import NoodelState from 'src/types/NoodelState';
 import NodeState from 'src/types/NodeState';
 import ResizeSensor from "../util/ResizeSensor";
-import { updateBranchSize, updateNodeSize } from './noodel-align';
+import { updateBranchSize, updateCanvasSize, updateNodeSize } from './noodel-align';
 
 export function attachResizeSensor(noodel: NoodelState, node: NodeState) {
 
@@ -14,10 +14,6 @@ export function attachResizeSensor(noodel: NoodelState, node: NodeState) {
 
     if (useResizeDetection) {
         node.r.resizeSensor = new ResizeSensor(node.r.el, (size) => {
-            if (!noodel.isMounted) { // skips the first callback before mount
-                return;
-            }
-
             updateNodeSize(noodel, node, size.height, size.width);
         });
     }
@@ -39,10 +35,6 @@ export function attachBranchResizeSensor(noodel: NoodelState, parent: NodeState)
 
     if (useResizeDetection) {
         parent.r.branchResizeSensor = new ResizeSensor(parent.r.branchEl, (size) => {
-            if (!noodel.isMounted) { // skips the first callback before mount
-                return;
-            }
-
             updateBranchSize(noodel, parent, size.height, size.width);
         });
     };
@@ -55,7 +47,6 @@ export function detachBranchResizeSensor(parent: NodeState) {
 
 export function attachCanvasResizeSensor(noodel: NoodelState) {
     new ResizeSensor(noodel.r.canvasEl, (size) => {
-        noodel.canvasWidth = size.width,
-        noodel.canvasHeight = size.height
+        updateCanvasSize(noodel, size.height, size.width);
     });
 }

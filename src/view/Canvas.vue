@@ -12,6 +12,7 @@
 				class="nd-limit nd-limit-left"
 				v-if="noodel.options.showLimitIndicators"
 				v-show="showLeftLimit"
+				:class="leftLimitClass"
 			/>
 		</transition>
 		<transition name="nd-limit">
@@ -19,6 +20,7 @@
 				class="nd-limit nd-limit-right"
 				v-if="noodel.options.showLimitIndicators"
 				v-show="showRightLimit"
+				:class="rightLimitClass"
 			/>
 		</transition>
 		<transition name="nd-limit">
@@ -26,6 +28,7 @@
 				class="nd-limit nd-limit-top"
 				v-if="noodel.options.showLimitIndicators"
 				v-show="showTopLimit"
+				:class="topLimitClass"
 			/>
 		</transition>
 		<transition name="nd-limit">
@@ -33,6 +36,7 @@
 				class="nd-limit nd-limit-bottom"
 				v-if="noodel.options.showLimitIndicators"
 				v-show="showBottomLimit"
+				:class="bottomLimitClass"
 			/>
 		</transition>
 		<div
@@ -54,7 +58,6 @@
 
 <script lang="ts">
 import BranchTransitionGroup from "./BranchTransitionGroup.vue";
-import { getFocalPositionY, getFocalPositionX } from "../controllers/getters";
 import { setupCanvasEl } from "../controllers/noodel-setup";
 import { setupCanvasInput } from "../controllers/input-binding";
 import { traverseDescendents } from "../controllers/noodel-traverse";
@@ -63,6 +66,7 @@ import { alignBranchToIndex, alignTrunkToBranch } from "../controllers/noodel-al
 import NodeState from "../types/NodeState";
 import { PropType, defineComponent } from "vue";
 import { queueMount } from "../controllers/event-emit";
+import { getActualOffsetTrunk } from '../controllers/getters';
 
 export default defineComponent({
 	components: {
@@ -101,8 +105,8 @@ export default defineComponent({
 
 	unmounted: function () {
 		this.noodel.trunkOffset = 0;
-		this.noodel.canvasHeight = 0;
-		this.noodel.canvasWidth = 0;
+		this.noodel.canvasSizeBranch = 0;
+		this.noodel.canvasSizeTrunk = 0;
 		this.noodel.isMounted = false;
 		this.noodel.applyTrunkMove = false;
 		this.noodel.r.canvasEl = null;
@@ -111,12 +115,11 @@ export default defineComponent({
 
 	computed: {
 		canvasClass(): {} {
-			let orientation = this.noodel.options.orientation;
-			let branchDirection = this.noodel.options.branchDirection;
-			let classes = {};
+			let classes = `nd-canvas-${this.noodel.options.orientation} nd-canvas-${this.noodel.options.branchDirection}`;
 
-			classes["nd-canvas-" + orientation] = true;
-			classes["nd-canvas-" + branchDirection] = true;
+			if (this.noodel.isInInspectMode) {
+				classes += ' nd-canvas-inspect';
+			}
 
 			return classes;
 		},
@@ -201,21 +204,102 @@ export default defineComponent({
 			}
 		},
 
+		leftLimitClass(): string {
+			let orientation = this.noodel.options.orientation;
+			let branchDirection = this.noodel.options.branchDirection;
+
+			if (orientation === "ltr") {
+				return 'nd-limit-trunk-start';
+			}
+			else if (orientation === "rtl") {
+				return 'nd-limit-trunk-end';
+			}
+			else {
+				if (branchDirection === "normal") {
+					return 'nd-limit-branch-start';
+				}
+				else {
+					return 'nd-limit-branch-end';
+				}
+			}
+		},
+
+		rightLimitClass(): string {
+			let orientation = this.noodel.options.orientation;
+			let branchDirection = this.noodel.options.branchDirection;
+
+			if (orientation === "ltr") {
+				return 'nd-limit-trunk-end';
+			}
+			else if (orientation === "rtl") {
+				return 'nd-limit-trunk-start';
+			}
+			else {
+				if (branchDirection === "normal") {
+					return 'nd-limit-branch-end';
+				}
+				else {
+					return 'nd-limit-branch-start';
+				}
+			}
+		},
+
+		topLimitClass(): string {
+			let orientation = this.noodel.options.orientation;
+			let branchDirection = this.noodel.options.branchDirection;
+
+			if (orientation === "ttb") {
+				return 'nd-limit-trunk-start';
+			}
+			else if (orientation === "btt") {
+				return 'nd-limit-trunk-end';
+			}
+			else {
+				if (branchDirection === "normal") {
+					return 'nd-limit-branch-start';
+				}
+				else {
+					return 'nd-limit-branch-end';
+				}
+			}
+		},
+
+		bottomLimitClass(): string {
+			let orientation = this.noodel.options.orientation;
+			let branchDirection = this.noodel.options.branchDirection;
+
+			if (orientation === "ttb") {
+				return 'nd-limit-trunk-end';
+			}
+			else if (orientation === "btt") {
+				return 'nd-limit-trunk-start';
+			}
+			else {
+				if (branchDirection === "normal") {
+					return 'nd-limit-branch-end';
+				}
+				else {
+					return 'nd-limit-branch-start';
+				}
+			}
+		},
+
 		trunkStyle(): {} {
 			let orientation = this.noodel.options.orientation;
+			let trunkOffset = getActualOffsetTrunk(this.noodel);
 			let transform: string = null;
 
 			if (orientation === "ltr") {
-				transform = `translateX(${getFocalPositionX(this.noodel) - this.noodel.trunkOffset}px)`;
+				transform = `translateX(${trunkOffset}px)`;
 			}
 			else if (orientation === "rtl") {
-				transform = `translateX(${-getFocalPositionX(this.noodel) + this.noodel.trunkOffset}px)`;
+				transform = `translateX(${-trunkOffset}px)`;
 			}
 			else if (orientation === "ttb") {
-				transform = `translateY(${getFocalPositionY(this.noodel) - this.noodel.trunkOffset}px)`;
+				transform = `translateY(${trunkOffset}px)`;
 			}
 			else if (orientation === "btt") {
-				transform = `translateY(${-getFocalPositionY(this.noodel) + this.noodel.trunkOffset}px)`;
+				transform = `translateY(${-trunkOffset}px)`;
 			}
 
 			return { transform };

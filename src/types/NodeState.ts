@@ -63,6 +63,12 @@ export default interface NodeState {
      */
     branchOffset: number;
     applyBranchMove: boolean;
+    /**
+     * Transient orientation-agnostic offset of this node's child branch 
+     * caused by panning or animation effects,
+     * relative to the anchor point of the active node.
+     */
+    branchMoveOffset: number;
 
     size: number;
     branchSize: number;

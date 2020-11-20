@@ -8,7 +8,7 @@ import NodeOptions from '../types/NodeOptions';
 import { generateNodeId, registerNodeSubtree, findNode, isIdRegistered } from './id-register';
 import { alignNoodelOnJump } from './noodel-navigate';
 import { cancelPan } from './noodel-pan';
-import { resetAlignment } from './noodel-align';
+import { resetAlignment, updateCanvasSize } from './noodel-align';
 import { traverseDescendents } from './noodel-traverse';
 import { attachBranchResizeSensor, attachCanvasResizeSensor, attachResizeSensor, detachBranchResizeSensor, detachResizeSensor } from './resize-detect';
 import NoodelNode from '../main/NoodelNode';
@@ -57,6 +57,7 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
 
         trunkOffset: 0,
         applyTrunkMove: false,
+        trunkMoveOffset: 0,
 
         branchStartReached: false,
         branchEndReached: false,
@@ -65,8 +66,8 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
 
         isInInspectMode: false,
 
-        canvasHeight: 0,
-        canvasWidth: 0,
+        canvasSizeBranch: 0,
+        canvasSizeTrunk: 0,
 
         options: {
             visibleSubtreeDepth: 1,
@@ -87,10 +88,10 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
             showChildIndicators: true,
             orientation: "ltr",
             branchDirection: "normal",
-            focalPositionX: (w) => w / 2,
-            focalPositionY: (h) => h / 2,
-            focalAnchorBranch: (s) => s / 2,
-            focalAnchorNode: (s) => s / 2
+            focalPositionTrunk: (w) => w / 2,
+            focalPositionBranch: (h) => h / 2,
+            focalAnchorTrunk: (s) => s / 2,
+            focalAnchorBranch: (s) => s / 2
         },
     });
 
@@ -186,9 +187,7 @@ export function setupCanvasEl(noodel: NoodelState) {
 
     let rect = noodel.r.canvasEl.getBoundingClientRect();
 
-    noodel.canvasWidth = rect.width;
-    noodel.canvasHeight = rect.height;
-
+    updateCanvasSize(noodel, rect.height, rect.width);
     attachCanvasResizeSensor(noodel);
 }
 
@@ -343,6 +342,7 @@ export function buildNodeView(noodel: NoodelState, def: NodeDefinition, index: n
 
         branchOffset: 0,
         applyBranchMove: false,
+        branchMoveOffset: 0,
 
         branchRelativeOffset: branchRelativeOffset,
         trunkRelativeOffset: isRoot ? 0 : parent.trunkRelativeOffset + parent.branchSize,

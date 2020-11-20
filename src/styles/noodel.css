@@ -162,7 +162,7 @@
     touch-action: none;
 }
 
-.nd-node-inspect > .nd-content-box {
+.nd-canvas-inspect .nd-branch-focal .nd-node-active>.nd-content-box {
     overflow: auto;
     user-select: text;
     -webkit-user-select: text;

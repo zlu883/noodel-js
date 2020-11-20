@@ -141,7 +141,6 @@ export default defineComponent({
 			let className = '';
 
 			if (this.node.isActive) className += 'nd-node-active ';
-			if (this.node.isInInspectMode) className += 'nd-node-inspect ';
 
 			className += this.node.classNames.node || '';
 

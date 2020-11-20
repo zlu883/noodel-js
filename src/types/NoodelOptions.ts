@@ -92,7 +92,7 @@ export default interface NoodelOptions {
      * If the number is greater than the canvas width, will use the canvas width.
      * Defaults to 1/2 of the canvas width.
      */
-    focalPositionX?: (canvasWidth: number) => number;
+    focalPositionTrunk?: (canvasSizeTrunk: number) => number;
     /**
      * A function that determines the vertical coordinate of the point on the canvas where 
      * the focal node should be aligned to, given the canvas height as reference. 
@@ -100,25 +100,21 @@ export default interface NoodelOptions {
      * If the number is greater than the canvas height, will use the canvas height.
      * Defaults to 1/2 of the canvas height.
      */
-    focalPositionY?: (canvasHeight: number) => number;
+    focalPositionBranch?: (canvasSizeBranch: number) => number;
     /**
-     * A function that determines the location on the focal branch 
-     * that should align to the focal position,
-     * given the focal branch's size on the trunk axis. Should return a number
-     * of pixels counting from the starting edge of the branch based on the current
-     * trunk orientation. 
-     * If the number is greater than the focal branch size, will use the focal branch size.
+     * A function that determines the "anchor point" on the focal branch 
+     * that should align to the focal position, given its size on the trunk axis. 
+     * Should return a number of pixels counting from the starting edge of the branch.
+     * If the number exceeds the focal branch size, will use the focal branch size.
      * Defaults to 1/2 of the focal branch size.
      */
-    focalAnchorBranch?: (focalBranchSize: number) => number;
+    focalAnchorTrunk?: (focalBranchSize: number) => number;
     /**
-     * A function that determines the location on all active nodes 
-     * that should align to the focal position,
-     * given the node's size on the branch axis. Should return a number
-     * of pixels counting from the starting edge of the node based on the current
-     * branch direction. 
-     * If the number is greater than the node size, will use the node size.
+     * A function that determines the "anchor point" on all active nodes 
+     * that should align to the focal position, given their size on the branch axis. 
+     * Should return a number of pixels counting from the starting edge of the node. 
+     * If the number exceeds the node size, will use the node size.
      * Defaults to 1/2 of the node size.
      */
-    focalAnchorNode?: (nodeSize: number) => number;
+    focalAnchorBranch?: (nodeSize: number) => number;
 }

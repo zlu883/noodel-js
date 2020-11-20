@@ -1,6 +1,6 @@
 import NoodelState from 'src/types/NoodelState';
 import NodeState from 'src/types/NodeState';
-import { getFocalPositionY, getFocalPositionX } from './getters';
+import { getActualOffsetBranch, getActualOffsetTrunk } from './getters';
 
 /**
  * Forces a layout reflow on browsers by doing a computed property access.
@@ -20,25 +20,25 @@ export function forceReflow() {
  * Finds the current rendered trunk offset, taking into account the possibility
  * of it being in transition.
  */
-export function findCurrentTrunkOffset(noodel: NoodelState): number {
+export function findRenderedTrunkOffset(noodel: NoodelState): number {
 
-    if (!noodel.applyTrunkMove) return noodel.trunkOffset;
+    if (!noodel.applyTrunkMove) return getActualOffsetTrunk(noodel);
 
     let orientation = noodel.options.orientation;
     let canvasRect = noodel.r.canvasEl.getBoundingClientRect();
     let trunkRect = noodel.r.trunkEl.getBoundingClientRect();
 
     if (orientation === 'ltr') {
-        return getFocalPositionX(noodel) - (trunkRect.left - canvasRect.left);
+        return trunkRect.left - canvasRect.left;
     }
     else if (orientation === 'rtl') {
-        return getFocalPositionX(noodel) - (canvasRect.right - trunkRect.right);
+        return canvasRect.right - trunkRect.right;
     }
     else if (orientation === 'ttb') {
-        return getFocalPositionY(noodel) - (trunkRect.top - canvasRect.top);
+        return trunkRect.top - canvasRect.top;
     }
     else if (orientation === 'btt') {
-        return getFocalPositionY(noodel) - (canvasRect.bottom - trunkRect.bottom);
+        return canvasRect.bottom - trunkRect.bottom;
     }
 }
 
@@ -46,29 +46,29 @@ export function findCurrentTrunkOffset(noodel: NoodelState): number {
  * Finds the current rendered focal branch offset, taking into account the possibility
  * of it being in transition.
  */
-export function findCurrentBranchOffset(noodel: NoodelState, parent: NodeState): number {
+export function findRenderedBranchOffset(noodel: NoodelState, parent: NodeState): number {
 
-    if (!parent.applyBranchMove) return parent.branchOffset;
+    if (!parent.applyBranchMove) return getActualOffsetBranch(noodel, parent);
 
     let orientation = noodel.options.orientation;
     let branchDirection = noodel.options.branchDirection;
     let canvasRect = noodel.r.canvasEl.getBoundingClientRect();
-    let focalBranchRect = parent.r.branchSliderEl.getBoundingClientRect();
+    let branchSliderRect = parent.r.branchSliderEl.getBoundingClientRect();
 
     if (orientation === 'ltr' || orientation === 'rtl') {
         if (branchDirection === 'normal') {
-            return getFocalPositionY(noodel) - (focalBranchRect.top - canvasRect.top);
+            return branchSliderRect.top - canvasRect.top;
         }
         else if (branchDirection === 'reverse') {
-            return getFocalPositionY(noodel) - (canvasRect.bottom - focalBranchRect.bottom);
+            return canvasRect.bottom - branchSliderRect.bottom;
         }
     }
     else if (orientation === 'ttb' || orientation === 'btt') {
         if (branchDirection === 'normal') {
-            return getFocalPositionX(noodel) - (focalBranchRect.left - canvasRect.left);
+            return branchSliderRect.left - canvasRect.left;
         }
         else if (branchDirection === 'reverse') {
-            return getFocalPositionX(noodel) - (canvasRect.right - focalBranchRect.right);
+            return canvasRect.right - branchSliderRect.right;
         }
     }
 }

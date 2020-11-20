@@ -24,42 +24,13 @@ export function getPath(node: NodeState): number[] {
 }
 
 /**
- * The x-coordinate of the focal position on the canvas.
- */
-export function getFocalPositionX(noodel: NoodelState): number {
-    let canvasWidth = noodel.canvasWidth;
-
-    return Math.min(noodel.options.focalPositionX(canvasWidth), canvasWidth);
-}
-
-/**
- * The y-coordinate of the focal position on the canvas.
- */
-export function getFocalPositionY(noodel: NoodelState): number {
-    let canvasHeight = noodel.canvasHeight;
-
-    return Math.min(noodel.options.focalPositionY(canvasHeight), canvasHeight);
-}
-
-/**
  * The orientation agnostic distance counting from the start of the trunk axis
  * to the focal position.
  */
 export function getFocalOffsetTrunk(noodel: NoodelState): number {
-    let orientation = noodel.options.orientation;
+    let canvasSizeTrunk = noodel.canvasSizeTrunk;
 
-    if (orientation === 'ltr') {
-        return getFocalPositionX(noodel);
-    }
-    else if (orientation === 'rtl') {
-        return noodel.canvasWidth - getFocalPositionX(noodel);
-    }
-    else if (orientation === 'ttb') {
-        return getFocalPositionY(noodel);
-    }
-    else if (orientation === 'btt') {
-        return noodel.canvasHeight - getFocalPositionY(noodel);
-    }
+    return Math.min(noodel.options.focalPositionTrunk(canvasSizeTrunk), canvasSizeTrunk);
 }
 
 /**
@@ -67,26 +38,9 @@ export function getFocalOffsetTrunk(noodel: NoodelState): number {
  * to the focal position.
  */
 export function getFocalOffsetBranch(noodel: NoodelState) {
-    let options = noodel.options;
-    let orientation = options.orientation;
-    let branchDirection = options.branchDirection;
+    let canvasSizeBranch = noodel.canvasSizeBranch;
 
-    if (orientation === 'ltr' || orientation === 'rtl') {
-        if (branchDirection === 'normal') {
-            return getFocalPositionY(noodel);
-        }
-        else if (branchDirection === 'reverse') {
-            return noodel.canvasHeight - getFocalPositionY(noodel);
-        }
-    }
-    else {
-        if (branchDirection === 'normal') {
-            return getFocalPositionX(noodel);
-        }
-        else if (branchDirection === 'reverse') {
-            return noodel.canvasWidth - getFocalPositionX(noodel);
-        }
-    }
+    return Math.min(noodel.options.focalPositionBranch(canvasSizeBranch), canvasSizeBranch);
 }
 
 /**
@@ -112,7 +66,7 @@ export function getRelativeOffsetBranch(branchParent: NodeState) {
 export function getAnchorOffsetTrunk(noodel: NoodelState) {
     let focalBranchSize = noodel.focalParent.branchSize;
 
-    return Math.min(noodel.options.focalAnchorBranch(focalBranchSize), focalBranchSize);
+    return Math.min(noodel.options.focalAnchorTrunk(focalBranchSize), focalBranchSize);
 }
 
 /**
@@ -122,5 +76,31 @@ export function getAnchorOffsetTrunk(noodel: NoodelState) {
 export function getAnchorOffsetBranch(noodel: NoodelState, branchParent: NodeState) {
     let nodeSize = getActiveChild(branchParent).size;
 
-    return Math.min(noodel.options.focalAnchorNode(nodeSize), nodeSize);
+    return Math.min(noodel.options.focalAnchorBranch(nodeSize), nodeSize);
+}
+
+/**
+ * The actual orientation-agnostic offset of the trunk taking into account all
+ * calculations.
+ */
+export function getActualOffsetTrunk(noodel: NoodelState): number {
+    return (
+        getFocalOffsetTrunk(noodel) 
+        - getRelativeOffsetTrunk(noodel)
+        - getAnchorOffsetTrunk(noodel)
+        - noodel.trunkMoveOffset
+    );
+}
+
+/**
+ * The actual orientation-agnostic offset of a branch taking into account all
+ * calculations.
+ */
+export function getActualOffsetBranch(noodel: NoodelState, branchParent: NodeState) {
+    return (
+        getFocalOffsetBranch(noodel) 
+        - getRelativeOffsetBranch(branchParent)
+        - getAnchorOffsetBranch(noodel, branchParent)
+        - branchParent.branchMoveOffset
+    );
 }

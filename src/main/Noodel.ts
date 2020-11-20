@@ -5,7 +5,7 @@ import Canvas from '../view/Canvas.vue';
 import { nextTick as vueNextTick, createApp } from 'vue';
 import NoodelState from '../types/NoodelState';
 import NoodelNode from './NoodelNode';
-import { getActiveChild } from '../controllers/getters';
+import { getActiveChild, getFocalNode } from '../controllers/getters';
 import { shiftFocalLevel, shiftFocalNode } from '../controllers/noodel-navigate';
 import { findNodeByPath as _findNodeByPath } from '../controllers/noodel-traverse';
 import { enterInspectMode, exitInspectMode } from '../controllers/inspect-mode';
@@ -180,10 +180,9 @@ export default class Noodel {
      * Get the focal node. Return null if noodel is empty.
      */
     getFocalNode(): NoodelNode {
-        let index = this.noodelState.focalParent.activeChildIndex;
-
-        if (index === null) return null;
-        return this.noodelState.focalParent.children[index].r.vm;
+        let focalNode =  getFocalNode(this.noodelState);
+        
+        return focalNode ? focalNode.r.vm : null;
     }
 
     /**

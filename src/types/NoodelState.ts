@@ -66,6 +66,11 @@ export default interface NoodelState {
      */
     trunkOffset: number;
     applyTrunkMove: boolean;
+    /**
+     * Transient orientation-agnostic offset of the trunk caused by panning or animation effects,
+     * relative to the anchor point of the current focal branch.
+     */
+    trunkMoveOffset: number;
 
     branchStartReached: boolean;
     branchEndReached: boolean;
@@ -74,7 +79,7 @@ export default interface NoodelState {
 
     isInInspectMode: boolean;
 
-    canvasHeight: number;
-    canvasWidth: number;
+    canvasSizeBranch: number;
+    canvasSizeTrunk: number;
     options: NoodelOptions;
 }

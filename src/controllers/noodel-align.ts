@@ -2,7 +2,7 @@ import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
 import { traverseDescendents } from './noodel-traverse';
 import { nextTick } from 'vue';
-import { findCurrentBranchOffset, findCurrentTrunkOffset, forceReflow } from './noodel-animate';
+import { findRenderedBranchOffset, findRenderedTrunkOffset, forceReflow } from './noodel-animate';
 import { cancelPan } from './noodel-pan';
 
 export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: number, newWidth: number, isInsert = false) {
@@ -43,7 +43,7 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
             // If branch is in transition, cancel it temporarily and force an alignment.
             // This does not apply to inserts as branch transition is needed for FLIP animation in transition groups
             if (parent.applyBranchMove && !isInsert) {
-                let currentOffset = findCurrentBranchOffset(noodel, parent);
+                let currentOffset = findRenderedBranchOffset(noodel, parent);
                 
                 // Find out the diff between transition target and current, for adding back later.
                 // Using diff rather than a fixed value prevents possible bugs with simultaneous resize of multiple nodes.
@@ -63,7 +63,6 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
                 parent.branchOffset += alignVal;
 
                 if (isInsert && parent.isBranchMounted) {
-                    console.log(parent.isBranchMounted)
                     parent.applyBranchMove = true;
                 }
             }
@@ -107,7 +106,7 @@ export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeig
             // This does not apply to inserts as transitions can only happen during simultaneous child insert + navigation,
             // and transition should be kept in this case
             if (noodel.applyTrunkMove && !isInsert) {                
-                let currentOffset = findCurrentTrunkOffset(noodel);
+                let currentOffset = findRenderedTrunkOffset(noodel);
                 // Find out the diff between transition target and current, for adding back later.
                 // Using diff rather than a fixed value prevents possible bugs with simultaneous resize of multiple branches.
                 let transitDiff = noodel.trunkOffset - currentOffset;
@@ -197,6 +196,10 @@ export function resetAlignment(noodel: NoodelState) {
     noodel.applyTrunkMove = false;
     noodel.trunkOffset = 0;
 
+    let rect = noodel.r.canvasEl.getBoundingClientRect();
+
+    updateCanvasSize(noodel, rect.height, rect.width);
+
     traverseDescendents(
         noodel.root,
         (node) => {
@@ -230,4 +233,17 @@ export function resetAlignment(noodel: NoodelState) {
             true
         );
     });
+}
+
+export function updateCanvasSize(noodel: NoodelState, height: number, width: number) {
+    let orientation = noodel.options.orientation;
+
+    if (orientation === 'ltr' || orientation === 'rtl') {
+        noodel.canvasSizeTrunk = width;
+        noodel.canvasSizeBranch = height
+    }
+    else {
+        noodel.canvasSizeTrunk = height;
+        noodel.canvasSizeBranch = width;
+    }
 }

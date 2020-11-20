@@ -40,7 +40,6 @@
 
 <script lang="ts">
 import NodeTransitionGroup from "./NodeTransitionGroup.vue";
-import { getFocalPositionY, getFocalPositionX } from "../controllers/getters";
 import NodeState from "../types/NodeState";
 import NoodelState from "../types/NoodelState";
 import { PropType, defineComponent, nextTick } from "vue";
@@ -49,6 +48,7 @@ import {
 	attachBranchResizeSensor,
 	detachBranchResizeSensor,
 } from "../controllers/resize-detect";
+import { getActualOffsetBranch } from '../controllers/getters';
 
 export default defineComponent({
 	components: {
@@ -149,21 +149,22 @@ export default defineComponent({
 		branchSliderStyle(): string {
 			let orientation = this.noodel.options.orientation;
 			let branchDirection = this.noodel.options.branchDirection;
+			let branchOffset = getActualOffsetBranch(this.noodel, this.parent);
 			let style = '';
 
 			if (orientation === "ltr" || orientation === "rtl") {
 				if (branchDirection === "normal") {
-					style += `transform: translateY(${-this.parent.branchOffset + getFocalPositionY(this.noodel)}px);`;
+					style += `transform: translateY(${branchOffset}px);`;
 				}
 				else if (branchDirection === "reverse") {
-					style += `transform: translateY(${this.parent.branchOffset - getFocalPositionY(this.noodel)}px);`;
+					style += `transform: translateY(${-branchOffset}px);`;
 				}
 			} else if (orientation === "ttb" || orientation === "btt") {
 				if (branchDirection === "normal") {
-					style += `transform: translateX(${-this.parent.branchOffset + getFocalPositionX(this.noodel)}px);`;
+					style += `transform: translateX(${branchOffset}px);`;
 				}
 				else if (branchDirection === "reverse") {
-					style += `transform: translateX(${this.parent.branchOffset - getFocalPositionX(this.noodel)}px);`;
+					style += `transform: translateX(${-branchOffset}px);`;
 				}
 			}
 

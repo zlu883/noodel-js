@@ -4,7 +4,7 @@ import { hideActiveSubtree, setActiveChild, setFocalParent, showActiveSubtree } 
 import { NoodelAxis } from 'src/types/NoodelAxis';
 import { Axis } from 'src/types/Axis';
 import { shiftFocalLevel, shiftFocalNode, unsetLimitIndicators } from './noodel-navigate';
-import { findCurrentBranchOffset, findCurrentTrunkOffset } from './noodel-animate';
+import { findRenderedBranchOffset, findRenderedTrunkOffset } from './noodel-animate';
 
 export function startPan(noodel: NoodelState, realAxis: Axis) {
 
@@ -29,14 +29,14 @@ export function startPan(noodel: NoodelState, realAxis: Axis) {
     noodel.r.panAxis = panAxis;
 
     if (panAxis === "trunk") {
-        let currentTrunkOffset = findCurrentTrunkOffset(noodel);
+        let currentTrunkOffset = findRenderedTrunkOffset(noodel);
 
         noodel.applyTrunkMove = false;
         noodel.trunkOffset = currentTrunkOffset;
         noodel.r.panOriginTrunk = currentTrunkOffset;
     }
     else if (panAxis === "branch") {
-        let currentFocalBranchOffset = findCurrentBranchOffset(noodel, noodel.focalParent);
+        let currentFocalBranchOffset = findRenderedBranchOffset(noodel, noodel.focalParent);
 
         noodel.focalParent.applyBranchMove = false;
         noodel.focalParent.branchOffset = currentFocalBranchOffset;
