@@ -86,19 +86,19 @@ export default interface NoodelOptions {
      */
     branchDirection?: BranchDirection;
     /**
-     * A function that determines the horizontal coordinate of the point on the canvas where 
-     * the focal node should be aligned to, given the canvas width as reference. 
-     * Should return a number of pixels counting from the left edge of the canvas.
-     * If the number is greater than the canvas width, will use the canvas width.
-     * Defaults to 1/2 of the canvas width.
+     * A function that determines the trunk-axis position on the canvas where 
+     * the focal node should be aligned to, given the trunk-axis size of the canvas as reference. 
+     * Should return a number of pixels counting from the trunk-axis starting edge of the canvas.
+     * If the number is greater than the canvas size, will use the canvas size.
+     * Defaults to 1/2 of the canvas size.
      */
     focalPositionTrunk?: (canvasSizeTrunk: number) => number;
     /**
-     * A function that determines the vertical coordinate of the point on the canvas where 
-     * the focal node should be aligned to, given the canvas height as reference. 
-     * Should return a number of pixels counting from the top edge of the canvas.
-     * If the number is greater than the canvas height, will use the canvas height.
-     * Defaults to 1/2 of the canvas height.
+     * A function that determines the branch-axis position on the canvas where 
+     * the focal node should be aligned to, given the branch-axis size of the canvas as reference. 
+     * Should return a number of pixels counting from the branch-axis starting edge of the canvas.
+     * If the number is greater than the canvas size, will use the canvas size.
+     * Defaults to 1/2 of the canvas size.
      */
     focalPositionBranch?: (canvasSizeBranch: number) => number;
     /**
@@ -116,5 +116,5 @@ export default interface NoodelOptions {
      * If the number exceeds the node size, will use the node size.
      * Defaults to 1/2 of the node size.
      */
-    focalAnchorBranch?: (nodeSize: number) => number;
+    focalAnchorBranch?: (activeNodeSize: number) => number;
 }
