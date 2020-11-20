@@ -1,4 +1,3 @@
-import { AlignmentX, AlignmentY } from './Alignment';
 import { BranchDirection } from './BranchDirection';
 import { Orientation } from './Orientation';
 
@@ -87,27 +86,39 @@ export default interface NoodelOptions {
      */
     branchDirection?: BranchDirection;
     /**
-     * The horizontal coordinate of the point on the canvas where the focal
-     * node is aligned to. Can be a number of pixels counting from the left edge of the
-     * canvas, or a function of the canvas dimensions that returns such a number.
+     * A function that determines the horizontal coordinate of the point on the canvas where 
+     * the focal node should be aligned to, given the canvas width as reference. 
+     * Should return a number of pixels counting from the left edge of the canvas.
+     * If the number is greater than the canvas width, will use the canvas width.
      * Defaults to 1/2 of the canvas width.
      */
-    focalPositionX?: number | ((canvasWidth: number, canvasHeight: number) => number);
+    focalPositionX?: (canvasWidth: number) => number;
     /**
-     * The vertical coordinate of the point on the canvas where the focal
-     * node is aligned to. Can be a number of pixels counting from the top edge of the
-     * canvas, or a function of the canvas dimensions that returns such a number.
+     * A function that determines the vertical coordinate of the point on the canvas where 
+     * the focal node should be aligned to, given the canvas height as reference. 
+     * Should return a number of pixels counting from the top edge of the canvas.
+     * If the number is greater than the canvas height, will use the canvas height.
      * Defaults to 1/2 of the canvas height.
      */
-    focalPositionY?: number | ((canvasWidth: number, canvasHeight: number) => number);
+    focalPositionY?: (canvasHeight: number) => number;
     /**
-     * Determines how the focal node aligns to the focal position in the horizontal axis.
-     * Defaults to 'center'.
+     * A function that determines the location on the focal branch 
+     * that should align to the focal position,
+     * given the focal branch's size on the trunk axis. Should return a number
+     * of pixels counting from the starting edge of the branch based on the current
+     * trunk orientation. 
+     * If the number is greater than the focal branch size, will use the focal branch size.
+     * Defaults to 1/2 of the focal branch size.
      */
-    focalAlignmentX?: AlignmentX;
+    focalAnchorBranch?: (focalBranchSize: number) => number;
     /**
-     * Determines how the focal node aligns to the focal position in the vertical axis.
-     * Defaults to 'center'.
+     * A function that determines the location on all active nodes 
+     * that should align to the focal position,
+     * given the node's size on the branch axis. Should return a number
+     * of pixels counting from the starting edge of the node based on the current
+     * branch direction. 
+     * If the number is greater than the node size, will use the node size.
+     * Defaults to 1/2 of the node size.
      */
-    focalAlignmentY?: AlignmentY;
+    focalAnchorNode?: (nodeSize: number) => number;
 }

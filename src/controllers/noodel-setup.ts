@@ -87,10 +87,10 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
             showChildIndicators: true,
             orientation: "ltr",
             branchDirection: "normal",
-            focalPositionX: (w, h) => 0.5 * w,
-            focalPositionY: (w, h) => 0.5 * h,
-            focalAlignmentX: 'center',
-            focalAlignmentY: 'center'
+            focalPositionX: (w) => w / 2,
+            focalPositionY: (h) => h / 2,
+            focalAnchorBranch: (s) => s / 2,
+            focalAnchorNode: (s) => s / 2
         },
     });
 
