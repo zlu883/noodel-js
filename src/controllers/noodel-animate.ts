@@ -107,8 +107,8 @@ export function disableBranchMove(noodel: NoodelState, parent: NodeState, applyT
  * during an ongoing transition. Forcing a reflow when a new transition is
  * expected eliminates the problem.
  * 
- * Also useful when you need to force a layout refresh after changing some styles
- * in order to perform further changes.
+ * Also useful when you need to force the browser to apply style changes
+ * after updates in order to prepare for further changes.
  */
 export function forceReflow() {
     document.body.getBoundingClientRect();

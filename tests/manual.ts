@@ -44,11 +44,36 @@ document.getElementById("setReversed").addEventListener("click", () => {
     })
 });
 
+let fp = 0.25;
+
 document.getElementById("setFocalPosition").addEventListener("click", () => {
+    if (fp === 0.25) {
+        fp = 0.75;
+    }
+    else {
+        fp = 0.25;
+    }
+
     noodel.setOptions({
-        focalPositionTrunk: (w, h) => w * 0.25,
-        focalPositionBranch: (w, h) => h * 0.25
-    })
+        focalPositionTrunk: (s) => s * fp,
+        focalPositionBranch: (s) => s * fp
+    });
+});
+
+let fa = 0.1;
+
+document.getElementById("setFocalAnchor").addEventListener("click", () => {
+    if (fa === 0.1) {
+        fa = 0.9;
+    }
+    else {
+        fa = 0.1;
+    }
+
+    noodel.setOptions({
+        focalAnchorTrunk: (s) => s * fa,
+        focalAnchorBranch: (s) => s * fa
+    });
 });
 
 document.getElementById("deleteFocalNode").addEventListener("click", () => {

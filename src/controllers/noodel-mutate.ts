@@ -1,5 +1,5 @@
 import NodeState from '../types/NodeState';
-import { isPanningBranch, isPanningTrunk } from './getters';
+import { isPanningBranch } from './getters';
 import NoodelState from '../types/NoodelState';
 import { updateOffsetsBeforeNodeDelete } from './noodel-align';
 import { forceReflow } from './noodel-animate';
@@ -94,12 +94,12 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
         updateOffsetsBeforeNodeDelete(parent.children[i]);
     }
 
+    if (parent.isFocalParent && isPanningBranch(noodel)) {
+        finalizePan(noodel);
+    }
+
     // if deletion includes active child, change the active child as appropriate
     if (parent.activeChildIndex >= index && parent.activeChildIndex < index + deleteCount) {
-
-        if (parent.isFocalParent && isPanningBranch(noodel)) {
-            finalizePan(noodel);
-        }
 
         // changing active child should happen before changing focal branch
         // to prevent events sending twice
@@ -123,9 +123,7 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
         // change focal parent if current focal branch is being deleted
         if (parent.level <= noodel.focalLevel && parent.isBranchVisible) {
 
-            if (isPanningTrunk(noodel)) {
-                finalizePan(noodel);
-            }
+            finalizePan(noodel);
 
             if (parent.children.length === deleteCount) { // if deleting the whole branch
                 if (parent.r.isRoot) { // if emptying the noodel

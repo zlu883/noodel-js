@@ -134,7 +134,7 @@ export function getActualOffsetBranch(noodel: NoodelState, branchParent: NodeSta
         getFocalOffsetBranch(noodel) 
         - getRelativeOffsetBranch(branchParent)
         - getAnchorOffsetBranch(noodel, getActiveChild(branchParent))
-        - branchParent.branchMoveOffset
+        - (branchParent.isFocalParent ? noodel.branchMoveOffset : 0)
         + branchParent.branchTransitOffset
     );
 }

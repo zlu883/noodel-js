@@ -33,10 +33,10 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
     const parent = node.parent;
     let diff = newSize - node.size;
 
-    // update node size
-    node.size = newSize;
-
     if (Math.abs(diff) > 0.01) {
+        // update node size
+        node.size = newSize;
+
         // update branch relative offsets of next siblings in the branch
         for (let i = node.index + 1; i < parent.children.length; i++) {
             parent.children[i].branchRelativeOffset += diff;
@@ -72,10 +72,10 @@ export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeig
 
     let diff = newSize - parent.branchSize;
 
-    // update branch size
-    parent.branchSize = newSize;
-
     if (Math.abs(diff) > 0.01) {
+        // update branch size
+        parent.branchSize = newSize;
+
         // update trunk relative offset of all descendants
         traverseDescendents(parent, desc => desc.trunkRelativeOffset += diff, false);
 
@@ -112,14 +112,6 @@ export function updateOffsetsBeforeNodeDelete(node: NodeState) {
     }
 }
 
-export function resetTrunkMoveOffset(noodel: NoodelState) {
-    noodel.trunkMoveOffset = 0;
-}
-
-export function resetBranchMoveOffset(parent: NodeState) {
-    parent.branchMoveOffset = 0;
-}
-
 /**
  * Adjust trunk move offset if focal branch size or anchor position changes.
  */
@@ -145,11 +137,11 @@ export function adjustBranchMoveOffset(noodel: NoodelState) {
     let endLimit = focalNode.size - anchorOffset;
     let startLimit = -anchorOffset;
 
-    if (noodel.focalParent.branchMoveOffset > endLimit) {
-        noodel.focalParent.branchMoveOffset = endLimit;
+    if (noodel.branchMoveOffset > endLimit) {
+        noodel.branchMoveOffset = endLimit;
     }
-    else if (noodel.focalParent.branchMoveOffset < startLimit) {
-        noodel.focalParent.branchMoveOffset = startLimit;
+    else if (noodel.branchMoveOffset < startLimit) {
+        noodel.branchMoveOffset = startLimit;
     }
 }
 
@@ -160,7 +152,7 @@ export function adjustBranchMoveOffset(noodel: NoodelState) {
 export function resetAlignment(noodel: NoodelState) {
 
     finalizePan(noodel);
-    //disableTrunkMove(noodel);
+    disableTrunkMove(noodel);
 
     let rect = noodel.r.canvasEl.getBoundingClientRect();
 
@@ -173,15 +165,13 @@ export function resetAlignment(noodel: NoodelState) {
             node.branchRelativeOffset = 0;
             node.size = 0;
             node.branchSize = 0;
-            //disableBranchMove(noodel, node);
+            disableBranchMove(noodel, node);
             node.isBranchTransparent = true;
         },
         true
     );
 
     nextTick(() => {
-        //enableTrunkMove(noodel);
-        
         traverseDescendents(
             noodel.root,
             (node) => {
@@ -195,10 +185,15 @@ export function resetAlignment(noodel: NoodelState) {
                     updateBranchSize(noodel, node, rect.height, rect.width);
                 }
 
-                //enableBranchMove(node);
                 node.isBranchTransparent = false;
             },
             true
         );
+
+        nextTick(() => {
+            forceReflow();
+            enableTrunkMove(noodel);
+            traverseDescendents(noodel.root, node => enableBranchMove(node), true);
+        });
     });
 }

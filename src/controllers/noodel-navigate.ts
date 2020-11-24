@@ -1,6 +1,6 @@
 import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
-import { getActiveChild, getFocalNode, isPanning, isPanningBranch, isPanningTrunk } from './getters';
+import { getActiveChild, getFocalNode } from './getters';
 import { forceReflow } from '../controllers/noodel-animate';
 import { exitInspectMode } from './inspect-mode';
 import { queueFocalNodeChange, queueFocalParentChange } from './event-emit';
@@ -77,9 +77,7 @@ export function shiftFocalLevel(noodel: NoodelState, levelDiff: number) {
         exitInspectMode(noodel);
     }
 
-    if (isPanningTrunk(noodel)) {
-        finalizePan(noodel);
-    }
+    finalizePan(noodel);
 
     let newFocalParent = findNewFocalParent(noodel, levelDiff);
 
@@ -112,9 +110,7 @@ export function shiftFocalNode(noodel: NoodelState, indexDiff: number) {
         exitInspectMode(noodel);
     }
 
-    if (isPanningBranch(noodel)) {
-        finalizePan(noodel);
-    }
+    finalizePan(noodel);
 
     let focalParent = noodel.focalParent;
     let targetIndex = focalParent.activeChildIndex + indexDiff;
@@ -169,23 +165,32 @@ export function jumpTo(noodel: NoodelState, target: NodeState) {
 
     // first establish the focal parent and nodes so that events are triggered properly,
     // the order here is important so events won't be triggered twice
-    setActiveChild(noodel, nextParent, nextActiveChildIndex);
-    setFocalParent(noodel, nextParent);
-
-    // adjusts the active child of ancestors up to the nearest visible branch to point to target
-    while (true) {
-        if (nextParent.isBranchVisible) { // has reached nearest visible branch
-            hideActiveSubtree(nextParent);
-            setActiveChild(noodel, nextParent, nextActiveChildIndex);
-            showActiveSubtree(noodel.root, noodel.focalLevel + noodel.options.visibleSubtreeDepth);
-            break; 
-        }
-        
+    if (nextParent.isBranchVisible) {
+        hideActiveSubtree(getActiveChild(nextParent));
         setActiveChild(noodel, nextParent, nextActiveChildIndex);
-        nextActiveChildIndex = nextParent.index;
-        nextParent = nextParent.parent;
+        showActiveSubtree(getActiveChild(nextParent), noodel.options.visibleSubtreeDepth);
+        setFocalParent(noodel, nextParent);
     }
-    
+    else {
+        setActiveChild(noodel, nextParent, nextActiveChildIndex);
+        setFocalParent(noodel, nextParent);
+
+        // adjusts the active child of ancestors up to the nearest visible branch to point to target
+        while (true) {
+            nextActiveChildIndex = nextParent.index;
+            nextParent = nextParent.parent;
+
+            if (nextParent.isBranchVisible) { // has reached nearest visible branch
+                hideActiveSubtree(getActiveChild(nextParent));
+                setActiveChild(noodel, nextParent, nextActiveChildIndex);
+                showActiveSubtree(nextParent, (noodel.focalLevel - nextParent.level) + noodel.options.visibleSubtreeDepth);
+                break; 
+            }
+            
+            setActiveChild(noodel, nextParent, nextActiveChildIndex);
+        }    
+    }
+
     forceReflow();
 }
 

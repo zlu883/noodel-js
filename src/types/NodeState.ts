@@ -58,11 +58,6 @@ export default interface NodeState {
 
     applyBranchMove: boolean;
     /**
-     * Transient orientation-agnostic offset of this node's child branch 
-     * caused by panning, relative to the anchor point of the active node.
-     */
-    branchMoveOffset: number;
-    /**
      * Transient orientation agnostic offset of this node's child branch applied when the branch
      * needs to "escape" the middle of a transition while preserving its other state
      * but still keeping the visual position.

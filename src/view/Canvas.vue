@@ -81,14 +81,12 @@ export default defineComponent({
 		setupCanvasEl(this.noodel);
 		setupCanvasInput(this.noodel);
 
-		// use triple RAF to ensure that all side effects (e.g. resize sensor callbacks)
+		// use double RAF to ensure that all side effects (e.g. size captures)
 		// are finished
 		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
-				requestAnimationFrame(() => {
-					this.noodel.isMounted = true;
-					queueMount(this.noodel);
-				});
+				this.noodel.isMounted = true;
+				queueMount(this.noodel);
 			});
 		});
 	},

@@ -74,7 +74,7 @@ export default defineComponent({
 		);
 		attachBranchResizeSensor(this.noodel, this.parent);
 
-		nextTick(() => {
+		requestAnimationFrame(() => {
 			this.parent.isBranchMounted = true;
 		});
 	},

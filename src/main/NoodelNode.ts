@@ -518,7 +518,7 @@ export default class NoodelNode {
     /**
      * Asynchronous method to capture the length of this node (on the branch axis) and adjust 
      * the branch's position if necessary. Use when resize detection is disabled to manually
-     * trigger realignment on node resize. Fails silently if this is root or noodel is not mounted.
+     * trigger realignment on node resize. Does nothing if this is root or noodel is not mounted.
      */
     realign() {
         this.throwErrorIfDeleted();
@@ -538,7 +538,7 @@ export default class NoodelNode {
     /**
      * Asynchronous method to capture the length of this node's child branch (on the trunk axis) and adjust 
      * the trunk's position if necessary. Use when resize detection is disabled to manually
-     * trigger realignment on branch resize. Fails silently if this has no children or noodel is not mounted.
+     * trigger realignment on branch resize. Does nothing if this has no children or noodel is not mounted.
      */
     realignBranch() {
         this.throwErrorIfDeleted();

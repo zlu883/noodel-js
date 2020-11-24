@@ -5,16 +5,16 @@ import NoodelState from '../types/NoodelState';
 import { showActiveSubtree } from './noodel-navigate';
 import { jumpToHash, setupRouting, unsetRouting } from './noodel-routing';
 import NodeOptions from '../types/NodeOptions';
-import { generateNodeId, registerNodeSubtree, findNode, isIdRegistered } from './id-register';
-import { jumpTo } from './noodel-navigate';
+import { generateNodeId, registerNodeSubtree, isIdRegistered } from './id-register';
 import { finalizePan } from './noodel-pan';
 import { adjustBranchMoveOffset, adjustTrunkMoveOffset, resetAlignment, updateCanvasSize } from './noodel-align';
 import { traverseDescendents } from './noodel-traverse';
 import { attachBranchResizeSensor, attachCanvasResizeSensor, attachResizeSensor, detachBranchResizeSensor, detachResizeSensor } from './resize-detect';
 import NoodelNode from '../main/NoodelNode';
-import { reactive, markRaw } from 'vue';
+import { reactive, markRaw, nextTick } from 'vue';
 import ComponentContent from '../types/ComponentContent';
 import { isPanningBranch, isPanningTrunk } from './getters';
+import { disableBranchMove, enableBranchMove, forceReflow } from './noodel-animate';
 
 export function setupNoodel(root: NodeDefinition, options: NoodelOptions): NoodelState {
 
@@ -56,8 +56,9 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
         focalLevel: 1,
 
         trunkOffset: 0,
-        applyTrunkMove: false,
+        applyTrunkMove: true,
         trunkMoveOffset: 0,
+        branchMoveOffset: 0,
         trunkTransitOffset: 0,
 
         branchStartReached: false,
@@ -218,14 +219,16 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
         let newOrientation = noodel.options.orientation;
         let newBranchDirection = noodel.options.branchDirection;
 
-        if (((oldOrientation === 'ltr' || oldOrientation === 'rtl') && (newOrientation === 'ttb' || newOrientation === 'btt')) ||
-            ((oldOrientation === 'ttb' || oldOrientation === 'btt') && (newOrientation === 'ltr' || newOrientation === 'rtl'))) {
+        if (newOrientation !== oldOrientation) {
             resetAlignment(noodel);
         }
         else if (newBranchDirection !== oldBranchDirection) {
-            // prevents transition going haywire, not necessary if orientation also changes since
-            // realignAll will do it
-            traverseDescendents(noodel.root, node => node.applyBranchMove = false, true);
+            // prevent transition
+            traverseDescendents(noodel.root, node => disableBranchMove(noodel, node), true);
+            nextTick(() => {
+                forceReflow();
+                traverseDescendents(noodel.root, node => enableBranchMove(node), true)
+            });
         }
 
         let newUseResizeDetection = noodel.options.useResizeDetection;
@@ -346,8 +349,7 @@ export function buildNodeState(noodel: NoodelState, def: NodeDefinition, index: 
         isInInspectMode: false,
 
         branchOffset: 0,
-        applyBranchMove: false,
-        branchMoveOffset: 0,
+        applyBranchMove: true,
         branchTransitOffset: 0,
 
         branchRelativeOffset: branchRelativeOffset,
