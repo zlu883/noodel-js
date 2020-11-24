@@ -1,5 +1,5 @@
 import NoodelState from '../types/NoodelState';
-import { doJumpNavigation } from './noodel-navigate';
+import { jumpTo } from './noodel-navigate';
 import { findNode } from './id-register';
 import { getActiveChild } from './getters';
 
@@ -8,18 +8,22 @@ export function setupRouting(noodel: NoodelState) {
     if (noodel.r.onHashChanged) return;
 
     noodel.r.onHashChanged = () => {
-        let hash = window.location.hash;
-
-        if (hash) {
-            let target = findNode(noodel, hash.substr(1));
-
-            if (target && target.parent) {
-                doJumpNavigation(noodel, target);
-            }
-        } 
+        jumpToHash(noodel);
     };
 
     window.addEventListener("hashchange", noodel.r.onHashChanged);
+}
+
+export function jumpToHash(noodel: NoodelState) {
+    let hash = window.location.hash;
+
+    if (hash) {
+        let target = findNode(noodel, hash.substr(1));
+
+        if (target && target.parent) {
+            jumpTo(noodel, target);
+        }
+    } 
 }
 
 export function syncHashToFocalNode(noodel: NoodelState) {

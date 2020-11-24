@@ -1,10 +1,10 @@
 import NodeState from '../types/NodeState';
 import NodeDefinition from '../types/NodeDefinition';
-import { setActiveChild, deleteChildren, insertChildren } from '../controllers/noodel-mutate';
+import { deleteChildren, insertChildren } from '../controllers/noodel-mutate';
 import { parseAndApplyNodeOptions, parseContent } from '../controllers/noodel-setup';
 import { getPath as _getPath } from '../controllers/getters';
-import { alignBranchToIndex, updateNodeSize, updateBranchSize } from '../controllers/noodel-align';
-import { shiftFocalNode, doJumpNavigation } from '../controllers/noodel-navigate';
+import { updateNodeSize, updateBranchSize } from '../controllers/noodel-align';
+import { shiftFocalNode, jumpTo, setActiveChild } from '../controllers/noodel-navigate';
 import NoodelState from '../types/NoodelState';
 import { changeNodeId, unregisterNodeSubtree } from '../controllers/id-register';
 import NodeOptions from '../types/NodeOptions';
@@ -336,12 +336,11 @@ export default class NoodelNode {
         if (this.state.isFocalParent) {
             shiftFocalNode(this.noodelState, index - this.state.activeChildIndex);
         }
-        else if (this.state.isBranchVisible && (this.state.level + 1) < this.noodelState.focalLevel) {
-            doJumpNavigation(this.noodelState, this.state.children[index]);
+        else if (this.state.isBranchVisible && this.state.level < this.noodelState.focalLevel) {
+            jumpTo(this.noodelState, this.state.children[index]);
         }
         else {
-            setActiveChild(this.state, index);
-            alignBranchToIndex(this.state, index);
+            setActiveChild(this.noodelState, this.state, index);
         }
     }
 
@@ -356,7 +355,7 @@ export default class NoodelNode {
             throw new Error("Cannot jump to focus: target is root");
         }
 
-        doJumpNavigation(this.noodelState, this.state);
+        jumpTo(this.noodelState, this.state);
     }
 
     /**

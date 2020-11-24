@@ -23,6 +23,38 @@ export function getPath(node: NodeState): number[] {
     return path.reverse();
 }
 
+export function isFirstNode(node: NodeState): boolean {
+    return node.index === 0;
+}
+
+export function isLastNode(node: NodeState): boolean {
+    return node.index === node.parent.children.length - 1;
+}
+
+export function isTopmostBranch(parent: NodeState): boolean {
+    return parent.r.isRoot;
+}
+
+export function isDeepestBranch(parent: NodeState): boolean {
+    return getActiveChild(getActiveChild(parent)) === null;
+}
+
+export function isEmpty(noodel: NoodelState): boolean {
+    return noodel.root.children.length === 0;
+}
+
+export function isPanning(noodel: NoodelState): boolean {
+    return noodel.r.panAxis !== null;
+}
+
+export function isPanningTrunk(noodel: NoodelState): boolean {
+    return noodel.r.panAxis === 'trunk';
+}
+
+export function isPanningBranch(noodel: NoodelState): boolean {
+    return noodel.r.panAxis === 'branch';
+}
+ 
 /**
  * The orientation agnostic distance counting from the start of the trunk axis
  * to the focal position.
@@ -60,21 +92,21 @@ export function getRelativeOffsetBranch(branchParent: NodeState) {
 }
 
 /**
- * The orientation agnostic distance of the current focal branch's anchor point
+ * The orientation agnostic distance of a branch's anchor point
  * from the branch's starting edge.
  */
-export function getAnchorOffsetTrunk(noodel: NoodelState) {
-    let focalBranchSize = noodel.focalParent.branchSize;
+export function getAnchorOffsetTrunk(noodel: NoodelState, branchParent: NodeState) {
+    let focalBranchSize = branchParent.branchSize;
 
     return Math.min(noodel.options.focalAnchorTrunk(focalBranchSize), focalBranchSize);
 }
 
 /**
- * The orientation agnostic distance of an active node's anchor point
+ * The orientation agnostic distance of a node's anchor point
  * from the node's starting edge.
  */
-export function getAnchorOffsetBranch(noodel: NoodelState, branchParent: NodeState) {
-    let nodeSize = getActiveChild(branchParent).size;
+export function getAnchorOffsetBranch(noodel: NoodelState, node: NodeState) {
+    let nodeSize = node.size;
 
     return Math.min(noodel.options.focalAnchorBranch(nodeSize), nodeSize);
 }
@@ -87,8 +119,9 @@ export function getActualOffsetTrunk(noodel: NoodelState): number {
     return (
         getFocalOffsetTrunk(noodel) 
         - getRelativeOffsetTrunk(noodel)
-        - getAnchorOffsetTrunk(noodel)
+        - getAnchorOffsetTrunk(noodel, noodel.focalParent)
         - noodel.trunkMoveOffset
+        + noodel.trunkTransitOffset
     );
 }
 
@@ -100,7 +133,8 @@ export function getActualOffsetBranch(noodel: NoodelState, branchParent: NodeSta
     return (
         getFocalOffsetBranch(noodel) 
         - getRelativeOffsetBranch(branchParent)
-        - getAnchorOffsetBranch(noodel, branchParent)
+        - getAnchorOffsetBranch(noodel, getActiveChild(branchParent))
         - branchParent.branchMoveOffset
+        + branchParent.branchTransitOffset
     );
 }

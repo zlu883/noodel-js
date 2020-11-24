@@ -26,7 +26,6 @@
 			ref="slider"	
 			:class="branchSliderClass"
 			:style="branchSliderStyle"		
-			@transitionend="onTransitionEnd"	
 		>
 			<NodeTransitionGroup 
 				:noodel="noodel" 
@@ -91,7 +90,6 @@ export default defineComponent({
 		this.parent.applyBranchMove = false;
 		this.parent.isBranchTransparent = true;
 		this.parent.branchSize = 0;
-		this.parent.branchOffset = 0;
 	},
 
 	computed: {
@@ -139,7 +137,9 @@ export default defineComponent({
 		branchSliderClass(): string {
 			let className = '';
 
-			if (this.parent.applyBranchMove) className += 'nd-branch-slider-move ';
+			if (this.parent.applyBranchMove && this.parent.isBranchMounted) {
+				className += 'nd-branch-slider-move ';
+			}
 
 			className += this.parent.classNames.branchSlider || '';
 
@@ -180,18 +180,6 @@ export default defineComponent({
 		branchContentBoxStyle(): string {
 			return this.parent.styles.branchContentBox;
 		},
-	},
-
-	methods: {
-		onTransitionEnd(ev: TransitionEvent) {
-			if (
-				ev.propertyName === "transform" &&
-				ev.target === this.parent.r.branchSliderEl
-			) {
-				if (this.parent.r.ignoreTransitionEnd) return;
-				this.parent.applyBranchMove = false;
-			}
-		},
-	},
+	}
 });
 </script>

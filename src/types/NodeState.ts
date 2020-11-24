@@ -15,7 +15,6 @@ export default interface NodeState {
         eventListeners: Map<keyof NodeEventMap, NodeEventMap[keyof NodeEventMap][]>;
 
         isRoot: boolean;
-        ignoreTransitionEnd: boolean;
 
         contentBoxEl: HTMLDivElement;
         el: HTMLDivElement;
@@ -57,18 +56,18 @@ export default interface NodeState {
     isFocalParent: boolean;
     isActive: boolean;
 
-    /**
-     * This is the orientation-agnostic offset of this node's child branch counting from
-     * the *start* of the branch axis. Does not take into account the focal position.
-     */
-    branchOffset: number;
     applyBranchMove: boolean;
     /**
      * Transient orientation-agnostic offset of this node's child branch 
-     * caused by panning or animation effects,
-     * relative to the anchor point of the active node.
+     * caused by panning, relative to the anchor point of the active node.
      */
     branchMoveOffset: number;
+    /**
+     * Transient orientation agnostic offset of this node's child branch applied when the branch
+     * needs to "escape" the middle of a transition while preserving its other state
+     * but still keeping the visual position.
+     */
+    branchTransitOffset: number;
 
     size: number;
     branchSize: number;

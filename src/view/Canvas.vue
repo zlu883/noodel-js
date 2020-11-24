@@ -44,7 +44,6 @@
 			class="nd-trunk"
 			:class="trunkClass"
 			:style="trunkStyle"
-			@transitionend="onTrunkTransitionEnd"
 		>
 			<BranchTransitionGroup
 				:allParents="allBranchParents"
@@ -62,7 +61,6 @@ import { setupCanvasEl } from "../controllers/noodel-setup";
 import { setupCanvasInput } from "../controllers/input-binding";
 import { traverseDescendents } from "../controllers/noodel-traverse";
 import NoodelState from "../types/NoodelState";
-import { alignBranchToIndex, alignTrunkToBranch } from "../controllers/noodel-align";
 import NodeState from "../types/NodeState";
 import { PropType, defineComponent } from "vue";
 import { queueMount } from "../controllers/event-emit";
@@ -83,28 +81,19 @@ export default defineComponent({
 		setupCanvasEl(this.noodel);
 		setupCanvasInput(this.noodel);
 
-		this.$nextTick(() => {
-			this.allBranchParents.forEach((parent) => {
-				alignBranchToIndex(parent, parent.activeChildIndex);
-			});
-
-			alignTrunkToBranch(this.noodel, this.noodel.focalParent);
-
-			// use triple RAF to ensure that all side effects (e.g. resize sensor callbacks)
-			// are finished
+		// use triple RAF to ensure that all side effects (e.g. resize sensor callbacks)
+		// are finished
+		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
 				requestAnimationFrame(() => {
-					requestAnimationFrame(() => {
-						this.noodel.isMounted = true;
-						queueMount(this.noodel);
-					});
+					this.noodel.isMounted = true;
+					queueMount(this.noodel);
 				});
 			});
 		});
 	},
 
 	unmounted: function () {
-		this.noodel.trunkOffset = 0;
 		this.noodel.canvasSizeBranch = 0;
 		this.noodel.canvasSizeTrunk = 0;
 		this.noodel.isMounted = false;
@@ -305,10 +294,10 @@ export default defineComponent({
 			return { transform };
 		},
 
-		trunkClass(): {} {
-			return {
-				"nd-trunk-move": this.noodel.applyTrunkMove,
-			};
+		trunkClass(): string {
+			if (this.noodel.applyTrunkMove && this.noodel.isMounted) {
+				return "nd-trunk-move";
+			}
 		},
 
 		allBranchParents(): NodeState[] {
@@ -329,20 +318,10 @@ export default defineComponent({
 	},
 
 	methods: {
-		onTrunkTransitionEnd(ev: TransitionEvent) {
-			if (
-				ev.propertyName === "transform" &&
-				ev.target === this.noodel.r.trunkEl
-			) {
-				if (this.noodel.r.ignoreTransitionEnd) return;
-				this.noodel.applyTrunkMove = false;
-			}
-		},
-
 		onDragStart(ev: DragEvent) {
 			if (this.noodel.isInInspectMode) return;
 			ev.preventDefault();
-		},
+		}
 	},
 });
 </script>

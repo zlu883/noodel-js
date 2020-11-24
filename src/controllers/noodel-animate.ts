@@ -3,6 +3,104 @@ import NodeState from 'src/types/NodeState';
 import { getActualOffsetBranch, getActualOffsetTrunk } from './getters';
 
 /**
+ * Calculates the difference between the expected trunk offset
+ * and its current rendered offset (may be in transition)
+ * and set it as the transit offset.
+ */
+function applyTrunkTransitOffset(noodel: NoodelState) {
+    let orientation = noodel.options.orientation;
+    let canvasRect = noodel.r.canvasEl.getBoundingClientRect();
+    let trunkRect = noodel.r.trunkEl.getBoundingClientRect();
+    let renderedOffset;
+
+    if (orientation === 'ltr') {
+        renderedOffset = trunkRect.left - canvasRect.left;
+    }
+    else if (orientation === 'rtl') {
+        renderedOffset = canvasRect.right - trunkRect.right;
+    }
+    else if (orientation === 'ttb') {
+        renderedOffset = trunkRect.top - canvasRect.top;
+    }
+    else if (orientation === 'btt') {
+        renderedOffset = canvasRect.bottom - trunkRect.bottom;
+    }
+
+    noodel.trunkTransitOffset = renderedOffset - getActualOffsetTrunk(noodel);
+}
+
+/**
+ * Calculates the difference between the expected branch offset
+ * and its current rendered offset (may be in transition)
+ * and set it as the transit offset.
+ */
+function applyBranchTransitOffset(noodel: NoodelState, parent: NodeState) {
+    if (!parent.isBranchVisible) return;
+
+    let orientation = noodel.options.orientation;
+    let branchDirection = noodel.options.branchDirection;
+    let canvasRect = noodel.r.canvasEl.getBoundingClientRect();
+    let branchSliderRect = parent.r.branchSliderEl.getBoundingClientRect();
+    let renderedOffset;
+
+    if (orientation === 'ltr' || orientation === 'rtl') {
+        if (branchDirection === 'normal') {
+            renderedOffset = branchSliderRect.top - canvasRect.top;
+        }
+        else if (branchDirection === 'reverse') {
+            renderedOffset = canvasRect.bottom - branchSliderRect.bottom;
+        }
+    }
+    else if (orientation === 'ttb' || orientation === 'btt') {
+        if (branchDirection === 'normal') {
+            renderedOffset = branchSliderRect.left - canvasRect.left;
+        }
+        else if (branchDirection === 'reverse') {
+            renderedOffset = canvasRect.right - branchSliderRect.right;
+        }
+    }
+
+    parent.branchTransitOffset = renderedOffset - getActualOffsetBranch(noodel, parent);
+}
+
+/**
+ * Enable trunk move animation by attaching the move class. 
+ */
+export function enableTrunkMove(noodel: NoodelState) {
+    if (noodel.applyTrunkMove) return;
+    noodel.trunkTransitOffset = 0;
+    noodel.applyTrunkMove = true;
+}
+
+/**
+ * Disable trunk move animation by detaching the move class. 
+ * Can optionally apply transit offset.
+ */
+export function disableTrunkMove(noodel: NoodelState, applyTransit: boolean = false) {
+    if (!noodel.applyTrunkMove) return;
+    if (applyTransit) applyTrunkTransitOffset(noodel);
+    noodel.applyTrunkMove = false;
+}
+
+/**
+ * Enable branch move animation by attaching the move class. 
+ */
+export function enableBranchMove(parent: NodeState) {
+    if (parent.applyBranchMove) return;
+    parent.branchTransitOffset = 0;
+    parent.applyBranchMove = true;
+}
+
+/**
+ * Disable branch move animation by detaching the move class. 
+ */
+export function disableBranchMove(noodel: NoodelState, parent: NodeState, applyTransit: boolean = false) {
+    if (!parent.applyBranchMove) return;
+    if (applyTransit) applyBranchTransitOffset(noodel, parent);
+    parent.applyBranchMove = false;
+}
+
+/**
  * Forces a layout reflow on browsers by doing a computed property access.
  * Some browsers have an issue with transform/opacity transitions 
  * such that the rendering will glitch if the property is changed midway
@@ -14,61 +112,4 @@ import { getActualOffsetBranch, getActualOffsetTrunk } from './getters';
  */
 export function forceReflow() {
     document.body.getBoundingClientRect();
-}
-
-/**
- * Finds the current rendered trunk offset, taking into account the possibility
- * of it being in transition.
- */
-export function findRenderedTrunkOffset(noodel: NoodelState): number {
-
-    if (!noodel.applyTrunkMove) return getActualOffsetTrunk(noodel);
-
-    let orientation = noodel.options.orientation;
-    let canvasRect = noodel.r.canvasEl.getBoundingClientRect();
-    let trunkRect = noodel.r.trunkEl.getBoundingClientRect();
-
-    if (orientation === 'ltr') {
-        return trunkRect.left - canvasRect.left;
-    }
-    else if (orientation === 'rtl') {
-        return canvasRect.right - trunkRect.right;
-    }
-    else if (orientation === 'ttb') {
-        return trunkRect.top - canvasRect.top;
-    }
-    else if (orientation === 'btt') {
-        return canvasRect.bottom - trunkRect.bottom;
-    }
-}
-
-/**
- * Finds the current rendered focal branch offset, taking into account the possibility
- * of it being in transition.
- */
-export function findRenderedBranchOffset(noodel: NoodelState, parent: NodeState): number {
-
-    if (!parent.applyBranchMove) return getActualOffsetBranch(noodel, parent);
-
-    let orientation = noodel.options.orientation;
-    let branchDirection = noodel.options.branchDirection;
-    let canvasRect = noodel.r.canvasEl.getBoundingClientRect();
-    let branchSliderRect = parent.r.branchSliderEl.getBoundingClientRect();
-
-    if (orientation === 'ltr' || orientation === 'rtl') {
-        if (branchDirection === 'normal') {
-            return branchSliderRect.top - canvasRect.top;
-        }
-        else if (branchDirection === 'reverse') {
-            return canvasRect.bottom - branchSliderRect.bottom;
-        }
-    }
-    else if (orientation === 'ttb' || orientation === 'btt') {
-        if (branchDirection === 'normal') {
-            return branchSliderRect.left - canvasRect.left;
-        }
-        else if (branchDirection === 'reverse') {
-            return canvasRect.right - branchSliderRect.right;
-        }
-    }
 }

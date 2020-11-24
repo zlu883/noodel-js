@@ -1,20 +1,15 @@
 import NoodelState from 'src/types/NoodelState';
-import { getActiveChild } from './getters';
-import { hideActiveSubtree, setActiveChild, setFocalParent, showActiveSubtree } from './noodel-mutate';
+import { getActiveChild, getAnchorOffsetBranch, getAnchorOffsetTrunk, isDeepestBranch, isFirstNode, isLastNode, isPanning, isPanningBranch, isPanningTrunk, isTopmostBranch } from './getters';
+import { hideActiveSubtree, setActiveChild, setFocalParent, showActiveSubtree } from './noodel-navigate';
 import { NoodelAxis } from 'src/types/NoodelAxis';
 import { Axis } from 'src/types/Axis';
-import { shiftFocalLevel, shiftFocalNode, unsetLimitIndicators } from './noodel-navigate';
-import { findRenderedBranchOffset, findRenderedTrunkOffset } from './noodel-animate';
+import { shiftFocalLevel, shiftFocalNode, queueUnsetLimitIndicator } from './noodel-navigate';
+import { enableBranchMove, enableTrunkMove, disableBranchMove, disableTrunkMove } from './noodel-animate';
+import { resetBranchMoveOffset, resetTrunkMoveOffset } from './noodel-align';
 
 export function startPan(noodel: NoodelState, realAxis: Axis) {
 
-    clearTimeout(noodel.r.limitIndicatorTimeout);
-
-    let currentFocalNode = getActiveChild(noodel.focalParent);
-
-    if (!currentFocalNode) return;
-
-    noodel.r.panStartFocalNode = currentFocalNode;
+    queueUnsetLimitIndicator(noodel, 0);
 
     let panAxis: NoodelAxis = null;
     let orientation = noodel.options.orientation;
@@ -29,94 +24,109 @@ export function startPan(noodel: NoodelState, realAxis: Axis) {
     noodel.r.panAxis = panAxis;
 
     if (panAxis === "trunk") {
-        let currentTrunkOffset = findRenderedTrunkOffset(noodel);
-
-        noodel.applyTrunkMove = false;
-        noodel.trunkOffset = currentTrunkOffset;
-        noodel.r.panOriginTrunk = currentTrunkOffset;
+        disableTrunkMove(noodel, true);
     }
     else if (panAxis === "branch") {
-        let currentFocalBranchOffset = findRenderedBranchOffset(noodel, noodel.focalParent);
-
-        noodel.focalParent.applyBranchMove = false;
-        noodel.focalParent.branchOffset = currentFocalBranchOffset;
-        noodel.r.panOriginBranch = currentFocalBranchOffset;
+        disableBranchMove(noodel, noodel.focalParent, true);
     }
 }
 
-/**
- * Make pan movement based on the given delta, changing the focal node/parent
- * and set limit indicators as necessary. Makes no assumption on the magnitude of the movement, 
- * and aims to be correct regardless of the target offset, bounding the movement to the possible limits.
- */
-export function updatePan(noodel: NoodelState, velocityX: number, velocityY: number, deltaX: number, deltaY: number, timestamp: number) {
-
-    if (noodel.r.panAxis === null) return;
-
-    let velocity = null;
-    let delta = null;
+export function updatePan(noodel: NoodelState, velocityX: number, velocityY: number, distanceX: number, distanceY: number, timestamp: number) {
     let orientation = noodel.options.orientation;
+    let deltaX = distanceX - noodel.r.lastPanDistanceX;
+    let deltaY = distanceY - noodel.r.lastPanDistanceY;
 
-    if (noodel.r.panAxis === "trunk") {
+    noodel.r.lastPanDistanceX = distanceX;
+    noodel.r.lastPanDistanceY = distanceY;
+
+    let appliedDelta = null; // this is the orientation agnostic delta caused by the movement
+    let appliedVelocity = null; // this is the orientation agnostic velocity caused by the movement
+
+    if (isPanningTrunk(noodel)) {
 
         if (orientation === 'ltr') {
-            velocity = -velocityX;
-            delta = -deltaX;
+            appliedVelocity = -velocityX;
+            appliedDelta = -deltaX;
         }
         else if (orientation === 'rtl') {
-            velocity = velocityX;
-            delta = deltaX;
+            appliedVelocity = velocityX;
+            appliedDelta = deltaX;
         }
         else if (orientation === 'ttb') {
-            velocity = -velocityY;
-            delta = -deltaY;
+            appliedVelocity = -velocityY;
+            appliedDelta = -deltaY;
         }
         else if (orientation === 'btt') {
-            velocity = velocityY;
-            delta = deltaY;
+            appliedVelocity = velocityY;
+            appliedDelta = deltaY;
         }
 
-        updateSwipeVelocityBuffer(noodel, velocity, timestamp);
+        updateSwipeVelocityBuffer(noodel, appliedVelocity, timestamp);
 
-        let targetOffset = noodel.r.panOriginTrunk + (delta * noodel.options.swipeMultiplierTrunk);
+        if (appliedDelta === 0) return;
+
+        // from here onwards, will attempt to move the trunk and change
+        // focal parent if necessary, based on the applied delta
+
+        appliedDelta *= noodel.options.swipeMultiplierTrunk;
+
+        let targetMoveOffset = noodel.trunkMoveOffset;
         let targetFocalParent = noodel.focalParent;
+        let targetFocalParentAnchorOffset = getAnchorOffsetTrunk(noodel, targetFocalParent);
         let trunkStartReached = false;
         let trunkEndReached = false;
 
-        if (targetOffset === noodel.trunkOffset) {
-            return;
-        }
-        else if (targetOffset > noodel.trunkOffset) { // moving towards trunk axis end
-            while (targetOffset > targetFocalParent.trunkRelativeOffset + targetFocalParent.branchSize) {
-                let next = getActiveChild(targetFocalParent);
+        if (appliedDelta < 0) { // moving towards trunk axis start
 
-                if (!getActiveChild(next)) break;
-                targetFocalParent = next;
-            }
+            // makes it easier to reason with the signs
+            appliedDelta = Math.abs(appliedDelta);
 
-            if (!getActiveChild(getActiveChild(targetFocalParent))) {
-                let limit = targetFocalParent.trunkRelativeOffset + targetFocalParent.branchSize / 2;
+            while (true) {
+                let projectedOffset = targetMoveOffset - appliedDelta;
 
-                if (targetOffset > limit) {
-                    trunkEndReached = true;
-                    targetOffset = limit;
+                if (isTopmostBranch(targetFocalParent) && projectedOffset < 0) {
+                    trunkStartReached = true;
+                    targetMoveOffset = 0;
+                    break;
+                }
+
+                if (projectedOffset < -targetFocalParentAnchorOffset) {
+                    // reduce applied delta - be very careful with signs here
+                    appliedDelta -= targetMoveOffset + targetFocalParentAnchorOffset;
+                    targetFocalParent = targetFocalParent.parent;
+                    targetFocalParentAnchorOffset = getAnchorOffsetTrunk(noodel, targetFocalParent);
+                    targetMoveOffset = targetFocalParent.branchSize - targetFocalParentAnchorOffset;
+                }
+                else {
+                    targetMoveOffset = projectedOffset;
+                    break;
                 }
             }
         }
-        else { // moving towards trunk axis start            
-            while (targetOffset < targetFocalParent.trunkRelativeOffset) {
-                let prev = targetFocalParent.parent;
+        else { // moving towards trunk axis end   
 
-                if (!prev) break;
-                targetFocalParent = prev;
-            }
+            // makes it easier to reason with the signs
+            appliedDelta = Math.abs(appliedDelta);
 
-            if (!targetFocalParent.parent) { // is root
-                let limit = targetFocalParent.branchSize / 2;
+            while (true) {
+                let projectedOffset = targetMoveOffset + appliedDelta;
 
-                if (targetOffset < limit) {
-                    trunkStartReached = true;
-                    targetOffset = limit;
+                if (isDeepestBranch(targetFocalParent) && projectedOffset > 0) {
+                    trunkEndReached = true;
+                    targetMoveOffset = 0;
+                    break;
+                }
+
+                if (projectedOffset > targetFocalParent.branchSize - targetFocalParentAnchorOffset) {
+                    // reduce applied delta - be very careful with signs here
+                    appliedDelta -= targetFocalParent.branchSize - targetFocalParentAnchorOffset - targetMoveOffset;
+                    targetFocalParent = getActiveChild(targetFocalParent);
+                    targetFocalParentAnchorOffset = getAnchorOffsetTrunk(noodel, targetFocalParent);
+                    targetMoveOffset = -targetFocalParentAnchorOffset;
+                }
+                else {
+                    targetMoveOffset = projectedOffset;
+                    break;
                 }
             }
         }
@@ -127,129 +137,143 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
 
         noodel.trunkEndReached = trunkEndReached;
         noodel.trunkStartReached = trunkStartReached;
-        noodel.trunkOffset = targetOffset;
     }
-    else if (noodel.r.panAxis === "branch") {
+    else if (isPanningBranch(noodel)) {
 
         let branchDirection = noodel.options.branchDirection;
 
         if (orientation === 'ltr' || orientation === 'rtl') {
             if (branchDirection === 'normal') {
-                velocity = -velocityY;
-                delta = -deltaY;
+                appliedVelocity = -velocityY;
+                appliedDelta = -deltaY;
             }
             else if (branchDirection === 'reverse') {
-                velocity = velocityY;
-                delta = deltaY;
+                appliedVelocity = velocityY;
+                appliedDelta = deltaY;
             }           
         }
         else if (orientation === 'ttb' || orientation === 'btt') {
             if (branchDirection === 'normal') {
-                velocity = -velocityX;
-                delta = -deltaX;
+                appliedVelocity = -velocityX;
+                appliedDelta = -deltaX;
             }
             else if (branchDirection === 'reverse') {
-                velocity = velocityX;
-                delta = deltaX;
+                appliedVelocity = velocityX;
+                appliedDelta = deltaX;
             }     
         }
 
-        updateSwipeVelocityBuffer(noodel, velocity, timestamp);
+        updateSwipeVelocityBuffer(noodel, appliedVelocity, timestamp);
 
-        let targetOffset = noodel.r.panOriginBranch + (delta * noodel.options.swipeMultiplierBranch);
+        if (appliedDelta === 0) return;
+
+        // from here onwards, will attempt to move the focal branch and change
+        // focal node if necessary, based on the applied delta
+
+        appliedDelta *= noodel.options.swipeMultiplierBranch;
+
         let focalParent = noodel.focalParent;
-        let targetIndex = focalParent.activeChildIndex;
-        let targetNode = focalParent.children[targetIndex];
+        let targetMoveOffset = focalParent.branchMoveOffset;
+        let targetActiveNode = focalParent.children[focalParent.activeChildIndex];
+        let targetActiveNodeAnchorOffset = getAnchorOffsetBranch(noodel, targetActiveNode);
         let branchStartReached = false;
         let branchEndReached = false;
 
-        if (targetOffset === noodel.focalParent.branchOffset) {
-            return;
-        }
-        else if (targetOffset > noodel.focalParent.branchOffset) { // moving towards branch axis end
-            while (targetOffset > targetNode.branchRelativeOffset + targetNode.size) {
-                let nextIndex = targetIndex + 1;
+        if (appliedDelta < 0) { // moving towards branch axis start
 
-                if (nextIndex >= focalParent.children.length) break;
-                targetIndex = nextIndex;
-                targetNode = focalParent.children[targetIndex];
-            }
+            // makes it easier to reason with the signs
+            appliedDelta = Math.abs(appliedDelta);
 
-            if (targetIndex === focalParent.children.length - 1) {
-                let limit = targetNode.branchRelativeOffset + targetNode.size / 2;
+            while (true) {
+                let projectedOffset = targetMoveOffset - appliedDelta;
 
-                if (targetOffset > limit) {
-                    branchEndReached = true;
-                    targetOffset = limit;
-                }
-            }
-        }
-        else { // moving towards branch axis start
-            while (targetOffset < targetNode.branchRelativeOffset) {
-                let prevIndex = targetIndex - 1;
-
-                if (prevIndex < 0) break;
-                targetIndex = prevIndex;
-                targetNode = focalParent.children[targetIndex];
-            }
-
-            if (targetIndex === 0) {
-                let limit = targetNode.size / 2;
-
-                if (targetOffset < limit) {
+                if (isFirstNode(targetActiveNode) && projectedOffset < 0) {
                     branchStartReached = true;
-                    targetOffset = limit;
+                    targetMoveOffset = 0;
+                    break;
+                }
+
+                if (projectedOffset < -targetActiveNodeAnchorOffset) {
+                    // reduce applied delta - be very careful with signs here
+                    appliedDelta -= targetMoveOffset + targetActiveNodeAnchorOffset;
+                    targetActiveNode = focalParent.children[targetActiveNode.index - 1];
+                    targetActiveNodeAnchorOffset = getAnchorOffsetBranch(noodel, targetActiveNode);
+                    targetMoveOffset = targetActiveNode.size - targetActiveNodeAnchorOffset;
+                }
+                else {
+                    targetMoveOffset = projectedOffset;
+                    break;
+                }
+            }
+        }
+        else { // moving towards branch axis end
+
+            // makes it easier to reason with the signs
+            appliedDelta = Math.abs(appliedDelta);
+
+            while (true) {
+                let projectedOffset = targetMoveOffset + appliedDelta;
+
+                if (isLastNode(targetActiveNode) && projectedOffset > 0) {
+                    branchEndReached = true;
+                    targetMoveOffset = 0;
+                    break;
+                }
+
+                if (projectedOffset > targetActiveNode.size - targetActiveNodeAnchorOffset) {
+                    // reduce applied delta - be very careful with signs here
+                    appliedDelta -= targetActiveNode.branchSize - targetActiveNodeAnchorOffset - targetMoveOffset;
+                    targetActiveNode = focalParent.children[targetActiveNode.index + 1];
+                    targetActiveNodeAnchorOffset = getAnchorOffsetBranch(noodel, targetActiveNode);
+                    targetMoveOffset = -targetActiveNodeAnchorOffset;
+                }
+                else {
+                    targetMoveOffset = projectedOffset;
+                    break;
                 }
             }
         }
 
-        if (targetIndex !== focalParent.activeChildIndex) {
-            hideActiveSubtree(getActiveChild(focalParent));
-            setActiveChild(focalParent, targetIndex);
+        let currentFocalNode = getActiveChild(focalParent);
+
+        if (targetActiveNode !== currentFocalNode) {
+            hideActiveSubtree(currentFocalNode);
+            setActiveChild(noodel, focalParent, targetActiveNode.index);
             showActiveSubtree(focalParent, noodel.options.visibleSubtreeDepth);
         }
 
         noodel.branchStartReached = branchStartReached;
         noodel.branchEndReached = branchEndReached;
-        noodel.focalParent.branchOffset = targetOffset;
     }
 }
 
 export function releasePan(noodel: NoodelState) {
-
-    if (noodel.r.panAxis === null) return;
-
-    if (noodel.r.panAxis === "trunk") {
-        noodel.r.panOriginTrunk = null;
-        noodel.r.panAxis = null; // before shiftFocalLevel to prevent extra cancelPan check
+    if (isPanningTrunk(noodel)) {
         shiftFocalLevel(noodel, computeSnapCount(computeSwipeVelocity(noodel), noodel.options.snapMultiplierTrunk));
     }
-    else if (noodel.r.panAxis === "branch") {
-        noodel.r.panOriginBranch = null;
-        noodel.r.panAxis = null; // before shiftFocalNode to prevent extra cancelPan check
+    else if (isPanningBranch(noodel)) {
         shiftFocalNode(noodel, computeSnapCount(computeSwipeVelocity(noodel), noodel.options.snapMultiplierBranch));
     }
 
-    unsetLimitIndicators(noodel, 0);
-    clearSwipeVelocityBuffer(noodel);
+    finalizePan(noodel);
 }
 
-export function cancelPan(noodel: NoodelState) {
+export function finalizePan(noodel: NoodelState) {
+    if (!isPanning(noodel)) return;
 
-    if (noodel.r.panAxis === null) return;
-
-    if (noodel.r.panAxis === "trunk") {
-        noodel.r.panOriginTrunk = null;
-        noodel.r.panAxis = null;
-        shiftFocalLevel(noodel, 0);
+    if (isPanningTrunk(noodel)) {
+        enableTrunkMove(noodel);
+        resetTrunkMoveOffset(noodel);
     }
-    else if (noodel.r.panAxis === "branch") {
-        noodel.r.panOriginBranch = null;
-        noodel.r.panAxis = null;
-        shiftFocalNode(noodel, 0);
+    else if (isPanningBranch(noodel)) {
+        enableBranchMove(noodel.focalParent);
+        resetBranchMoveOffset(noodel.focalParent);
     }
 
-    unsetLimitIndicators(noodel, 0);
+    noodel.r.panAxis = null;
+    noodel.r.lastPanDistanceX = null;
+    noodel.r.lastPanDistanceY = null;
+    queueUnsetLimitIndicator(noodel, 0);
     clearSwipeVelocityBuffer(noodel);
 }
 

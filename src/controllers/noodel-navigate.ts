@@ -1,12 +1,71 @@
-import { setActiveChild, setFocalParent, hideActiveSubtree, showActiveSubtree } from "../controllers/noodel-mutate";
 import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
-import { getActiveChild } from './getters';
-import { alignTrunkToBranch, alignBranchToIndex } from './noodel-align';
+import { getActiveChild, getFocalNode, isPanning, isPanningBranch, isPanningTrunk } from './getters';
 import { forceReflow } from '../controllers/noodel-animate';
 import { exitInspectMode } from './inspect-mode';
-import { handleFocalNodeChange } from './event-emit';
-import { cancelPan } from './noodel-pan';
+import { queueFocalNodeChange, queueFocalParentChange } from './event-emit';
+import { finalizePan } from './noodel-pan';
+import { traverseActiveDescendents } from './noodel-traverse';
+import { syncHashToFocalNode } from './noodel-routing';
+
+/**
+ * Changes the focal parent of the noodel, emit focal change events for
+ * focal parent AND focal node, and sync hash. This only changes the focal state, will not toggle
+ * the visible tree.
+ */
+export function setFocalParent(noodel: NoodelState, newParent: NodeState) {
+    if (newParent === noodel.focalParent) return;
+
+    let prevParent = noodel.focalParent;
+
+    prevParent.isFocalParent = false;
+    newParent.isFocalParent = true;
+    noodel.focalParent = newParent;
+    noodel.focalLevel = newParent.level + 1;
+
+    queueFocalParentChange(noodel, prevParent, newParent);
+    queueFocalNodeChange(noodel, getActiveChild(prevParent), getActiveChild(newParent));
+    syncHashToFocalNode(noodel);
+}
+
+/**
+ * Changes the active child of the parent to the given index (can be null to unset active child).
+ * If the parent is focal, will emit focal node change events and sync hash.
+ * This only changes the active state, will not toggle the visible tree.
+ */
+export function setActiveChild(noodel: NoodelState, parent: NodeState, index: number | null) {
+    if (index === parent.activeChildIndex) return;
+
+    let prev = getActiveChild(parent);
+
+    if (prev) prev.isActive = false;
+
+    parent.activeChildIndex = index;
+
+    let current = getActiveChild(parent);
+
+    if (current) current.isActive = true;
+
+    // you set index to null only when deleting every child
+    // if this happens to the focal branch, it must change and 
+    // should not emit events in that case
+    if (parent.isFocalParent && index !== null) {
+        queueFocalNodeChange(noodel, prev, current);
+        syncHashToFocalNode(noodel);
+    }
+}
+
+export function showActiveSubtree(origin: NodeState, depth?: number) {
+    traverseActiveDescendents(origin, desc => {
+        desc.isBranchVisible = true;
+    }, true, false, depth);
+}
+
+export function hideActiveSubtree(origin: NodeState, depth?: number) {
+    traverseActiveDescendents(origin, desc => {
+        desc.isBranchVisible = false;
+    }, true, false, depth);
+}
 
 /**
  * Shifts the focal level by a level difference. If the difference is 0,
@@ -14,43 +73,33 @@ import { cancelPan } from './noodel-pan';
  */
 export function shiftFocalLevel(noodel: NoodelState, levelDiff: number) {
 
-    let prevFocalNode = noodel.r.panStartFocalNode || getActiveChild(noodel.focalParent);
-    
-    noodel.r.panStartFocalNode = null;
-
-    if (!prevFocalNode) return;
-
     if (noodel.isInInspectMode) {
         exitInspectMode(noodel);
     }
 
-    // if panning, cancel it
-    if (noodel.r.panAxis === "trunk") {
-        cancelPan(noodel);
+    if (isPanningTrunk(noodel)) {
+        finalizePan(noodel);
     }
 
     let newFocalParent = findNewFocalParent(noodel, levelDiff);
 
-    if (newFocalParent.id === noodel.focalParent.id) {
+    if (newFocalParent === noodel.focalParent) {
         // if unable to shift anymore in the target direction
         if (levelDiff < 0) {
             noodel.trunkStartReached = true;
+            queueUnsetLimitIndicator(noodel, 300);
         }
         else if (levelDiff > 0) {
             noodel.trunkEndReached = true;
+            queueUnsetLimitIndicator(noodel, 300);
         }
     }
-
-    unsetLimitIndicators(noodel, 300);
-
-    if (newFocalParent.id !== noodel.focalParent.id) {
+    else {
+        hideActiveSubtree(newFocalParent);
         setFocalParent(noodel, newFocalParent);
+        showActiveSubtree(noodel.root, noodel.focalLevel + noodel.options.visibleSubtreeDepth);
+        forceReflow();
     }
-    
-    alignTrunkToBranch(noodel, newFocalParent);
-    forceReflow();
-
-    handleFocalNodeChange(noodel, prevFocalNode, getActiveChild(noodel.focalParent));
 }
 
 /**
@@ -58,134 +107,93 @@ export function shiftFocalLevel(noodel: NoodelState, levelDiff: number) {
  * is 0, will align the branch to the current active node.
  */
 export function shiftFocalNode(noodel: NoodelState, indexDiff: number) {
-    
-    let prevFocalNode = noodel.r.panStartFocalNode || getActiveChild(noodel.focalParent);
-    
-    noodel.r.panStartFocalNode = null;
-
-    if (!prevFocalNode) return;
 
     if (noodel.isInInspectMode) {
         exitInspectMode(noodel);
     }
 
-    // if panning, cancel it
-    if (noodel.r.panAxis === "branch") {
-        cancelPan(noodel);
+    if (isPanningBranch(noodel)) {
+        finalizePan(noodel);
     }
 
-    let targetIndex = noodel.focalParent.activeChildIndex + indexDiff;
+    let focalParent = noodel.focalParent;
+    let targetIndex = focalParent.activeChildIndex + indexDiff;
 
     // clamp index to valid range
     if (targetIndex < 0) {
         targetIndex = 0;
     }
-    else if (targetIndex >= noodel.focalParent.children.length) {
-        targetIndex = noodel.focalParent.children.length - 1;
+    else if (targetIndex >= focalParent.children.length) {
+        targetIndex = focalParent.children.length - 1;
     }
 
-    if (targetIndex === noodel.focalParent.activeChildIndex) {
+    if (targetIndex === focalParent.activeChildIndex) {
         // if unable to shift anymore in the target direction
         if (indexDiff < 0) {
             noodel.branchStartReached = true;
+            queueUnsetLimitIndicator(noodel, 300);
         }
         else if (indexDiff > 0) {
             noodel.branchEndReached = true;
+            queueUnsetLimitIndicator(noodel, 300);
         }
     }
-
-    unsetLimitIndicators(noodel, 300);
-
-    if (targetIndex !== noodel.focalParent.activeChildIndex) {
-        hideActiveSubtree(getActiveChild(noodel.focalParent));
-        setActiveChild(noodel.focalParent, targetIndex);
-        showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
+    else {
+        hideActiveSubtree(getActiveChild(focalParent));
+        setActiveChild(noodel, focalParent, targetIndex);
+        showActiveSubtree(focalParent, noodel.options.visibleSubtreeDepth);
+        forceReflow();
     }
-    
-    alignBranchToIndex(noodel.focalParent, targetIndex);
-    forceReflow();
-
-    handleFocalNodeChange(noodel, prevFocalNode, getActiveChild(noodel.focalParent));
 }
 
 /**
- * Jumps to a specific node in the tree, realigning all affected branches and trunk
- * if necessary. Should not expose to input handlers/API methods, use doJumpNavigation instead.
+ * Jump to a specific node in the tree.
  */
-export function alignNoodelOnJump(noodel: NoodelState, target: NodeState) {
-
-    // if panning, cancel it
-    if (noodel.r.panAxis !== null) {
-        cancelPan(noodel);
-    }
+export function jumpTo(noodel: NoodelState, target: NodeState) {
 
     // No need to jump if target is already focal node
-    if (target.id === noodel.focalParent.children[noodel.focalParent.activeChildIndex].id) {
+    if (target === getFocalNode(noodel)) {
         return;
     }
 
-    // finds the nearest visible branch
-    let nearestVisibleBranchParent = target.parent;
-
-    while (!nearestVisibleBranchParent.isBranchVisible) {
-        nearestVisibleBranchParent = nearestVisibleBranchParent.parent;
-    }
-
-    hideActiveSubtree(getActiveChild(nearestVisibleBranchParent));
-
-    // adjusts the active child of ancestors up to the nearest visible branch to point to target
-    let nextParent = target.parent;
-    let nextActiveChildIndex = target.index;
-
-    while (true) {
-        if (nextParent.activeChildIndex !== nextActiveChildIndex) {
-            setActiveChild(nextParent, nextActiveChildIndex);
-            alignBranchToIndex(nextParent, nextActiveChildIndex);
-        }
-
-        if (nextParent.id === nearestVisibleBranchParent.id) {
-            break;
-        }
-
-        // shows the intermediate branch that was not visible, should happen after alignBranch
-        // to prevent triggering a transition that will be ignored by the browser
-        nextParent.isBranchVisible = true;
-
-        nextActiveChildIndex = nextParent.index;
-        nextParent = nextParent.parent;
-    }
-
-    showActiveSubtree(target.parent, noodel.options.visibleSubtreeDepth);
-
-    if (target.parent.id !== noodel.focalParent.id) {
-        setFocalParent(noodel, target.parent);
-        alignTrunkToBranch(noodel, target.parent);
-    }
-    
-    forceReflow();
-}
-
-/**
- * Jump navigation wrapper for use by input handlers/API methods, taking 
- * care of side effects.
- */
-export function doJumpNavigation(noodel: NoodelState, target: NodeState) {
-
-    clearTimeout(noodel.r.limitIndicatorTimeout);
-
-    let prevFocalNode = getActiveChild(noodel.focalParent);
-
-    if (!prevFocalNode) return;
+    queueUnsetLimitIndicator(noodel, 0);
 
     if (noodel.isInInspectMode) {
         exitInspectMode(noodel);
     }
 
-    alignNoodelOnJump(noodel, target);
-    handleFocalNodeChange(noodel, prevFocalNode, getActiveChild(noodel.focalParent));
+    finalizePan(noodel);
+
+    let nextParent = target.parent;
+    let nextActiveChildIndex = target.index;
+
+    // first establish the focal parent and nodes so that events are triggered properly,
+    // the order here is important so events won't be triggered twice
+    setActiveChild(noodel, nextParent, nextActiveChildIndex);
+    setFocalParent(noodel, nextParent);
+
+    // adjusts the active child of ancestors up to the nearest visible branch to point to target
+    while (true) {
+        if (nextParent.isBranchVisible) { // has reached nearest visible branch
+            hideActiveSubtree(nextParent);
+            setActiveChild(noodel, nextParent, nextActiveChildIndex);
+            showActiveSubtree(noodel.root, noodel.focalLevel + noodel.options.visibleSubtreeDepth);
+            break; 
+        }
+        
+        setActiveChild(noodel, nextParent, nextActiveChildIndex);
+        nextActiveChildIndex = nextParent.index;
+        nextParent = nextParent.parent;
+    }
+    
+    forceReflow();
 }
 
-export function unsetLimitIndicators(noodel: NoodelState, wait: number) {
+/**
+ * Wait for the specified time before unsetting the limit indicators.
+ * Will replace previous instances of the wait.
+ */
+export function queueUnsetLimitIndicator(noodel: NoodelState, wait: number) {
 
     function unset() {
         forceReflow();
@@ -202,23 +210,25 @@ export function unsetLimitIndicators(noodel: NoodelState, wait: number) {
     }
     else {
         clearTimeout(noodel.r.limitIndicatorTimeout);
-        noodel.r.limitIndicatorTimeout = setTimeout(unset, 300);
+        noodel.r.limitIndicatorTimeout = setTimeout(unset, wait);
     }
 }
 
 /**
  * Finds the new focal parent to move to when the a focal level change should occur
- * on the current active tree. If levelDiff goes beyond the existing
- * branches, will return the furthest branch possible, i.e. the root or the deepest branch.
+ * on the current active tree. If levelDiff goes beyond the limit, 
+ * will return the furthest parent possible, i.e. the root or the deepest branch.
  */
 function findNewFocalParent(noodel: NoodelState, levelDiff: number): NodeState {
 
-    let nextParent = noodel.focalParent;
+    let target = noodel.focalParent;
 
     if (levelDiff < 0) {
         for (let i = 0; i > levelDiff; i--) {
-            if (nextParent.parent) {
-                nextParent = nextParent.parent;
+            let next = target.parent;
+
+            if (next) {
+                target = next;
             }
             else {
                 break;
@@ -227,8 +237,10 @@ function findNewFocalParent(noodel: NoodelState, levelDiff: number): NodeState {
     }
     else if (levelDiff > 0) {
         for (let i = 0; i < levelDiff; i++) {
-            if (getActiveChild(nextParent).activeChildIndex !== null) {
-                nextParent = getActiveChild(nextParent);
+            let next = getActiveChild(target);
+
+            if (next.activeChildIndex !== null) {
+                target = next;
             }
             else {
                 break;
@@ -236,5 +248,5 @@ function findNewFocalParent(noodel: NoodelState, levelDiff: number): NodeState {
         }
     }
 
-    return nextParent;
+    return target;
 }

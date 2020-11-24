@@ -2,18 +2,19 @@ import NodeDefinition from '../types/NodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
 import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
-import { showActiveSubtree } from './noodel-mutate';
-import { setupRouting, unsetRouting } from './noodel-routing';
+import { showActiveSubtree } from './noodel-navigate';
+import { jumpToHash, setupRouting, unsetRouting } from './noodel-routing';
 import NodeOptions from '../types/NodeOptions';
 import { generateNodeId, registerNodeSubtree, findNode, isIdRegistered } from './id-register';
-import { alignNoodelOnJump } from './noodel-navigate';
-import { cancelPan } from './noodel-pan';
-import { resetAlignment, updateCanvasSize } from './noodel-align';
+import { jumpTo } from './noodel-navigate';
+import { finalizePan } from './noodel-pan';
+import { adjustBranchMoveOffset, adjustTrunkMoveOffset, resetAlignment, updateCanvasSize } from './noodel-align';
 import { traverseDescendents } from './noodel-traverse';
 import { attachBranchResizeSensor, attachCanvasResizeSensor, attachResizeSensor, detachBranchResizeSensor, detachResizeSensor } from './resize-detect';
 import NoodelNode from '../main/NoodelNode';
 import { reactive, markRaw } from 'vue';
 import ComponentContent from '../types/ComponentContent';
+import { isPanningBranch, isPanningTrunk } from './getters';
 
 export function setupNoodel(root: NodeDefinition, options: NoodelOptions): NoodelState {
 
@@ -35,15 +36,14 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
             eventQueue: [],
             onHashChanged: null,
             lastPanTimestamp: null,
-            panOriginTrunk: null,
-            panOriginBranch: null,
+            lastPanDistanceX: 0,
+            lastPanDistanceY: 0,
             panAxis: null,
             swipeVelocityBuffer: [],
             isShiftKeyPressed: false,
             limitIndicatorTimeout: null,
             pointerUpSrcNode: null,
             panStartFocalNode: null,
-            ignoreTransitionEnd: false,
             canvasEl: null,
             trunkEl: null,
             hammerJsInstance: null,
@@ -58,6 +58,7 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
         trunkOffset: 0,
         applyTrunkMove: false,
         trunkMoveOffset: 0,
+        trunkTransitOffset: 0,
 
         branchStartReached: false,
         branchEndReached: false,
@@ -95,7 +96,7 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
         },
     });
 
-    let rootNode = buildNodeView(noodelState, root, 0, null, true, 0);
+    let rootNode = buildNodeState(noodelState, root, 0, null, true, 0);
 
     noodelState.root = rootNode;
     noodelState.focalParent = rootNode;
@@ -105,15 +106,7 @@ export function setupNoodel(root: NodeDefinition, options: NoodelOptions): Noode
     showActiveSubtree(rootNode, noodelState.options.visibleSubtreeDepth);
 
     if (noodelState.options.useRouting) {
-        let hash = window.location.hash;
-
-        if (hash) {
-            let target = findNode(noodelState, hash.substr(1));
-
-            if (target && target.parent) {
-                alignNoodelOnJump(noodelState, target);
-            }
-        }
+        jumpToHash(noodelState); // this will cause extra focal change event if there's jump
     }
 
     return noodelState;
@@ -202,7 +195,17 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
         ...options
     }
 
-    if (!options.useSwipeNavigation) cancelPan(noodel);
+    if (!options.useSwipeNavigation) {
+        finalizePan(noodel);
+    }
+
+    if (options.focalAnchorTrunk && isPanningTrunk(noodel)) {
+        adjustTrunkMoveOffset(noodel);
+    }
+
+    if (options.focalAnchorBranch && isPanningBranch(noodel)) {
+        adjustBranchMoveOffset(noodel);
+    }
 
     if (noodel.options.useRouting) {
         setupRouting(noodel);
@@ -280,7 +283,10 @@ export function parseAndApplyNodeOptions(noodel: NoodelState, options: NodeOptio
     }
 }
 
-export function buildNodeView(noodel: NoodelState, def: NodeDefinition, index: number, parent: NodeState, isActive: boolean, branchRelativeOffset: number): NodeState {
+/**
+ * Recursively build the state tree for new nodes.
+ */
+export function buildNodeState(noodel: NoodelState, def: NodeDefinition, index: number, parent: NodeState, isActive: boolean, branchRelativeOffset: number): NodeState {
 
     let isRoot = parent === null;
     if (!def.children) def.children = [];
@@ -321,7 +327,6 @@ export function buildNodeView(noodel: NoodelState, def: NodeDefinition, index: n
                 ['childrenExitFocus', []],
             ]),
             isRoot: isRoot,           
-            ignoreTransitionEnd: false,
             contentBoxEl: null,
             el: null,
             branchEl: null,
@@ -343,6 +348,7 @@ export function buildNodeView(noodel: NoodelState, def: NodeDefinition, index: n
         branchOffset: 0,
         applyBranchMove: false,
         branchMoveOffset: 0,
+        branchTransitOffset: 0,
 
         branchRelativeOffset: branchRelativeOffset,
         trunkRelativeOffset: isRoot ? 0 : parent.trunkRelativeOffset + parent.branchSize,
@@ -373,7 +379,7 @@ export function buildNodeView(noodel: NoodelState, def: NodeDefinition, index: n
     parseAndApplyNodeOptions(noodel, def.options, nodeState);
 
     for (let i = 0; i < def.children.length; i++) {
-        nodeState.children.push(buildNodeView(noodel, def.children[i], i, nodeState, i === activeChildIndex, 0));
+        nodeState.children.push(buildNodeState(noodel, def.children[i], i, nodeState, i === activeChildIndex, 0));
     }
 
     return nodeState;

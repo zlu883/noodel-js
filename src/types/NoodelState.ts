@@ -31,25 +31,17 @@ export default interface NoodelState {
          */
         panStartFocalNode: NodeState;
 
-        ignoreTransitionEnd: boolean;
-
         canvasEl: HTMLDivElement;
         trunkEl: HTMLDivElement;
 
         hammerJsInstance: HammerManager;
         /**
-         * This is the offset of the trunk when panning begins.
-         */
-        panOriginTrunk: number;
-        /**
-         * This is the offset of the focal branch when panning begins.
-         */
-        panOriginBranch: number;
-        /**
          * The current pan axis, if panning. Otherwise is null.
          */
         panAxis: NoodelAxis;
         lastPanTimestamp: number;
+        lastPanDistanceX: number;
+        lastPanDistanceY: number;
         swipeVelocityBuffer: number[];
         onHashChanged: () => any;
     };
@@ -60,17 +52,18 @@ export default interface NoodelState {
     focalParent: NodeState;
     focalLevel: number;
 
-    /**
-     * This is the orientation-agnostic offset of the trunk counting from
-     * the *start* of the trunk axis. Does not take into account the focal position.
-     */
-    trunkOffset: number;
     applyTrunkMove: boolean;
     /**
-     * Transient orientation-agnostic offset of the trunk caused by panning or animation effects,
+     * Transient orientation-agnostic offset of the trunk caused by panning,
      * relative to the anchor point of the current focal branch.
      */
     trunkMoveOffset: number;
+    /**
+     * Transient orientation agnostic offset of the trunk applied when the trunk
+     * needs to "escape" the middle of a transition while preserving its other state
+     * but still keeping the visual position.
+     */
+    trunkTransitOffset: number;
 
     branchStartReached: boolean;
     branchEndReached: boolean;

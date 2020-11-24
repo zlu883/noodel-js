@@ -1,10 +1,10 @@
-import { doJumpNavigation, shiftFocalNode, shiftFocalLevel } from './noodel-navigate';
+import { jumpTo, shiftFocalNode, shiftFocalLevel } from './noodel-navigate';
 import { startPan, updatePan, releasePan } from './noodel-pan';
 import Hammer from 'hammerjs';
 import NoodelState from '../types/NoodelState';
 import { exitInspectMode, enterInspectMode } from './inspect-mode';
 import { throttle } from './throttle';
-import { getActiveChild } from './getters';
+import { getActiveChild, isEmpty, isPanning } from './getters';
 import { Axis } from 'src/types/Axis';
 
 export function setupCanvasInput(noodel: NoodelState) {
@@ -59,7 +59,7 @@ function moveNoodel(noodel: NoodelState, axis: Axis, diff: number) {
 }
 
 function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {   
-    
+    if (isEmpty(noodel)) return;
     if (checkInputPreventClass(noodel, ev, 'nd-prevent-key')) return;
 
     if (ev.key === "Shift") {
@@ -139,8 +139,8 @@ function onKeyUp(noodel: NoodelState, event: KeyboardEvent) {
 }
 
 function onWheel(noodel: NoodelState, ev: WheelEvent) {
-
     if (!noodel.options.useWheelNavigation) return;
+    if (isEmpty(noodel)) return;
     if (noodel.isInInspectMode) return;
     if (checkInputPreventClass(noodel, ev, 'nd-prevent-wheel')) return;
 
@@ -184,6 +184,7 @@ function onWheel(noodel: NoodelState, ev: WheelEvent) {
 
 function onPanStart(noodel: NoodelState, ev: HammerInput) {
     if (!noodel.options.useSwipeNavigation) return;
+    if (isEmpty(noodel)) return;
     if (noodel.isInInspectMode) return;
     if (checkInputPreventClass(noodel, ev.srcEvent, 'nd-prevent-swipe')) return;
 
@@ -200,16 +201,18 @@ function onPanStart(noodel: NoodelState, ev: HammerInput) {
 }
 
 function onPan(noodel: NoodelState, ev: HammerInput) {
+    if (!isPanning(noodel)) return;
     updatePan(noodel, ev.velocityX, ev.velocityY, ev.deltaX, ev.deltaY, (ev as any).timeStamp);
 }
 
 function onPanEnd(noodel: NoodelState, ev: HammerInput) {
+    if (!isPanning(noodel)) return;
     releasePan(noodel); 
 }
 
 function onTap(noodel: NoodelState, ev: HammerInput) {
-
-    if (noodel.r.panAxis !== null) return;
+    if (isEmpty(noodel)) return;
+    if (isPanning(noodel)) return;
     if (checkInputPreventClass(noodel, ev.srcEvent, 'nd-prevent-tap')) return;
 
     if ((ev as any).tapCount === 1) {
@@ -233,7 +236,7 @@ function onTap(noodel: NoodelState, ev: HammerInput) {
                 }
             }
                 
-            doJumpNavigation(noodel, target);
+            jumpTo(noodel, target);
         }
     }
     else if ((ev as any).tapCount === 2) {
