@@ -69,6 +69,24 @@ export function parseHTMLToNode(el: Element): NodeDefinition {
     };
 }
 
+export function parseContentTreeDefinition(contentTree: NodeDefinition[] | string | Element): NodeDefinition[] {
+    if (Array.isArray(contentTree)) {
+        return contentTree;
+    }
+    else if (typeof contentTree === "string") {
+        let el = document.querySelector(contentTree);
+        
+        if (!el) throw new Error("Unable to parse content tree definition: invalid selector");
+        return parseHTMLToNode(el).children;
+    }
+    else if (contentTree instanceof Element) {
+        return parseHTMLToNode(contentTree).children;
+    } 
+    else {
+        return [];
+    }
+}
+
 export function parseContent(content: string | ComponentContent): string | ComponentContent {
     if (!content) return content;
     if (typeof content === 'string') return content;

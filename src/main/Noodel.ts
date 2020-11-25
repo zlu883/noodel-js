@@ -11,7 +11,7 @@ import { findNodeByPath as _findNodeByPath } from '../controllers/identity';
 import { enterInspectMode, exitInspectMode } from '../controllers/inspect-mode';
 import { findNode } from '../controllers/identity';
 import NoodelEventMap from '../types/NoodelEventMap';
-import { parseHTMLToNode } from '../controllers/serialize';
+import { parseContentTreeDefinition, parseHTMLToNode } from '../controllers/serialize';
 import { parseAndApplyOptions } from '../controllers/options';
 
 /**
@@ -32,24 +32,8 @@ export default class Noodel {
      * @param options Global options for the noodel
      */
     constructor(contentTree?: NodeDefinition[] | Element | string, options?: NoodelOptions) {
-        let root: NodeDefinition = null;
-    
-        if (Array.isArray(contentTree)) {
-            root = {
-                children: contentTree
-            };
-        }
-        else if (typeof contentTree === "string") {
-            let el = document.querySelector(contentTree);
-            
-            if (!el) throw new Error("Cannot create noodel: invalid selector");
-            root = parseHTMLToNode(el);
-        }
-        else if (contentTree instanceof Element) {
-            root = parseHTMLToNode(contentTree);
-        } 
-        else {
-            root = {};
+        let root: NodeDefinition = {
+            children: parseContentTreeDefinition(contentTree)
         }
 
         if (!options) {

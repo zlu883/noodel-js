@@ -13,7 +13,7 @@ import { nextTick } from 'vue';
 import { traverseDescendents } from '../controllers/traverse';
 import NodeCss from '../types/NodeCss';
 import NodeEventMap from '../types/NodeEventMap';
-import { serializeNodeDeep, serializeContent, serializeNode, parseContent } from '../controllers/serialize';
+import { serializeNodeDeep, serializeContent, serializeNode, parseContent, parseContentTreeDefinition } from '../controllers/serialize';
 
 /**
  * The view model of a node in a noodel. Has 2-way binding with the view.
@@ -365,8 +365,10 @@ export default class NoodelNode {
      * @param defs definition trees of the new node(s)
      * @param index index to insert at, will append to the end of existing children if omitted
      */
-    insertChildren(defs: NodeDefinition[], index?: number): NoodelNode[] {
+    insertChildren(defs: NodeDefinition[] | string | Element, index?: number): NoodelNode[] {
         this.throwErrorIfDeleted();
+
+        let newDefs = parseContentTreeDefinition(defs);
 
         if (index === undefined) {
             index = this.state.children.length;
@@ -376,9 +378,9 @@ export default class NoodelNode {
             throw new Error("Cannot insert children: invalid index");
         }
 
-        if (defs.length === 0) return [];
+        if (newDefs.length === 0) return [];
 
-        return insertChildren(this.noodelState, this.state, index, defs).map(n => n.r.vm);
+        return insertChildren(this.noodelState, this.state, index, newDefs).map(n => n.r.vm);
     }
 
     /**
@@ -386,7 +388,7 @@ export default class NoodelNode {
      * Return the list of inserted nodes.
      * @param defs node definitions to add
      */
-    insertBefore(defs: NodeDefinition[]): NoodelNode[] {
+    insertBefore(defs: NodeDefinition[] | string | Element): NoodelNode[] {
         this.throwErrorIfDeleted();
 
         if (this.isRoot()) {
@@ -401,7 +403,7 @@ export default class NoodelNode {
      * Return the list of inserted nodes.
      * @param defs node definitions to add
      */
-    insertAfter(defs: NodeDefinition[]): NoodelNode[] {
+    insertAfter(defs: NodeDefinition[] | string | Element): NoodelNode[] {
         this.throwErrorIfDeleted();
 
         if (this.isRoot()) {
