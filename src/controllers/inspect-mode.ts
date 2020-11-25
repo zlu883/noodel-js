@@ -1,8 +1,10 @@
+/* Module for managing inspect mode. */
+
 import NoodelState from '../types/NoodelState';
 import { getFocalNode } from './getters';
-import { finalizePan } from './noodel-pan';
-import { queueEnterInspectMode, queueExitInspectMode } from './event-emit';
-import { disableBranchMove, disableTrunkMove, enableBranchMove, enableTrunkMove } from './noodel-animate';
+import { finalizePan } from './pan';
+import { queueEnterInspectMode, queueExitInspectMode } from './event';
+import { disableBranchTransition, disableTrunkTransition, enableBranchTransition, enableTrunkTransition } from './transition';
 
 export function enterInspectMode(noodel: NoodelState) {
     
@@ -11,8 +13,8 @@ export function enterInspectMode(noodel: NoodelState) {
     finalizePan(noodel);
 
     // stops any animations
-    disableTrunkMove(noodel);
-    disableBranchMove(noodel, noodel.focalParent);
+    disableTrunkTransition(noodel);
+    disableBranchTransition(noodel, noodel.focalParent);
 
     // touch-action: auto on focal node under inspect mode
     // interferes with Hammer's recognizers, so they must be disabled first
@@ -28,8 +30,8 @@ export function exitInspectMode(noodel: NoodelState) {
 
     if (!noodel.isInInspectMode) return;
 
-    enableTrunkMove(noodel);
-    enableBranchMove(noodel.focalParent);
+    enableTrunkTransition(noodel);
+    enableBranchTransition(noodel.focalParent);
 
     noodel.r.hammerJsInstance.get('pan').set({enable: true});
 

@@ -1,16 +1,18 @@
 import NodeDefinition from '../types/NodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
-import { setupNoodel, parseHTMLToNode, parseAndApplyOptions } from '../controllers/noodel-setup';
+import { createNoodelState } from '../controllers/setup';
 import Canvas from '../view/Canvas.vue';
 import { nextTick as vueNextTick, createApp } from 'vue';
 import NoodelState from '../types/NoodelState';
 import NoodelNode from './NoodelNode';
 import { getActiveChild, getFocalNode } from '../controllers/getters';
-import { shiftFocalLevel, shiftFocalNode } from '../controllers/noodel-navigate';
-import { findNodeByPath as _findNodeByPath } from '../controllers/noodel-traverse';
+import { shiftFocalLevel, shiftFocalNode } from '../controllers/navigate';
+import { findNodeByPath as _findNodeByPath } from '../controllers/identity';
 import { enterInspectMode, exitInspectMode } from '../controllers/inspect-mode';
-import { findNode } from '../controllers/id-register';
+import { findNode } from '../controllers/identity';
 import NoodelEventMap from '../types/NoodelEventMap';
+import { parseHTMLToNode } from '../controllers/serialize';
+import { parseAndApplyOptions } from '../controllers/options';
 
 /**
  * The view model of a noodel. Has 2-way binding with the view.
@@ -54,7 +56,7 @@ export default class Noodel {
             options = {};
         }
 
-        this.noodelState = setupNoodel(root, options);
+        this.noodelState = createNoodelState(root, options);
     }
 
     // LIFECYCLE

@@ -1,3 +1,5 @@
+/* Module for functions associated with managing transitions. */
+
 import NoodelState from 'src/types/NoodelState';
 import NodeState from 'src/types/NodeState';
 import { getActualOffsetBranch, getActualOffsetTrunk } from './getters';
@@ -64,37 +66,37 @@ function applyBranchTransitOffset(noodel: NoodelState, parent: NodeState) {
 }
 
 /**
- * Enable trunk move animation by attaching the move class. 
+ * Enable trunk transition by attaching the move class. 
  */
-export function enableTrunkMove(noodel: NoodelState) {
+export function enableTrunkTransition(noodel: NoodelState) {
     if (noodel.applyTrunkMove) return;
     noodel.trunkTransitOffset = 0;
     noodel.applyTrunkMove = true;
 }
 
 /**
- * Disable trunk move animation by detaching the move class. 
+ * Disable trunk transition by detaching the move class. 
  * Can optionally apply transit offset.
  */
-export function disableTrunkMove(noodel: NoodelState, applyTransit: boolean = false) {
+export function disableTrunkTransition(noodel: NoodelState, applyTransit: boolean = false) {
     if (!noodel.applyTrunkMove) return;
     if (applyTransit) applyTrunkTransitOffset(noodel);
     noodel.applyTrunkMove = false;
 }
 
 /**
- * Enable branch move animation by attaching the move class. 
+ * Enable branch transition by attaching the move class. 
  */
-export function enableBranchMove(parent: NodeState) {
+export function enableBranchTransition(parent: NodeState) {
     if (parent.applyBranchMove) return;
     parent.branchTransitOffset = 0;
     parent.applyBranchMove = true;
 }
 
 /**
- * Disable branch move animation by detaching the move class. 
+ * Disable branch transition by detaching the move class. 
  */
-export function disableBranchMove(noodel: NoodelState, parent: NodeState, applyTransit: boolean = false) {
+export function disableBranchTransition(noodel: NoodelState, parent: NodeState, applyTransit: boolean = false) {
     if (!parent.applyBranchMove) return;
     if (applyTransit) applyBranchTransitOffset(noodel, parent);
     parent.applyBranchMove = false;

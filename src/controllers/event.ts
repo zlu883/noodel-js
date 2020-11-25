@@ -1,7 +1,8 @@
+/* Module for queueing and emitting events. */
+
 import NoodelState from '../types/NoodelState';
 import NodeState from '../types/NodeState';
 import { nextTick } from 'vue';
-import { syncHashToFocalNode } from './noodel-routing';
 
 function queueEvent(noodel: NoodelState, ev: Function) {
     if (noodel.r.eventQueue.length === 0) {

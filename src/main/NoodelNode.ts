@@ -1,19 +1,19 @@
 import NodeState from '../types/NodeState';
 import NodeDefinition from '../types/NodeDefinition';
-import { deleteChildren, insertChildren } from '../controllers/noodel-mutate';
-import { parseAndApplyNodeOptions, parseContent } from '../controllers/noodel-setup';
+import { deleteChildren, insertChildren } from '../controllers/mutate';
+import { parseAndApplyNodeOptions } from '../controllers/options';
 import { getPath as _getPath } from '../controllers/getters';
-import { updateNodeSize, updateBranchSize } from '../controllers/noodel-align';
-import { shiftFocalNode, jumpTo, setActiveChild } from '../controllers/noodel-navigate';
+import { updateNodeSize, updateBranchSize } from '../controllers/alignment';
+import { shiftFocalNode, jumpTo, setActiveChild } from '../controllers/navigate';
 import NoodelState from '../types/NoodelState';
-import { changeNodeId, unregisterNodeSubtree } from '../controllers/id-register';
+import { changeNodeId, unregisterNodeSubtree } from '../controllers/identity';
 import NodeOptions from '../types/NodeOptions';
 import ComponentContent from '../types/ComponentContent';
 import { nextTick } from 'vue';
-import { traverseDescendents } from '../controllers/noodel-traverse';
+import { traverseDescendents } from '../controllers/traverse';
 import NodeCss from '../types/NodeCss';
 import NodeEventMap from '../types/NodeEventMap';
-import { serializeNodeDeep, serializeContent, serializeNode } from '../controllers/noodel-serialize';
+import { serializeNodeDeep, serializeContent, serializeNode, parseContent } from '../controllers/serialize';
 
 /**
  * The view model of a node in a noodel. Has 2-way binding with the view.

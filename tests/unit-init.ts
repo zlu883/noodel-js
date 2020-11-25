@@ -245,7 +245,12 @@ describe('Init', function () {
     describe('without options', function () {
         it('should have default options', function () {
             let noodel = new Noodel([]);
-            assert.deepStrictEqual(noodel.getOptions(), {
+            let options = noodel.getOptions();
+            assert.isFunction(options.focalAnchorBranch);
+            assert.isFunction(options.focalAnchorTrunk);
+            assert.isFunction(options.focalPositionBranch);
+            assert.isFunction(options.focalPositionTrunk);
+            assert.deepStrictEqual(options, {
                 visibleSubtreeDepth: 1,
                 retainDepthOnTapNavigation: false,
                 swipeMultiplierBranch: 1,
@@ -263,13 +268,22 @@ describe('Init', function () {
                 showLimitIndicators: true,
                 showChildIndicators: true,
                 orientation: "ltr",
-                branchDirection: "normal"
+                branchDirection: "normal",
+                focalAnchorBranch: options.focalAnchorBranch,
+                focalAnchorTrunk: options.focalAnchorTrunk,
+                focalPositionBranch: options.focalPositionBranch,
+                focalPositionTrunk: options.focalPositionTrunk
             });
         });
     });
 
     describe('with options', function () {
         it('should override default options', function () {
+            let focalAnchorBranch = () => 100;
+            let focalAnchorTrunk = () => 200;
+            let focalPositionBranch = () => 300;
+            let focalPositionTrunk = () => 400;
+
             let noodel = new Noodel([], {
                 visibleSubtreeDepth: 2,
                 retainDepthOnTapNavigation: true,
@@ -288,7 +302,11 @@ describe('Init', function () {
                 showLimitIndicators: false,
                 showChildIndicators: false,
                 orientation: "rtl",
-                branchDirection: "reverse"
+                branchDirection: "reverse",
+                focalAnchorTrunk,
+                focalAnchorBranch,
+                focalPositionBranch,
+                focalPositionTrunk
             });
 
             assert.deepStrictEqual(noodel.getOptions(), {
@@ -309,7 +327,11 @@ describe('Init', function () {
                 showLimitIndicators: false,
                 showChildIndicators: false,
                 orientation: "rtl",
-                branchDirection: "reverse"
+                branchDirection: "reverse",
+                focalAnchorTrunk,
+                focalAnchorBranch,
+                focalPositionBranch,
+                focalPositionTrunk
             });
         });
     });

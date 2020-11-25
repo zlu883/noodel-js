@@ -1,6 +1,8 @@
+/* Module for various convenience getters. */
+
 import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
-import { traverseAncestors } from './noodel-traverse';
+import { traverseAncestors } from './traverse';
 
 export function getFocalNode(noodel: NoodelState) {
     return getActiveChild(noodel.focalParent);
@@ -120,7 +122,7 @@ export function getActualOffsetTrunk(noodel: NoodelState): number {
         getFocalOffsetTrunk(noodel) 
         - getRelativeOffsetTrunk(noodel)
         - getAnchorOffsetTrunk(noodel, noodel.focalParent)
-        - noodel.trunkMoveOffset
+        - noodel.trunkPanOffset
         + noodel.trunkTransitOffset
     );
 }
@@ -134,7 +136,7 @@ export function getActualOffsetBranch(noodel: NoodelState, branchParent: NodeSta
         getFocalOffsetBranch(noodel) 
         - getRelativeOffsetBranch(branchParent)
         - getAnchorOffsetBranch(noodel, getActiveChild(branchParent))
-        - (branchParent.isFocalParent ? noodel.branchMoveOffset : 0)
+        - (branchParent.isFocalParent ? noodel.branchPanOffset : 0)
         + branchParent.branchTransitOffset
     );
 }

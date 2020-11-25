@@ -1,37 +1,13 @@
-import { jumpTo, shiftFocalNode, shiftFocalLevel } from './noodel-navigate';
-import { startPan, updatePan, releasePan } from './noodel-pan';
+/* Module for setting up input bindings and logic for various input methods. */
+
+import { jumpTo, shiftFocalNode, shiftFocalLevel } from './navigate';
+import { startPan, updatePan, releasePan } from './pan';
 import Hammer from 'hammerjs';
 import NoodelState from '../types/NoodelState';
 import { exitInspectMode, enterInspectMode } from './inspect-mode';
-import { throttle } from './throttle';
+import { throttle } from './timing';
 import { getActiveChild, isEmpty, isPanning } from './getters';
 import { Axis } from 'src/types/Axis';
-
-export function setupCanvasInput(noodel: NoodelState) {
-
-    let el = noodel.r.canvasEl;
-
-    el.addEventListener('keydown', (ev: KeyboardEvent) => throttle(noodel, 'keydown', () => onKeyDown(noodel, ev), 60));
-    el.addEventListener('keyup', (ev: KeyboardEvent) => onKeyUp(noodel, ev));
-    el.addEventListener('wheel', (ev: WheelEvent) => throttle(noodel, 'wheel', () => onWheel(noodel, ev), 80));
-
-    const manager = new Hammer.Manager(el);
-
-    let pan = new Hammer.Pan({threshold: 10, direction: Hammer.DIRECTION_ALL});
-    let singleTap = new Hammer.Tap({taps: 1, posThreshold: 100});
-    let doubleTap = new Hammer.Tap({taps: 2, posThreshold: 100});
-
-    manager.add([pan, doubleTap, singleTap]);
-
-    singleTap.recognizeWith(doubleTap);
-
-    manager.on("panstart", (ev) => onPanStart(noodel, ev));
-    manager.on("pan", (ev) => onPan(noodel, ev));
-    manager.on("panend", (ev) => onPanEnd(noodel, ev));
-    manager.on('tap', (ev) => onTap(noodel, ev));
-
-    noodel.r.hammerJsInstance = manager;
-}
 
 /**
  * Trigger a noodel movement for the given real axis,
@@ -269,4 +245,30 @@ function checkInputPreventClass(noodel: NoodelState, ev: Event, className: strin
 
         if (!target) return false;
     }
+}
+
+export function setupCanvasInput(noodel: NoodelState) {
+
+    let el = noodel.r.canvasEl;
+
+    el.addEventListener('keydown', (ev: KeyboardEvent) => throttle(noodel, 'keydown', () => onKeyDown(noodel, ev), 60));
+    el.addEventListener('keyup', (ev: KeyboardEvent) => onKeyUp(noodel, ev));
+    el.addEventListener('wheel', (ev: WheelEvent) => throttle(noodel, 'wheel', () => onWheel(noodel, ev), 80));
+
+    const manager = new Hammer.Manager(el);
+
+    let pan = new Hammer.Pan({threshold: 10, direction: Hammer.DIRECTION_ALL});
+    let singleTap = new Hammer.Tap({taps: 1, posThreshold: 100});
+    let doubleTap = new Hammer.Tap({taps: 2, posThreshold: 100});
+
+    manager.add([pan, doubleTap, singleTap]);
+
+    singleTap.recognizeWith(doubleTap);
+
+    manager.on("panstart", (ev) => onPanStart(noodel, ev));
+    manager.on("pan", (ev) => onPan(noodel, ev));
+    manager.on("panend", (ev) => onPanEnd(noodel, ev));
+    manager.on('tap', (ev) => onTap(noodel, ev));
+
+    noodel.r.hammerJsInstance = manager;
 }

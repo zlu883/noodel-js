@@ -57,14 +57,15 @@
 
 <script lang="ts">
 import BranchTransitionGroup from "./BranchTransitionGroup.vue";
-import { setupCanvasEl } from "../controllers/noodel-setup";
-import { setupCanvasInput } from "../controllers/input-binding";
-import { traverseDescendents } from "../controllers/noodel-traverse";
+import { setupCanvasInput } from "../controllers/input";
+import { traverseDescendents } from "../controllers/traverse";
 import NoodelState from "../types/NoodelState";
 import NodeState from "../types/NodeState";
 import { PropType, defineComponent } from "vue";
-import { queueMount } from "../controllers/event-emit";
+import { queueMount } from "../controllers/event";
 import { getActualOffsetTrunk } from '../controllers/getters';
+import { updateCanvasSize } from '../controllers/alignment';
+import { attachCanvasResizeSensor } from '../controllers/resize-sensor';
 
 export default defineComponent({
 	components: {
@@ -78,7 +79,11 @@ export default defineComponent({
 	mounted: function () {
 		this.noodel.r.canvasEl = this.$el as HTMLDivElement;
 		this.noodel.r.trunkEl = (this.$refs.trunk as any) as HTMLDivElement;
-		setupCanvasEl(this.noodel);
+
+		let rect = this.$el.getBoundingClientRect();
+
+    	updateCanvasSize(this.noodel, rect.height, rect.width);
+		attachCanvasResizeSensor(this.noodel);
 		setupCanvasInput(this.noodel);
 
 		// use double RAF to ensure that all side effects (e.g. size captures)

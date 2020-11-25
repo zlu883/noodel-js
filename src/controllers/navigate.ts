@@ -1,12 +1,14 @@
+/* Module for handling noodel navigation. */
+
 import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
 import { getActiveChild, getFocalNode } from './getters';
-import { forceReflow } from '../controllers/noodel-animate';
+import { forceReflow } from './transition';
 import { exitInspectMode } from './inspect-mode';
-import { queueFocalNodeChange, queueFocalParentChange } from './event-emit';
-import { finalizePan } from './noodel-pan';
-import { traverseActiveDescendents } from './noodel-traverse';
-import { syncHashToFocalNode } from './noodel-routing';
+import { queueFocalNodeChange, queueFocalParentChange } from './event';
+import { finalizePan } from './pan';
+import { traverseActiveDescendents } from './traverse';
+import { syncHashToFocalNode } from './routing';
 
 /**
  * Changes the focal parent of the noodel, emit focal change events for

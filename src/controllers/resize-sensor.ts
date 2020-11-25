@@ -1,7 +1,9 @@
+/* Module for attaching/detaching resize sensors. */
+
 import NoodelState from 'src/types/NoodelState';
 import NodeState from 'src/types/NodeState';
 import ResizeSensor from "../util/ResizeSensor";
-import { updateBranchSize, updateCanvasSize, updateNodeSize } from './noodel-align';
+import { updateBranchSize, updateCanvasSize, updateNodeSize } from './alignment';
 
 export function attachResizeSensor(noodel: NoodelState, node: NodeState) {
 

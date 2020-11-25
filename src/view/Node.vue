@@ -44,14 +44,14 @@
 
 <script lang="ts">
 import NodeState from "../types/NodeState";
-import { updateNodeSize } from "../controllers/noodel-align";
+import { updateNodeSize } from "../controllers/alignment";
 import NoodelState from "../types/NoodelState";
-import { traverseAncestors } from "../controllers/noodel-traverse";
+import { traverseAncestors } from "../controllers/traverse";
 import { nextTick, PropType, defineComponent } from "vue";
 import {
 	attachResizeSensor,
 	detachResizeSensor,
-} from "../controllers/resize-detect";
+} from "../controllers/resize-sensor";
 
 export default defineComponent({
 	props: {

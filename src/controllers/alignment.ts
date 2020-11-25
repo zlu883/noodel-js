@@ -1,9 +1,11 @@
+/* Module for managing position alignments in response to size and layout changes. */
+
 import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
-import { traverseDescendents } from './noodel-traverse';
+import { traverseDescendents } from './traverse';
 import { nextTick } from 'vue';
-import { disableBranchMove, disableTrunkMove, enableBranchMove, enableTrunkMove, forceReflow } from './noodel-animate';
-import { finalizePan } from './noodel-pan';
+import { disableBranchTransition, disableTrunkTransition, enableBranchTransition, enableTrunkTransition, forceReflow } from './transition';
+import { finalizePan } from './pan';
 import { getAnchorOffsetBranch, getAnchorOffsetTrunk, getFocalNode, isPanningBranch, isPanningTrunk } from './getters';
 
 export function updateCanvasSize(noodel: NoodelState, height: number, width: number) {
@@ -49,10 +51,10 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
         // If branch is in transition, cancel it temporarily and apply transit offset.
         // This does not apply to inserts as branch transition is needed simultaneously with FLIP of child nodes
         if (parent.applyBranchMove && !isInsert) {
-            disableBranchMove(noodel, parent, true);
+            disableBranchTransition(noodel, parent, true);
 
             nextTick(() => {
-                enableBranchMove(parent);
+                enableBranchTransition(parent);
                 forceReflow();
             });
         }
@@ -87,11 +89,11 @@ export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeig
         // This does not apply to inserts as transitions can only happen during simultaneous child insert + navigation,
         // and transition should be kept in this case
         if (noodel.applyTrunkMove && !isInsert) {                
-            disableTrunkMove(noodel, true);
+            disableTrunkTransition(noodel, true);
 
             // resume transition
             nextTick(() => {
-                enableTrunkMove(noodel);
+                enableTrunkTransition(noodel);
                 forceReflow();
             });
         }
@@ -104,11 +106,11 @@ export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeig
  */
 export function updateOffsetsBeforeNodeDelete(node: NodeState) {
 
-    let parent = node.parent;
+    let siblings = node.parent.children;
 
     // adjust sibling offsets
-    for (let i = node.index + 1; i < parent.children.length; i++) {
-        parent.children[i].branchRelativeOffset -= node.size;
+    for (let i = node.index + 1; i < siblings.length; i++) {
+        siblings[i].branchRelativeOffset -= node.size;
     }
 }
 
@@ -120,11 +122,11 @@ export function adjustTrunkMoveOffset(noodel: NoodelState) {
     let endLimit = noodel.focalParent.branchSize - anchorOffset;
     let startLimit = -anchorOffset;
 
-    if (noodel.trunkMoveOffset > endLimit) {
-        noodel.trunkMoveOffset = endLimit;
+    if (noodel.trunkPanOffset > endLimit) {
+        noodel.trunkPanOffset = endLimit;
     }
-    else if (noodel.trunkMoveOffset < startLimit) {
-        noodel.trunkMoveOffset = startLimit;
+    else if (noodel.trunkPanOffset < startLimit) {
+        noodel.trunkPanOffset = startLimit;
     }
 }
 
@@ -137,11 +139,11 @@ export function adjustBranchMoveOffset(noodel: NoodelState) {
     let endLimit = focalNode.size - anchorOffset;
     let startLimit = -anchorOffset;
 
-    if (noodel.branchMoveOffset > endLimit) {
-        noodel.branchMoveOffset = endLimit;
+    if (noodel.branchPanOffset > endLimit) {
+        noodel.branchPanOffset = endLimit;
     }
-    else if (noodel.branchMoveOffset < startLimit) {
-        noodel.branchMoveOffset = startLimit;
+    else if (noodel.branchPanOffset < startLimit) {
+        noodel.branchPanOffset = startLimit;
     }
 }
 
@@ -152,7 +154,7 @@ export function adjustBranchMoveOffset(noodel: NoodelState) {
 export function resetAlignment(noodel: NoodelState) {
 
     finalizePan(noodel);
-    disableTrunkMove(noodel);
+    disableTrunkTransition(noodel);
 
     let rect = noodel.r.canvasEl.getBoundingClientRect();
 
@@ -165,7 +167,7 @@ export function resetAlignment(noodel: NoodelState) {
             node.branchRelativeOffset = 0;
             node.size = 0;
             node.branchSize = 0;
-            disableBranchMove(noodel, node);
+            disableBranchTransition(noodel, node);
             node.isBranchTransparent = true;
         },
         true
@@ -192,8 +194,8 @@ export function resetAlignment(noodel: NoodelState) {
 
         nextTick(() => {
             forceReflow();
-            enableTrunkMove(noodel);
-            traverseDescendents(noodel.root, node => enableBranchMove(node), true);
+            enableTrunkTransition(noodel);
+            traverseDescendents(noodel.root, node => enableBranchTransition(node), true);
         });
     });
 }

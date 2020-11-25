@@ -1,6 +1,7 @@
+/* Module for methods of traversing the noodel tree. */
+
 import NodeState from '../types/NodeState';
 import { getActiveChild } from './getters';
-import NoodelState from '../types/NoodelState';
 
 export function traverseAncestors(origin: NodeState, task: (node: NodeState) => any, includeOrigin: boolean, includeRoot: boolean) {
 
@@ -52,16 +53,4 @@ export function traverseActiveDescendents(
         task(origin);
         maxDepth--;
     }
-}
-
-export function findNodeByPath(noodel: NoodelState, path: number[]): NodeState {
-
-    let target = noodel.root;
-
-    for (let i = 0; i < path.length; i++) {
-        target = target.children[path[i]];
-        if (!target) return null;
-    }
-
-    return target;
 }

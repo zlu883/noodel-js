@@ -1,13 +1,15 @@
+/* Module for handling mutations of the noodel tree. */
+
 import NodeState from '../types/NodeState';
 import { isPanningBranch } from './getters';
 import NoodelState from '../types/NoodelState';
-import { updateOffsetsBeforeNodeDelete } from './noodel-align';
-import { forceReflow } from './noodel-animate';
-import { finalizePan } from './noodel-pan';
-import { registerNodeSubtree } from './id-register';
+import { updateOffsetsBeforeNodeDelete } from './alignment';
+import { forceReflow } from './transition';
+import { finalizePan } from './pan';
+import { registerNodeSubtree } from './identity';
 import NodeDefinition from '../types/NodeDefinition';
-import { buildNodeState } from './noodel-setup';
-import { setActiveChild, setFocalParent, showActiveSubtree } from './noodel-navigate';
+import { createNodeState } from './setup';
+import { setActiveChild, setFocalParent, showActiveSubtree } from './navigate';
 
 /**
  * Insert children to a parent at a particular index. Always keep the current active child
@@ -21,7 +23,7 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
 
     // construct state tree, this should come first as it may throw error
     let children = childDefs.map((def, pos) => {
-        return buildNodeState(
+        return createNodeState(
             noodel,
             def,
             index + pos,

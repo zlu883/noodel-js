@@ -1,10 +1,12 @@
+/* Module for handling pan input and logic. */
+
 import NoodelState from 'src/types/NoodelState';
 import { getActiveChild, getAnchorOffsetBranch, getAnchorOffsetTrunk, isDeepestBranch, isFirstNode, isLastNode, isPanning, isPanningBranch, isPanningTrunk, isTopmostBranch } from './getters';
-import { hideActiveSubtree, setActiveChild, setFocalParent, showActiveSubtree } from './noodel-navigate';
+import { hideActiveSubtree, setActiveChild, setFocalParent, showActiveSubtree } from './navigate';
 import { NoodelAxis } from 'src/types/NoodelAxis';
 import { Axis } from 'src/types/Axis';
-import { shiftFocalLevel, shiftFocalNode, queueUnsetLimitIndicator } from './noodel-navigate';
-import { enableBranchMove, enableTrunkMove, disableBranchMove, disableTrunkMove } from './noodel-animate';
+import { shiftFocalLevel, shiftFocalNode, queueUnsetLimitIndicator } from './navigate';
+import { enableBranchTransition, enableTrunkTransition, disableBranchTransition, disableTrunkTransition } from './transition';
 
 export function startPan(noodel: NoodelState, realAxis: Axis) {
 
@@ -23,10 +25,10 @@ export function startPan(noodel: NoodelState, realAxis: Axis) {
     noodel.r.panAxis = panAxis;
 
     if (panAxis === "trunk") {
-        disableTrunkMove(noodel, true);
+        disableTrunkTransition(noodel, true);
     }
     else if (panAxis === "branch") {
-        disableBranchMove(noodel, noodel.focalParent, true);
+        disableBranchTransition(noodel, noodel.focalParent, true);
     }
 }
 
@@ -69,7 +71,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
 
         appliedDelta *= noodel.options.swipeMultiplierTrunk;
 
-        let targetMoveOffset = noodel.trunkMoveOffset;
+        let targetMoveOffset = noodel.trunkPanOffset;
         let targetFocalParent = noodel.focalParent;
         let targetFocalParentAnchorOffset = getAnchorOffsetTrunk(noodel, targetFocalParent);
         let trunkStartReached = false;
@@ -134,7 +136,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
             setFocalParent(noodel, targetFocalParent);
         }
 
-        noodel.trunkMoveOffset = targetMoveOffset;
+        noodel.trunkPanOffset = targetMoveOffset;
         noodel.trunkEndReached = trunkEndReached;
         noodel.trunkStartReached = trunkStartReached;
     }
@@ -173,7 +175,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
         appliedDelta *= noodel.options.swipeMultiplierBranch;
 
         let focalParent = noodel.focalParent;
-        let targetMoveOffset = noodel.branchMoveOffset;
+        let targetMoveOffset = noodel.branchPanOffset;
         let targetActiveNode = focalParent.children[focalParent.activeChildIndex];
         let targetActiveNodeAnchorOffset = getAnchorOffsetBranch(noodel, targetActiveNode);
         let branchStartReached = false;
@@ -242,7 +244,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
             showActiveSubtree(focalParent, noodel.options.visibleSubtreeDepth);
         }
 
-        noodel.branchMoveOffset = targetMoveOffset;
+        noodel.branchPanOffset = targetMoveOffset;
         noodel.branchStartReached = branchStartReached;
         noodel.branchEndReached = branchEndReached;
     }
@@ -263,12 +265,12 @@ export function finalizePan(noodel: NoodelState) {
     if (!isPanning(noodel)) return;
 
     if (isPanningTrunk(noodel)) {
-        enableTrunkMove(noodel);
-        noodel.trunkMoveOffset = 0;
+        enableTrunkTransition(noodel);
+        noodel.trunkPanOffset = 0;
     }
     else if (isPanningBranch(noodel)) {
-        enableBranchMove(noodel.focalParent);
-        noodel.branchMoveOffset = 0;
+        enableBranchTransition(noodel.focalParent);
+        noodel.branchPanOffset = 0;
     }
 
     noodel.r.panAxis = null;

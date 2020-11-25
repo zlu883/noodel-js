@@ -42,11 +42,11 @@ import NodeTransitionGroup from "./NodeTransitionGroup.vue";
 import NodeState from "../types/NodeState";
 import NoodelState from "../types/NoodelState";
 import { PropType, defineComponent, nextTick } from "vue";
-import { updateBranchSize } from "../controllers/noodel-align";
+import { updateBranchSize } from "../controllers/alignment";
 import {
 	attachBranchResizeSensor,
 	detachBranchResizeSensor,
-} from "../controllers/resize-detect";
+} from "../controllers/resize-sensor";
 import { getActualOffsetBranch } from '../controllers/getters';
 
 export default defineComponent({

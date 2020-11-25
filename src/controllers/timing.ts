@@ -1,5 +1,11 @@
+/* Module for throttle and debounce functions. */
+
 import NoodelState from '../types/NoodelState';
 
+/**
+ * Force the given function to execute only once within the given interval
+ * regardless how many times it is called.
+ */
 export function throttle(noodel: NoodelState, key: string, func: () => any, interval: number) {
     if (noodel.r.throttleMap.get(key)) return;
 
