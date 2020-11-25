@@ -56,6 +56,10 @@ export function isPanningTrunk(noodel: NoodelState): boolean {
 export function isPanningBranch(noodel: NoodelState): boolean {
     return noodel.r.panAxis === 'branch';
 }
+
+export function isBranchVisible(noodel: NoodelState, parent: NodeState): boolean {
+    return parent.isActiveLineage && parent.level <= (noodel.focalLevel - 1) + noodel.options.visibleSubtreeDepth;
+}
  
 /**
  * The orientation agnostic distance counting from the start of the trunk axis

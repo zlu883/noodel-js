@@ -1,7 +1,7 @@
 /* Module for handling mutations of the noodel tree. */
 
 import NodeState from '../types/NodeState';
-import { isPanningBranch } from './getters';
+import { isBranchVisible, isPanningBranch } from './getters';
 import NoodelState from '../types/NoodelState';
 import { updateOffsetsBeforeNodeDelete } from './alignment';
 import { forceReflow } from './transition';
@@ -9,7 +9,7 @@ import { finalizePan } from './pan';
 import { registerNodeSubtree } from './identity';
 import NodeDefinition from '../types/NodeDefinition';
 import { createNodeState } from './setup';
-import { setActiveChild, setFocalParent, showActiveSubtree } from './navigate';
+import { setActiveChild, setFocalParent } from './navigate';
 
 /**
  * Insert children to a parent at a particular index. Always keep the current active child
@@ -63,11 +63,6 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
         setActiveChild(noodel, parent, activeChildIndex);
     }
 
-    // show the inserted nodes if they are in the active tree
-    if (parent.isActive && (parent.r.isRoot || parent.parent.isBranchVisible)) {
-        showActiveSubtree(noodel.focalParent, noodel.options.visibleSubtreeDepth);
-    }
-
     // if panning focal branch, cancel it since it may conflict with animations
     if (parent.isFocalParent && isPanningBranch(noodel)) {
         finalizePan(noodel);
@@ -78,7 +73,7 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
     parent.isBranchTransparent = true;
 
     // to ensure smooth animations
-    if (parent.isBranchVisible) {
+    if (isBranchVisible(noodel, parent)) {
         forceReflow();
     }
 
@@ -107,7 +102,6 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
         // to prevent events sending twice
         if (parent.children.length === deleteCount) { // all children deleted
             setActiveChild(noodel, parent, null); // this will not trigger event even if parent is focal
-            parent.isBranchVisible = false;
         }
         else if (index + deleteCount < parent.children.length) { // siblings exist after the deleted children
             setActiveChild(noodel, parent, index + deleteCount); // set next sibling active
@@ -116,14 +110,8 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
             setActiveChild(noodel, parent, index - 1); // set prev sibling active        
         }
 
-        // show the subtree of the new active child if branch is visible
-        // no need to hide previous subtree because it will be deleted
-        if (parent.isBranchVisible) {
-            showActiveSubtree(parent, noodel.options.visibleSubtreeDepth);
-        }
-
         // change focal parent if current focal branch is being deleted
-        if (parent.level <= noodel.focalLevel && parent.isBranchVisible) {
+        if (parent.level <= noodel.focalLevel && parent.isActiveLineage) {
 
             finalizePan(noodel);
 
@@ -171,7 +159,7 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
     }
 
     // to ensure smooth animations
-    if (parent.isBranchVisible) {
+    if (isBranchVisible(noodel, parent)) {
         forceReflow();
     }
 

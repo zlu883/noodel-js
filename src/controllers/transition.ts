@@ -2,7 +2,7 @@
 
 import NoodelState from 'src/types/NoodelState';
 import NodeState from 'src/types/NodeState';
-import { getActualOffsetBranch, getActualOffsetTrunk } from './getters';
+import { getActualOffsetBranch, getActualOffsetTrunk, isBranchVisible } from './getters';
 
 /**
  * Calculates the difference between the expected trunk offset
@@ -37,7 +37,7 @@ function applyTrunkTransitOffset(noodel: NoodelState) {
  * and set it as the transit offset.
  */
 function applyBranchTransitOffset(noodel: NoodelState, parent: NodeState) {
-    if (!parent.isBranchVisible) return;
+    if (!isBranchVisible(noodel, parent)) return;
 
     let orientation = noodel.options.orientation;
     let branchDirection = noodel.options.branchDirection;

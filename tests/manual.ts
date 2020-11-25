@@ -3,7 +3,7 @@ import '../src/styles/noodel.css';
 import '../src/styles/noodel-default.css';
 
 let noodel = new Noodel("#template", {
-    visibleSubtreeDepth: 3,
+    visibleSubtreeDepth: 1,
 });
 
 noodel.mount("#noodel");

@@ -4,7 +4,6 @@ import NodeDefinition from '../types/NodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
 import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
-import { showActiveSubtree } from './navigate';
 import { jumpToHash } from './routing';
 import { generateNodeId, registerNodeSubtree, isIdRegistered } from './identity';
 import NoodelNode from '../main/NoodelNode';
@@ -100,7 +99,6 @@ export function createNoodelState(root: NodeDefinition, options: NoodelOptions):
 
     registerNodeSubtree(noodelState, rootNode);
     parseAndApplyOptions(options, noodelState);
-    showActiveSubtree(rootNode, noodelState.options.visibleSubtreeDepth);
 
     if (noodelState.options.useRouting) {
         jumpToHash(noodelState); // this will cause extra focal change event if there's jump
@@ -169,6 +167,7 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
         isBranchTransparent: true, // initialize to transparent state for capturing size
         isFocalParent: isRoot, // only initialze root as focal parent
         isActive: isActive,
+        isActiveLineage: isRoot || (isActive && parent.isActiveLineage),
         isInInspectMode: false,
 
         branchOffset: 0,

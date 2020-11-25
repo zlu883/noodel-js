@@ -2,7 +2,7 @@
 
 import NoodelState from 'src/types/NoodelState';
 import { getActiveChild, getAnchorOffsetBranch, getAnchorOffsetTrunk, isDeepestBranch, isFirstNode, isLastNode, isPanning, isPanningBranch, isPanningTrunk, isTopmostBranch } from './getters';
-import { hideActiveSubtree, setActiveChild, setFocalParent, showActiveSubtree } from './navigate';
+import { setActiveChild, setFocalParent } from './navigate';
 import { NoodelAxis } from 'src/types/NoodelAxis';
 import { Axis } from 'src/types/Axis';
 import { shiftFocalLevel, shiftFocalNode, queueUnsetLimitIndicator } from './navigate';
@@ -239,9 +239,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
         let currentFocalNode = getActiveChild(focalParent);
 
         if (targetActiveNode !== currentFocalNode) {
-            hideActiveSubtree(currentFocalNode);
             setActiveChild(noodel, focalParent, targetActiveNode.index);
-            showActiveSubtree(focalParent, noodel.options.visibleSubtreeDepth);
         }
 
         noodel.branchPanOffset = targetMoveOffset;

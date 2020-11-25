@@ -2,7 +2,7 @@
 
 <template>
 	<div
-		v-show="parent.isBranchVisible || parent.isBranchTransparent"
+		v-show="showBranch"
 		class="nd-branch"
 		:class="branchClass"
 		:style="branchStyle"
@@ -47,7 +47,7 @@ import {
 	attachBranchResizeSensor,
 	detachBranchResizeSensor,
 } from "../controllers/resize-sensor";
-import { getActualOffsetBranch } from '../controllers/getters';
+import { getActualOffsetBranch, isBranchVisible } from '../controllers/getters';
 
 export default defineComponent({
 	components: {
@@ -93,6 +93,10 @@ export default defineComponent({
 	},
 
 	computed: {
+		showBranch(): boolean {
+			return isBranchVisible(this.noodel, this.parent) || this.parent.isBranchTransparent;
+		},
+
 		branchClass(): string {
 			let className = '';
 
@@ -121,7 +125,7 @@ export default defineComponent({
 				style += `bottom: ${this.parent.trunkRelativeOffset}px;`;
 			}
 
-			if (!this.parent.isBranchVisible) {
+			if (!isBranchVisible(this.noodel, this.parent)) {
 				style += 'pointer-events: none;';
 
 				if (this.parent.isBranchTransparent) {

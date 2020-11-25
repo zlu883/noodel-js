@@ -7,8 +7,29 @@ import { forceReflow } from './transition';
 import { exitInspectMode } from './inspect-mode';
 import { queueFocalNodeChange, queueFocalParentChange } from './event';
 import { finalizePan } from './pan';
-import { traverseActiveDescendents } from './traverse';
 import { syncHashToFocalNode } from './routing';
+
+function setActiveLineage(parent: NodeState) {
+    if (!parent.isActiveLineage) return;
+
+    let next = getActiveChild(parent);
+
+    while (next && !next.isActiveLineage) {
+        next.isActiveLineage = true;
+        next = getActiveChild(next);
+    }
+}
+
+function unsetActiveLineage(parent: NodeState) {
+    if (!parent.isActiveLineage) return;
+
+    let next = getActiveChild(parent);
+
+    while (next && next.isActiveLineage) {
+        next.isActiveLineage = false;
+        next = getActiveChild(next);
+    }
+}
 
 /**
  * Changes the focal parent of the noodel, emit focal change events for
@@ -33,20 +54,26 @@ export function setFocalParent(noodel: NoodelState, newParent: NodeState) {
 /**
  * Changes the active child of the parent to the given index (can be null to unset active child).
  * If the parent is focal, will emit focal node change events and sync hash.
- * This only changes the active state, will not toggle the visible tree.
+ * This will also change state for the active lineage.
  */
 export function setActiveChild(noodel: NoodelState, parent: NodeState, index: number | null) {
     if (index === parent.activeChildIndex) return;
 
     let prev = getActiveChild(parent);
 
-    if (prev) prev.isActive = false;
-
+    if (prev) {
+        prev.isActive = false;
+        unsetActiveLineage(parent);
+    }
+    
     parent.activeChildIndex = index;
 
     let current = getActiveChild(parent);
 
-    if (current) current.isActive = true;
+    if (current) {
+        current.isActive = true;
+        setActiveLineage(parent);
+    }
 
     // you set index to null only when deleting every child
     // if this happens to the focal branch, it must change and 
@@ -55,18 +82,6 @@ export function setActiveChild(noodel: NoodelState, parent: NodeState, index: nu
         queueFocalNodeChange(noodel, prev, current);
         syncHashToFocalNode(noodel);
     }
-}
-
-export function showActiveSubtree(origin: NodeState, depth?: number) {
-    traverseActiveDescendents(origin, desc => {
-        desc.isBranchVisible = true;
-    }, true, false, depth);
-}
-
-export function hideActiveSubtree(origin: NodeState, depth?: number) {
-    traverseActiveDescendents(origin, desc => {
-        desc.isBranchVisible = false;
-    }, true, false, depth);
 }
 
 /**
@@ -95,9 +110,7 @@ export function shiftFocalLevel(noodel: NoodelState, levelDiff: number) {
         }
     }
     else {
-        hideActiveSubtree(newFocalParent);
         setFocalParent(noodel, newFocalParent);
-        showActiveSubtree(noodel.root, noodel.focalLevel + noodel.options.visibleSubtreeDepth);
         forceReflow();
     }
 }
@@ -137,9 +150,7 @@ export function shiftFocalNode(noodel: NoodelState, indexDiff: number) {
         }
     }
     else {
-        hideActiveSubtree(getActiveChild(focalParent));
         setActiveChild(noodel, focalParent, targetIndex);
-        showActiveSubtree(focalParent, noodel.options.visibleSubtreeDepth);
         forceReflow();
     }
 }
@@ -167,31 +178,19 @@ export function jumpTo(noodel: NoodelState, target: NodeState) {
 
     // first establish the focal parent and nodes so that events are triggered properly,
     // the order here is important so events won't be triggered twice
-    if (nextParent.isBranchVisible) {
-        hideActiveSubtree(getActiveChild(nextParent));
-        setActiveChild(noodel, nextParent, nextActiveChildIndex);
-        showActiveSubtree(getActiveChild(nextParent), noodel.options.visibleSubtreeDepth);
-        setFocalParent(noodel, nextParent);
-    }
-    else {
-        setActiveChild(noodel, nextParent, nextActiveChildIndex);
-        setFocalParent(noodel, nextParent);
+    setActiveChild(noodel, nextParent, nextActiveChildIndex);
+    setFocalParent(noodel, nextParent);
 
-        // adjusts the active child of ancestors up to the nearest visible branch to point to target
-        while (true) {
-            nextActiveChildIndex = nextParent.index;
-            nextParent = nextParent.parent;
+    // adjusts the active child of ancestors to point to target
+    while (true) {
+        if (nextParent.isActiveLineage) { // has reached nearest active lineage branch
+            break; 
+        }
 
-            if (nextParent.isBranchVisible) { // has reached nearest visible branch
-                hideActiveSubtree(getActiveChild(nextParent));
-                setActiveChild(noodel, nextParent, nextActiveChildIndex);
-                showActiveSubtree(nextParent, (noodel.focalLevel - nextParent.level) + noodel.options.visibleSubtreeDepth);
-                break; 
-            }
-            
-            setActiveChild(noodel, nextParent, nextActiveChildIndex);
-        }    
-    }
+        nextActiveChildIndex = nextParent.index;
+        nextParent = nextParent.parent;
+        setActiveChild(noodel, nextParent, nextActiveChildIndex);
+    }    
 
     forceReflow();
 }

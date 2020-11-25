@@ -45,16 +45,17 @@ export default interface NodeState {
 
     isBranchMounted: boolean;
     /**
-     * Toggles visibility of child branch via display: none.
-     */
-    isBranchVisible: boolean;
-    /**
      * If true, will hide child branch with opacity: 0 instead of display: none.
      * Used temporarily for setting up resize sensors.
      */
     isBranchTransparent: boolean;
     isFocalParent: boolean;
     isActive: boolean;
+    /**
+     * Whether this node is in the lineage of active nodes starting from the root.
+     * This is used to check whether a branch should be visible.
+     */
+    isActiveLineage: boolean;
 
     applyBranchMove: boolean;
     /**

@@ -52,6 +52,7 @@ import {
 	attachResizeSensor,
 	detachResizeSensor,
 } from "../controllers/resize-sensor";
+import { isBranchVisible } from '../controllers/getters';
 
 export default defineComponent({
 	props: {
@@ -171,7 +172,7 @@ export default defineComponent({
 		childIndicatorClass(): string {
 			let className = '';
 
-			if (this.node.isBranchVisible) className += 'nd-child-indicator-expanded ';
+			if (isBranchVisible(this.noodel, this.node)) className += 'nd-child-indicator-expanded ';
 
 			className += this.node.classNames.childIndicator || '';
 
