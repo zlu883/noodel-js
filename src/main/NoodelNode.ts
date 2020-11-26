@@ -303,7 +303,7 @@ export default class NoodelNode {
     setStyles(styles: NodeCss) {
         this.throwErrorIfDeleted();
 
-        this._s.classNames = {
+        this._s.styles = {
             ...this._s.styles,
             ...styles
         }

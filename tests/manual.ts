@@ -6,6 +6,18 @@ let noodel = new Noodel("#template", {
     visibleSubtreeDepth: 1,
 });
 
+let sizeChangeNode = noodel.findNodeById("sizeChange");
+
+sizeChangeNode.on("enterFocus", () => {
+    console.log("enter");
+    sizeChangeNode.setStyles({
+        contentBox: "height: 200px; width: 200px"
+    });
+});
+sizeChangeNode.on("exitFocus", () => sizeChangeNode.setStyles({
+    contentBox: "height: 150px; width: 150px"
+}));
+
 noodel.mount("#noodel");
 
 document.getElementById("setRtl").addEventListener("click", () => {
