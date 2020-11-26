@@ -20,16 +20,18 @@ import NodeState from '../types/NodeState';
  * to account for transient directional glitches in the swipe motion.
  */
 function updateSwipeVelocityBuffer(noodel: NoodelState, velocity: number, timestamp: number) {
-    if (noodel.r.lastPanTimestamp === null || timestamp - noodel.r.lastPanTimestamp < 60) {
-        noodel.r.swipeVelocityBuffer.push(velocity);
+    let swipeVelocityBuffer = noodel.r.swipeVelocityBuffer;
+    let lastPanTimestamp = noodel.r.lastPanTimestamp;
 
-        if (noodel.r.swipeVelocityBuffer.length > 10) {
-            noodel.r.swipeVelocityBuffer.shift();
+    if (lastPanTimestamp === null || timestamp - lastPanTimestamp < 60) {
+        swipeVelocityBuffer.push(velocity);
+
+        if (swipeVelocityBuffer.length > 10) {
+            swipeVelocityBuffer.shift();
         }
     }
     else {
-        noodel.r.swipeVelocityBuffer = [];
-        noodel.r.swipeVelocityBuffer.push(velocity);
+        noodel.r.swipeVelocityBuffer = [velocity];
     }
 
     noodel.r.lastPanTimestamp = timestamp;

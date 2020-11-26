@@ -38,7 +38,6 @@ export function createNoodelState(root: NodeDefinition, options: NoodelOptions):
             isShiftKeyPressed: false,
             limitIndicatorTimeout: null,
             pointerUpSrcNode: null,
-            panStartFocalNode: null,
             canvasEl: null,
             trunkEl: null,
             hammerJsInstance: null,

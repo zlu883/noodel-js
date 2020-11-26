@@ -20,15 +20,15 @@ import { serializeNodeDeep, serializeContent, serializeNode, parseContent, parse
  */
 export default class NoodelNode {
 
-    private state: NodeState;
-    private noodelState: NoodelState;
+    private _s: NodeState;
+    private _ns: NoodelState;
 
     /**
      * Internal use only. To get the view model for specific nodes, use methods on the Noodel class instead.
      */
     private constructor(state: NodeState, noodelState: NoodelState) { // set to private to avoid including internal types in the declarations
-        this.state = state;
-        this.noodelState = noodelState;
+        this._s = state;
+        this._ns = noodelState;
     }
 
     private throwErrorIfDeleted() {
@@ -44,7 +44,7 @@ export default class NoodelNode {
      * noodel is not mounted.
      */
     getEl(): HTMLDivElement {
-        return this.state.r.el;
+        return this._s.r.el;
     }
 
     /**
@@ -52,7 +52,7 @@ export default class NoodelNode {
      * noodel is not mounted or branch does not exist.
      */
     getBranchEl(): HTMLDivElement {
-        return this.state.r.branchEl;
+        return this._s.r.branchEl;
     }
 
     /**
@@ -60,16 +60,16 @@ export default class NoodelNode {
      * if this is detached from its parent by a delete operation.
      */
     getParent(): NoodelNode {
-        if (!this.state.parent) return null;
-        return this.state.parent.r.vm;
+        if (!this._s.parent) return null;
+        return this._s.parent.r.vm;
     }
 
     /**
      * Get the path (an array of zero-based indices counting from the root) of this node.
      */
     getPath(): number[] {
-        if (!this.noodelState) return null;
-        return _getPath(this.state);
+        if (!this._ns) return null;
+        return _getPath(this._s);
     }
 
     /**
@@ -78,7 +78,7 @@ export default class NoodelNode {
      * @param deep whether to extract a deep definition tree including descendants, default false
      */
     extractDefinition(deep = false): NodeDefinition {
-        return deep ? serializeNodeDeep(this.state) : serializeNode(this.state);
+        return deep ? serializeNodeDeep(this._s) : serializeNode(this._s);
     }
 
     /**
@@ -86,49 +86,49 @@ export default class NoodelNode {
      * @param index 0-based index of the child
      */
     getChild(index: number): NoodelNode {
-        if (index < 0 || index >= this.state.children.length) {
+        if (index < 0 || index >= this._s.children.length) {
             return null;
         }
 
-        return this.state.children[index].r.vm;
+        return this._s.children[index].r.vm;
     }
 
     /**
      * Get the index of the active child of this node. Return null if there's no children.
      */
     getActiveChildIndex(): number {
-        return this.state.activeChildIndex;
+        return this._s.activeChildIndex;
     }
 
     /**
      * Get the active child of this node. Return null if there's no children.
      */
     getActiveChild(): NoodelNode {
-        let index = this.state.activeChildIndex;
+        let index = this._s.activeChildIndex;
 
         if (index === null) return null;
-        return this.state.children[index].r.vm;
+        return this._s.children[index].r.vm;
     }
 
     /**
      * Get a copied array of this node's list of children.
      */
     getChildren(): NoodelNode[] {
-        return this.state.children.map(c => c.r.vm);
+        return this._s.children.map(c => c.r.vm);
     }
 
     /**
      * Get the number of children of this node.
      */
     getChildCount(): number {
-        return this.state.children.length;
+        return this._s.children.length;
     }
 
     /**
      * Get the ID of this node.
      */
     getId(): string {
-        return this.state.id;
+        return this._s.id;
     }
 
     /**
@@ -137,7 +137,7 @@ export default class NoodelNode {
      * shallowly copied.
      */
     getContent(): string | ComponentContent {
-        return serializeContent(this.state.content);
+        return serializeContent(this._s.content);
     }
 
     /**
@@ -146,7 +146,7 @@ export default class NoodelNode {
      * shallowly copied.
      */
     getBranchContent(): string | ComponentContent {
-        return serializeContent(this.state.branchContent);
+        return serializeContent(this._s.branchContent);
     }
 
     /**
@@ -154,7 +154,7 @@ export default class NoodelNode {
      */
     getClassNames(): NodeCss {
         return {
-            ...this.state.classNames
+            ...this._s.classNames
         };
     }
 
@@ -163,7 +163,7 @@ export default class NoodelNode {
      */
     getStyles(): NodeCss {
         return {
-            ...this.state.styles
+            ...this._s.styles
         };
     }
 
@@ -172,7 +172,7 @@ export default class NoodelNode {
      */
     getOptions(): NodeOptions {
         return {
-            ...this.state.options
+            ...this._s.options
         };
     }
 
@@ -181,7 +181,7 @@ export default class NoodelNode {
      * Will return 0 if detached from its parent by a delete operation.
      */
     getIndex(): number {
-        return this.state.index;
+        return this._s.index;
     }
 
     /**
@@ -191,21 +191,21 @@ export default class NoodelNode {
      */
     getLevel(): number {
         if (this.isDeleted()) return null;
-        return this.state.level;
+        return this._s.level;
     }
 
     /**
      * Check whether this node is the root.
      */
     isRoot(): boolean {
-        return this.state.r.isRoot;
+        return this._s.r.isRoot;
     }
 
     /**
      * Check whether this node is active.
      */
     isActive(): boolean {
-        return this.state.isActive;
+        return this._s.isActive;
     }
 
     /**
@@ -213,7 +213,7 @@ export default class NoodelNode {
      */
     isFocalParent(): boolean {
         if (this.isDeleted()) return false;
-        return this.state.isFocalParent;
+        return this._s.isFocalParent;
     }
 
     /**
@@ -222,7 +222,7 @@ export default class NoodelNode {
     isInFocalBranch(): boolean {
         if (this.isDeleted()) return false;
         if (this.isRoot()) return false;
-        return this.state.parent.isFocalParent;
+        return this._s.parent.isFocalParent;
     }
 
     /**
@@ -239,7 +239,7 @@ export default class NoodelNode {
     isVisible(): boolean {
         if (this.isDeleted()) return false;
         if (this.isRoot()) return false;
-        return isBranchVisible(this.noodelState, this.state.parent);
+        return isBranchVisible(this._ns, this._s.parent);
     }
 
     /**
@@ -248,14 +248,14 @@ export default class NoodelNode {
      */
     isChildrenVisible(): boolean {
         if (this.isDeleted()) return false;
-        return isBranchVisible(this.noodelState, this.state);
+        return isBranchVisible(this._ns, this._s);
     }
 
     /**
      * Check whether this node has been deleted from its noodel.
      */
     isDeleted(): boolean {
-        return !this.noodelState;
+        return !this._ns;
     }
 
     // MUTATERS
@@ -267,8 +267,8 @@ export default class NoodelNode {
     setId(id: string) {
         this.throwErrorIfDeleted();
 
-        if (id === this.state.id) return;
-        changeNodeId(this.noodelState, this.state.id, id);
+        if (id === this._s.id) return;
+        changeNodeId(this._ns, this._s.id, id);
     }
 
     /**
@@ -278,7 +278,7 @@ export default class NoodelNode {
     setContent(content: string | ComponentContent) {
         this.throwErrorIfDeleted();
 
-        this.state.content = parseContent(content);
+        this._s.content = parseContent(content);
     }
 
     /**
@@ -289,8 +289,8 @@ export default class NoodelNode {
     setClassNames(classNames: NodeCss) {
         this.throwErrorIfDeleted();
 
-        this.state.classNames = {
-            ...this.state.classNames,
+        this._s.classNames = {
+            ...this._s.classNames,
             ...classNames
         }
     }
@@ -303,8 +303,8 @@ export default class NoodelNode {
     setStyles(styles: NodeCss) {
         this.throwErrorIfDeleted();
 
-        this.state.classNames = {
-            ...this.state.styles,
+        this._s.classNames = {
+            ...this._s.styles,
             ...styles
         }
     }
@@ -317,7 +317,7 @@ export default class NoodelNode {
     setOptions(options: NodeOptions) {
         this.throwErrorIfDeleted();
 
-        parseAndApplyNodeOptions(this.noodelState, options, this.state);
+        parseAndApplyNodeOptions(this._ns, options, this._s);
     }
 
     /**
@@ -329,18 +329,18 @@ export default class NoodelNode {
     setActiveChild(index: number) {
         this.throwErrorIfDeleted();
 
-        if (index < 0 || index >= this.state.children.length) {
+        if (index < 0 || index >= this._s.children.length) {
             throw new Error("Cannot set active child: node has no children or invalid index");
         }
 
-        if (this.state.isFocalParent) {
-            shiftFocalNode(this.noodelState, index - this.state.activeChildIndex);
+        if (this._s.isFocalParent) {
+            shiftFocalNode(this._ns, index - this._s.activeChildIndex);
         }
-        else if (this.state.isActiveLineage && this.state.level < this.noodelState.focalLevel) {
-            jumpTo(this.noodelState, this.state.children[index]);
+        else if (this._s.isActiveLineage && this._s.level < this._ns.focalLevel) {
+            jumpTo(this._ns, this._s.children[index]);
         }
         else {
-            setActiveChild(this.noodelState, this.state, index);
+            setActiveChild(this._ns, this._s, index);
         }
     }
 
@@ -351,11 +351,11 @@ export default class NoodelNode {
     jumpToFocus() {
         this.throwErrorIfDeleted();
 
-        if (this.state.r.isRoot) {
+        if (this._s.r.isRoot) {
             throw new Error("Cannot jump to focus: target is root");
         }
 
-        jumpTo(this.noodelState, this.state);
+        jumpTo(this._ns, this._s);
     }
 
     /**
@@ -371,16 +371,16 @@ export default class NoodelNode {
         let newDefs = parseContentTreeDefinition(defs);
 
         if (index === undefined) {
-            index = this.state.children.length;
+            index = this._s.children.length;
         }
 
-        if (index < 0 || index > this.state.children.length) {
+        if (index < 0 || index > this._s.children.length) {
             throw new Error("Cannot insert children: invalid index");
         }
 
         if (newDefs.length === 0) return [];
 
-        return insertChildren(this.noodelState, this.state, index, newDefs).map(n => n.r.vm);
+        return insertChildren(this._ns, this._s, index, newDefs).map(n => n.r.vm);
     }
 
     /**
@@ -425,22 +425,22 @@ export default class NoodelNode {
     deleteChildren(index: number, count: number): NoodelNode[] {
         this.throwErrorIfDeleted();
 
-        if (index < 0 || count < 0 || index >= this.state.children.length) {
+        if (index < 0 || count < 0 || index >= this._s.children.length) {
             throw new Error("Cannot delete child node(s): invalid index or count");
         }
 
-        if (index + count > this.state.children.length) {
-            count = this.state.children.length - index;
+        if (index + count > this._s.children.length) {
+            count = this._s.children.length - index;
         }
 
         if (count <= 0) return;
 
-        let deletedNodes = deleteChildren(this.noodelState, this.state, index, count);
+        let deletedNodes = deleteChildren(this._ns, this._s, index, count);
 
         // unregister
         deletedNodes.forEach(node => {
             node.parent = null;
-            unregisterNodeSubtree(this.noodelState, node);
+            unregisterNodeSubtree(this._ns, node);
         });
 
         return deletedNodes.map(n => n.r.vm);
@@ -512,7 +512,7 @@ export default class NoodelNode {
      * @param includeSelf whether to include this node in the traversal
      */
     traverseSubtree(func: (node: NoodelNode) => any, includeSelf: boolean) {
-        traverseDescendents(this.state, desc => func(desc.r.vm), includeSelf);
+        traverseDescendents(this._s, desc => func(desc.r.vm), includeSelf);
     }
 
     // ALIGNMENT
@@ -524,16 +524,16 @@ export default class NoodelNode {
      */
     realign() {
         this.throwErrorIfDeleted();
-        if (!this.noodelState.isMounted) return;
-        if (!this.state.parent) return;
+        if (!this._ns.isMounted) return;
+        if (!this._s.parent) return;
 
-        this.state.parent.isBranchTransparent = true;
+        this._s.parent.isBranchTransparent = true;
 
         nextTick(() => {
-            let rect = this.state.r.el.getBoundingClientRect();
+            let rect = this._s.r.el.getBoundingClientRect();
             
-            updateNodeSize(this.noodelState, this.state, rect.height, rect.width);
-            this.state.parent.isBranchTransparent = false;
+            updateNodeSize(this._ns, this._s, rect.height, rect.width);
+            this._s.parent.isBranchTransparent = false;
         });
     }
 
@@ -544,16 +544,16 @@ export default class NoodelNode {
      */
     realignBranch() {
         this.throwErrorIfDeleted();
-        if (!this.noodelState.isMounted) return;
-        if (this.state.children.length === 0) return;
+        if (!this._ns.isMounted) return;
+        if (this._s.children.length === 0) return;
 
-        this.state.isBranchTransparent = true;
+        this._s.isBranchTransparent = true;
 
         nextTick(() => {
-            let rect = this.state.r.branchSliderEl.getBoundingClientRect();
+            let rect = this._s.r.branchSliderEl.getBoundingClientRect();
 
-            updateBranchSize(this.noodelState, this.state, rect.height, rect.width);
-            this.state.isBranchTransparent = false;
+            updateBranchSize(this._ns, this._s, rect.height, rect.width);
+            this._s.isBranchTransparent = false;
         });
     }
 
@@ -565,7 +565,7 @@ export default class NoodelNode {
      * @param listener event listener to attach
      */
     on<E extends keyof NodeEventMap>(ev: E, listener: NodeEventMap[E]) {
-        this.state.r.eventListeners.get(ev).push(listener);
+        this._s.r.eventListeners.get(ev).push(listener);
     }
 
     /**
@@ -574,7 +574,7 @@ export default class NoodelNode {
      * @param listener the event listener to remove, by reference comparison
      */
     off<E extends keyof NodeEventMap>(ev: E, listener: NodeEventMap[E]) {
-        let handlers = this.state.r.eventListeners.get(ev);
+        let handlers = this._s.r.eventListeners.get(ev);
         let index = handlers.indexOf(listener);
 
         if (index > -1) handlers.splice(index, 1);

@@ -26,11 +26,6 @@ export default interface NoodelState {
          * Used by HammerJS handlers to determine the origin of tap input.
          */
         pointerUpSrcNode: NodeState;
-        /**
-         * The focal node when a pan started. Used for triggering focal change events on pan end.
-         */
-        panStartFocalNode: NodeState;
-
         canvasEl: HTMLDivElement;
         trunkEl: HTMLDivElement;
 

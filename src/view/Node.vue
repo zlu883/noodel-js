@@ -93,24 +93,25 @@ export default defineComponent({
 			let orientation = this.noodel.options.orientation;
 			let branchDirection = this.noodel.options.branchDirection;
 			let offset = this.node.branchRelativeOffset + "px";
+			let el = this.node.r.el;
 
-			this.node.r.el.classList.remove("nd-node-active");
+			el.classList.remove("nd-node-active");
 
 			if (orientation === "ltr" || orientation === "rtl") {
-				this.node.r.el.style.width = "100%";
+				el.style.width = "100%";
 
 				if (branchDirection === "normal") {
-					this.node.r.el.style.top = offset;
+					el.style.top = offset;
 				} else {
-					this.node.r.el.style.bottom = offset;
+					el.style.bottom = offset;
 				}
 			} else {
-				this.node.r.el.style.height = "100%";
+				el.style.height = "100%";
 
 				if (branchDirection === "normal") {
-					this.node.r.el.style.left = offset;
+					el.style.left = offset;
 				} else {
-					this.node.r.el.style.right = offset;
+					el.style.right = offset;
 				}
 			}
 		}

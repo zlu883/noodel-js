@@ -165,11 +165,12 @@ function onPanStart(noodel: NoodelState, ev: HammerInput) {
     if (checkInputPreventClass(noodel, ev.srcEvent, 'nd-prevent-swipe')) return;
 
     let axis: Axis = null;
+    let direction = ev.direction;
 
-    if (ev.direction === Hammer.DIRECTION_LEFT || ev.direction === Hammer.DIRECTION_RIGHT) {
+    if (direction === Hammer.DIRECTION_LEFT || direction === Hammer.DIRECTION_RIGHT) {
         axis = 'x';
     }
-    else if (ev.direction === Hammer.DIRECTION_UP || ev.direction === Hammer.DIRECTION_DOWN) {
+    else if (direction === Hammer.DIRECTION_UP || direction === Hammer.DIRECTION_DOWN) {
         axis = 'y';
     }
 

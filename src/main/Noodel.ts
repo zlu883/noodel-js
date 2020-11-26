@@ -19,7 +19,7 @@ import { parseAndApplyOptions } from '../controllers/options';
  */
 export default class Noodel {
 
-    private noodelState: NoodelState;
+    private _s: NoodelState;
 
     static VueComponent: object = Canvas;
 
@@ -40,7 +40,7 @@ export default class Noodel {
             options = {};
         }
 
-        this.noodelState = createNoodelState(root, options);
+        this._s = createNoodelState(root, options);
     }
 
     // LIFECYCLE
@@ -57,9 +57,9 @@ export default class Noodel {
             throw new Error("Cannot mount noodel: invalid container element");
         }
 
-        this.noodelState.r.containerEl = el;
-        this.noodelState.r.vueInstance = createApp(Canvas as any, {noodel: this.noodelState});
-        this.noodelState.r.vueInstance.mount(el);
+        this._s.r.containerEl = el;
+        this._s.r.vueInstance = createApp(Canvas as any, {noodel: this._s});
+        this._s.r.vueInstance.mount(el);
     }
 
     /**
@@ -67,15 +67,15 @@ export default class Noodel {
      * but keeping the current state of the view model.
      */
     unmount() {
-        let vueInstance = this.noodelState.r.vueInstance;
-        let containerEl = this.noodelState.r.containerEl;
+        let vueInstance = this._s.r.vueInstance;
+        let containerEl = this._s.r.containerEl;
 
         if (vueInstance) {
             vueInstance.unmount(containerEl);
         }
         
-        this.noodelState.r.vueInstance = null;
-        this.noodelState.r.containerEl = null;
+        this._s.r.vueInstance = null;
+        this._s.r.containerEl = null;
     }
 
     /**
@@ -96,14 +96,14 @@ export default class Noodel {
      * as props to the Vue component in a Vue app. Should not be modified directly.
      */
     getState(): NoodelState {
-        return this.noodelState;
+        return this._s;
     }
 
     /**
      * Get the DOM element of the noodel's outmost container, i.e. nd-canvas.
      */
     getEl(): HTMLDivElement {
-        return this.noodelState.r.canvasEl;
+        return this._s.r.canvasEl;
     }
 
     /**
@@ -112,7 +112,7 @@ export default class Noodel {
      */
     getOptions(): NoodelOptions {
         return {
-            ...this.noodelState.options
+            ...this._s.options
         };
     }
 
@@ -120,7 +120,7 @@ export default class Noodel {
      * Get the level of the current focal branch. The first branch has level 1.
      */
     getFocalLevel(): number {
-        return this.noodelState.focalLevel;
+        return this._s.focalLevel;
     }
 
     /**
@@ -129,7 +129,7 @@ export default class Noodel {
      */
     getActiveTreeHeight(): number {
         let count = 0;
-        let currentParent = this.noodelState.root;
+        let currentParent = this._s.root;
 
         while (currentParent.activeChildIndex !== null) {
             count++;
@@ -143,7 +143,7 @@ export default class Noodel {
      * Get the number of nodes in this noodel (excluding the root).
      */
     getNodeCount(): number {
-        return this.noodelState.r.idMap.size - 1;
+        return this._s.r.idMap.size - 1;
     }
 
     /**
@@ -151,7 +151,7 @@ export default class Noodel {
      * that serves as the parent of the topmost branch, and always exists.
      */
     getRoot(): NoodelNode {
-        return this.noodelState.root.r.vm;
+        return this._s.root.r.vm;
     }
 
     /**
@@ -159,14 +159,14 @@ export default class Noodel {
      * if there's no focal branch (i.e. noodel is empty).
      */
     getFocalParent(): NoodelNode {
-        return this.noodelState.focalParent.r.vm;
+        return this._s.focalParent.r.vm;
     }
 
     /**
      * Get the focal node. Return null if noodel is empty.
      */
     getFocalNode(): NoodelNode {
-        let focalNode =  getFocalNode(this.noodelState);
+        let focalNode =  getFocalNode(this._s);
         
         return focalNode ? focalNode.r.vm : null;
     }
@@ -176,7 +176,7 @@ export default class Noodel {
      * starting from the root. Return null if no such node exist.
      */
     findNodeByPath(path: number[]): NoodelNode {
-        let target = _findNodeByPath(this.noodelState, path);
+        let target = _findNodeByPath(this._s, path);
         
         return target ? target.r.vm : null;
     }
@@ -185,7 +185,7 @@ export default class Noodel {
      * Get the node with the given ID. Return null if no such node exist.
      */
     findNodeById(id: string): NoodelNode {
-        let target = findNode(this.noodelState, id);
+        let target = findNode(this._s, id);
         
         return target ? target.r.vm : null;
     }
@@ -194,7 +194,7 @@ export default class Noodel {
      * Check if this noodel is in inspect mode.
      */
     isInInspectMode(): boolean {
-        return this.noodelState.isInInspectMode;
+        return this._s.isInInspectMode;
     }
 
     // MUTATERS
@@ -204,7 +204,7 @@ export default class Noodel {
      * will be merged into the current options.
      */
     setOptions(options: NoodelOptions) {
-        parseAndApplyOptions(options, this.noodelState);
+        parseAndApplyOptions(options, this._s);
     }
     
     /**
@@ -213,7 +213,7 @@ export default class Noodel {
      * the possible limits, will navigate to the furthest level in that direction.
      */
     setFocalLevel(level: number) {
-        shiftFocalLevel(this.noodelState, level - this.noodelState.focalLevel);
+        shiftFocalLevel(this._s, level - this._s.focalLevel);
     }
 
     /**
@@ -222,7 +222,7 @@ export default class Noodel {
      * @param levelCount number of levels to move, defaults to 1
      */
     moveIn(levelCount: number = 1) {
-        shiftFocalLevel(this.noodelState, levelCount);
+        shiftFocalLevel(this._s, levelCount);
     }
 
     /**
@@ -231,7 +231,7 @@ export default class Noodel {
      * @param levelCount number of levels to move, defaults to 1
      */
     moveOut(levelCount: number = 1) {
-        shiftFocalLevel(this.noodelState, -levelCount);
+        shiftFocalLevel(this._s, -levelCount);
     }
 
     /**
@@ -240,7 +240,7 @@ export default class Noodel {
      * @param nodeCount number of nodes to move, defaults to 1
      */
     moveForward(nodeCount: number = 1) {
-        shiftFocalNode(this.noodelState, nodeCount);
+        shiftFocalNode(this._s, nodeCount);
     }
 
     /**
@@ -249,7 +249,7 @@ export default class Noodel {
      * @param nodeCount number of nodes to move, defaults to 1
      */
     moveBack(nodeCount: number = 1) {
-        shiftFocalNode(this.noodelState, -nodeCount);
+        shiftFocalNode(this._s, -nodeCount);
     }
 
     /**
@@ -257,10 +257,10 @@ export default class Noodel {
      */
     toggleInspectMode(on: boolean) {
         if (on) {
-            enterInspectMode(this.noodelState);
+            enterInspectMode(this._s);
         }
         else {
-            exitInspectMode(this.noodelState);
+            exitInspectMode(this._s);
         }
     }
 
@@ -272,7 +272,7 @@ export default class Noodel {
      * @param listener event listener to attach
      */
     on<E extends keyof NoodelEventMap>(ev: E, listener: NoodelEventMap[E]) {
-        this.noodelState.r.eventListeners.get(ev).push(listener);
+        this._s.r.eventListeners.get(ev).push(listener);
     }
 
     /**
@@ -281,7 +281,7 @@ export default class Noodel {
      * @param listener the event listener to remove, by reference comparison
      */
     off<E extends keyof NoodelEventMap>(ev: E, listener: NoodelEventMap[E]) {
-        let handlers = this.noodelState.r.eventListeners.get(ev);
+        let handlers = this._s.r.eventListeners.get(ev);
         let index = handlers.indexOf(listener);
 
         if (index > -1) handlers.splice(index, 1);
