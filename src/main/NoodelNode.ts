@@ -518,14 +518,14 @@ export default class NoodelNode {
     // ALIGNMENT
     
     /**
-     * Asynchronous method to capture the length of this node (on the branch axis) and adjust 
-     * the branch's position if necessary. Use when resize detection is disabled to manually
-     * trigger realignment on node resize. Does nothing if this is root or noodel is not mounted.
+     * Recapture the size of this node (on the branch axis) and adjust 
+     * the branch's position if necessary. Use immediately after an operation that changes
+     * the size of this node (on the branch axis). 
+     * Does nothing if this is the root or noodel is not mounted.
      */
     realign() {
         this.throwErrorIfDeleted();
-        if (!this._ns.isMounted) return;
-        if (!this._s.parent) return;
+        if (!this._s.parent || !this._s.parent.isBranchMounted) return;
 
         this._s.parent.isBranchTransparent = true;
 
@@ -538,14 +538,14 @@ export default class NoodelNode {
     }
 
     /**
-     * Asynchronous method to capture the length of this node's child branch (on the trunk axis) and adjust 
-     * the trunk's position if necessary. Use when resize detection is disabled to manually
-     * trigger realignment on branch resize. Does nothing if this has no children or noodel is not mounted.
+     * Recapture the size of this node's child branch (on the trunk axis) and adjust 
+     * the trunk's position if necessary. Use immediately after an operation that changes
+     * the size of this node's child branch (on the trunk axis).
+     * Does nothing if this has no children or noodel is not mounted.
      */
     realignBranch() {
         this.throwErrorIfDeleted();
-        if (!this._ns.isMounted) return;
-        if (this._s.children.length === 0) return;
+        if (this._s.children.length === 0 || !this._s.isBranchMounted) return;
 
         this._s.isBranchTransparent = true;
 

@@ -79,7 +79,6 @@ export function createNoodelState(root: NodeDefinition, options: NoodelOptions):
             useTapNavigation: true,
             useInspectModeKey: true,
             useInspectModeDoubleTap: true,
-            useResizeDetection: true,
             showLimitIndicators: true,
             showChildIndicators: true,
             orientation: "ltr",
@@ -154,8 +153,6 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
             el: null,
             branchEl: null,
             branchSliderEl: null,
-            resizeSensor: null,
-            branchResizeSensor: null,
             vm: null,
             fade: false
         }),
@@ -191,8 +188,6 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
         },
         activeChildIndex: activeChildIndex,
         options: {
-            useResizeDetection: null,
-            useBranchResizeDetection: null,
             showChildIndicator: null,
         },
     });

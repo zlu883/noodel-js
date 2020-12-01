@@ -6,7 +6,7 @@ import { traverseDescendents } from './traverse';
 import { nextTick } from 'vue';
 import { disableBranchTransition, disableTrunkTransition, enableBranchTransition, enableTrunkTransition, forceReflow } from './transition';
 import { finalizePan } from './pan';
-import { getAnchorOffsetBranch, getAnchorOffsetTrunk, getFocalNode, isPanningBranch, isPanningTrunk } from './getters';
+import { getAnchorOffsetBranch, getAnchorOffsetTrunk, getFocalNode, isBranchVisible, isPanningBranch, isPanningTrunk } from './getters';
 
 export function updateCanvasSize(noodel: NoodelState, height: number, width: number) {
     let orientation = noodel.options.orientation;
@@ -39,7 +39,7 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
 
         // Disable branch transition temporarily and apply transit offset
         // This does not apply to inserts (i.e. branch not mounted) as transition is necessary for FLIP
-        if (parent.applyBranchMove && !isInsert) {
+        if (isBranchVisible(noodel, parent) && node.index <= parent.activeChildIndex && parent.applyBranchMove && !isInsert) {
             disableBranchTransition(noodel, parent, true);
 
             nextTick(() => {
@@ -80,7 +80,7 @@ export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeig
         // Disable trunk transition temporarily and apply transit offset.
         // This does not apply to inserts as transitions can only happen during simultaneous child insert + navigation,
         // and transition should be kept in this case
-        if (noodel.applyTrunkMove && !isInsert) {
+        if (isBranchVisible(noodel, parent) && parent.level < noodel.focalLevel && noodel.applyTrunkMove && !isInsert) {
             disableTrunkTransition(noodel, true);
 
             // resume transition

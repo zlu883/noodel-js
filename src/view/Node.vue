@@ -48,10 +48,6 @@ import { updateNodeSize } from "../controllers/alignment";
 import NoodelState from "../types/NoodelState";
 import { traverseAncestors } from "../controllers/traverse";
 import { nextTick, PropType, defineComponent } from "vue";
-import {
-	attachResizeSensor,
-	detachResizeSensor,
-} from "../controllers/resize-sensor";
 import { isBranchVisible } from '../controllers/getters';
 
 export default defineComponent({
@@ -75,8 +71,6 @@ export default defineComponent({
 			true
 		);
 
-		attachResizeSensor(this.noodel, this.node);
-
 		// allows parent branch to fall back to display: none after first size update,
 		// using nextTick to wait for parent branch size capture to finish first
 		nextTick(() => {
@@ -85,8 +79,6 @@ export default defineComponent({
 	},
 
 	beforeUnmount() {
-		detachResizeSensor(this.node);
-
 		// check fade flag and adjust absolute positioning as necessary
 		if (this.node.r.fade) {
 			this.node.r.fade = false;

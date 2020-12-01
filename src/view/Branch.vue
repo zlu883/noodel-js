@@ -43,10 +43,6 @@ import NodeState from "../types/NodeState";
 import NoodelState from "../types/NoodelState";
 import { PropType, defineComponent, nextTick } from "vue";
 import { updateBranchSize } from "../controllers/alignment";
-import {
-	attachBranchResizeSensor,
-	detachBranchResizeSensor,
-} from "../controllers/resize-sensor";
 import { getActualOffsetBranch, isBranchVisible } from '../controllers/getters';
 
 export default defineComponent({
@@ -72,15 +68,12 @@ export default defineComponent({
 			branchRect.width,
 			true
 		);
-		attachBranchResizeSensor(this.noodel, this.parent);
-
+		
 		requestAnimationFrame(() => {
-			this.parent.isBranchMounted = true;
+			requestAnimationFrame(() => {
+				this.parent.isBranchMounted = true;
+			});
 		});
-	},
-
-	beforeUnmount() {
-		detachBranchResizeSensor(this.parent);
 	},
 
 	unmounted() {

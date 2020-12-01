@@ -96,8 +96,6 @@ describe('Init', function () {
         });
         it('should parse node options', function () {
             let expected: NodeOptions = {
-                useResizeDetection: true,
-                useBranchResizeDetection: false,
                 showChildIndicator: true,
             };
 
@@ -160,8 +158,6 @@ describe('Init', function () {
                 },
                 {
                     options: {
-                        useResizeDetection: true,
-                        useBranchResizeDetection: false,
                         showChildIndicator: true,
                     }
                 }
@@ -233,8 +229,6 @@ describe('Init', function () {
         });
         it('should parse node options', function () {
             let expected: NodeOptions = {
-                useResizeDetection: true,
-                useBranchResizeDetection: false,
                 showChildIndicator: true,
             };
 
@@ -264,7 +258,6 @@ describe('Init', function () {
                 useTapNavigation: true,
                 useInspectModeKey: true,
                 useInspectModeDoubleTap: true,
-                useResizeDetection: true,
                 showLimitIndicators: true,
                 showChildIndicators: true,
                 orientation: "ltr",
@@ -298,7 +291,6 @@ describe('Init', function () {
                 useTapNavigation: false,
                 useInspectModeKey: false,
                 useInspectModeDoubleTap: false,
-                useResizeDetection: false,
                 showLimitIndicators: false,
                 showChildIndicators: false,
                 orientation: "rtl",
@@ -323,7 +315,6 @@ describe('Init', function () {
                 useTapNavigation: false,
                 useInspectModeKey: false,
                 useInspectModeDoubleTap: false,
-                useResizeDetection: false,
                 showLimitIndicators: false,
                 showChildIndicators: false,
                 orientation: "rtl",

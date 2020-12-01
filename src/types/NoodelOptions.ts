@@ -41,12 +41,6 @@ export default interface NoodelOptions {
      */
     useInspectModeDoubleTap?: boolean;
     /**
-     * Global option for enabling resize detection on ALL nodes and branches.
-     * When enabled, will automatically align the positioning of elements when
-     * node/branch resizes are detected. Defaults to true.
-     */
-    useResizeDetection?: boolean;
-    /**
      * Determines whether routing should be enabled for this noodel. Defaults to true.
      */
     useRouting?: boolean;

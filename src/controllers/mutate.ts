@@ -67,8 +67,7 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
         finalizePan(noodel);
     }
 
-    // Allows resize sensors for the new nodes to be attached properly.
-    // Will be toggled back off at node mount.
+    // Allow new nodes' size capture
     if (parent.isBranchMounted) {
         parent.isBranchTransparent = true;
     }

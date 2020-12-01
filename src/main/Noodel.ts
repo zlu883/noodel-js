@@ -2,7 +2,7 @@ import NodeDefinition from '../types/NodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
 import { createNoodelState } from '../controllers/setup';
 import Canvas from '../view/Canvas.vue';
-import { nextTick as vueNextTick, createApp } from 'vue';
+import { nextTick as vueNextTick, createApp, nextTick } from 'vue';
 import NoodelState from '../types/NoodelState';
 import NoodelNode from './NoodelNode';
 import { getActiveChild, getFocalNode } from '../controllers/getters';
@@ -13,6 +13,8 @@ import { findNode } from '../controllers/identity';
 import NoodelEventMap from '../types/NoodelEventMap';
 import { parseContentTreeDefinition } from '../controllers/serialize';
 import { parseAndApplyOptions } from '../controllers/options';
+import { updateBranchSize, updateCanvasSize, updateNodeSize } from '../controllers/alignment';
+import { traverseDescendents } from '../controllers/traverse';
 
 /**
  * The view model of a noodel. Has 2-way binding with the view.
@@ -262,6 +264,55 @@ export default class Noodel {
         else {
             exitInspectMode(this._s);
         }
+    }
+
+    // ALIGNMENT
+    
+    /**
+     * Recapture the size of the canvas and adjust the noodel's positions
+     * if necessary. Use immediately after an operation that changes
+     * the size of the canvas. 
+     * Does nothing if the noodel is not mounted.
+     */
+    realignCanvas() {
+        if (!this._s.isMounted) return;
+
+        nextTick(() => {
+            let rect = this._s.r.canvasEl.getBoundingClientRect();
+            
+            updateCanvasSize(this._s, rect.height, rect.width);
+        });
+    }
+
+    /**
+     * Convenience method to recapture the size of the canvas
+     * and ALL nodes and branches, and realign positions if necessary. 
+     * Use this if you need to align everything after a size change.
+     * Does nothing if the noodel is not mounted.
+     */
+    realignAll() {
+        if (!this._s.isMounted) return;
+
+        this.realignCanvas();
+
+        traverseDescendents(this._s.root, node => {
+            node.isBranchTransparent = true;
+        }, true); 
+
+        nextTick(() => {
+            traverseDescendents(this._s.root, node => {
+                if (!node.r.isRoot) {
+                    let nodeRect = node.r.el.getBoundingClientRect();
+            
+                    updateNodeSize(this._s, node, nodeRect.height, nodeRect.width);
+                }
+                
+                let branchRect = node.r.branchSliderEl.getBoundingClientRect();
+
+                updateBranchSize(this._s, node, branchRect.height, branchRect.width);
+                node.isBranchTransparent = false;
+            }, true);     
+        });
     }
 
     // EVENT

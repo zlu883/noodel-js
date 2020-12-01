@@ -1,4 +1,3 @@
-import ResizeSensor from "../util/ResizeSensor";
 import NodeOptions from './NodeOptions';
 import ComponentContent from './ComponentContent';
 import NoodelNode from '../main/NoodelNode';
@@ -20,9 +19,6 @@ export default interface NodeState {
         el: HTMLDivElement;
         branchEl: HTMLDivElement;
         branchSliderEl: HTMLDivElement;
-
-        resizeSensor: ResizeSensor;
-        branchResizeSensor: ResizeSensor;
 
         vm: NoodelNode;
         /**
@@ -46,7 +42,7 @@ export default interface NodeState {
     isBranchMounted: boolean;
     /**
      * If true, will hide child branch with opacity: 0 instead of display: none.
-     * Used temporarily for setting up resize sensors.
+     * Used temporarily for capturing sizes.
      */
     isBranchTransparent: boolean;
     isFocalParent: boolean;

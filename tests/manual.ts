@@ -13,13 +13,15 @@ sizeChangeTriggerNode.on("enterFocus", () => {
     sizeChangeNode.setStyles({
         contentBox: "height: 200px; width: 200px"
     });
-    sizeChangeNode.realign()
+    sizeChangeNode.realign();
+    sizeChangeNode.getParent().realignBranch();
 });
 sizeChangeTriggerNode.on("exitFocus", () => {
     sizeChangeNode.setStyles({
         contentBox: "height: 150px; width: 150px"
     });
-    sizeChangeNode.realign()
+    sizeChangeNode.realign();
+    sizeChangeNode.getParent().realignBranch();
 });
 
 noodel.mount("#noodel");
@@ -32,11 +34,13 @@ document.getElementById("changeElSize").addEventListener("click", () => {
         sizeChangeNode.getEl().style.width = "200px";
         x = false;
         sizeChangeNode.realign();
+        sizeChangeNode.getParent().realignBranch();
     }
     else {
         sizeChangeNode.getEl().style.height = "150px";
         sizeChangeNode.getEl().style.width = "150px";
         sizeChangeNode.realign();
+        sizeChangeNode.getParent().realignBranch();
         x = true;
     }
 });

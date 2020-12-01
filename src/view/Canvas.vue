@@ -65,7 +65,6 @@ import { PropType, defineComponent } from "vue";
 import { queueMount } from "../controllers/event";
 import { getActualOffsetTrunk } from '../controllers/getters';
 import { updateCanvasSize } from '../controllers/alignment';
-import { attachCanvasResizeSensor } from '../controllers/resize-sensor';
 
 export default defineComponent({
 	components: {
@@ -83,7 +82,6 @@ export default defineComponent({
 		let rect = this.$el.getBoundingClientRect();
 
     	updateCanvasSize(this.noodel, rect.height, rect.width);
-		attachCanvasResizeSensor(this.noodel);
 		setupCanvasInput(this.noodel);
 
 		// use double RAF to ensure that all side effects (e.g. size captures)

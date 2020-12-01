@@ -60,11 +60,6 @@ export function parseHTMLToNode(el: Element): NodeDefinition {
             branch: attributes.styleBranch,
             branchContentBox: attributes.styleBranchContentBox,
             branchSlider: attributes.styleBranchSlider,
-        },
-        options: {
-            useResizeDetection: attributes.useResizeDetection === 'true' ? true : attributes.useResizeDetection === 'false' ? false : null,
-            useBranchResizeDetection: attributes.useBranchResizeDetection === 'true' ? true : attributes.useBranchResizeDetection === 'false' ? false : null,
-            showChildIndicator: attributes.showChildIndicator === 'true' ? true : attributes.showChildIndicator === 'false' ? false : null,
         }
     };
 }
