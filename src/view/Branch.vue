@@ -68,7 +68,7 @@ export default defineComponent({
 			branchRect.width,
 			true
 		);
-		
+
 		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
 				this.parent.isBranchMounted = true;
@@ -106,16 +106,20 @@ export default defineComponent({
 			let style = '';
 
 			if (orientation === "ltr") {
-				style += `left: ${this.parent.trunkRelativeOffset}px;`;
+				style += `left: 0;`;
+				style += `transform: translateX(${this.parent.trunkRelativeOffset}px);`
 			}
 			else if (orientation === "rtl") {
-				style += `right: ${this.parent.trunkRelativeOffset}px;`;
+				style += `right: 0;`;
+				style += `transform: translateX(${-this.parent.trunkRelativeOffset}px);`
 			}
 			else if (orientation === "ttb") {
-				style += `top: ${this.parent.trunkRelativeOffset}px;`;
+				style += `top: 0;`;
+				style += `transform: translateY(${this.parent.trunkRelativeOffset}px);`
 			}
 			else if (orientation === "btt") {
-				style += `bottom: ${this.parent.trunkRelativeOffset}px;`;
+				style += `bottom: 0;`;
+				style += `transform: translateY(${-this.parent.trunkRelativeOffset}px);`
 			}
 
 			if (!isBranchVisible(this.noodel, this.parent)) {
