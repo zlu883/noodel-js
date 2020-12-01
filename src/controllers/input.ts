@@ -5,7 +5,7 @@ import { startPan, updatePan, releasePan } from './pan';
 import Hammer from 'hammerjs';
 import NoodelState from '../types/NoodelState';
 import { exitInspectMode, enterInspectMode } from './inspect-mode';
-import { throttle } from './timing';
+import { throttle } from './util';
 import { getActiveChild, isEmpty, isPanning } from './getters';
 import { Axis } from 'src/types/Axis';
 

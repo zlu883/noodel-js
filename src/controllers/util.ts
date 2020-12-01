@@ -1,4 +1,4 @@
-/* Module for throttle and debounce functions. */
+/* Module for generic utility functions. */
 
 import NoodelState from '../types/NoodelState';
 
