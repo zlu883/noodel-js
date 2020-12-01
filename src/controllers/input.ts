@@ -6,7 +6,7 @@ import Hammer from 'hammerjs';
 import NoodelState from '../types/NoodelState';
 import { exitInspectMode, enterInspectMode } from './inspect-mode';
 import { throttle } from './util';
-import { getActiveChild, isEmpty, isPanning } from './getters';
+import { getActiveChild, getBranchDirection, getOrientation, isEmpty, isPanning } from './getters';
 import { Axis } from 'src/types/Axis';
 
 /**
@@ -15,8 +15,8 @@ import { Axis } from 'src/types/Axis';
  * current orientation options.
  */
 function moveNoodel(noodel: NoodelState, axis: Axis, diff: number) {
-    let orientation = noodel.options.orientation;
-	let branchDirection = noodel.options.branchDirection;
+    let orientation = getOrientation(noodel);
+	let branchDirection = getBranchDirection(noodel);
 
     if ((orientation === 'ltr' && axis === 'x') || (orientation === 'ttb' && axis === 'y')) {
         shiftFocalLevel(noodel, diff);
@@ -38,10 +38,12 @@ function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {
     if (isEmpty(noodel)) return;
     if (checkInputPreventClass(noodel, ev, 'nd-prevent-key')) return;
 
-    if (ev.key === "Shift") {
+    const key = ev.key;
+
+    if (key === "Shift") {
         noodel.r.isShiftKeyPressed = true;
     }
-    else if (ev.key === "Enter") {
+    else if (key === "Enter") {
         if (!noodel.options.useInspectModeKey) return;
         if (noodel.isInInspectMode) {
             exitInspectMode(noodel);
@@ -54,52 +56,54 @@ function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {
     if (!noodel.options.useKeyNavigation) return;
     if (noodel.isInInspectMode) return;
 
-    if (ev.key === "ArrowDown") {
+    const isShiftKeyPressed = noodel.r.isShiftKeyPressed;
+
+    if (key === "ArrowDown") {
         moveNoodel(noodel, 'y', 1);
     }
-    else if (ev.key === "ArrowUp") {
+    else if (key === "ArrowUp") {
         moveNoodel(noodel, 'y', -1);
     }
-    else if (ev.key === "ArrowLeft") {
+    else if (key === "ArrowLeft") {
         moveNoodel(noodel, 'x', -1);
     }
-    else if (ev.key === "ArrowRight") {
+    else if (key === "ArrowRight") {
         moveNoodel(noodel, 'x', 1);
     }
-    else if (ev.key === " " || ev.key === "Spacebar") {
-        if (noodel.r.isShiftKeyPressed) {
+    else if (key === " " || key === "Spacebar") {
+        if (isShiftKeyPressed) {
             moveNoodel(noodel, 'x', 3);
         }
         else {
             moveNoodel(noodel, 'y', 3);
         }
     }
-    else if (ev.key === "PageDown") {
-        if (noodel.r.isShiftKeyPressed) {
+    else if (key === "PageDown") {
+        if (isShiftKeyPressed) {
             moveNoodel(noodel, 'x', 3);
         }
         else {
             moveNoodel(noodel, 'y', 3);
         }
     }
-    else if (ev.key === "PageUp") {
-        if (noodel.r.isShiftKeyPressed) {
+    else if (key === "PageUp") {
+        if (isShiftKeyPressed) {
             moveNoodel(noodel, 'x', -3);
         }
         else {
             moveNoodel(noodel, 'y', -3);
         }
     }
-    else if (ev.key === "Home") {
-        if (noodel.r.isShiftKeyPressed) {
+    else if (key === "Home") {
+        if (isShiftKeyPressed) {
             moveNoodel(noodel, 'x', Number.MIN_SAFE_INTEGER);
         }
         else {
             moveNoodel(noodel, 'y', Number.MIN_SAFE_INTEGER);
         }
     }
-    else if (ev.key === "End") {
-        if (noodel.r.isShiftKeyPressed) {
+    else if (key === "End") {
+        if (isShiftKeyPressed) {
             moveNoodel(noodel, 'x', Number.MAX_SAFE_INTEGER);
         }
         else {

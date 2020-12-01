@@ -43,7 +43,7 @@ import NodeState from "../types/NodeState";
 import NoodelState from "../types/NoodelState";
 import { PropType, defineComponent, nextTick } from "vue";
 import { updateBranchSize } from "../controllers/alignment";
-import { getActualOffsetBranch, isBranchVisible } from '../controllers/getters';
+import { getActualOffsetBranch, getBranchDirection, getOrientation, isBranchVisible } from '../controllers/getters';
 
 export default defineComponent({
 	components: {
@@ -101,8 +101,8 @@ export default defineComponent({
 		},
 
 		branchStyle(): string {
-			let orientation = this.noodel.options.orientation;
-			let branchDirection = this.noodel.options.branchDirection;
+			let orientation = getOrientation(this.noodel);
+			let branchDirection = getBranchDirection(this.noodel);
 			let style = '';
 
 			if (orientation === "ltr") {
@@ -148,8 +148,8 @@ export default defineComponent({
 		},
 
 		branchSliderStyle(): string {
-			let orientation = this.noodel.options.orientation;
-			let branchDirection = this.noodel.options.branchDirection;
+			let orientation = getOrientation(this.noodel);
+			let branchDirection = getBranchDirection(this.noodel);
 			let branchOffset = getActualOffsetBranch(this.noodel, this.parent);
 			let style = '';
 

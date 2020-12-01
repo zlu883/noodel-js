@@ -1,7 +1,9 @@
 /* Module for various convenience getters. */
 
+import { BranchDirection } from '../types/BranchDirection';
 import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
+import { Orientation } from '../types/Orientation';
 import { traverseAncestors } from './traverse';
 
 export function getFocalNode(noodel: NoodelState) {
@@ -59,6 +61,14 @@ export function isPanningBranch(noodel: NoodelState): boolean {
 
 export function isBranchVisible(noodel: NoodelState, parent: NodeState): boolean {
     return parent.isActiveLineage && parent.level <= (noodel.focalLevel - 1) + noodel.options.visibleSubtreeDepth;
+}
+
+export function getOrientation(noodel: NoodelState): Orientation {
+    return noodel.options.orientation;
+}
+
+export function getBranchDirection(noodel: NoodelState): BranchDirection {
+    return noodel.options.branchDirection;
 }
  
 /**

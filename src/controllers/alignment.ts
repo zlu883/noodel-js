@@ -4,12 +4,13 @@ import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
 import { traverseDescendents } from './traverse';
 import { nextTick } from 'vue';
-import { disableBranchTransition, disableTrunkTransition, enableBranchTransition, enableTrunkTransition, forceReflow } from './transition';
+import { disableBranchTransition, disableTrunkTransition, enableBranchTransition, enableTrunkTransition } from './transition';
 import { finalizePan } from './pan';
-import { getAnchorOffsetBranch, getAnchorOffsetTrunk, getFocalNode, isBranchVisible, isPanningBranch, isPanningTrunk } from './getters';
+import { getAnchorOffsetBranch, getAnchorOffsetTrunk, getFocalNode, getOrientation, isBranchVisible, isPanningBranch, isPanningTrunk } from './getters';
+import { forceReflow } from './util';
 
 export function updateCanvasSize(noodel: NoodelState, height: number, width: number) {
-    let orientation = noodel.options.orientation;
+    let orientation = getOrientation(noodel);
 
     if (orientation === 'ltr' || orientation === 'rtl') {
         noodel.canvasSizeTrunk = width;
@@ -22,7 +23,7 @@ export function updateCanvasSize(noodel: NoodelState, height: number, width: num
 }
 
 export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: number, newWidth: number, isInsert = false) {
-    let orientation = noodel.options.orientation;
+    let orientation = getOrientation(noodel);
     let newSize = null;
 
     if (orientation === 'ltr' || orientation === 'rtl') {
@@ -63,7 +64,7 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
 }
 
 export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeight: number, newWidth: number, isInsert = false) {
-    let orientation = noodel.options.orientation;
+    let orientation = getOrientation(noodel);
     let newSize = null;
 
     if (orientation === 'ltr' || orientation === 'rtl') {

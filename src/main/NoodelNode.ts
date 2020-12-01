@@ -14,6 +14,7 @@ import { traverseDescendents } from '../controllers/traverse';
 import NodeCss from '../types/NodeCss';
 import NodeEventMap from '../types/NodeEventMap';
 import { serializeNodeDeep, serializeContent, serializeNode, parseContent, parseContentTreeDefinition } from '../controllers/serialize';
+import { throwError } from '../controllers/util';
 
 /**
  * The view model of a node in a noodel. Has 2-way binding with the view.
@@ -33,7 +34,7 @@ export default class NoodelNode {
 
     private throwErrorIfDeleted() {
         if (this.isDeleted()) {
-            throw new Error("Invalid operation because this node has been deleted from its noodel.");
+            throwError("Invalid operation because this node has been deleted from its noodel.");
         }
     }
 
@@ -330,7 +331,7 @@ export default class NoodelNode {
         this.throwErrorIfDeleted();
 
         if (index < 0 || index >= this._s.children.length) {
-            throw new Error("Cannot set active child: node has no children or invalid index");
+            throwError("Cannot set active child: node has no children or invalid index");
         }
 
         if (this._s.isFocalParent) {
@@ -352,7 +353,7 @@ export default class NoodelNode {
         this.throwErrorIfDeleted();
 
         if (this._s.r.isRoot) {
-            throw new Error("Cannot jump to focus: target is root");
+            throwError("Cannot jump to focus: target is root");
         }
 
         jumpTo(this._ns, this._s);
@@ -375,7 +376,7 @@ export default class NoodelNode {
         }
 
         if (index < 0 || index > this._s.children.length) {
-            throw new Error("Cannot insert children: invalid index");
+            throwError("Cannot insert children: invalid index");
         }
 
         if (newDefs.length === 0) return [];
@@ -392,7 +393,7 @@ export default class NoodelNode {
         this.throwErrorIfDeleted();
 
         if (this.isRoot()) {
-            throw new Error("Cannot insert sibling nodes before root");
+            throwError("Cannot insert before: target is root");
         }
 
         return this.getParent().insertChildren(defs, this.getIndex());
@@ -407,7 +408,7 @@ export default class NoodelNode {
         this.throwErrorIfDeleted();
 
         if (this.isRoot()) {
-            throw new Error("Cannot insert sibling nodes after root");
+            throwError("Cannot insert after: target is root");
         }
 
         return this.getParent().insertChildren(defs, this.getIndex() + 1);
@@ -426,7 +427,7 @@ export default class NoodelNode {
         this.throwErrorIfDeleted();
 
         if (index < 0 || count < 0 || index >= this._s.children.length) {
-            throw new Error("Cannot delete child node(s): invalid index or count");
+            throwError("Cannot delete children: invalid index or count");
         }
 
         if (index + count > this._s.children.length) {
@@ -455,7 +456,7 @@ export default class NoodelNode {
         this.throwErrorIfDeleted();
 
         if (count < 0) {
-            throw new Error("Cannot delete before: invalid count");
+            throwError("Cannot delete before: invalid count");
         }
 
         if (this.isRoot()) return [];
@@ -480,7 +481,7 @@ export default class NoodelNode {
         this.throwErrorIfDeleted();
 
         if (count < 0) {
-            throw new Error("Cannot delete after: invalid count");
+            throwError("Cannot delete after: invalid count");
         }
 
         if (this.isRoot()) return [];
@@ -497,7 +498,7 @@ export default class NoodelNode {
         this.throwErrorIfDeleted();
 
         if (this.isRoot()) {
-            throw new Error("Cannot delete the root");
+            throwError("Cannot delete self: target is root");
         }
 
         this.getParent().deleteChildren(this.getIndex(), 1);

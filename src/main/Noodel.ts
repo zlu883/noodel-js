@@ -15,6 +15,7 @@ import { parseContentTreeDefinition } from '../controllers/serialize';
 import { parseAndApplyOptions } from '../controllers/options';
 import { updateBranchSize, updateCanvasSize, updateNodeSize } from '../controllers/alignment';
 import { traverseDescendents } from '../controllers/traverse';
+import { throwError } from '../controllers/util';
 
 /**
  * The view model of a noodel. Has 2-way binding with the view.
@@ -56,7 +57,7 @@ export default class Noodel {
         }
 
         if (!(el instanceof Element)) {
-            throw new Error("Cannot mount noodel: invalid container element");
+            throwError("Cannot mount noodel: invalid container element");
         }
 
         this._s.r.containerEl = el;

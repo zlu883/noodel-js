@@ -48,8 +48,10 @@ export function syncHashToFocalNode(noodel: NoodelState) {
 }
 
 export function unsetRouting(noodel: NoodelState) {
-    if(!noodel.r.onHashChanged) return;
+    let onHashChanged = noodel.r.onHashChanged;
 
-    window.removeEventListener("hashchange", noodel.r.onHashChanged);
+    if(!onHashChanged) return;
+
+    window.removeEventListener("hashchange", onHashChanged);
     noodel.r.onHashChanged = null;
 }

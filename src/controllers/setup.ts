@@ -10,6 +10,7 @@ import NoodelNode from '../main/NoodelNode';
 import { reactive, markRaw } from 'vue';
 import { parseContent } from './serialize';
 import { parseAndApplyNodeOptions, parseAndApplyOptions } from './options';
+import { throwError } from './util';
 
 export function createNoodelState(root: NodeDefinition, options: NoodelOptions): NoodelState {
 
@@ -20,7 +21,6 @@ export function createNoodelState(root: NodeDefinition, options: NoodelOptions):
             idCount: -1,
             idMap: new Map([]),
             throttleMap: new Map([]),
-            debounceMap: new Map([]),
             eventListeners: new Map([
                 ['mount', []], 
                 ['focalNodeChange', []],
@@ -111,30 +111,26 @@ export function createNoodelState(root: NodeDefinition, options: NoodelOptions):
 export function createNodeState(noodel: NoodelState, def: NodeDefinition, index: number, parent: NodeState, isActive: boolean, branchRelativeOffset: number): NodeState {
 
     let isRoot = parent === null;
-    if (!def.children) def.children = [];
-    if (!def.classNames) def.classNames = {};
-    if (!def.styles) def.styles = {};
-    if (!def.options) def.options = {};
+    let children = def.children || [];
+    let classNames = def.classNames || {};
+    let styles = def.styles || {};
+    let options = def.options || {};
+    let id = def.id;
 
-    // parse and validate ID
-    let newId = null;
-
-    if (typeof def.id === 'string') {
-        if (isIdRegistered(noodel, def.id)) {
-            throw new Error("Duplicate ID for new node: " + def.id);
+    if (id) {
+        if (isIdRegistered(noodel, id)) {
+            throwError("Duplicate ID detected for new node: " + id);
         }
-
-        newId = def.id;
     }
     else {
-        newId = generateNodeId(noodel);
+        id = generateNodeId(noodel);
     }
 
     // parse and validate active child index
-    let activeChildIndex = def.children.length > 0 ? 0 : null;
+    let activeChildIndex = children.length > 0 ? 0 : null;
 
-    for (let i = 0; i < def.children.length; i++) {
-        if (def.children[i].isActive) {
+    for (let i = 0; i < children.length; i++) {
+        if (children[i].isActive) {
             activeChildIndex = i;
             break;
         }
@@ -176,15 +172,15 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
         branchSize: 0,
         
         parent: parent as any,
-        id: newId,
+        id: id,
         children: [],
         content: parseContent(def.content) || null,
         branchContent: parseContent(def.branchContent) || null,
         classNames: {
-            ...def.classNames
+            ...classNames
         },
         styles: {
-            ...def.styles
+            ...styles
         },
         activeChildIndex: activeChildIndex,
         options: {
@@ -195,10 +191,10 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
     });
 
     nodeState.r.vm = new (NoodelNode as any)(nodeState, noodel);
-    parseAndApplyNodeOptions(noodel, def.options, nodeState);
+    parseAndApplyNodeOptions(noodel, options, nodeState);
 
-    for (let i = 0; i < def.children.length; i++) {
-        nodeState.children.push(createNodeState(noodel, def.children[i], i, nodeState, i === activeChildIndex, 0));
+    for (let i = 0; i < children.length; i++) {
+        nodeState.children.push(createNodeState(noodel, children[i], i, nodeState, i === activeChildIndex, 0));
     }
 
     return nodeState;

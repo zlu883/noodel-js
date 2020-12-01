@@ -6,16 +6,17 @@ import NodeState from '../types/NodeState';
 import NoodelOptions from '../types/NoodelOptions';
 import NoodelState from '../types/NoodelState';
 import { adjustTrunkMoveOffset, adjustBranchMoveOffset, resetAlignment } from './alignment';
-import { isPanningTrunk, isPanningBranch } from './getters';
+import { isPanningTrunk, isPanningBranch, getOrientation, getBranchDirection } from './getters';
 import { finalizePan } from './pan';
 import { setupRouting, unsetRouting } from './routing';
-import { disableBranchTransition, forceReflow, enableBranchTransition } from './transition';
+import { disableBranchTransition, enableBranchTransition } from './transition';
 import { traverseDescendents } from './traverse';
+import { forceReflow } from './util';
 
 export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState) {
 
-    let oldOrientation = noodel.options.orientation;
-    let oldBranchDirection = noodel.options.branchDirection;
+    let oldOrientation = getOrientation(noodel);
+    let oldBranchDirection = getBranchDirection(noodel);
 
     noodel.options = {
         ...noodel.options,
@@ -42,8 +43,8 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
     }
 
     if (noodel.isMounted) {
-        let newOrientation = noodel.options.orientation;
-        let newBranchDirection = noodel.options.branchDirection;
+        let newOrientation = getOrientation(noodel);
+        let newBranchDirection = getBranchDirection(noodel);
 
         if (newOrientation !== oldOrientation) {
             resetAlignment(noodel);

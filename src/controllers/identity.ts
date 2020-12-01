@@ -34,11 +34,12 @@ export function isIdRegistered(noodel: NoodelState, id: string): boolean {
 }
 
 export function changeNodeId(noodel: NoodelState, oldId: string, newId: string) {
-    let node = noodel.r.idMap.get(oldId);
+    let idMap = noodel.r.idMap;
+    let node = idMap.get(oldId);
 
     node.id = newId;
-    noodel.r.idMap.delete(oldId);
-    noodel.r.idMap.set(newId, node);
+    idMap.delete(oldId);
+    idMap.set(newId, node);
 }
 
 export function findNode(noodel: NoodelState, id: string): NodeState {

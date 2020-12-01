@@ -63,7 +63,7 @@ import NoodelState from "../types/NoodelState";
 import NodeState from "../types/NodeState";
 import { PropType, defineComponent } from "vue";
 import { queueMount } from "../controllers/event";
-import { getActualOffsetTrunk } from '../controllers/getters';
+import { getActualOffsetTrunk, getBranchDirection, getOrientation } from '../controllers/getters';
 import { updateCanvasSize } from '../controllers/alignment';
 
 export default defineComponent({
@@ -115,8 +115,8 @@ export default defineComponent({
 		},
 
 		showLeftLimit(): boolean {
-			let orientation = this.noodel.options.orientation;
-			let branchDirection = this.noodel.options.branchDirection;
+			let orientation = getOrientation(this.noodel);
+			let branchDirection = getBranchDirection(this.noodel);
 
 			if (orientation === "ltr") {
 				return this.noodel.trunkStartReached;
@@ -135,8 +135,8 @@ export default defineComponent({
 		},
 
 		showRightLimit(): boolean {
-			let orientation = this.noodel.options.orientation;
-			let branchDirection = this.noodel.options.branchDirection;
+			let orientation = getOrientation(this.noodel);
+			let branchDirection = getBranchDirection(this.noodel);
 
 			if (orientation === "ltr") {
 				return this.noodel.trunkEndReached;
@@ -155,8 +155,8 @@ export default defineComponent({
 		},
 
 		showTopLimit(): boolean {
-			let orientation = this.noodel.options.orientation;
-			let branchDirection = this.noodel.options.branchDirection;
+			let orientation = getOrientation(this.noodel);
+			let branchDirection = getBranchDirection(this.noodel);
 
 			if (orientation === "ttb") {
 				return this.noodel.trunkStartReached;
@@ -175,8 +175,8 @@ export default defineComponent({
 		},
 
 		showBottomLimit(): boolean {
-			let orientation = this.noodel.options.orientation;
-			let branchDirection = this.noodel.options.branchDirection;
+			let orientation = getOrientation(this.noodel);
+			let branchDirection = getBranchDirection(this.noodel);
 
 			if (orientation === "ttb") {
 				return this.noodel.trunkEndReached;
@@ -195,8 +195,8 @@ export default defineComponent({
 		},
 
 		leftLimitClass(): string {
-			let orientation = this.noodel.options.orientation;
-			let branchDirection = this.noodel.options.branchDirection;
+			let orientation = getOrientation(this.noodel);
+			let branchDirection = getBranchDirection(this.noodel);
 
 			if (orientation === "ltr") {
 				return 'nd-limit-trunk-start';
@@ -215,8 +215,8 @@ export default defineComponent({
 		},
 
 		rightLimitClass(): string {
-			let orientation = this.noodel.options.orientation;
-			let branchDirection = this.noodel.options.branchDirection;
+			let orientation = getOrientation(this.noodel);
+			let branchDirection = getBranchDirection(this.noodel);
 
 			if (orientation === "ltr") {
 				return 'nd-limit-trunk-end';
@@ -235,8 +235,8 @@ export default defineComponent({
 		},
 
 		topLimitClass(): string {
-			let orientation = this.noodel.options.orientation;
-			let branchDirection = this.noodel.options.branchDirection;
+			let orientation = getOrientation(this.noodel);
+			let branchDirection = getBranchDirection(this.noodel);
 
 			if (orientation === "ttb") {
 				return 'nd-limit-trunk-start';
@@ -255,8 +255,8 @@ export default defineComponent({
 		},
 
 		bottomLimitClass(): string {
-			let orientation = this.noodel.options.orientation;
-			let branchDirection = this.noodel.options.branchDirection;
+			let orientation = getOrientation(this.noodel);
+			let branchDirection = getBranchDirection(this.noodel);
 
 			if (orientation === "ttb") {
 				return 'nd-limit-trunk-end';
@@ -275,7 +275,7 @@ export default defineComponent({
 		},
 
 		trunkStyle(): {} {
-			let orientation = this.noodel.options.orientation;
+			let orientation = getOrientation(this.noodel);
 			let trunkOffset = getActualOffsetTrunk(this.noodel);
 			let transform: string = null;
 

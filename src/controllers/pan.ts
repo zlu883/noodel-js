@@ -1,7 +1,7 @@
 /* Module for handling pan input and logic. */
 
 import NoodelState from 'src/types/NoodelState';
-import { getActiveChild, getAnchorOffsetBranch, getAnchorOffsetTrunk, isDeepestBranch, isFirstNode, isLastNode, isPanning, isPanningBranch, isPanningTrunk, isTopmostBranch } from './getters';
+import { getActiveChild, getAnchorOffsetBranch, getAnchorOffsetTrunk, getBranchDirection, getOrientation, isDeepestBranch, isFirstNode, isLastNode, isPanning, isPanningBranch, isPanningTrunk, isTopmostBranch } from './getters';
 import { setActiveChild, setFocalParent } from './navigate';
 import { NoodelAxis } from 'src/types/NoodelAxis';
 import { Axis } from 'src/types/Axis';
@@ -237,7 +237,7 @@ export function startPan(noodel: NoodelState, realAxis: Axis) {
     queueUnsetLimitIndicator(noodel, 0);
 
     let panAxis: NoodelAxis = null;
-    let orientation = noodel.options.orientation;
+    let orientation = getOrientation(noodel);
 
     if (orientation === 'ltr' || orientation === 'rtl') {
         panAxis = realAxis === 'x' ? 'trunk' : 'branch';
@@ -257,7 +257,7 @@ export function startPan(noodel: NoodelState, realAxis: Axis) {
 }
 
 export function updatePan(noodel: NoodelState, velocityX: number, velocityY: number, distanceX: number, distanceY: number, timestamp: number) {
-    let orientation = noodel.options.orientation;
+    let orientation = getOrientation(noodel);
     let deltaX = distanceX - noodel.r.lastPanDistanceX;
     let deltaY = distanceY - noodel.r.lastPanDistanceY;
 
@@ -304,7 +304,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
     }
     else if (isPanningBranch(noodel)) {
 
-        let branchDirection = noodel.options.branchDirection;
+        let branchDirection = getBranchDirection(noodel);
 
         if (orientation === 'ltr' || orientation === 'rtl') {
             if (branchDirection === 'normal') {

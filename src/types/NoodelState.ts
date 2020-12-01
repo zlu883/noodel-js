@@ -16,7 +16,6 @@ export default interface NoodelState {
         idCount: number;
         idMap: Map<string, NodeState>;
         throttleMap: Map<string, boolean>;
-        debounceMap: Map<string, number>;
         eventListeners: Map<keyof NoodelEventMap, NoodelEventMap[keyof NoodelEventMap][]>;
         eventQueue: Function[];
         limitIndicatorTimeout: number;

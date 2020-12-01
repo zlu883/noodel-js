@@ -4,6 +4,7 @@ import { markRaw } from 'vue';
 import ComponentContent from '../types/ComponentContent';
 import NodeDefinition from '../types/NodeDefinition';
 import NodeState from '../types/NodeState';
+import { throwError } from './util';
 
 /**
  * Recursively parse the given HTML element into a tree of node definitions. 
@@ -71,7 +72,7 @@ export function parseContentTreeDefinition(contentTree: NodeDefinition[] | strin
     else if (typeof contentTree === "string") {
         let el = document.querySelector(contentTree);
         
-        if (!el) throw new Error("Unable to parse content tree definition: invalid selector");
+        if (!el) throwError("Unable to parse content tree definition: invalid selector");
         return parseHTMLToNode(el).children;
     }
     else if (contentTree instanceof Element) {

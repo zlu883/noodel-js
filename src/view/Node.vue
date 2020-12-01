@@ -48,7 +48,7 @@ import { updateNodeSize } from "../controllers/alignment";
 import NoodelState from "../types/NoodelState";
 import { traverseAncestors } from "../controllers/traverse";
 import { nextTick, PropType, defineComponent } from "vue";
-import { isBranchVisible } from '../controllers/getters';
+import { getBranchDirection, getOrientation, isBranchVisible } from '../controllers/getters';
 
 export default defineComponent({
 	props: {
@@ -82,8 +82,8 @@ export default defineComponent({
 		// check fade flag and adjust absolute positioning as necessary
 		if (this.node.r.fade) {
 			this.node.r.fade = false;
-			let orientation = this.noodel.options.orientation;
-			let branchDirection = this.noodel.options.branchDirection;
+			let orientation = getOrientation(this.noodel);
+			let branchDirection = getBranchDirection(this.noodel);
 			let offset = this.node.branchRelativeOffset + "px";
 			let el = this.node.r.el;
 

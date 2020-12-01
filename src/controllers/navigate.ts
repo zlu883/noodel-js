@@ -3,11 +3,11 @@
 import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
 import { getActiveChild, getFocalNode } from './getters';
-import { forceReflow } from './transition';
 import { exitInspectMode } from './inspect-mode';
 import { queueFocalNodeChange, queueFocalParentChange } from './event';
 import { finalizePan } from './pan';
 import { syncHashToFocalNode } from './routing';
+import { forceReflow } from './util';
 
 function setActiveLineage(parent: NodeState) {
     if (!parent.isActiveLineage) return;

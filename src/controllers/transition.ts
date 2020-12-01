@@ -2,7 +2,7 @@
 
 import NoodelState from 'src/types/NoodelState';
 import NodeState from 'src/types/NodeState';
-import { getActualOffsetBranch, getActualOffsetTrunk, isBranchVisible } from './getters';
+import { getActualOffsetBranch, getActualOffsetTrunk, getBranchDirection, getOrientation, isBranchVisible } from './getters';
 
 /**
  * Calculates the difference between the expected trunk offset
@@ -10,7 +10,7 @@ import { getActualOffsetBranch, getActualOffsetTrunk, isBranchVisible } from './
  * and set it as the transit offset.
  */
 function applyTrunkTransitOffset(noodel: NoodelState) {
-    let orientation = noodel.options.orientation;
+    let orientation = getOrientation(noodel);
     let canvasRect = noodel.r.canvasEl.getBoundingClientRect();
     let trunkRect = noodel.r.trunkEl.getBoundingClientRect();
     let renderedOffset;
@@ -39,8 +39,8 @@ function applyTrunkTransitOffset(noodel: NoodelState) {
 function applyBranchTransitOffset(noodel: NoodelState, parent: NodeState) {
     if (!isBranchVisible(noodel, parent)) return;
 
-    let orientation = noodel.options.orientation;
-    let branchDirection = noodel.options.branchDirection;
+    let orientation = getOrientation(noodel);
+    let branchDirection = getBranchDirection(noodel);
     let canvasRect = noodel.r.canvasEl.getBoundingClientRect();
     let branchSliderRect = parent.r.branchSliderEl.getBoundingClientRect();
     let renderedOffset;
@@ -100,18 +100,4 @@ export function disableBranchTransition(noodel: NoodelState, parent: NodeState, 
     if (!parent.applyBranchMove) return;
     if (applyTransit) applyBranchTransitOffset(noodel, parent);
     parent.applyBranchMove = false;
-}
-
-/**
- * Forces a layout reflow on browsers by doing a computed property access.
- * Some browsers have an issue with transform/opacity transitions 
- * such that the rendering will glitch if the property is changed midway
- * during an ongoing transition. Forcing a reflow when a new transition is
- * expected eliminates the problem.
- * 
- * Also useful when you need to force the browser to apply style changes
- * after updates in order to prepare for further changes.
- */
-export function forceReflow() {
-    document.body.getBoundingClientRect();
 }
