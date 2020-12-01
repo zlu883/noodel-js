@@ -103,8 +103,9 @@ export function getRelativeOffsetBranch(branchParent: NodeState) {
  */
 export function getAnchorOffsetTrunk(noodel: NoodelState, branchParent: NodeState) {
     let focalBranchSize = branchParent.branchSize;
+    let func = branchParent.options.focalAnchorTrunk || noodel.options.focalAnchorTrunk;
 
-    return Math.min(noodel.options.focalAnchorTrunk(focalBranchSize), focalBranchSize);
+    return Math.min(func(focalBranchSize), focalBranchSize);
 }
 
 /**
@@ -113,8 +114,9 @@ export function getAnchorOffsetTrunk(noodel: NoodelState, branchParent: NodeStat
  */
 export function getAnchorOffsetBranch(noodel: NoodelState, node: NodeState) {
     let nodeSize = node.size;
+    let func = node.options.focalAnchorBranch || noodel.options.focalAnchorBranch;
 
-    return Math.min(noodel.options.focalAnchorBranch(nodeSize), nodeSize);
+    return Math.min(func(nodeSize), nodeSize);
 }
 
 /**

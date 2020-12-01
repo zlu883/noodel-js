@@ -189,6 +189,8 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
         activeChildIndex: activeChildIndex,
         options: {
             showChildIndicator: null,
+            focalAnchorBranch: null,
+            focalAnchorTrunk: null
         },
     });
 

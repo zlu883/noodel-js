@@ -152,6 +152,8 @@ describe('Init', function () {
                 {
                     options: {
                         showChildIndicator: true,
+                        focalAnchorTrunk: () => 10,
+                        focalAnchorBranch: () => 10,
                     }
                 }
             ]);
@@ -221,11 +223,10 @@ describe('Init', function () {
             assert.strictEqual(noodel.getFocalParent(), noodel.getRoot());
         });
         it('should parse node options', function () {
-            let expected: NodeOptions = {
-                showChildIndicator: true,
-            };
-
-            assert.deepStrictEqual(noodel.getRoot().getChild(7).getOptions(), expected);
+            let options = noodel.getRoot().getChild(7).getOptions();
+            assert.strictEqual(options.showChildIndicator, true);
+            assert.isFunction(options.focalAnchorBranch);
+            assert.isFunction(options.focalAnchorTrunk);
         });
     });
 
