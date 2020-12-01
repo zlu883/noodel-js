@@ -7,18 +7,39 @@ let noodel = new Noodel("#template", {
 });
 
 let sizeChangeNode = noodel.findNodeById("sizeChange");
+let sizeChangeTriggerNode = noodel.findNodeById("sizeChangeTrigger");
 
-sizeChangeNode.on("enterFocus", () => {
-    console.log("enter");
+sizeChangeTriggerNode.on("enterFocus", () => {
     sizeChangeNode.setStyles({
         contentBox: "height: 200px; width: 200px"
     });
+    sizeChangeNode.realign()
 });
-sizeChangeNode.on("exitFocus", () => sizeChangeNode.setStyles({
-    contentBox: "height: 150px; width: 150px"
-}));
+sizeChangeTriggerNode.on("exitFocus", () => {
+    sizeChangeNode.setStyles({
+        contentBox: "height: 150px; width: 150px"
+    });
+    sizeChangeNode.realign()
+});
 
 noodel.mount("#noodel");
+
+let x = true;
+
+document.getElementById("changeElSize").addEventListener("click", () => {
+    if (x) {
+        sizeChangeNode.getEl().style.height = "200px";
+        sizeChangeNode.getEl().style.width = "200px";
+        x = false;
+        sizeChangeNode.realign();
+    }
+    else {
+        sizeChangeNode.getEl().style.height = "150px";
+        sizeChangeNode.getEl().style.width = "150px";
+        sizeChangeNode.realign();
+        x = true;
+    }
+});
 
 document.getElementById("setRtl").addEventListener("click", () => {
     noodel.setOptions({
@@ -106,6 +127,11 @@ document.getElementById("deleteNodeAfter").addEventListener("click", () => {
 
 document.getElementById("deleteActiveChild").addEventListener("click", () => {
     let c = noodel.getFocalNode().getActiveChild();
+    if (c) c.deleteSelf();
+});
+
+document.getElementById("deleteNode2").addEventListener("click", () => {
+    let c = noodel.findNodeById("2");
     if (c) c.deleteSelf();
 });
 

@@ -23,12 +23,12 @@
             background-color: yellow;
         }
 
-        .nd-branch-slider-move {
-            transition-duration: 3s;
+        .nd-branch-slider-move, .nd-branch-trunk-move, .nd-node-move {
+            transition-duration: 5s;
         }
 
-        .nd-branch-trunk-move {
-            transition-duration: 3s;
+        .nd-branch-slider {
+            background-color: black;
         }
     </style>
     <div id="template" style="display: none;">
@@ -44,17 +44,17 @@
                 </div>
             </div>
         </div>
-        <div class="node">
+        <div class="node" data-id="2">
             <h3>2</h3>
             <div class="node">
                 <h3>2/1</h3>
             </div>
             <div class="node" data-active>
-                <h3>2/2</h3>
+                <p contenteditable="true" class="nd-prevent-key"></p>
             </div>
             <div class="node" data-id="sizeChange" data-style-content-box="height: 150px; width: 150px;">
-                <p>I will grow on enter and shrink on leave</p>
-                <div class="node">
+                <p class="el">I will grow on enter and shrink on leave</p>
+                <div class="node" data-id="sizeChangeTrigger">
                     <h3>2/3/1</h3>
                 </div>
                 <div class="node">
@@ -108,11 +108,13 @@
     <button id="deleteNodeBefore">Delete node before</button>
     <button id="deleteNodeAfter">Delete node after</button>
     <button id="deleteActiveChild">Delete active child</button>
+    <button id="deleteNode2">Delete node no.2</button>
     <button id="deleteMultipleBefore">Delete multiple before</button>
     <button id="deleteMultipleAfter">Delete multiple after</button>
     <button id="deleteMultipleChild">Delete multiple child</button>
     <button id="appendMultipleChild">Append multiple child</button>
     <button id="insertMultipleChild">Insert multiple child at index 2</button>
+    <button id="changeElSize">Change element size externally</button>
     <script src="../manual-test.js"></script>
 </body>
 

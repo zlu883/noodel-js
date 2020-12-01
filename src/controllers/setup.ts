@@ -162,7 +162,6 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
         index: index,
         level: isRoot ? 0 : parent.level + 1,
         isBranchMounted: false,
-        isBranchVisible: false,
         isBranchTransparent: true, // initialize to transparent state for capturing size
         isFocalParent: isRoot, // only initialze root as focal parent
         isActive: isActive,

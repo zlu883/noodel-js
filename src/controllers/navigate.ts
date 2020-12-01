@@ -75,10 +75,7 @@ export function setActiveChild(noodel: NoodelState, parent: NodeState, index: nu
         setActiveLineage(parent);
     }
 
-    // you set index to null only when deleting every child
-    // if this happens to the focal branch, it must change and 
-    // should not emit events in that case
-    if (parent.isFocalParent && index !== null) {
+    if (parent.isFocalParent) {
         queueFocalNodeChange(noodel, prev, current);
         syncHashToFocalNode(noodel);
     }

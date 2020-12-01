@@ -11,7 +11,7 @@ import { findNodeByPath as _findNodeByPath } from '../controllers/identity';
 import { enterInspectMode, exitInspectMode } from '../controllers/inspect-mode';
 import { findNode } from '../controllers/identity';
 import NoodelEventMap from '../types/NoodelEventMap';
-import { parseContentTreeDefinition, parseHTMLToNode } from '../controllers/serialize';
+import { parseContentTreeDefinition } from '../controllers/serialize';
 import { parseAndApplyOptions } from '../controllers/options';
 
 /**

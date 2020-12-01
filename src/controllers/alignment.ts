@@ -36,6 +36,18 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
     let diff = newSize - node.size;
 
     if (Math.abs(diff) > 0.01) {
+
+        // Disable branch transition temporarily and apply transit offset
+        // This does not apply to inserts (i.e. branch not mounted) as transition is necessary for FLIP
+        if (parent.applyBranchMove && !isInsert) {
+            disableBranchTransition(noodel, parent, true);
+
+            nextTick(() => {
+                enableBranchTransition(parent);
+                forceReflow();
+            });
+        }
+
         // update node size
         node.size = newSize;
 
@@ -46,17 +58,6 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
 
         if (isPanningBranch(noodel) && node.isActive && parent.isFocalParent) {
             adjustBranchMoveOffset(noodel);
-        }
-
-        // If branch is in transition, cancel it temporarily and apply transit offset.
-        // This does not apply to inserts as branch transition is needed simultaneously with FLIP of child nodes
-        if (parent.applyBranchMove && !isInsert) {
-            disableBranchTransition(noodel, parent, true);
-
-            nextTick(() => {
-                enableBranchTransition(parent);
-                forceReflow();
-            });
         }
     }
 }
@@ -75,6 +76,20 @@ export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeig
     let diff = newSize - parent.branchSize;
 
     if (Math.abs(diff) > 0.01) {
+
+        // Disable trunk transition temporarily and apply transit offset.
+        // This does not apply to inserts as transitions can only happen during simultaneous child insert + navigation,
+        // and transition should be kept in this case
+        if (noodel.applyTrunkMove && !isInsert) {
+            disableTrunkTransition(noodel, true);
+
+            // resume transition
+            nextTick(() => {
+                enableTrunkTransition(noodel);
+                forceReflow();
+            });
+        }
+
         // update branch size
         parent.branchSize = newSize;
 
@@ -83,19 +98,6 @@ export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeig
 
         if (isPanningTrunk(noodel) && parent.isFocalParent) {
             adjustTrunkMoveOffset(noodel);
-        }
-
-        // If trunk is in transition, cancel it temporarily and apply transit offset.
-        // This does not apply to inserts as transitions can only happen during simultaneous child insert + navigation,
-        // and transition should be kept in this case
-        if (noodel.applyTrunkMove && !isInsert) {                
-            disableTrunkTransition(noodel, true);
-
-            // resume transition
-            nextTick(() => {
-                enableTrunkTransition(noodel);
-                forceReflow();
-            });
         }
     }
 }
@@ -181,7 +183,7 @@ export function resetAlignment(noodel: NoodelState) {
                     let rect = node.r.el.getBoundingClientRect();
                     updateNodeSize(noodel, node, rect.height, rect.width);
                 }
-    
+
                 if (node.r.branchSliderEl) {
                     let rect = node.r.branchSliderEl.getBoundingClientRect();
                     updateBranchSize(noodel, node, rect.height, rect.width);

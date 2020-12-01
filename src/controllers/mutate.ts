@@ -1,10 +1,9 @@
 /* Module for handling mutations of the noodel tree. */
 
 import NodeState from '../types/NodeState';
-import { isBranchVisible, isPanningBranch } from './getters';
+import { isPanningBranch } from './getters';
 import NoodelState from '../types/NoodelState';
 import { updateOffsetsBeforeNodeDelete } from './alignment';
-import { forceReflow } from './transition';
 import { finalizePan } from './pan';
 import { registerNodeSubtree } from './identity';
 import NodeDefinition from '../types/NodeDefinition';
@@ -70,11 +69,8 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
 
     // Allows resize sensors for the new nodes to be attached properly.
     // Will be toggled back off at node mount.
-    parent.isBranchTransparent = true;
-
-    // to ensure smooth animations
-    if (isBranchVisible(noodel, parent)) {
-        forceReflow();
+    if (parent.isBranchMounted) {
+        parent.isBranchTransparent = true;
     }
 
     return children;
@@ -86,60 +82,67 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
  */
 export function deleteChildren(noodel: NoodelState, parent: NodeState, index: number, deleteCount: number): NodeState[] {
 
-    // first adjust sibling offsets
-    for (let i = index; i < index + deleteCount; i++) {
-        updateOffsetsBeforeNodeDelete(parent.children[i]);
-    }
+    // The logic differs depending on whether all children are deleted
+    if (parent.children.length === deleteCount) {
 
-    if (parent.isFocalParent && isPanningBranch(noodel)) {
-        finalizePan(noodel);
-    }
-
-    // if deletion includes active child, change the active child as appropriate
-    if (parent.activeChildIndex >= index && parent.activeChildIndex < index + deleteCount) {
-
-        // changing active child should happen before changing focal branch
-        // to prevent events sending twice
-        if (parent.children.length === deleteCount) { // all children deleted
-            setActiveChild(noodel, parent, null); // this will not trigger event even if parent is focal
-        }
-        else if (index + deleteCount < parent.children.length) { // siblings exist after the deleted children
-            setActiveChild(noodel, parent, index + deleteCount); // set next sibling active
-        }
-        else { // no siblings exist after deleted children
-            setActiveChild(noodel, parent, index - 1); // set prev sibling active        
-        }
+        // For this set of logic, setFocalParent must come before setActiveChild
+        // for correct event emitting
 
         // change focal parent if current focal branch is being deleted
         if (parent.level <= noodel.focalLevel && parent.isActiveLineage) {
 
             finalizePan(noodel);
 
-            if (parent.children.length === deleteCount) { // if deleting the whole branch
-                if (parent.r.isRoot) { // if emptying the noodel
-                    setFocalParent(noodel, parent);
-                }
-                else {
-                    setFocalParent(noodel, parent.parent);
-                }
+            // if emptying the noodel
+            if (parent.r.isRoot) { 
+                setFocalParent(noodel, parent);
             }
             else {
-                // if deleting the active child from a visible ancestor
-                if (parent.level < noodel.focalLevel) {
-                    setFocalParent(noodel, parent);
-                }               
+                setFocalParent(noodel, parent.parent);
             }
         }
-    }
 
-    // update sibling indices
-    for (let i = index; i < parent.children.length; i++) {
-        parent.children[i].index -= deleteCount;
+        setActiveChild(noodel, parent, null);
     }
+    else {
+        // first adjust sibling offsets
+        for (let i = index; i < index + deleteCount; i++) {
+            updateOffsetsBeforeNodeDelete(parent.children[i]);
+        }
 
-    // update parent's active child index
-    if (parent.activeChildIndex > index) {
-        parent.activeChildIndex -= deleteCount;
+        if (parent.isFocalParent && isPanningBranch(noodel)) {
+            finalizePan(noodel);
+        }
+
+        // if deletion includes active child, change the active child as appropriate
+        if (parent.activeChildIndex >= index && parent.activeChildIndex < index + deleteCount) {
+
+            // For this set of logic, setActiveChild must come before setFocalParent
+            // for correct event emitting
+
+            if (index + deleteCount < parent.children.length) { // siblings exist after the deleted children
+                setActiveChild(noodel, parent, index + deleteCount); // set next sibling active
+            }
+            else { // no siblings exist after deleted children
+                setActiveChild(noodel, parent, index - 1); // set prev sibling active        
+            }
+
+            // change focal parent if current focal branch is being deleted
+            if (parent.level < noodel.focalLevel - 1 && parent.isActiveLineage) {
+                finalizePan(noodel);
+                setFocalParent(noodel, parent);
+            }
+        }
+
+        // update sibling indices
+        for (let i = index; i < parent.children.length; i++) {
+            parent.children[i].index -= deleteCount;
+        }
+
+        // update parent's active child index to match state after delete
+        if (parent.activeChildIndex > index) {
+            parent.activeChildIndex -= deleteCount;
+        }
     }
 
     // do delete
@@ -156,11 +159,6 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
     // this is used to determine which nodes need their positions adjusted for fade out
     if (noodel.isMounted && parent.children.length > 0) {
         deletedNodes.forEach(node => node.r.fade = true);
-    }
-
-    // to ensure smooth animations
-    if (isBranchVisible(noodel, parent)) {
-        forceReflow();
     }
 
     return deletedNodes;
