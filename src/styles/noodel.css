@@ -1,6 +1,4 @@
 .nd-canvas {
-    width: 100%;
-    height: 100%;
     position: relative;
     overflow: hidden;
     -webkit-touch-callout: none;
@@ -147,8 +145,6 @@
 
 .nd-inspect-backdrop {
     position: absolute;
-    height: 999999px;
-    width: 999999px;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);

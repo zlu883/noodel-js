@@ -94,13 +94,6 @@ describe('Init', function () {
             assert.strictEqual(noodel.getFocalNode(), noodel.getRoot().getActiveChild());
             assert.strictEqual(noodel.getFocalParent(), noodel.getRoot());
         });
-        it('should parse node options', function () {
-            let expected: NodeOptions = {
-                showChildIndicator: true,
-            };
-
-            assert.deepStrictEqual(noodel.getRoot().getChild(7).getOptions(), expected);
-        });
     });
 
     describe('from valid element', function () {

@@ -1,6 +1,8 @@
 /* All timing functions use easeOutCubic from Penner equations */
 
 .nd-canvas {
+	width: 800px;
+	height: 600px;
 	cursor: grab;
 	background-color: #a6a6a6;
 }
@@ -250,6 +252,11 @@
 	transition-property: opacity;
 	transition-duration: 0.5s;
 	transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.nd-inspect-backdrop {
+	height: 600px;
+	width: 800px;
 }
 
 .nd-inspect-backdrop-enter-from, .nd-inspect-backdrop-leave-active {

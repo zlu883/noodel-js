@@ -10,25 +10,14 @@
 
 <body>   
     <style>
-        .nd-canvas {
-            width: 800px;
-            height: 600px;
-        }
-
-        .green {
-            background-color: green;
-        }
-
-        .yellow {
-            background-color: yellow;
+        .nd-branch-slider {
+            background-color: black;
+            transition: none;
         }
 
         .nd-branch-slider-move, .nd-branch-trunk-move, .nd-node-move {
+            transition: transform;
             transition-duration: 5s;
-        }
-
-        .nd-branch-slider {
-            background-color: black;
         }
     </style>
     <div id="template" style="display: none;">
@@ -53,9 +42,9 @@
                 <p contenteditable="true" class="nd-prevent-key"></p>
             </div>
             <div class="node" data-id="sizeChange" data-style-content-box="height: 150px; width: 150px;">
-                <p class="el">I will grow on enter and shrink on leave</p>
+                <p class="el">I will grow and shrink!</p>
                 <div class="node" data-id="sizeChangeTrigger">
-                    <h3>2/3/1</h3>
+                    <p>I will trigger grow on enter and shrink on leave!</p>
                 </div>
                 <div class="node">
                     <h3>2/3/2</h3>
