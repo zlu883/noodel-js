@@ -1,6 +1,5 @@
 import Noodel from "../src/main/Noodel";
 import NodeCss from "../src/types/NodeCss";
-import NodeOptions from "../src/types/NodeOptions";
 
 const assert = chai.assert;
 

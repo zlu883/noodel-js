@@ -13,12 +13,13 @@ This also means there are many things you can contribute. Including but not limi
 - Spreading the word
 
 ## Roadmap
-Some planned features/enhancements for the future include, but not limited to:
-- Add more tests (test coverage is quite bad at the moment...)
-- Options for "docking" the trunk and branches to the edge of the canvas
-- Options for changing the focal position
-- Content overflow detection
+Some possible features/enhancements for the future include, but not limited to:
+- Improve test coverage
+- Add API methods for node relocation and reordering
+- Integration with other forms of content, e.g. markdown
 - Integration with other frameworks e.g. React
+- More styling themes
+- Utility libraries/plugins for various needs, e.g. overflow detection
 
 ## Bug reports
 Please use Github issues for bug reports. As a general rule, please provide:

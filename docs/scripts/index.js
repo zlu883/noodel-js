@@ -2,7 +2,7 @@ window.addEventListener("load", function() {
     document.body.style.width = window.innerWidth + 'px';
     document.body.style.height = window.innerHeight + 'px';
     requestAnimationFrame(function () {
-        const noodel = new Noodel("#root", {
+        const noodel = new Noodel("#noodel", {
             retainDepthOnTapNavigation: true,
             swipeMultiplierTrunk: 0.9,
             swipeMultiplierBranch: 0.7,
@@ -93,7 +93,7 @@ window.addEventListener("load", function() {
             }
         });
         
-        noodel.mount("#root");
+        noodel.mount("#noodel");
     });
 });
 window.addEventListener("resize", function () {
