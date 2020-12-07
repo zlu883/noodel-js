@@ -91,7 +91,7 @@ export default defineComponent({
 		},
 
 		branchClass(): string {
-			let className = '';
+			let className = `nd-branch-level-${this.parent.level + 1} `;
 
 			if (this.parent.isFocalParent) className += 'nd-branch-focal ';
 
