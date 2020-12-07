@@ -78,7 +78,7 @@ export function getBranchDirection(noodel: NoodelState): BranchDirection {
 export function getFocalOffsetTrunk(noodel: NoodelState): number {
     let canvasSizeTrunk = noodel.canvasSizeTrunk;
 
-    return Math.min(noodel.options.focalPositionTrunk(canvasSizeTrunk), canvasSizeTrunk);
+    return Math.min(noodel.options.focalOffsetTrunk(canvasSizeTrunk), canvasSizeTrunk);
 }
 
 /**
@@ -88,7 +88,7 @@ export function getFocalOffsetTrunk(noodel: NoodelState): number {
 export function getFocalOffsetBranch(noodel: NoodelState) {
     let canvasSizeBranch = noodel.canvasSizeBranch;
 
-    return Math.min(noodel.options.focalPositionBranch(canvasSizeBranch), canvasSizeBranch);
+    return Math.min(noodel.options.focalOffsetBranch(canvasSizeBranch), canvasSizeBranch);
 }
 
 /**
@@ -113,7 +113,7 @@ export function getRelativeOffsetBranch(branchParent: NodeState) {
  */
 export function getAnchorOffsetTrunk(noodel: NoodelState, branchParent: NodeState) {
     let focalBranchSize = branchParent.branchSize;
-    let func = branchParent.options.focalAnchorTrunk || noodel.options.focalAnchorTrunk;
+    let func = branchParent.options.anchorOffsetTrunk || noodel.options.anchorOffsetTrunk;
 
     return Math.min(func(focalBranchSize), focalBranchSize);
 }
@@ -124,7 +124,7 @@ export function getAnchorOffsetTrunk(noodel: NoodelState, branchParent: NodeStat
  */
 export function getAnchorOffsetBranch(noodel: NoodelState, node: NodeState) {
     let nodeSize = node.size;
-    let func = node.options.focalAnchorBranch || noodel.options.focalAnchorBranch;
+    let func = node.options.anchorOffsetBranch || noodel.options.anchorOffsetBranch;
 
     return Math.min(func(nodeSize), nodeSize);
 }

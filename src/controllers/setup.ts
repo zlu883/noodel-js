@@ -83,10 +83,10 @@ export function createNoodelState(root: NodeDefinition, options: NoodelOptions):
             showChildIndicators: true,
             orientation: "ltr",
             branchDirection: "normal",
-            focalPositionTrunk: (w) => w / 2,
-            focalPositionBranch: (h) => h / 2,
-            focalAnchorTrunk: (s) => s / 2,
-            focalAnchorBranch: (s) => s / 2
+            focalOffsetTrunk: (s) => s / 2,
+            focalOffsetBranch: (s) => s / 2,
+            anchorOffsetTrunk: (s) => s / 2,
+            anchorOffsetBranch: (s) => s / 2
         },
     });
 

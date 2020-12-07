@@ -11,10 +11,10 @@ export default interface NodeOptions {
      * If set to a function, will override the global focalAnchorTrunk option for
      * this specific node's child branch. Defaults to null.
      */
-    focalAnchorTrunk?: ((focalBranchSize: number) => number) | null;
+    anchorOffsetTrunk?: null | ((branchLength: number) => number);
     /**
      * If set to a function, will override the global focalAnchorBranch option for
      * this specific node. Defaults to null.
      */
-    focalAnchorBranch?: ((activeNodeSize: number) => number) | null;
+    anchorOffsetBranch?: null | ((activeNodeSize: number) => number) ;
 } 

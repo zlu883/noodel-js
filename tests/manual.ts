@@ -83,7 +83,7 @@ document.getElementById("setReversed").addEventListener("click", () => {
 
 let fp = 0.25;
 
-document.getElementById("setFocalPosition").addEventListener("click", () => {
+document.getElementById("setFocalOffset").addEventListener("click", () => {
     if (fp === 0.25) {
         fp = 0.75;
     }
@@ -92,14 +92,14 @@ document.getElementById("setFocalPosition").addEventListener("click", () => {
     }
 
     noodel.setOptions({
-        focalPositionTrunk: (s) => s * fp,
-        focalPositionBranch: (s) => s * fp
+        focalOffsetTrunk: (s) => s * fp,
+        focalOffsetBranch: (s) => s * fp
     });
 });
 
 let fa = 0.1;
 
-document.getElementById("setFocalAnchor").addEventListener("click", () => {
+document.getElementById("setAnchorOffset").addEventListener("click", () => {
     if (fa === 0.1) {
         fa = 0.9;
     }
@@ -108,8 +108,8 @@ document.getElementById("setFocalAnchor").addEventListener("click", () => {
     }
 
     noodel.setOptions({
-        focalAnchorTrunk: (s) => s * fa,
-        focalAnchorBranch: (s) => s * fa
+        anchorOffsetTrunk: (s) => s * fa,
+        anchorOffsetBranch: (s) => s * fa
     });
 });
 

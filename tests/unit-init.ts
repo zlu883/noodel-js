@@ -151,8 +151,8 @@ describe('Init', function () {
                 {
                     options: {
                         showChildIndicator: true,
-                        focalAnchorTrunk: () => 10,
-                        focalAnchorBranch: () => 10,
+                        anchorOffsetTrunk: () => 10,
+                        anchorOffsetBranch: () => 10,
                     }
                 }
             ]);
@@ -224,8 +224,8 @@ describe('Init', function () {
         it('should parse node options', function () {
             let options = noodel.getRoot().getChild(7).getOptions();
             assert.strictEqual(options.showChildIndicator, true);
-            assert.isFunction(options.focalAnchorBranch);
-            assert.isFunction(options.focalAnchorTrunk);
+            assert.isFunction(options.anchorOffsetBranch);
+            assert.isFunction(options.anchorOffsetTrunk);
         });
     });
 
@@ -233,10 +233,10 @@ describe('Init', function () {
         it('should have default options', function () {
             let noodel = new Noodel([]);
             let options = noodel.getOptions();
-            assert.isFunction(options.focalAnchorBranch);
-            assert.isFunction(options.focalAnchorTrunk);
-            assert.isFunction(options.focalPositionBranch);
-            assert.isFunction(options.focalPositionTrunk);
+            assert.isFunction(options.anchorOffsetBranch);
+            assert.isFunction(options.anchorOffsetTrunk);
+            assert.isFunction(options.focalOffsetBranch);
+            assert.isFunction(options.focalOffsetTrunk);
             assert.deepStrictEqual(options, {
                 visibleSubtreeDepth: 1,
                 retainDepthOnTapNavigation: false,
@@ -255,10 +255,10 @@ describe('Init', function () {
                 showChildIndicators: true,
                 orientation: "ltr",
                 branchDirection: "normal",
-                focalAnchorBranch: options.focalAnchorBranch,
-                focalAnchorTrunk: options.focalAnchorTrunk,
-                focalPositionBranch: options.focalPositionBranch,
-                focalPositionTrunk: options.focalPositionTrunk
+                anchorOffsetBranch: options.anchorOffsetBranch,
+                anchorOffsetTrunk: options.anchorOffsetTrunk,
+                focalOffsetBranch: options.focalOffsetBranch,
+                focalOffsetTrunk: options.focalOffsetTrunk
             });
         });
     });
@@ -288,10 +288,10 @@ describe('Init', function () {
                 showChildIndicators: false,
                 orientation: "rtl",
                 branchDirection: "reverse",
-                focalAnchorTrunk,
-                focalAnchorBranch,
-                focalPositionBranch,
-                focalPositionTrunk
+                anchorOffsetTrunk: focalAnchorTrunk,
+                anchorOffsetBranch: focalAnchorBranch,
+                focalOffsetBranch: focalPositionBranch,
+                focalOffsetTrunk: focalPositionTrunk
             });
 
             assert.deepStrictEqual(noodel.getOptions(), {
@@ -312,10 +312,10 @@ describe('Init', function () {
                 showChildIndicators: false,
                 orientation: "rtl",
                 branchDirection: "reverse",
-                focalAnchorTrunk,
-                focalAnchorBranch,
-                focalPositionBranch,
-                focalPositionTrunk
+                anchorOffsetTrunk: focalAnchorTrunk,
+                anchorOffsetBranch: focalAnchorBranch,
+                focalOffsetBranch: focalPositionBranch,
+                focalOffsetTrunk: focalPositionTrunk
             });
         });
     });

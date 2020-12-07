@@ -27,11 +27,11 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
         finalizePan(noodel);
     }
 
-    if (options.focalAnchorTrunk && isPanningTrunk(noodel)) {
+    if (options.anchorOffsetTrunk && isPanningTrunk(noodel)) {
         adjustTrunkMoveOffset(noodel);
     }
 
-    if (options.focalAnchorBranch && isPanningBranch(noodel)) {
+    if (options.anchorOffsetBranch && isPanningBranch(noodel)) {
         adjustBranchMoveOffset(noodel);
     }
 

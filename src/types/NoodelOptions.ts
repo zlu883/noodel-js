@@ -80,35 +80,35 @@ export default interface NoodelOptions {
      */
     branchDirection?: BranchDirection;
     /**
-     * A function that determines the trunk-axis position on the canvas where 
-     * the focal node should be aligned to, given the trunk-axis size of the canvas as reference. 
-     * Should return a number of pixels counting from the trunk-axis starting edge of the canvas.
-     * If the number is greater than the canvas size, will use the canvas size.
-     * Defaults to 1/2 of the canvas size.
+     * A function that determines the trunk-axis offset on the canvas where 
+     * the focal branch should be aligned to, given the trunk-axis length of the canvas as reference. 
+     * Should return a number of pixels counting from the trunk-axis origin of the canvas.
+     * If the number is greater than the canvas length, will use the canvas length.
+     * Defaults to 1/2 of the canvas length.
      */
-    focalPositionTrunk?: (canvasSizeTrunk: number) => number;
+    focalOffsetTrunk?: (canvasLengthTrunk: number) => number;
     /**
-     * A function that determines the branch-axis position on the canvas where 
-     * the focal node should be aligned to, given the branch-axis size of the canvas as reference. 
-     * Should return a number of pixels counting from the branch-axis starting edge of the canvas.
-     * If the number is greater than the canvas size, will use the canvas size.
-     * Defaults to 1/2 of the canvas size.
+     * A function that determines the branch-axis offset on the canvas where 
+     * the active nodes should be aligned to, given the branch-axis length of the canvas as reference. 
+     * Should return a number of pixels counting from the branch-axis origin of the canvas.
+     * If the number is greater than the canvas length, will use the canvas length.
+     * Defaults to 1/2 of the canvas length.
      */
-    focalPositionBranch?: (canvasSizeBranch: number) => number;
+    focalOffsetBranch?: (canvasLengthBranch: number) => number;
     /**
-     * A function that determines the "anchor point" on the focal branch 
-     * that should align to the focal position, given its size on the trunk axis. 
-     * Should return a number of pixels counting from the starting edge of the branch.
-     * If the number exceeds the focal branch size, will use the focal branch size.
-     * Defaults to 1/2 of the focal branch size.
+     * A function that determines the trunk-axis offset on each branch 
+     * that should align to the focal offset when they become focal, given their length on the trunk axis. 
+     * Should return a number of pixels counting from the trunk-axis origin of the branch.
+     * If the number exceeds the branch length, will use the branch length.
+     * Defaults to 1/2 of the branch length.
      */
-    focalAnchorTrunk?: (focalBranchSize: number) => number;
+    anchorOffsetTrunk?: (branchLength: number) => number;
     /**
-     * A function that determines the "anchor point" on all active nodes 
-     * that should align to the focal position, given their size on the branch axis. 
-     * Should return a number of pixels counting from the starting edge of the node. 
-     * If the number exceeds the node size, will use the node size.
-     * Defaults to 1/2 of the node size.
+     * A function that determines the branch-axis offset on each node 
+     * that should align to the focal position when they become active, given their length on the branch axis. 
+     * Should return a number of pixels counting from the branch-axis origin of the node. 
+     * If the number exceeds the node length, will use the node length.
+     * Defaults to 1/2 of the node length.
      */
-    focalAnchorBranch?: (activeNodeSize: number) => number;
+    anchorOffsetBranch?: (nodeLength: number) => number;
 }
