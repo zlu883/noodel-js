@@ -105,9 +105,8 @@
                     <div class="node">
                         <p>
                             Noodel - which stands for <i>node view model</i> - is a responsive, dynamic user interface for
-                            content trees,
-                            which you can navigate by just moving up, down, left and right.
-                            It offers a new way to present content that is modern, user-friendly, and versatile.
+                            content trees, which you can navigate by simply moving up, down, left and right.
+                            It offers a new way to present content that is modern, intuitive, and adaptable.
                         </p>
                         <p>
                             Noodel is currently available as Noodel.js, an open source JavaScript library for use in web
@@ -176,7 +175,7 @@
                 <div class="node">
                     <h3>What's so good about it?</h3>
                     <div class="node">
-                        <h4>😃 User friendly</h4>
+                        <h4>😃 Intuitive</h4>
                         <p>
                             Noodel is simple and intuitive. Most people immediately understand how it works. It
                             aims to leverage the user's spatial memory for navigation, and reduce clutter and cognitive
@@ -1058,44 +1057,79 @@
                         </p>
                     </div>
                     <div class="node">
-                        <h3>Focal distance</h3>
+                        <h3>Focal offsets and anchor offsets</h3>
                         <p>
-                            The focal distance options specify a "distance" from the starting edge of the canvas 
-                            where the nodes and branches aligns to, on both the trunk and branch axes.
-                            It allows you to specify the distance as a function of the canvas length on that axis.
+                            The focal offsets specify the "snap-to lines" on the canvas where the focal branch and active nodes
+                            align to, on their respective axis. These are calculated as a function of the canvas length,
+                            and defaults to 1/2 of the canvas length (i.e. the center).
                         </p>
                         <p>
-                            Note that the starting edge of the canvas is different depending on the orientation, e.g the left edge
-                            for ltr layout, and the top edge for ttb layout.
+                            The anchor offsets specify the "snap-to lines" on each branch/node that should be aligned to the
+                            focal offset, on their respective axis, when they become focal or active.
+                            These are calculated as a function of the length of the branch/node,
+                            and defaults to 1/2 of their length (i.e. the center). These can be specified globally and/or
+                            customized on each individual node.
                         </p>
-                        <pre>
-                            <code class="language-js">
-                                const noodel = new Noodel(..., {
-                                    focalDistanceTrunk: (canvasLength) => canvasLength / 3 // focal point at 1/3 of the canvas
-                                    focalDistanceBranch: (canvasLength) => 600 // You can also return just a constant distance
-                                });
-                            </code>
-                        </pre>
+                        <p>
+                            When used in combination, you can decide how and where the branches and nodes align in a highly flexible way.
+                        </p>
+                        <div class="node">
+                            <p>
+                                Note that you can return just a constant in these functions for a fixed offset.
+                            </p>
+                        </div>
+                        <div class="node">
+                            <p>
+                                Also note that the "origins" referenced by these offsets are different 
+                                depending on the orientation and branch direction. E.g. For an ltr layout
+                                with normal branch direction, the origin for the trunk axis is the left edge
+                                and the origin for the branch axis is the top edge. For an rtl layout
+                                with reverse branch direction, the origin for the trunk axis is the right edge
+                                and the origin for the branch axis is the bottom edge.
+                            </p>
+                        </div>
                     </div>
                     <div class="node">
-                        <h3>Focal anchor</h3>
+                        <h3>Resize management</h3>
                         <p>
-                            The focal anchor options specify a "distance" from the starting edge of each node that should
-                            align to the focal distance on the branch axis, and from the starting edge of each branch that should
-                            align to the focal distance on the trunk axis, when they become active or focal.
-                            It allows you to specify the distance as a function of the length of the branch or node on their
-                            respective axis.
-                        </p>
-                        <p>
-                            Note that the starting edge of the branch/nodes are different depending on the orientation and branch
-                            directions. E.g when orientation is rtl and branch direction is reversed, the starting edge of branches
-                            is the right edge and the starting edge of nodes is the bottom edge.
+                            Starting from Noodel v3, automatic resize detection has been removed in favor of
+                            a manual approach, to address some limitations and improve performance. If the noodel is mounted,
+                            and something happens that causes the size of nodes/branches/canvas to change,
+                            you should immediately call one of Noodel's various <code class="language-js">realign()</code>
+                            methods to capture the size change and reposition elements as necessary.
                         </p>
                         <pre>
                             <code class="language-js">
-                                const noodel = new Noodel();
+                                // this operation will cause the size of someNode to change on both axes
+                                someNode.setStyle({
+                                    contentBox: "width: 200px; height: 300px"
+                                });
+
+                                // immediately call realign to capture node resize on the branch-axis
+                                someNode.realign();
+
+                                // parent need to realign branch since the change also caused branch resize on the trunk-axis
+                                someNode.getParent().realignBranch();
                             </code>
                         </pre>
+                        <div class="node">
+                            <h3>Using realignAll()</h3>
+                            <p>
+                                The realignAll() method is a convenience method for realigning everything at once. This is useful
+                                in situations such as when everything is styled based on viewport units, and the viewport size changed.
+                                Since this is a more expensive operation it should be used carefully. 
+                            </p>
+                            <pre>
+                                <code class="language-js">
+                                    // if everything is dependent on viewport units...
+                                    window.addEventListener("resize", () => {
+                                        noodel.realignAll();
+                                    });
+
+                                    // ideally, you should debounce the function above for better performance
+                                </code>
+                            </pre>
+                        </div>
                     </div>
                 </div>
                 <div class="node">
@@ -1169,18 +1203,19 @@
                             Noodel's CSS classes, or by setting custom class/styles for individual nodes.
                         </p>
                         <p>
-                            In addition, you have complete freedom in structuring/styling the content inside your
+                            In addition, you have complete freedom in structuring and styling the content inside your
                             nodes.
                         </p>
                     </div>
                     <div class="node">
                         <h3>Styling via Noodel's CSS classes</h3>
                         <p>
-                            Noodel comes with a basic stylesheet that determines the layout, with a simple greyscale
-                            theme.
-                            You can extend/override most of Noodel's CSS classes to customize various visual features.
+                            Noodel comes with a "core" stylesheet that determines the layout, and a theming stylesheet
+                            with a default grayscale theme. While you must keep the core stylesheet, you can override or
+                            replace the CSS rules in the theming stylesheet as you see fit.
                         </p>
                         <p>
+                            All of Noodel's DOM elements have various built-in CSS classes attached dynamically.
                             See <a href="#nd-canvas">CSS classes</a> in the API section for the list of classes you can
                             work with.
                         </p>
@@ -1199,36 +1234,19 @@
                     <div class="node">
                         <h3>Controlling node size</h3>
                         <p>
-                            The size of nodes are determined in a very simple way - they are placed in a
-                            normal block context, so will grow or shrink to fit their content while conforming to the
-                            size of siblings, with respect to any CSS height and width properties.
+                            The size of nodes are completely flexible - they are simply placed in a
+                            <a href="https://css-tricks.com/snippets/css/a-guide-to-flexbox/">flex</a> container, 
+                            and will grow or shrink to fit their content while respecting any CSS rules applied.
                         </p>
                         <p>
-                            This means you can fully control the size of nodes by setting the height, width,
-                            max-height,
-                            max-width, min-height and min-width properties on the <code
-                                class="language-css">nd-node</code>
-                            class (or on custom class/styles you provide for individual nodes). You can have either
-                            fixed size nodes
-                            (by setting a specific width/height) or
-                            flexible size nodes (by not setting a specific width/height), and well as using max/min
-                            sizes
-                            to adapt to a range of situations. In addition, you can style your content
+                            This means you can control the size of nodes by setting their various height, width
+                            and flex properties. In addition, you can style your content
                             and let them influence the size of their node containers.
-                        </p>
-                        <p>
-                            And whenever the size of a node changes, Noodel will automatically align everything so your
-                            focal node is always centered at the right position!
-                        </p>
-                        <p>
-                            By default, nodes only come with a <code class="language-css">max-height: 600px</code>
-                            and <code class="language-css">max-width: 800px</code> that matches the default size of the
-                            canvas.
                         </p>
                         <div class="node">
                             <h3>Example: full-page carousel</h3>
                             <p>
-                                As an example, it's very easy to use Noodel to create the typical full-page
+                                As an example, it's very easy to use Noodel to create a full-page
                                 carousel site, with some simple CSS overrides:
                             </p>
                             <pre>
@@ -1241,7 +1259,6 @@
                                 .nd-node {
                                     height: 100vh;
                                     width: 100vw;
-                                    margin: 0; /* Removes the "gap" between nodes */
                                 }
                             </code>
                         </pre>
@@ -1269,11 +1286,17 @@
                     </div>
                 </div>
                 <div class="node">
-                    <h3>TypeScript support</h3>
-                    <p>
-                        Noodel is completely written in TypeScript, with typings out of the box that makes development
-                        easier.
-                    </p>
+                    <h3>TypeScript</h3>
+                    <div class="node">
+                        <p>
+                            Noodel is completely written in TypeScript, fully typed and documented, making
+                            development a breeze.
+                        </p>
+                        <p>
+                            This means you don't need to install any additional type declarations - they come bundled out of the box
+                            when you install via npm.
+                        </p>
+                    </div>
                 </div>
             </div>
             <div class="node" data-class="menu-item">
