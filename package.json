@@ -22,13 +22,13 @@
     "description": "User interface for responsive, dynamic content trees",
     "dependencies": {
         "hammerjs": "^2.0.8",
-        "vue": "^3.0.3"
+        "vue": "^3.0.4"
     },
     "devDependencies": {
         "@types/chai": "^4.2.14",
         "@types/hammerjs": "^2.0.36",
-        "@types/mocha": "^8.0.4",
-        "@vue/compiler-sfc": "^3.0.3",
+        "@types/mocha": "^8.2.0",
+        "@vue/compiler-sfc": "^3.0.4",
         "chai": "^4.2.0",
         "css-loader": "^4.3.0",
         "cssnano": "^4.1.10",
@@ -42,7 +42,7 @@
         "terser-webpack-plugin": "^4.2.3",
         "ts-loader": "^8.0.11",
         "typescript": "~3.7.5",
-        "vue-loader": "^16.1.0",
+        "vue-loader": "^16.1.1",
         "vue-template-compiler": "^2.6.12",
         "webpack": "^4.44.2",
         "webpack-cli": "^3.3.12",

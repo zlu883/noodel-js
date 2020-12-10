@@ -164,3 +164,9 @@ document.getElementById("appendMultipleChild").addEventListener("click", () => {
 document.getElementById("insertMultipleChild").addEventListener("click", () => {
     noodel.getFocalNode().insertChildren([{}, {}, {}], 2);
 });
+
+document.getElementById("setStyle").addEventListener("click", () => {
+    noodel.findNodeById("setStyle").setStyles({
+        branch: "background-color: green" 
+    });
+});

@@ -111,8 +111,6 @@
                         <p>
                             Noodel is currently available as Noodel.js, an open source JavaScript library for use in web
                             projects.
-                            Powered by the reactive view engine of <a target="_blank"
-                                href="https://vuejs.org/">Vue.js</a>.
                         </p>
                     </div>
                 </div>
@@ -122,13 +120,11 @@
                         <p>
                             At the maximum, you can use Noodel to present a full website or app as an interactive
                             content tree. It can be used for virtually anything - from static blogs or wikis, to dynamic
-                            apps with
-                            complex control flow.
+                            apps with complex control flow.
                         </p>
                         <p>
                             At the minimum, you can use Noodel like a carousel component that can be plugged into an
-                            existing
-                            page - for multi-level slideshows or hierachical information.
+                            existing page - for multi-level slideshows or hierachical information.
                         </p>
                     </div>
                 </div>
@@ -154,23 +150,25 @@
                 </div>
                 <div class="node">
                     <h3>Why Noodel?</h3>
-                    <p>
-                        Much of the content we encounter everyday naturally come in tree structures.
-                        Trees, however, are difficult to present on a viewing surface. Conventional
-                        UI schemes tend to "flatten" trees into linear layouts - the most common offender being
-                        long texts with many sections and subsections squashed into a single vertical column.
-                        Trying to find the section you want can be an exercise.
-                    </p>
-                    <p>
-                        Usually, this problem is addressed by table of contents and navigation menus. But
-                        such components become hard to use on smaller screens and does not
-                        scale well.
-                    </p>
-                    <p>
-                        Noodel is a system designed from the ground up that aims to present content in a <i>better</i>
-                        way - by integrating navigation with the content itself. As a design-driven and UI-driven
-                        concept, its core intent is to make the user experience as great as possible.
-                    </p>
+                    <div class="node">
+                        <p>
+                            Much of the content we encounter everyday naturally come in tree structures.
+                            Trees, however, are difficult to present on a viewing surface. Conventional
+                            UI schemes tend to "flatten" trees into linear layouts - the most common offender being
+                            long texts with many sections and subsections squashed into a single vertical column.
+                            Trying to find the section you want can be an exercise.
+                        </p>
+                        <p>
+                            Usually, this problem is addressed by table of contents and navigation menus. But
+                            such components become hard to use on smaller screens and does not
+                            scale well.
+                        </p>
+                        <p>
+                            Noodel is a system designed from the ground up that aims to present content in a <i>better</i>
+                            way - by integrating navigation with the content itself. As a design-driven and UI-driven
+                            concept, its core intent is to make the user experience as great as possible.
+                        </p>
+                    </div>    
                 </div>
                 <div class="node">
                     <h3>What's so good about it?</h3>
@@ -199,7 +197,7 @@
                         </p>
                     </div>
                     <div class="node">
-                        <h4>⚡ Dynamic</h4>
+                        <h4>🚀 Dynamic</h4>
                         <p>
                             Noodel is more than just a static content viewer, although you can certainly use it that
                             way.
@@ -208,9 +206,17 @@
                         </p>
                     </div>
                     <div class="node">
+                        <h4>⚡ Performant</h4>
+                        <p>
+                            Noodel is built with performance in mind using modern best practices. It uses the
+                            fast and powerful <a target="_blank" href="https://vuejs.org/">Vue.js</a> library
+                            under the hood for DOM management and updates.
+                        </p>
+                    </div>
+                    <div class="node">
                         <h4>✨ Interactive</h4>
                         <p>
-                            And finally, who doesn't like an interface that feels like it's from a sci-fi movie?
+                            And finally, who doesn't like an interface that feels like it came from a sci-fi movie?
                             Noodel is responsive, interactive and comes with fancy animation effects. It's
                             just cool.
                         </p>
@@ -365,7 +371,7 @@
                         </div>
                     </div>
                     <div class="node">
-                        <h3>NPM</h3>
+                        <h3>npm</h3>
                         <p>For more complex projects that use bundlers, install from npm:</p>
                         <pre>
                         <code class="language-shell">
@@ -503,109 +509,6 @@
                                 content. Never use unsanitized strings from user input.
                             </p>
                         </div>
-                    </div>
-                </div>
-                <div class="node">
-                    <h3>Usage with Vue</h3>
-                    <div class="node" data-id="usage-vue-summary">
-                        <h3>Summary</h3>
-                        <p>
-                            Noodel uses Vue.js internally and hence provides integration with Vue out of the box.
-                            Noodel is available as a Vue component, and also allows you to use Vue components
-                            as the content for individual nodes.
-                        </p>
-                    </div>
-                    <div class="node">
-                        <h3>Using the Vue-less build</h3>
-                        <p>
-                            If you are including Noodel and Vue's scripts directly in your
-                            HTML, it is recommended that you use Noodel's <a href="#note-on-builds">Vue-less
-                            build</a>, alongside the Vue script used in your main project (Noodel requires Vue V3).
-                            This prevents Vue from being included twice.
-                        </p>
-                        <p>
-                            If you are using Noodel via a bundler, the default entry is the Vue-less build 
-                            and the bundler should be able to take care of bundling Vue as a dependency.
-                        </p>
-                        <div class="node">
-                            <p>
-                                Noodel only needs Vue's runtime script. But if you need to compile templates in runtime
-                                you will need to include Vue's compiler script.
-                            </p>
-                        </div>
-                    </div>
-                    <div class="node">
-                        <h3>Using Noodel's Vue component</h3>
-                        <p>
-                            Noodel's Vue component is exposed as a static variable on the Noodel class, which can be
-                            used like any other Vue components. The way to use it is as follows:
-                        </p>
-                        <pre>
-                            <code class="language-js">
-                                import Noodel from 'noodel';
-
-                                const NoodelComponent = Noodel.VueComponent;                            
-                                const app = new Vue({
-                                    component: {
-                                        NoodelComponent
-                                    },
-                                    template: '&lt;NoodelComponent :noodel="noodel.getState()"/&gt;',
-                                    data: {
-                                        noodel: new Noodel([])
-                                    }
-                                }).mount("#el");
-                            </code> 
-                        </pre>
-                        <div class="node">
-                            <p>
-                                Noodel's Vue component takes a single prop, <i>noodel</i>, which must be the internal state tree
-                                of a Noodel instance that you can obtain via <code class="language-js">getState()</code>.
-                            </p>
-                            <p>
-                                It is important that you do not modify this state tree yourself, but instead use the API methods
-                                provided on the Noodel instance.
-                            </p>
-                        </div>
-                        <div class="node">
-                            <p>
-                                You are not required to register the Noodel instance as reactive data. However, there is no harm
-                                in doing so (like in the example) if it suits how you manage your state in your Vue project.
-                            </p>
-                        </div>
-                        <div class="node">
-                            <p>
-                                <img src="./alert-triangle.svg" class="link-icon" /> You do NOT need to call Noodel's 
-                                <code class="language-js">mount()</code>
-                                or <code class="language-js">unmount()</code> when using Noodel
-                                as a Vue component. It is simply a component that gets mounted and unmounted with your Vue instance!
-                            </p>
-                        </div>
-                    </div>
-                    <div class="node">
-                        <h3>Using Vue components as node content</h3>
-                        <p>
-                            You can pass Vue components as node content and they will be rendered via Vue's dynamic component feature, i.e.
-                            <code class="language-markup">&lt;component :is="yourComponent"&gt;&lt;/component&gt;</code>.
-                            To do so, you need to provide an object as node content:
-                        </p>
-                        <pre>
-                        <code class="language-js">
-                            const noodel = new Noodel([
-                                {
-                                    content: {
-                                        component: YourVueComponent, // your Vue component reference
-                                        props: { // name-value pairs of props to pass to this component
-                                            "propA": "abc",
-                                            "propB": 20
-                                        },
-                                        eventListeners: { // name-value pairs of event listeners to attach onto the component
-                                            "onButtonClick": () => console.log("button click")
-                                        }
-                                    }
-                                }
-                            ]);
-                        </code>
-                    </pre>
                     </div>
                 </div>
                 <div class="node">
@@ -1286,6 +1189,112 @@
                     </div>
                 </div>
                 <div class="node">
+                    <h3>Usage with Vue</h3>
+                    <div class="node" data-id="usage-vue-summary">
+                        <h3>Summary</h3>
+                        <p>
+                            Noodel uses Vue.js internally and hence provides integration with Vue out of the box.
+                            Noodel is available as a Vue component, and also allows you to use Vue components
+                            as the content for individual nodes.
+                        </p>
+                    </div>
+                    <div class="node">
+                        <h3>Using the Vue-less build</h3>
+                        <p>
+                            If you are including Noodel and Vue's scripts directly in your
+                            HTML, it is recommended that you use Noodel's <a href="#note-on-builds">Vue-less
+                            build</a>, alongside the Vue script used in your main project (Noodel requires Vue V3).
+                            This prevents Vue from being included twice.
+                        </p>
+                        <p>
+                            If you are using Noodel via a bundler, the default entry is the Vue-less build 
+                            and the bundler should be able to take care of bundling Vue as a dependency.
+                        </p>
+                        <div class="node">
+                            <p>
+                                Noodel only needs Vue's runtime script. But if you need to compile templates in runtime
+                                you'll need to include Vue's compiler script yourself.
+                            </p>
+                        </div>
+                    </div>
+                    <div class="node">
+                        <h3>Using Noodel's Vue component</h3>
+                        <p>
+                            Noodel's Vue component is exposed as a static variable on the Noodel class, which can be
+                            used like any other Vue components. The way to use it is as follows:
+                        </p>
+                        <pre>
+                            <code class="language-js">
+                                import Noodel from 'noodel';
+                                import { createApp } from 'vue';
+
+                                const NoodelComponent = Noodel.VueComponent;                            
+                                const app = createApp({
+                                    component: {
+                                        NoodelComponent
+                                    },
+                                    template: '&lt;NoodelComponent :noodel="noodel.getState()"/&gt;',
+                                    data: {
+                                        noodel: new Noodel([])
+                                    }
+                                });
+                                
+                                app.mount("#el");
+                            </code> 
+                        </pre>
+                        <div class="node">
+                            <p>
+                                Noodel's Vue component takes a single prop, <i>noodel</i>, which must be the internal state tree
+                                of a Noodel instance that you can obtain via <code class="language-js">getState()</code>.
+                            </p>
+                            <p>
+                                It is important that you do not modify this state tree yourself, but instead use the API methods
+                                provided on the Noodel instance.
+                            </p>
+                        </div>
+                        <div class="node">
+                            <p>
+                                You are not required to register the Noodel instance as reactive data. However, there is no harm
+                                in doing so (like in the example) if it suits how you manage your state in your Vue project.
+                            </p>
+                        </div>
+                        <div class="node">
+                            <p>
+                                <img src="./alert-triangle.svg" class="link-icon" /> You do NOT need to call Noodel's 
+                                <code class="language-js">mount()</code>
+                                or <code class="language-js">unmount()</code> when using Noodel
+                                as a Vue component. It is simply a component that gets mounted and unmounted with your Vue instance!
+                            </p>
+                        </div>
+                    </div>
+                    <div class="node">
+                        <h3>Using Vue components as node content</h3>
+                        <p>
+                            You can pass Vue components as node content and they will be rendered via Vue's dynamic component feature, i.e.
+                            <code class="language-markup">&lt;component :is="yourComponent"&gt;&lt;/component&gt;</code>.
+                            To do so, you need to provide an object as node content:
+                        </p>
+                        <pre>
+                        <code class="language-js">
+                            const noodel = new Noodel([
+                                {
+                                    content: {
+                                        component: YourVueComponent, // your Vue component reference
+                                        props: { // name-value pairs of props to pass to this component
+                                            "propA": "abc",
+                                            "propB": 20
+                                        },
+                                        eventListeners: { // name-value pairs of event listeners to attach onto the component
+                                            "onButtonClick": () => console.log("button click")
+                                        }
+                                    }
+                                }
+                            ]);
+                        </code>
+                    </pre>
+                    </div>
+                </div>
+                <div class="node">
                     <h3>TypeScript</h3>
                     <div class="node">
                         <p>
@@ -1293,14 +1302,23 @@
                             development a breeze.
                         </p>
                         <p>
-                            This means you don't need to install any additional type declarations - they come bundled out of the box
+                            You don't need to install any additional type declarations - they come bundled out of the box
                             when you install via npm.
                         </p>
                     </div>
                 </div>
+                <div class="node">
+                    <h3>Browser support</h3>
+                    <div class="node">
+                        <p>Noodel is targeted to work on all major modern browsers.</p>
+                        <p>Support for IE 10 and 11 is best-effort only - Noodel <i>should</i> work on these browsers, but
+                            there may be quirks and bugs in some features.</p>
+                        <p>IE 9 and below are not supported.</p>
+                    </div>
+                </div>
             </div>
             <div class="node" data-class="menu-item">
-                <h2>API</h2>
+                <h2>🌱 API</h2>
                 <div class="node" data-class="menu-item">
                     <h3>Noodel<span class="label">class</span></h3>
                     <p>The view model of a noodel. Has 2-way binding with the view.</p>
@@ -2337,16 +2355,7 @@
                 </div>
             </div>
             <div class="node" data-class="menu-item">
-                <h3>Browser support</h3>
-                <div class="node">
-                    <p>Noodel is targeted to work on all major modern browsers.</p>
-                    <p>Support for IE 10 and 11 is best-effort only - Noodel <i>should</i> work on these browsers, but
-                        there may be quirks and bugs in some features.</p>
-                    <p>IE 9 and below are not supported.</p>
-                </div>
-            </div>
-            <div class="node" data-class="menu-item">
-                <h3>Contribute</h3>
+                <h2>🤝 Contribute</h2>
                 <div class="node">
                     <p>Contributions are most welcome! Please <b><a
                                 href="https://github.com/zlu883/noodel-js/blob/master/CONTRIBUTING.md">see here</a></b>
@@ -2354,7 +2363,7 @@
                 </div>
             </div>
             <div class="node" data-class="menu-item">
-                <h3>Donate</h3>
+                <h2>❤️ Donate</h2>
                 <div class="node">
                     <p>If you find Noodel useful or inspiring, please consider supporting the author :)</p>
                     <form action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
