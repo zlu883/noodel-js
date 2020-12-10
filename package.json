@@ -22,7 +22,7 @@
     "description": "User interface for responsive, dynamic content trees",
     "dependencies": {
         "hammerjs": "^2.0.8",
-        "vue": "^3.0.4"
+        "vue": "^3.0.3"
     },
     "devDependencies": {
         "@types/chai": "^4.2.14",
