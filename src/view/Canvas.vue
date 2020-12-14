@@ -58,7 +58,7 @@
 <script lang="ts">
 import BranchTransitionGroup from "./BranchTransitionGroup.vue";
 import { setupCanvasInput } from "../controllers/input";
-import { traverseDescendents } from "../controllers/traverse";
+import { traverseDescendants } from "../controllers/traverse";
 import NoodelState from "../types/NoodelState";
 import NodeState from "../types/NodeState";
 import { PropType, defineComponent } from "vue";
@@ -304,7 +304,7 @@ export default defineComponent({
 		allBranchParents(): NodeState[] {
 			let allBranchParents: NodeState[] = [];
 
-			traverseDescendents(
+			traverseDescendants(
 				this.noodel.root,
 				(desc) => {
 					if (desc.children.length > 0) {

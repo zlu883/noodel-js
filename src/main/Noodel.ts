@@ -14,7 +14,7 @@ import NoodelEventMap from '../types/NoodelEventMap';
 import { parseContentTreeDefinition } from '../controllers/serialize';
 import { parseAndApplyOptions } from '../controllers/options';
 import { updateBranchSize, updateCanvasSize, updateNodeSize } from '../controllers/alignment';
-import { traverseDescendents } from '../controllers/traverse';
+import { traverseDescendants } from '../controllers/traverse';
 import { throwError } from '../controllers/util';
 
 /**
@@ -296,12 +296,12 @@ export default class Noodel {
 
         this.realignCanvas();
 
-        traverseDescendents(this._s.root, node => {
+        traverseDescendants(this._s.root, node => {
             node.isBranchTransparent = true;
         }, true); 
 
         nextTick(() => {
-            traverseDescendents(this._s.root, node => {
+            traverseDescendants(this._s.root, node => {
                 if (!node.r.isRoot) {
                     let nodeRect = node.r.el.getBoundingClientRect();
             

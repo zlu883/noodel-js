@@ -9,6 +9,7 @@ import { registerNodeSubtree } from './identity';
 import NodeDefinition from '../types/NodeDefinition';
 import { createNodeState } from './setup';
 import { setActiveChild, setFocalParent } from './navigate';
+import { traverseDescendants } from './traverse';
 
 /**
  * Insert children to a parent at a particular index. Always keep the current active child
@@ -32,7 +33,7 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
         );
     });
 
-    // register new children and their descendents
+    // register new children and their descendants
     children.forEach(child => registerNodeSubtree(noodel, child));
 
     // adjust active child index if inserting before active, to retain active child

@@ -10,7 +10,7 @@ import { changeNodeId, unregisterNodeSubtree } from '../controllers/identity';
 import NodeOptions from '../types/NodeOptions';
 import ComponentContent from '../types/ComponentContent';
 import { nextTick } from 'vue';
-import { traverseDescendents } from '../controllers/traverse';
+import { traverseDescendants } from '../controllers/traverse';
 import NodeCss from '../types/NodeCss';
 import NodeEventMap from '../types/NodeEventMap';
 import { serializeNodeDeep, serializeContent, serializeNode, parseContent, parseContentTreeDefinition } from '../controllers/serialize';
@@ -360,7 +360,7 @@ export default class NoodelNode {
     }
 
     /**
-     * Insert one or more new nodes (and their descendents) as children of this node.
+     * Insert one or more new nodes (and their descendants) as children of this node.
      * Will always preserve the current active child if possible. Return the 
      * list of inserted nodes.
      * @param defs definition trees of the new node(s)
@@ -415,7 +415,7 @@ export default class NoodelNode {
     }
 
     /**
-     * Delete one or more children (and their descendents) of this node.
+     * Delete one or more children (and their descendants) of this node.
      * If the active child is removed, will set the next child active,
      * unless the child is the last in the list, where the previous child
      * will be set active. If the focal branch is deleted, will move focus
@@ -508,12 +508,12 @@ export default class NoodelNode {
 
     /**
      * Do a preorder traversal of this node's subtree and perform the specified action
-     * on each descendent.
+     * on each descendant.
      * @param func the action to perform
      * @param includeSelf whether to include this node in the traversal
      */
     traverseSubtree(func: (node: NoodelNode) => any, includeSelf: boolean) {
-        traverseDescendents(this._s, desc => func(desc.r.vm), includeSelf);
+        traverseDescendants(this._s, desc => func(desc.r.vm), includeSelf);
     }
 
     // ALIGNMENT
