@@ -2,7 +2,7 @@
 
 import NoodelState from '../types/NoodelState';
 import NodeState from '../types/NodeState';
-import { traverseDescendents } from './traverse';
+import { traverseDescendants } from './traverse';
 
 export function generateNodeId(noodel: NoodelState) {
     noodel.r.idCount++;
@@ -10,19 +10,19 @@ export function generateNodeId(noodel: NoodelState) {
 }
 
 /**
- * Register a node and all its descendents.
+ * Register a node and all its descendants.
  */
 export function registerNodeSubtree(noodel: NoodelState, subtreeRoot: NodeState) {
-    traverseDescendents(subtreeRoot, desc => {
+    traverseDescendants(subtreeRoot, desc => {
         noodel.r.idMap.set(desc.id, desc);
     }, true);
 }
 
 /**
- * Unregister a node and all its descendents.
+ * Unregister a node and all its descendants.
  */
 export function unregisterNodeSubtree(noodel: NoodelState, node: NodeState) {
-    traverseDescendents(node, (desc) => {
+    traverseDescendants(node, (desc) => {
         noodel.r.idMap.delete(desc.id);
     }, true);
 }

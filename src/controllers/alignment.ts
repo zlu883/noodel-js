@@ -2,7 +2,7 @@
 
 import NodeState from '../types/NodeState';
 import NoodelState from '../types/NoodelState';
-import { traverseDescendents } from './traverse';
+import { traverseDescendants } from './traverse';
 import { nextTick } from 'vue';
 import { disableBranchTransition, disableTrunkTransition, enableBranchTransition, enableTrunkTransition } from './transition';
 import { finalizePan } from './pan';
@@ -92,7 +92,7 @@ export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeig
         parent.branchSize = newSize;
 
         // update trunk relative offset of all descendants
-        traverseDescendents(parent, desc => desc.trunkRelativeOffset += diff, false);
+        traverseDescendants(parent, desc => desc.trunkRelativeOffset += diff, false);
 
         if (isPanningTrunk(noodel) && parent.isFocalParent) {
             adjustTrunkPanOffset(noodel);
@@ -160,7 +160,7 @@ export function resetAlignment(noodel: NoodelState) {
 
     updateCanvasSize(noodel, rect.height, rect.width);
 
-    traverseDescendents(
+    traverseDescendants(
         noodel.root,
         (node) => {
             node.trunkRelativeOffset = 0;
@@ -174,7 +174,7 @@ export function resetAlignment(noodel: NoodelState) {
     );
 
     nextTick(() => {
-        traverseDescendents(
+        traverseDescendants(
             noodel.root,
             (node) => {
                 if (node.r.el) {
@@ -195,7 +195,7 @@ export function resetAlignment(noodel: NoodelState) {
         nextTick(() => {
             forceReflow();
             enableTrunkTransition(noodel);
-            traverseDescendents(noodel.root, node => enableBranchTransition(node), true);
+            traverseDescendants(noodel.root, node => enableBranchTransition(node), true);
         });
     });
 }

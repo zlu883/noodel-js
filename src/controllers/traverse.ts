@@ -21,17 +21,17 @@ export function traverseAncestors(origin: NodeState, task: (node: NodeState) => 
     }
 }
 
-export function traverseDescendents(origin: NodeState, task: (descendent: NodeState) => any, includeOrigin: boolean) {
+export function traverseDescendants(origin: NodeState, task: (desc: NodeState) => any, includeOrigin: boolean) {
     if (includeOrigin) task(origin);
 
     origin.children.forEach(child => {
-        traverseDescendents(child, task, true);
+        traverseDescendants(child, task, true);
     });
 }
 
-export function traverseActiveDescendents(
+export function traverseActiveDescendants(
     origin: NodeState, 
-    task: (descendent: NodeState) => any, 
+    task: (desc: NodeState) => any, 
     includeOrigin: boolean, 
     includeTail: boolean, 
     maxDepth: number = Number.MAX_SAFE_INTEGER

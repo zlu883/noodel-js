@@ -10,7 +10,7 @@ import { isPanningTrunk, isPanningBranch, getOrientation, getBranchDirection } f
 import { finalizePan } from './pan';
 import { setupRouting, unsetRouting } from './routing';
 import { disableBranchTransition, enableBranchTransition } from './transition';
-import { traverseDescendents } from './traverse';
+import { traverseDescendants } from './traverse';
 import { forceReflow } from './util';
 
 export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState) {
@@ -51,10 +51,10 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
         }
         else if (newBranchDirection !== oldBranchDirection) {
             // prevent transition
-            traverseDescendents(noodel.root, node => disableBranchTransition(noodel, node), true);
+            traverseDescendants(noodel.root, node => disableBranchTransition(noodel, node), true);
             nextTick(() => {
                 forceReflow();
-                traverseDescendents(noodel.root, node => enableBranchTransition(node), true)
+                traverseDescendants(noodel.root, node => enableBranchTransition(node), true)
             });
         }
     }
