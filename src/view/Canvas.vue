@@ -309,10 +309,11 @@ export default defineComponent({
 			traverseDescendants(
 				this.noodel.root,
 				(desc) => {
-					if (desc.children.length > 0) {
+					if (desc.children.length > 0 || desc.childrenExiting.length > 0) {
 						allBranchParents.push(desc);
 					}
 				},
+				true,
 				true
 			);
 

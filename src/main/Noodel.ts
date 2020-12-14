@@ -2,7 +2,7 @@ import NodeDefinition from '../types/NodeDefinition';
 import NoodelOptions from '../types/NoodelOptions';
 import { createNoodelState } from '../controllers/setup';
 import Canvas from '../view/Canvas.vue';
-import { nextTick as vueNextTick, createApp, nextTick } from 'vue';
+import { nextTick as vueNextTick, createApp, nextTick, markRaw } from 'vue';
 import NoodelState from '../types/NoodelState';
 import NoodelNode from './NoodelNode';
 import { getActiveChild, getFocalNode } from '../controllers/getters';
@@ -24,7 +24,7 @@ export default class Noodel {
 
     private _s: NoodelState;
 
-    static VueComponent: object = Canvas;
+    static VueComponent: object = markRaw(Canvas);
 
     /**
      * Creates the view model of a noodel based on the given content tree.

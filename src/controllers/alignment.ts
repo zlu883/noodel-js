@@ -6,8 +6,29 @@ import { traverseDescendants } from './traverse';
 import { nextTick } from 'vue';
 import { disableBranchTransition, disableTrunkTransition, enableBranchTransition, enableTrunkTransition } from './transition';
 import { finalizePan } from './pan';
-import { getAnchorOffsetBranch, getAnchorOffsetTrunk, getFocalNode, getOrientation, isBranchVisible, isPanningBranch, isPanningTrunk } from './getters';
+import { getActualOffsetBranch, getAnchorOffsetBranch, getAnchorOffsetTrunk, getFocalNode, getOrientation, isBranchVisible, isPanningBranch, isPanningTrunk } from './getters';
 import { forceReflow } from './util';
+
+function updateExitingNodePositions(noodel: NoodelState, parent: NodeState, offsetBefore: number) {
+    let offsetAfter = getActualOffsetBranch(noodel, parent);
+    let diff = offsetAfter - offsetBefore;
+
+    if (Math.abs(diff) > 0.01) parent.childrenExiting.forEach(node => node.branchRelativeOffset -= diff);
+}
+
+/**
+ * Update siblings' relative offsets BEFORE the deletion of a node
+ * and the mutation of its array of siblings.
+ */
+function updateSiblingOffsets(parent: NodeState, diff: number, fromIndex: number) {
+
+    let siblings = parent.children;
+
+    // adjust sibling offsets
+    for (let i = fromIndex; i < siblings.length; i++) {
+        siblings[i].branchRelativeOffset += diff;
+    }
+}
 
 export function updateCanvasSize(noodel: NoodelState, height: number, width: number) {
     let orientation = getOrientation(noodel);
@@ -39,7 +60,11 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
     if (Math.abs(diff) > 0.01) {
 
         // Disable branch transition temporarily and apply transit offset
-        if (parent.isBranchMounted && isBranchVisible(noodel, parent) && node.index <= parent.activeChildIndex && parent.applyBranchMove) {
+        if (parent.isBranchMounted 
+            && isBranchVisible(noodel, parent) 
+            && node.index <= parent.activeChildIndex 
+            && parent.applyBranchMove) {
+
             disableBranchTransition(noodel, parent, true);
 
             nextTick(() => {
@@ -48,17 +73,19 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
             });
         }
 
+        const branchOffsetBefore = getActualOffsetBranch(noodel, parent);
+
         // update node size
         node.size = newSize;
 
         // update branch relative offsets of next siblings in the branch
-        for (let i = node.index + 1; i < parent.children.length; i++) {
-            parent.children[i].branchRelativeOffset += diff;
-        }
+        updateSiblingOffsets(parent, diff, node.index + 1);
 
         if (isPanningBranch(noodel) && node.isActive && parent.isFocalParent) {
             adjustBranchPanOffset(noodel);
         }
+
+        updateExitingNodePositions(noodel, parent, branchOffsetBefore);
     }
 }
 
@@ -101,17 +128,22 @@ export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeig
 }
 
 /**
- * Update siblings' relative offsets BEFORE the deletion of a node
- * and the mutation of its array of siblings.
+ * Adjust the offsets of siblings and exiting nodes after node(s) were deleted from the branch.
+ * This function must be called after the nodes have been spliced from the children array
+ * and moved into the exiting array. 
  */
-export function updateOffsetsBeforeNodeDelete(node: NodeState) {
+export function alignBranchAfterNodeDelete(noodel: NoodelState, parent: NodeState, deletedNodes: NodeState[], deleteIndex: number, offsetBefore: number) {
+    let diff = 0;
 
-    let siblings = node.parent.children;
+    deletedNodes.forEach(node => diff -= node.size);
 
-    // adjust sibling offsets
-    for (let i = node.index + 1; i < siblings.length; i++) {
-        siblings[i].branchRelativeOffset -= node.size;
+    updateSiblingOffsets(parent, diff, deleteIndex);
+
+    if (isPanningBranch(noodel) && parent.isFocalParent) {
+        adjustBranchPanOffset(noodel);
     }
+
+    updateExitingNodePositions(noodel, parent, offsetBefore);
 }
 
 /**
@@ -169,6 +201,7 @@ export function resetAlignment(noodel: NoodelState) {
             node.branchSize = 0;
             disableBranchTransition(noodel, node);
             node.isBranchTransparent = true;
+            node.childrenExiting = []; // remove all nodes in exit transition since there's no foolproof way to retain correct positioning
         },
         true
     );

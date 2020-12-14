@@ -21,12 +21,18 @@ export function traverseAncestors(origin: NodeState, task: (node: NodeState) => 
     }
 }
 
-export function traverseDescendants(origin: NodeState, task: (desc: NodeState) => any, includeOrigin: boolean) {
+export function traverseDescendants(origin: NodeState, task: (desc: NodeState) => any, includeOrigin: boolean, includeDeleted = false) {
     if (includeOrigin) task(origin);
 
     origin.children.forEach(child => {
-        traverseDescendants(child, task, true);
+        traverseDescendants(child, task, true, includeDeleted);
     });
+
+    if (includeDeleted) {
+        origin.childrenExiting.forEach(child => {
+            traverseDescendants(child, task, true, includeDeleted);
+        });
+    }
 }
 
 export function traverseActiveDescendants(

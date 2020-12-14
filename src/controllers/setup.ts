@@ -158,7 +158,6 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
         isFocalParent: isRoot, // only initialze root as focal parent
         isActive: isActive,
         isActiveLineage: isRoot || (isActive && parent.isActiveLineage),
-        isDeleted: false,
 
         isInInspectMode: false,
 
@@ -189,6 +188,12 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
             focalAnchorBranch: null,
             focalAnchorTrunk: null
         },
+
+        childrenExiting: [],
+        c: false,
+        d: false,
+        t: false,
+        e: false
     });
 
     nodeState.r.vm = new (NoodelNode as any)(nodeState, noodel);

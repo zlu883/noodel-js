@@ -7,7 +7,7 @@
 		@afterLeave="afterLeave"
 	>
 		<div 
-			v-show="!node.isDeleted"
+			v-show="!node.d"
 			class="nd-node" 
 			:class="nodeClass"
 			:style="nodeStyle"
@@ -56,6 +56,7 @@ import NoodelState from "../types/NoodelState";
 import { traverseAncestors } from "../controllers/traverse";
 import { nextTick, PropType, defineComponent } from "vue";
 import { getBranchDirection, getOrientation, isBranchVisible } from '../controllers/getters';
+import { queueCleanupExitedNodes } from "../controllers/transition";
 
 export default defineComponent({
 	props: {
@@ -84,40 +85,6 @@ export default defineComponent({
 		});
 	},
 
-	beforeUnmount() {
-		// check fade flag and adjust absolute positioning as necessary
-		// if (this.node.r.fade) {
-		// 	this.node.r.fade = false;
-		// 	let orientation = getOrientation(this.noodel);
-		// 	let branchDirection = getBranchDirection(this.noodel);
-		// 	let offset = this.node.branchRelativeOffset + "px";
-		// 	let el = this.node.r.el;
-
-		// 	el.classList.remove("nd-node-active");
-
-		// 	if (orientation === "ltr" || orientation === "rtl") {
-		// 		el.style.width = "100%";
-
-		// 		if (branchDirection === "normal") {
-		// 			el.style.top = offset;
-		// 		} else {
-		// 			el.style.bottom = offset;
-		// 		}
-		// 	} else {
-		// 		el.style.height = "100%";
-
-		// 		if (branchDirection === "normal") {
-		// 			el.style.left = offset;
-		// 		} else {
-		// 			el.style.right = offset;
-		// 		}
-		// 	}
-		// }
-
-		this.node.r.contentBoxEl = null;
-		this.node.r.el = null;
-	},
-
 	unmounted() {
 		this.node.branchRelativeOffset = 0;
 		this.node.trunkRelativeOffset = 0;
@@ -128,6 +95,7 @@ export default defineComponent({
 
 	methods: {
 		onPointerUp() {
+			if (this.node.d) return;
 			if (this.noodel.r.pointerUpSrcNode) return;
 			this.noodel.r.pointerUpSrcNode = this.node;
 			requestAnimationFrame(
@@ -136,7 +104,8 @@ export default defineComponent({
 		},
 
 		afterLeave() {
-			// TODO
+			this.node.e = true;
+			queueCleanupExitedNodes(this.node.parent);
 		}
 	},
 
@@ -152,7 +121,34 @@ export default defineComponent({
 		},
 
 		nodeStyle(): string {
-			return this.node.styles.node;
+			let style = '';
+
+			if (this.node.d) {
+				let orientation = getOrientation(this.noodel);
+				let branchDirection = getBranchDirection(this.noodel);
+				let offset = this.node.branchRelativeOffset + "px";
+				let el = this.node.r.el;
+
+				style += "position: absolute; "
+
+				if (orientation === "ltr" || orientation === "rtl") {
+					if (branchDirection === "normal") {
+						style += `top: ${offset}; `;
+					} else {
+						style += `bottom: ${offset}; `;
+					}
+				} else {
+					if (branchDirection === "normal") {
+						style += `left: ${offset}; `;
+					} else {
+						style += `right: ${offset}; `;
+					}
+				}
+			}
+		
+			style += this.node.styles.node;
+			
+			return style;
 		},
 
 		contentBoxClass(): string {

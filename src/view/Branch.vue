@@ -31,7 +31,7 @@
 				:style="branchSliderStyle"		
 			>
 				<Node
-					v-for="child in parent.children"
+					v-for="child in childrenInView"
 					:key="child.id"
 					:node="child"
 					:noodel="noodel"
@@ -92,7 +92,18 @@ export default defineComponent({
 
 	computed: {
 		showBranch(): boolean {
-			return isBranchVisible(this.noodel, this.parent) || this.parent.isBranchTransparent;
+			return isBranchVisible(this.noodel, this.parent) 
+				|| this.parent.isBranchTransparent
+				// this only happens when all children has been deleted from the branch, allowing branch to show
+				// will use exit transition of nodes rather than branch
+				|| this.parent.d
+				|| this.parent.children.length === 0;
+		},
+
+		childrenInView(): NodeState[] {
+			if (this.parent.childrenExiting.length === 0) return this.parent.children;
+
+			return this.parent.children.concat(this.parent.childrenExiting);
 		},
 
 		branchClass(): string {

@@ -67,6 +67,7 @@
 
 .nd-branch-slider {
     display: flex;
+    position: relative;
     margin: 0 !important;
     padding: 0 !important;
     border: none !important;

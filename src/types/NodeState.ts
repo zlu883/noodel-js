@@ -49,7 +49,6 @@ export default interface NodeState {
      * This is used to check whether a branch should be visible.
      */
     isActiveLineage: boolean;
-    isDeleted: boolean;
 
     applyBranchMove: boolean;
     /**
@@ -78,4 +77,26 @@ export default interface NodeState {
     isInInspectMode: boolean;
 
     options: NodeOptions;
+
+    /**
+     * Container for child nodes in exit transition.
+     */
+    childrenExiting: NodeState[];
+    /**
+     * "Deleted" flag, set immediately when node is logically deleted
+     */
+    d: boolean;
+    /**
+     * "Detached" flag, set when node is logically deleted from its parent from
+     * an explicit delete operation
+     */
+    t: boolean;
+    /**
+     * "Exited" flag, set after node has finished exit transition and is ready to be removed from view
+     */
+    e: boolean;
+    /**
+     * "Cleanup" flag, set when node removal after exit is queued for next tick to avoid duplicate calls
+     */
+    c: boolean;
 }

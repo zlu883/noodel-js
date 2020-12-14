@@ -133,13 +133,17 @@
 	z-index: -1;
 }
 
+.nd-node-leave-from {
+	opacity: 1;
+}
+
 .nd-node-enter-from, .nd-node-leave-active {
 	opacity: 0;
 }
 
 .nd-node-enter-active, .nd-node-leave-active {
 	transition-property: opacity, transform;
-	transition-duration: 0.5s;
+	transition-duration: 100s;
 	transition-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
 }
 

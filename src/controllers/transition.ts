@@ -3,6 +3,7 @@
 import NoodelState from 'src/types/NoodelState';
 import NodeState from 'src/types/NodeState';
 import { getActualOffsetBranch, getActualOffsetTrunk, getBranchDirection, getOrientation, isBranchVisible } from './getters';
+import { nextTick } from 'vue';
 
 /**
  * Calculates the difference between the expected trunk offset
@@ -100,4 +101,17 @@ export function disableBranchTransition(noodel: NoodelState, parent: NodeState, 
     if (!parent.applyBranchMove) return;
     if (applyTransit) applyBranchTransitOffset(noodel, parent);
     parent.applyBranchMove = false;
+}
+
+/**
+ * Queue removal of exited nodes after they have finished transition on next tick.
+ */
+export function queueCleanupExitedNodes(parent: NodeState) {
+    if (parent.c) return;
+    parent.c = true;
+
+    nextTick(() => {
+        parent.childrenExiting = parent.childrenExiting.filter(node => !node.e);
+        parent.c = false;
+    });
 }

@@ -1,15 +1,18 @@
 /* Module for handling mutations of the noodel tree. */
 
 import NodeState from '../types/NodeState';
-import { getActiveChild, isBranchVisible, isPanningBranch } from './getters';
+import { getActualOffsetBranch, isBranchVisible, isPanningBranch } from './getters';
 import NoodelState from '../types/NoodelState';
-import { updateOffsetsBeforeNodeDelete } from './alignment';
+import { alignBranchAfterNodeDelete } from './alignment';
 import { finalizePan } from './pan';
 import { registerNodeSubtree } from './identity';
 import NodeDefinition from '../types/NodeDefinition';
 import { createNodeState } from './setup';
 import { setActiveChild, setFocalParent } from './navigate';
 import { traverseDescendants } from './traverse';
+import { disableBranchTransition, enableBranchTransition } from './transition';
+import { nextTick } from 'vue';
+import { forceReflow } from './util';
 
 /**
  * Insert children to a parent at a particular index. Always keep the current active child
@@ -63,11 +66,6 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
         setActiveChild(noodel, parent, activeChildIndex);
     }
 
-    // if panning focal branch, cancel it since it may conflict with animations
-    if (parent.isFocalParent && isPanningBranch(noodel)) {
-        finalizePan(noodel);
-    }
-
     // Allow new nodes' size capture
     if (parent.isBranchMounted) {
         parent.isBranchTransparent = true;
@@ -83,6 +81,20 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
 export function deleteChildren(noodel: NoodelState, parent: NodeState, index: number, deleteCount: number): NodeState[] {
 
     let children = parent.children;
+    let offsetBefore = getActualOffsetBranch(noodel, parent);
+
+    if (parent.isBranchMounted 
+        && isBranchVisible(noodel, parent) 
+        && index <= parent.activeChildIndex
+        && parent.applyBranchMove) {
+
+        disableBranchTransition(noodel, parent, true);
+
+        nextTick(() => {
+            enableBranchTransition(parent);
+            forceReflow();
+        });
+    }
 
     // The logic differs depending on whether all children are deleted
     if (children.length === deleteCount) {
@@ -107,15 +119,6 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
         setActiveChild(noodel, parent, null);
     }
     else {
-        // first adjust sibling offsets
-        for (let i = index; i < index + deleteCount; i++) {
-            updateOffsetsBeforeNodeDelete(parent.children[i]);
-        }
-
-        if (parent.isFocalParent && isPanningBranch(noodel)) {
-            finalizePan(noodel);
-        }
-
         // if deletion includes active child, change the active child as appropriate
         if (parent.activeChildIndex >= index && parent.activeChildIndex < index + deleteCount) {
 
@@ -150,13 +153,17 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
     // do delete
     let deletedNodes = children.splice(index, deleteCount);
 
+    parent.childrenExiting.push(...deletedNodes);
+
     // adjust properties of the deleted nodes
     deletedNodes.forEach(n => {
-        n.parent = null;
-        n.index = 0;
+        n.t = true;
         n.isActive = false;
-        traverseDescendants(n, desc => desc.isDeleted = true, true);
+        traverseDescendants(n, desc => desc.d = true, true);
     });
+
+    // adjust offsets
+    alignBranchAfterNodeDelete(noodel, parent, deletedNodes, index, offsetBefore);
 
     return deletedNodes;
 }
