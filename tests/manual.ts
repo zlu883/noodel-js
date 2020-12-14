@@ -139,6 +139,11 @@ document.getElementById("deleteNode2").addEventListener("click", () => {
     if (c) c.deleteSelf();
 });
 
+document.getElementById("deleteNode1/1").addEventListener("click", () => {
+    let c = noodel.findNodeById("setStyle");
+    if (c) c.deleteSelf();
+});
+
 document.getElementById("deleteMultipleBefore").addEventListener("click", () => {
     noodel.getFocalNode().deleteBefore(3);
 });

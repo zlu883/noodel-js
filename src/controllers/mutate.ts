@@ -1,7 +1,7 @@
 /* Module for handling mutations of the noodel tree. */
 
 import NodeState from '../types/NodeState';
-import { isPanningBranch } from './getters';
+import { getActiveChild, isBranchVisible, isPanningBranch } from './getters';
 import NoodelState from '../types/NoodelState';
 import { updateOffsetsBeforeNodeDelete } from './alignment';
 import { finalizePan } from './pan';
@@ -9,6 +9,7 @@ import { registerNodeSubtree } from './identity';
 import NodeDefinition from '../types/NodeDefinition';
 import { createNodeState } from './setup';
 import { setActiveChild, setFocalParent } from './navigate';
+import { traverseDescendents } from './traverse';
 
 /**
  * Insert children to a parent at a particular index. Always keep the current active child
@@ -81,8 +82,10 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
  */
 export function deleteChildren(noodel: NoodelState, parent: NodeState, index: number, deleteCount: number): NodeState[] {
 
+    let children = parent.children;
+
     // The logic differs depending on whether all children are deleted
-    if (parent.children.length === deleteCount) {
+    if (children.length === deleteCount) {
 
         // For this set of logic, setFocalParent must come before setActiveChild
         // for correct event emitting
@@ -119,7 +122,7 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
             // For this set of logic, setActiveChild must come before setFocalParent
             // for correct event emitting
 
-            if (index + deleteCount < parent.children.length) { // siblings exist after the deleted children
+            if (index + deleteCount < children.length) { // siblings exist after the deleted children
                 setActiveChild(noodel, parent, index + deleteCount); // set next sibling active
             }
             else { // no siblings exist after deleted children
@@ -134,8 +137,8 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
         }
 
         // update sibling indices
-        for (let i = index; i < parent.children.length; i++) {
-            parent.children[i].index -= deleteCount;
+        for (let i = index; i < children.length; i++) {
+            children[i].index -= deleteCount;
         }
 
         // update parent's active child index to match state after delete
@@ -145,20 +148,15 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
     }
 
     // do delete
-    let deletedNodes = parent.children.splice(index, deleteCount);
+    let deletedNodes = children.splice(index, deleteCount);
 
-    // adjust properties of the deleted nodes only (not their descendants)
+    // adjust properties of the deleted nodes
     deletedNodes.forEach(n => {
         n.parent = null;
         n.index = 0;
         n.isActive = false;
+        traverseDescendents(n, desc => desc.isDeleted = true, true);
     });
-
-    // add fading flag for nodes to be removed from a branch where the branch itself is not deleted
-    // this is used to determine which nodes need their positions adjusted for fade out
-    if (noodel.isMounted && parent.children.length > 0) {
-        deletedNodes.forEach(node => node.r.fade = true);
-    }
 
     return deletedNodes;
 }

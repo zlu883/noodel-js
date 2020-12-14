@@ -69,7 +69,7 @@ export default class NoodelNode {
      * Get the path (an array of zero-based indices counting from the root) of this node.
      */
     getPath(): number[] {
-        if (!this._ns) return null;
+        if (this.isDeleted()) return null;
         return _getPath(this._s);
     }
 
@@ -256,7 +256,7 @@ export default class NoodelNode {
      * Check whether this node has been deleted from its noodel.
      */
     isDeleted(): boolean {
-        return !this._ns;
+        return this._s.isDeleted;
     }
 
     // MUTATERS

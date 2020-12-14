@@ -24,8 +24,6 @@ export function registerNodeSubtree(noodel: NoodelState, subtreeRoot: NodeState)
 export function unregisterNodeSubtree(noodel: NoodelState, node: NodeState) {
     traverseDescendents(node, (desc) => {
         noodel.r.idMap.delete(desc.id);
-        // detach noodel state in view model, will be used in vm to check whether node is deleted
-        (desc.r.vm as any).noodelState = null;
     }, true);
 }
 

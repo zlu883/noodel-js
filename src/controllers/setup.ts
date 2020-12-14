@@ -150,7 +150,6 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
             branchEl: null,
             branchSliderEl: null,
             vm: null,
-            fade: false
         }),
         index: index,
         level: isRoot ? 0 : parent.level + 1,
@@ -159,6 +158,8 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
         isFocalParent: isRoot, // only initialze root as focal parent
         isActive: isActive,
         isActiveLineage: isRoot || (isActive && parent.isActiveLineage),
+        isDeleted: false,
+
         isInInspectMode: false,
 
         branchOffset: 0,

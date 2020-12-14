@@ -21,10 +21,6 @@ export default interface NodeState {
         branchSliderEl: HTMLDivElement;
 
         vm: NoodelNode;
-        /**
-         * Use to check need for fade out position adjustment during node deletion
-         */
-        fade: boolean;
     };
 
     id: string;
@@ -32,6 +28,7 @@ export default interface NodeState {
     level: number;
     children: NodeState[];
     activeChildIndex: number;
+    
     content: string | ComponentContent;
     branchContent: string | ComponentContent;
     classNames: NodeCss;
@@ -52,6 +49,7 @@ export default interface NodeState {
      * This is used to check whether a branch should be visible.
      */
     isActiveLineage: boolean;
+    isDeleted: boolean;
 
     applyBranchMove: boolean;
     /**

@@ -104,7 +104,11 @@ export function getRelativeOffsetTrunk(noodel: NoodelState) {
  * to the start of the branch axis.
  */
 export function getRelativeOffsetBranch(branchParent: NodeState) {
-    return getActiveChild(branchParent).branchRelativeOffset;
+    let activeChild = getActiveChild(branchParent);
+
+    if (!activeChild) return 0;
+
+    return activeChild.branchRelativeOffset;
 }
 
 /**
@@ -123,6 +127,8 @@ export function getAnchorOffsetTrunk(noodel: NoodelState, branchParent: NodeStat
  * from the node's starting edge.
  */
 export function getAnchorOffsetBranch(noodel: NoodelState, node: NodeState) {
+    if (!node) return 0;
+
     let nodeSize = node.size;
     let func = node.options.anchorOffsetBranch || noodel.options.anchorOffsetBranch;
 

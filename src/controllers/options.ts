@@ -5,7 +5,7 @@ import NodeOptions from '../types/NodeOptions';
 import NodeState from '../types/NodeState';
 import NoodelOptions from '../types/NoodelOptions';
 import NoodelState from '../types/NoodelState';
-import { adjustTrunkMoveOffset, adjustBranchMoveOffset, resetAlignment } from './alignment';
+import { adjustTrunkPanOffset, adjustBranchPanOffset, resetAlignment } from './alignment';
 import { isPanningTrunk, isPanningBranch, getOrientation, getBranchDirection } from './getters';
 import { finalizePan } from './pan';
 import { setupRouting, unsetRouting } from './routing';
@@ -28,11 +28,11 @@ export function parseAndApplyOptions(options: NoodelOptions, noodel: NoodelState
     }
 
     if (options.anchorOffsetTrunk && isPanningTrunk(noodel)) {
-        adjustTrunkMoveOffset(noodel);
+        adjustTrunkPanOffset(noodel);
     }
 
     if (options.anchorOffsetBranch && isPanningBranch(noodel)) {
-        adjustBranchMoveOffset(noodel);
+        adjustBranchPanOffset(noodel);
     }
 
     if (noodel.options.useRouting) {

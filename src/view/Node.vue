@@ -1,43 +1,50 @@
 <!--------------------------- TEMPLATE ----------------------------->
 
 <template>
-	<div 
-		class="nd-node" 
-		:class="nodeClass"
-		:style="nodeStyle"
+	<transition
+		name="nd-node"
+		:appear="noodel.isMounted"
+		@afterLeave="afterLeave"
 	>
-		<transition name="nd-inspect-backdrop">
-			<div
-				v-if="node.isInInspectMode"
-				class="nd-inspect-backdrop"
-			></div>
-		</transition>
-		<div
-			ref="contentBox"
-			class="nd-content-box"
-			:class="contentBoxClass"
-			:style="contentBoxStyle"
-			v-bind.prop="typeof node.content === 'string' ? { innerHTML: node.content } : null"
-			@pointerup="onPointerUp"
-			@mouseup="onPointerUp"
-			@touchend="onPointerUp"
+		<div 
+			v-show="!node.isDeleted"
+			class="nd-node" 
+			:class="nodeClass"
+			:style="nodeStyle"
 		>
-			<component
-				v-if="node.content && typeof node.content === 'object'"
-				:is="node.content.component"
-				v-bind="node.content.props"
-				v-on="node.content.eventListeners"
-			/>
-		</div>
-		<transition name="nd-child-indicator">
+			<transition name="nd-inspect-backdrop">
+				<div
+					v-if="node.isInInspectMode"
+					class="nd-inspect-backdrop"
+				></div>
+			</transition>
 			<div
-				v-if="showChildIndicator"
-				class="nd-child-indicator"
-				:class="childIndicatorClass"
-				:style="childIndicatorStyle"
-			/>
-		</transition>
-	</div>
+				ref="contentBox"
+				class="nd-content-box"
+				:class="contentBoxClass"
+				:style="contentBoxStyle"
+				v-bind.prop="typeof node.content === 'string' ? { innerHTML: node.content } : null"
+				@pointerup="onPointerUp"
+				@mouseup="onPointerUp"
+				@touchend="onPointerUp"
+			>
+				<component
+					v-if="node.content && typeof node.content === 'object'"
+					:is="node.content.component"
+					v-bind="node.content.props"
+					v-on="node.content.eventListeners"
+				/>
+			</div>
+			<transition name="nd-child-indicator">
+				<div
+					v-if="showChildIndicator"
+					class="nd-child-indicator"
+					:class="childIndicatorClass"
+					:style="childIndicatorStyle"
+				/>
+			</transition>
+		</div>
+	</transition>
 </template>
 
 <!---------------------------- SCRIPT ------------------------------>
@@ -68,7 +75,6 @@ export default defineComponent({
 			this.node,
 			nodeRect.height,
 			nodeRect.width,
-			true
 		);
 
 		// allows parent branch to fall back to display: none after first size update,
@@ -80,33 +86,33 @@ export default defineComponent({
 
 	beforeUnmount() {
 		// check fade flag and adjust absolute positioning as necessary
-		if (this.node.r.fade) {
-			this.node.r.fade = false;
-			let orientation = getOrientation(this.noodel);
-			let branchDirection = getBranchDirection(this.noodel);
-			let offset = this.node.branchRelativeOffset + "px";
-			let el = this.node.r.el;
+		// if (this.node.r.fade) {
+		// 	this.node.r.fade = false;
+		// 	let orientation = getOrientation(this.noodel);
+		// 	let branchDirection = getBranchDirection(this.noodel);
+		// 	let offset = this.node.branchRelativeOffset + "px";
+		// 	let el = this.node.r.el;
 
-			el.classList.remove("nd-node-active");
+		// 	el.classList.remove("nd-node-active");
 
-			if (orientation === "ltr" || orientation === "rtl") {
-				el.style.width = "100%";
+		// 	if (orientation === "ltr" || orientation === "rtl") {
+		// 		el.style.width = "100%";
 
-				if (branchDirection === "normal") {
-					el.style.top = offset;
-				} else {
-					el.style.bottom = offset;
-				}
-			} else {
-				el.style.height = "100%";
+		// 		if (branchDirection === "normal") {
+		// 			el.style.top = offset;
+		// 		} else {
+		// 			el.style.bottom = offset;
+		// 		}
+		// 	} else {
+		// 		el.style.height = "100%";
 
-				if (branchDirection === "normal") {
-					el.style.left = offset;
-				} else {
-					el.style.right = offset;
-				}
-			}
-		}
+		// 		if (branchDirection === "normal") {
+		// 			el.style.left = offset;
+		// 		} else {
+		// 			el.style.right = offset;
+		// 		}
+		// 	}
+		// }
 
 		this.node.r.contentBoxEl = null;
 		this.node.r.el = null;
@@ -128,6 +134,10 @@ export default defineComponent({
 				() => (this.noodel.r.pointerUpSrcNode = null)
 			);
 		},
+
+		afterLeave() {
+			// TODO
+		}
 	},
 
 	computed: {

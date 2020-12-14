@@ -52,7 +52,7 @@ export default interface NoodelState {
      * relative to the anchor point of the current focal branch.
      */
     trunkPanOffset: number;
-        /**
+    /**
      * Transient orientation-agnostic offset of the focal branch 
      * caused by panning, relative to the anchor point of the focal node.
      */

@@ -1,44 +1,50 @@
 <!--------------------------- TEMPLATE ----------------------------->
 
 <template>
-	<div
-		v-show="showBranch"
-		class="nd-branch"
-		:class="branchClass"
-		:style="branchStyle"
+	<transition 
+		name="nd-branch" 
 	>
 		<div
-			v-if="parent.branchContent"
-			class="nd-branch-content-box"
-			:class="branchContentBoxClass"
-			:style="branchContentBoxStyle"
-			v-bind.prop="typeof parent.branchContent === 'string' ? { innerHTML: parent.branchContent } : null"			
+			v-show="showBranch"
+			class="nd-branch"
+			:class="branchClass"
+			:style="branchStyle"
 		>
-			<component
-				v-if="typeof parent.branchContent === 'object'"
-				:is="parent.branchContent.component"
-				v-bind="parent.branchContent.props"
-				v-on="parent.branchContent.eventListeners"
-			/>
+			<div
+				v-if="parent.branchContent"
+				class="nd-branch-content-box"
+				:class="branchContentBoxClass"
+				:style="branchContentBoxStyle"
+				v-bind.prop="typeof parent.branchContent === 'string' ? { innerHTML: parent.branchContent } : null"			
+			>
+				<component
+					v-if="typeof parent.branchContent === 'object'"
+					:is="parent.branchContent.component"
+					v-bind="parent.branchContent.props"
+					v-on="parent.branchContent.eventListeners"
+				/>
+			</div>
+			<div
+				class="nd-branch-slider"
+				ref="slider"	
+				:class="branchSliderClass"
+				:style="branchSliderStyle"		
+			>
+				<Node
+					v-for="child in parent.children"
+					:key="child.id"
+					:node="child"
+					:noodel="noodel"
+				/>
+			</div>
 		</div>
-		<div
-			class="nd-branch-slider"
-			ref="slider"	
-			:class="branchSliderClass"
-			:style="branchSliderStyle"		
-		>
-			<NodeTransitionGroup 
-				:noodel="noodel" 
-				:parent="parent" 
-			/>
-		</div>
-	</div>
+	</transition>
 </template>
 
 <!---------------------------- SCRIPT ------------------------------>
 
 <script lang="ts">
-import NodeTransitionGroup from "./NodeTransitionGroup.vue";
+import Node from "./Node.vue";
 import NodeState from "../types/NodeState";
 import NoodelState from "../types/NoodelState";
 import { PropType, defineComponent, nextTick } from "vue";
@@ -47,7 +53,7 @@ import { getActualOffsetBranch, getBranchDirection, getOrientation, isBranchVisi
 
 export default defineComponent({
 	components: {
-		NodeTransitionGroup,
+		Node,
 	},
 
 	props: {
@@ -66,7 +72,6 @@ export default defineComponent({
 			this.parent,
 			branchRect.height,
 			branchRect.width,
-			true
 		);
 
 		requestAnimationFrame(() => {

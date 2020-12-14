@@ -45,8 +45,10 @@
 			:class="trunkClass"
 			:style="trunkStyle"
 		>
-			<BranchTransitionGroup
-				:allParents="allBranchParents"
+			<Branch
+				v-for="parent in allBranchParents"
+				:key="parent.id"
+				:parent="parent"
 				:noodel="noodel"
 			/>
 		</div>
@@ -56,7 +58,7 @@
 <!---------------------------- SCRIPT ------------------------------>
 
 <script lang="ts">
-import BranchTransitionGroup from "./BranchTransitionGroup.vue";
+import Branch from "./Branch.vue";
 import { setupCanvasInput } from "../controllers/input";
 import { traverseDescendents } from "../controllers/traverse";
 import NoodelState from "../types/NoodelState";
@@ -68,7 +70,7 @@ import { updateCanvasSize } from '../controllers/alignment';
 
 export default defineComponent({
 	components: {
-		BranchTransitionGroup,
+		Branch,
 	},
 
 	props: {

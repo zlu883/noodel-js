@@ -129,7 +129,6 @@
 }
 
 .nd-node-leave-active {
-	position: absolute;
 	overflow: hidden;
 	z-index: -1;
 }
