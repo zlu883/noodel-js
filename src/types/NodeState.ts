@@ -15,7 +15,6 @@ export default interface NodeState {
 
         isRoot: boolean;
 
-        contentBoxEl: HTMLDivElement;
         el: HTMLDivElement;
         branchEl: HTMLDivElement;
         branchSliderEl: HTMLDivElement;

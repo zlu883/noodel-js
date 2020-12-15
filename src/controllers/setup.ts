@@ -145,7 +145,6 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
                 ['childrenExitFocus', []],
             ]),
             isRoot: isRoot,           
-            contentBoxEl: null,
             el: null,
             branchEl: null,
             branchSliderEl: null,

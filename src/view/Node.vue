@@ -5,6 +5,9 @@
 		class="nd-node" 
 		:class="nodeClass"
 		:style="nodeStyle"
+		@pointerup="onPointerUp"
+		@mouseup="onPointerUp"
+		@touchend="onPointerUp"
 	>
 		<transition name="nd-inspect-backdrop">
 			<div
@@ -18,9 +21,6 @@
 			:class="contentBoxClass"
 			:style="contentBoxStyle"
 			v-bind.prop="typeof node.content === 'string' ? { innerHTML: node.content } : null"
-			@pointerup="onPointerUp"
-			@mouseup="onPointerUp"
-			@touchend="onPointerUp"
 		>
 			<component
 				v-if="node.content && typeof node.content === 'object'"
@@ -58,7 +58,6 @@ export default defineComponent({
 
 	mounted() {
 		this.node.r.el = this.$el as HTMLDivElement;
-		this.node.r.contentBoxEl = this.$refs.contentBox as HTMLDivElement;
 
 		// do initial size capture
 		let nodeRect = this.node.r.el.getBoundingClientRect();
@@ -108,7 +107,6 @@ export default defineComponent({
 			}
 		}
 
-		this.node.r.contentBoxEl = null;
 		this.node.r.el = null;
 	},
 
@@ -117,7 +115,6 @@ export default defineComponent({
 		this.node.trunkRelativeOffset = 0;
 		this.node.size = 0;
 		this.node.r.el = null;
-		this.node.r.contentBoxEl = null;
 	},
 
 	methods: {
