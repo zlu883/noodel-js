@@ -66,15 +66,8 @@ export default defineComponent({
 			this.noodel,
 			this.node,
 			nodeRect.height,
-			nodeRect.width,
-			true
+			nodeRect.width
 		);
-
-		// allows parent branch to fall back to display: none after first size update,
-		// using nextTick to wait for parent branch size capture to finish first
-		nextTick(() => {
-			this.node.parent.isBranchTransparent = false;
-		});
 	},
 
 	beforeUnmount() {

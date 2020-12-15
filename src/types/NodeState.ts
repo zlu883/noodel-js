@@ -39,10 +39,10 @@ export default interface NodeState {
 
     isBranchMounted: boolean;
     /**
-     * If true, will hide child branch with opacity: 0 instead of display: none.
-     * Used temporarily for capturing sizes.
+     * If true, will force the branch to show with opacity: 0 even if it isn't visible,
+     * for capturing sizes.
      */
-    isBranchTransparent: boolean;
+    forceVisible: boolean;
     isFocalParent: boolean;
     isActive: boolean;
     /**

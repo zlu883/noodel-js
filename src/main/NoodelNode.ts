@@ -531,13 +531,13 @@ export default class NoodelNode {
         this.throwErrorIfDeleted();
         if (!this._s.parent || !this._s.parent.isBranchMounted) return;
 
-        this._s.parent.isBranchTransparent = true;
+        this._s.parent.forceVisible = true;
 
         nextTick(() => {
             let rect = this._s.r.el.getBoundingClientRect();
             
             updateNodeSize(this._ns, this._s, rect.height, rect.width);
-            this._s.parent.isBranchTransparent = false;
+            this._s.parent.forceVisible = false;
         });
     }
 
@@ -551,13 +551,13 @@ export default class NoodelNode {
         this.throwErrorIfDeleted();
         if (this._s.children.length === 0 || !this._s.isBranchMounted) return;
 
-        this._s.isBranchTransparent = true;
+        this._s.forceVisible = true;
 
         nextTick(() => {
             let rect = this._s.r.branchSliderEl.getBoundingClientRect();
 
             updateBranchSize(this._ns, this._s, rect.height, rect.width);
-            this._s.isBranchTransparent = false;
+            this._s.forceVisible = false;
         });
     }
 

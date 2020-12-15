@@ -22,7 +22,7 @@ export function updateCanvasSize(noodel: NoodelState, height: number, width: num
     }
 }
 
-export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: number, newWidth: number, isInsert = false) {
+export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: number, newWidth: number) {
     let orientation = getOrientation(noodel);
     let newSize = null;
 
@@ -39,8 +39,11 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
     if (Math.abs(diff) > 0.01) {
 
         // Disable branch transition temporarily and apply transit offset
-        // This does not apply to inserts (i.e. branch not mounted) as transition is necessary for FLIP
-        if (isBranchVisible(noodel, parent) && node.index <= parent.activeChildIndex && parent.applyBranchMove && !isInsert) {
+        if (parent.isBranchMounted 
+            && isBranchVisible(noodel, parent) 
+            && node.index <= parent.activeChildIndex 
+            && parent.applyBranchMove) {
+
             disableBranchTransition(noodel, parent, true);
 
             nextTick(() => {
@@ -63,7 +66,7 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
     }
 }
 
-export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeight: number, newWidth: number, isInsert = false) {
+export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeight: number, newWidth: number) {
     let orientation = getOrientation(noodel);
     let newSize = null;
 
@@ -79,9 +82,11 @@ export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeig
     if (Math.abs(diff) > 0.01) {
 
         // Disable trunk transition temporarily and apply transit offset.
-        // This does not apply to inserts as transitions can only happen during simultaneous child insert + navigation,
-        // and transition should be kept in this case
-        if (isBranchVisible(noodel, parent) && parent.level < noodel.focalLevel && noodel.applyTrunkMove && !isInsert) {
+        if (parent.isBranchMounted 
+            && isBranchVisible(noodel, parent) 
+            && parent.level < noodel.focalLevel 
+            && noodel.applyTrunkMove) {
+
             disableTrunkTransition(noodel, true);
 
             // resume transition
@@ -171,7 +176,7 @@ export function resetAlignment(noodel: NoodelState) {
             node.size = 0;
             node.branchSize = 0;
             disableBranchTransition(noodel, node);
-            node.isBranchTransparent = true;
+            node.forceVisible = true;
         },
         true
     );
@@ -190,7 +195,7 @@ export function resetAlignment(noodel: NoodelState) {
                     updateBranchSize(noodel, node, rect.height, rect.width);
                 }
 
-                node.isBranchTransparent = false;
+                node.forceVisible = false;
             },
             true
         );

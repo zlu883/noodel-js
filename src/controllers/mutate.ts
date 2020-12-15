@@ -70,7 +70,7 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
 
     // Allow new nodes' size capture
     if (parent.isBranchMounted) {
-        parent.isBranchTransparent = true;
+        parent.forceVisible = true;
     }
 
     return children;

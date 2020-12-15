@@ -65,13 +65,14 @@ export default defineComponent({
 			this.noodel,
 			this.parent,
 			branchRect.height,
-			branchRect.width,
-			true
+			branchRect.width
 		);
 
+		// need double RAF here otherwise the sliders will animate on mount
 		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
 				this.parent.isBranchMounted = true;
+				this.parent.forceVisible = false;
 			});
 		});
 	},
@@ -81,13 +82,13 @@ export default defineComponent({
 		this.parent.r.branchSliderEl = null;
 		this.parent.isBranchMounted = false;
 		this.parent.applyBranchMove = false;
-		this.parent.isBranchTransparent = true;
+		this.parent.forceVisible = true;
 		this.parent.branchSize = 0;
 	},
 
 	computed: {
 		showBranch(): boolean {
-			return isBranchVisible(this.noodel, this.parent) || this.parent.isBranchTransparent;
+			return isBranchVisible(this.noodel, this.parent) || this.parent.forceVisible;
 		},
 
 		branchClass(): string {
@@ -125,7 +126,7 @@ export default defineComponent({
 			if (!isBranchVisible(this.noodel, this.parent)) {
 				style += 'pointer-events: none;';
 
-				if (this.parent.isBranchTransparent) {
+				if (this.parent.forceVisible) {
 					style += 'opacity: 0;';
 				}
 			}

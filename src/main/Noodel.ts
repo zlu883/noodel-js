@@ -297,7 +297,7 @@ export default class Noodel {
         this.realignCanvas();
 
         traverseDescendants(this._s.root, node => {
-            node.isBranchTransparent = true;
+            node.forceVisible = true;
         }, true); 
 
         nextTick(() => {
@@ -311,7 +311,7 @@ export default class Noodel {
                 let branchRect = node.r.branchSliderEl.getBoundingClientRect();
 
                 updateBranchSize(this._s, node, branchRect.height, branchRect.width);
-                node.isBranchTransparent = false;
+                node.forceVisible = false;
             }, true);     
         });
     }
