@@ -148,18 +148,11 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
     // do delete
     let deletedNodes = parent.children.splice(index, deleteCount);
 
-    // adjust properties of the deleted nodes only (not their descendants)
+    // adjust properties of the deleted nodes
     deletedNodes.forEach(n => {
-        n.parent = null;
-        n.index = 0;
-        n.isActive = false;
+        n.r.isDetached = true;
+        traverseDescendants(n, desc => desc.r.isDeleted = true, true);
     });
-
-    // add fading flag for nodes to be removed from a branch where the branch itself is not deleted
-    // this is used to determine which nodes need their positions adjusted for fade out
-    if (noodel.isMounted && parent.children.length > 0) {
-        deletedNodes.forEach(node => node.r.fade = true);
-    }
 
     return deletedNodes;
 }

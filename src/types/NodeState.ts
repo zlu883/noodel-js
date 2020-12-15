@@ -20,10 +20,9 @@ export default interface NodeState {
         branchSliderEl: HTMLDivElement;
 
         vm: NoodelNode;
-        /**
-         * Use to check need for fade out position adjustment during node deletion
-         */
-        fade: boolean;
+
+        isDeleted: boolean;
+        isDetached: boolean;
     };
 
     id: string;

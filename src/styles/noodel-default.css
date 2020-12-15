@@ -134,6 +134,14 @@
 	z-index: -1;
 }
 
+.nd-canvas-ltr .nd-node-leave-active, .nd-canvas-rtl .nd-node-leave-active {
+	width: 100%;
+}
+
+.nd-canvas-btt .nd-node-leave-active, .nd-canvas-ttb .nd-node-leave-active {
+	height: 100%;
+}
+
 .nd-node-enter-from, .nd-node-leave-active {
 	opacity: 0;
 }

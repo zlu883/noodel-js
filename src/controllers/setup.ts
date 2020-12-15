@@ -149,7 +149,8 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
             branchEl: null,
             branchSliderEl: null,
             vm: null,
-            fade: false
+            isDeleted: false,
+            isDetached: false
         }),
         index: index,
         level: isRoot ? 0 : parent.level + 1,

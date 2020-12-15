@@ -61,6 +61,7 @@ export default class NoodelNode {
      * if this is detached from its parent by a delete operation.
      */
     getParent(): NoodelNode {
+        if (this._s.r.isDetached) return null;
         if (!this._s.parent) return null;
         return this._s.parent.r.vm;
     }
@@ -69,7 +70,7 @@ export default class NoodelNode {
      * Get the path (an array of zero-based indices counting from the root) of this node.
      */
     getPath(): number[] {
-        if (!this._ns) return null;
+        if (this.isDeleted()) return null;
         return _getPath(this._s);
     }
 
@@ -182,6 +183,7 @@ export default class NoodelNode {
      * Will return 0 if detached from its parent by a delete operation.
      */
     getIndex(): number {
+        if (this._s.r.isDetached) return 0;
         return this._s.index;
     }
 
@@ -206,6 +208,7 @@ export default class NoodelNode {
      * Check whether this node is active.
      */
     isActive(): boolean {
+        if (this._s.r.isDetached) return false;
         return this._s.isActive;
     }
 
@@ -256,7 +259,7 @@ export default class NoodelNode {
      * Check whether this node has been deleted from its noodel.
      */
     isDeleted(): boolean {
-        return !this._ns;
+        return this._s.r.isDeleted;
     }
 
     // MUTATERS

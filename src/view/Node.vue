@@ -78,32 +78,22 @@ export default defineComponent({
 	},
 
 	beforeUnmount() {
-		// check fade flag and adjust absolute positioning as necessary
-		if (this.node.r.fade) {
-			this.node.r.fade = false;
-			let orientation = getOrientation(this.noodel);
-			let branchDirection = getBranchDirection(this.noodel);
-			let offset = this.node.branchRelativeOffset + "px";
-			let el = this.node.r.el;
+		let orientation = getOrientation(this.noodel);
+		let branchDirection = getBranchDirection(this.noodel);
+		let offset = this.node.branchRelativeOffset + "px";
+		let el = this.node.r.el;
 
-			el.classList.remove("nd-node-active");
-
-			if (orientation === "ltr" || orientation === "rtl") {
-				el.style.width = "100%";
-
-				if (branchDirection === "normal") {
-					el.style.top = offset;
-				} else {
-					el.style.bottom = offset;
-				}
+		if (orientation === "ltr" || orientation === "rtl") {
+			if (branchDirection === "normal") {
+				el.style.top = offset;
 			} else {
-				el.style.height = "100%";
-
-				if (branchDirection === "normal") {
-					el.style.left = offset;
-				} else {
-					el.style.right = offset;
-				}
+				el.style.bottom = offset;
+			}
+		} else {
+			if (branchDirection === "normal") {
+				el.style.left = offset;
+			} else {
+				el.style.right = offset;
 			}
 		}
 
