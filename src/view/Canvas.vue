@@ -61,10 +61,11 @@ import { setupCanvasInput } from "../controllers/input";
 import { traverseDescendants } from "../controllers/traverse";
 import NoodelState from "../types/NoodelState";
 import NodeState from "../types/NodeState";
-import { PropType, defineComponent } from "vue";
+import { PropType, defineComponent, nextTick } from "vue";
 import { queueMount } from "../controllers/event";
 import { getActualOffsetTrunk, getBranchDirection, getOrientation } from '../controllers/getters';
 import { updateCanvasSize } from '../controllers/alignment';
+import { forceReflow } from "../controllers/util";
 
 export default defineComponent({
 	components: {
@@ -84,13 +85,13 @@ export default defineComponent({
     	updateCanvasSize(this.noodel, rect.height, rect.width);
 		setupCanvasInput(this.noodel);
 
-		// use double RAF to ensure that all side effects (e.g. size captures)
-		// are finished
-		requestAnimationFrame(() => {
-			requestAnimationFrame(() => {
-				this.noodel.isMounted = true;
-				queueMount(this.noodel);
-			});
+		nextTick(() => {
+			// force reflow is necessary here to lock in the current DOM
+			// so that further updates will start from a clean state
+			forceReflow(); 
+			this.noodel.isMounted = true;
+			// mount event is triggered one tick after
+			queueMount(this.noodel);
 		});
 	},
 

@@ -44,6 +44,7 @@ import NoodelState from "../types/NoodelState";
 import { PropType, defineComponent, nextTick } from "vue";
 import { updateBranchSize } from "../controllers/alignment";
 import { getActualOffsetBranch, getBranchDirection, getOrientation, isBranchVisible } from '../controllers/getters';
+import { forceReflow } from "../controllers/util";
 
 export default defineComponent({
 	components: {
@@ -68,12 +69,16 @@ export default defineComponent({
 			branchRect.width
 		);
 
-		// need double RAF here otherwise the sliders will animate on mount
-		requestAnimationFrame(() => {
-			requestAnimationFrame(() => {
-				this.parent.isBranchMounted = true;
-				this.parent.forceVisible = false;
-			});
+		this.$nextTick(() => {
+			if (this.noodel.isMounted) {
+				// no need to force reflow since it will be done at canvas
+				// unless noodel is already mounted which means this mounting
+				// is due to an insert operation
+				forceReflow();
+			}
+
+			this.parent.isBranchMounted = true;
+			this.parent.forceVisible = false;
 		});
 	},
 
