@@ -3,6 +3,7 @@
 <template>
 	<transition-group
 		name="nd-node"
+        move-class="nd-no-transition"
 	>
 		<Node
 			v-for="child in parent.children"

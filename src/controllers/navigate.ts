@@ -8,6 +8,7 @@ import { queueFocalNodeChange, queueFocalParentChange } from './event';
 import { finalizePan } from './pan';
 import { syncHashToFocalNode } from './routing';
 import { forceReflow } from './util';
+import { nextTick } from 'vue';
 
 function setActiveLineage(parent: NodeState) {
     if (!parent.isActiveLineage) return;
@@ -72,7 +73,17 @@ export function setActiveChild(noodel: NoodelState, parent: NodeState, index: nu
 
     if (current) {
         current.isActive = true;
-        setActiveLineage(parent);
+
+        if (noodel.isMounted) {
+            // The nextTick here is a quick fix for the issue of
+            // v-show transitions not occurring properly in the transition-group of branches
+            // by delaying branch entry for one tick. This should not be a permanent fix
+            // and should be removed if future Vue patches eliminates the problem.
+            nextTick(() => setActiveLineage(parent));
+        }
+        else {
+            setActiveLineage(parent);
+        }
     }
 
     if (parent.isFocalParent) {

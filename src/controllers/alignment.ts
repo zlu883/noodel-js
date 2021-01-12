@@ -34,6 +34,7 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
     }
 
     const parent = node.parent;
+    const siblings = parent.children;
     let diff = newSize - node.size;
 
     if (Math.abs(diff) > 0.01) {
@@ -56,8 +57,10 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
         node.size = newSize;
 
         // update branch relative offsets of next siblings in the branch
-        for (let i = node.index + 1; i < parent.children.length; i++) {
-            parent.children[i].branchRelativeOffset += diff;
+        for (let i = node.index + 1; i < siblings.length; i++) {
+            if (!siblings[i].r.isDeleted) {
+                siblings[i].branchRelativeOffset += diff;
+            }
         }
 
         if (isPanningBranch(noodel) && node.isActive && parent.isFocalParent) {
@@ -105,20 +108,6 @@ export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeig
         if (isPanningTrunk(noodel) && parent.isFocalParent) {
             adjustTrunkMoveOffset(noodel);
         }
-    }
-}
-
-/**
- * Update siblings' relative offsets BEFORE the deletion of a node
- * and the mutation of its array of siblings.
- */
-export function updateOffsetsBeforeNodeDelete(node: NodeState) {
-
-    let siblings = node.parent.children;
-
-    // adjust sibling offsets
-    for (let i = node.index + 1; i < siblings.length; i++) {
-        siblings[i].branchRelativeOffset -= node.size;
     }
 }
 

@@ -82,17 +82,21 @@ export default defineComponent({
 
 		let rect = this.$el.getBoundingClientRect();
 
-    	updateCanvasSize(this.noodel, rect.height, rect.width);
+		updateCanvasSize(this.noodel, rect.height, rect.width);
 		setupCanvasInput(this.noodel);
 
 		nextTick(() => {
-			// force reflow is necessary here to lock in the current DOM
-			// so that further updates will start from a clean state
-			forceReflow(); 
-			this.noodel.isMounted = true;
-			// mount event is triggered one tick after
-			queueMount(this.noodel);
-		});
+            // force reflow is used here to lock in the current DOM
+            // with the properly positioned branches so that transitions won't occur on mount
+            forceReflow();
+            // another tick is required to ensure all changes are settled before onMount
+            nextTick(() => {
+                this.noodel.isMounted = true;
+
+                // mount event is triggered one tick after
+                queueMount(this.noodel);
+            });
+		})
 	},
 
 	unmounted: function () {

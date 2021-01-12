@@ -151,10 +151,9 @@ document.getElementById("deleteMultipleAfter").addEventListener("click", () => {
 // whether the call is singular or broken down into multiple calls
 // due to the fact that branchRelativeOffset cannot be adjusted for deleted items
 document.getElementById("deleteMultipleChild").addEventListener("click", () => {
-    // let c = noodel.getFocalNode().getActiveChild();
-    // c.removeAfter(2);
-    // if (c) c.removeSelf();
-    noodel.getFocalNode().deleteChildren(0, 3);
+    noodel.getFocalNode().deleteChildren(0, 1);
+    noodel.getFocalNode().deleteChildren(0, 1);
+    noodel.getFocalNode().deleteChildren(0, 1);
 });
 
 document.getElementById("appendMultipleChild").addEventListener("click", () => {

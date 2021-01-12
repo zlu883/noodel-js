@@ -1,15 +1,16 @@
 /* Module for handling mutations of the noodel tree. */
 
 import NodeState from '../types/NodeState';
-import { isPanningBranch } from './getters';
+import { getActualOffsetBranch, getBranchDirection, getOrientation, isPanningBranch } from './getters';
 import NoodelState from '../types/NoodelState';
-import { updateOffsetsBeforeNodeDelete } from './alignment';
+import { updateNodeSize } from './alignment';
 import { finalizePan } from './pan';
 import { registerNodeSubtree } from './identity';
 import NodeDefinition from '../types/NodeDefinition';
 import { createNodeState } from './setup';
 import { setActiveChild, setFocalParent } from './navigate';
 import { traverseDescendants } from './traverse';
+import { nextTick } from 'vue';
 
 /**
  * Insert children to a parent at a particular index. Always keep the current active child
@@ -82,10 +83,18 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
  */
 export function deleteChildren(noodel: NoodelState, parent: NodeState, index: number, deleteCount: number): NodeState[] {
 
-    // The logic differs depending on whether all children are deleted
-    if (parent.children.length === deleteCount) {
+    let siblings = parent.children;
 
-        // For this set of logic, setFocalParent must come before setActiveChild
+    // first, tag the nodes to delete with required properties
+    for (let i = index; i < index + deleteCount; i++) {
+        siblings[i].r.isDetached = true;
+        traverseDescendants(siblings[i], desc => desc.r.isDeleted = true, true);
+    }
+
+    // The logic differs depending on whether all children are deleted
+    if (siblings.length === deleteCount) {
+
+        // In this situation, setFocalParent must come before setActiveChild
         // for correct event emitting
 
         // change focal parent if current focal branch is being deleted
@@ -105,9 +114,19 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
         setActiveChild(noodel, parent, null);
     }
     else {
-        // first adjust sibling offsets
+        // capture current branch offset, and apply fade-out offsets on next tick
+        if (parent.r.lastBranchOffset === null) {
+            parent.r.lastBranchOffset = getActualOffsetBranch(noodel, parent);
+            nextTick(() => applyFadeOutOffset(noodel, parent));
+        }
+
         for (let i = index; i < index + deleteCount; i++) {
-            updateOffsetsBeforeNodeDelete(parent.children[i]);
+            // set the size of the nodes to delete to 0
+            // which will align the branch as appropriate
+            updateNodeSize(noodel, siblings[i], 0, 0);
+
+            // also add nodes to delete buffer
+            parent.r.deletedChildBuffer.push(siblings[i]);
         }
 
         if (parent.isFocalParent && isPanningBranch(noodel)) {
@@ -117,7 +136,7 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
         // if deletion includes active child, change the active child as appropriate
         if (parent.activeChildIndex >= index && parent.activeChildIndex < index + deleteCount) {
 
-            // For this set of logic, setActiveChild must come before setFocalParent
+            // In this situation, setActiveChild must come before setFocalParent
             // for correct event emitting
 
             if (index + deleteCount < parent.children.length) { // siblings exist after the deleted children
@@ -146,13 +165,42 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
     }
 
     // do delete
-    let deletedNodes = parent.children.splice(index, deleteCount);
+    return parent.children.splice(index, deleteCount);
+}
 
-    // adjust properties of the deleted nodes
-    deletedNodes.forEach(n => {
-        n.r.isDetached = true;
-        traverseDescendants(n, desc => desc.r.isDeleted = true, true);
-    });
+/**
+ * Apply offsets to deleted nodes so that they are at the right positions
+ * when fading out.
+ */
+function applyFadeOutOffset(noodel: NoodelState, parent: NodeState) {
 
-    return deletedNodes;
+    if (parent.children.length > 0) {
+        let branchOffsetDiff = getActualOffsetBranch(noodel, parent) - parent.r.lastBranchOffset;
+
+        parent.r.deletedChildBuffer.forEach(node => {
+            let orientation = getOrientation(noodel);
+            let branchDirection = getBranchDirection(noodel);
+            let offset = (node.branchRelativeOffset - branchOffsetDiff) + "px";
+            let el = node.r.el;
+            
+            if (orientation === "ltr" || orientation === "rtl") {
+                if (branchDirection === "normal") {
+                    el.style.top = offset;
+                } else {
+                    el.style.bottom = offset;
+                }
+            } else {
+                if (branchDirection === "normal") {
+                    el.style.left = offset;
+                } else {
+                    el.style.right = offset;
+                }
+            }
+    
+            //node.r.el = null;
+        });
+    }
+
+    parent.r.lastBranchOffset = null;
+    parent.r.deletedChildBuffer = [];
 }

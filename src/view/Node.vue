@@ -70,34 +70,11 @@ export default defineComponent({
 		);
 	},
 
-	beforeUnmount() {
-		let orientation = getOrientation(this.noodel);
-		let branchDirection = getBranchDirection(this.noodel);
-		let offset = this.node.branchRelativeOffset + "px";
-		let el = this.node.r.el;
-
-		if (orientation === "ltr" || orientation === "rtl") {
-			if (branchDirection === "normal") {
-				el.style.top = offset;
-			} else {
-				el.style.bottom = offset;
-			}
-		} else {
-			if (branchDirection === "normal") {
-				el.style.left = offset;
-			} else {
-				el.style.right = offset;
-			}
-		}
-
-		this.node.r.el = null;
-	},
-
 	unmounted() {
 		this.node.branchRelativeOffset = 0;
 		this.node.trunkRelativeOffset = 0;
-		this.node.size = 0;
-		this.node.r.el = null;
+        this.node.size = 0;
+        this.node.r.el = null;
 	},
 
 	methods: {

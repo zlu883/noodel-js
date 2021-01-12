@@ -4,6 +4,7 @@
 	<transition-group 
 		name="nd-branch" 
 		:css="noodel.isMounted"
+        move-class="nd-no-transition"
 	>
 		<Branch
 			v-for="parent in allParents"

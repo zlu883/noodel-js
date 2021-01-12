@@ -15,10 +15,16 @@
             transition: none;
         }
 
-        .nd-branch-slider-move, .nd-trunk-move, .nd-node-move, .nd-node-enter-active {
+        .nd-branch-slider-move, .nd-trunk-move, .nd-node-move, .nd-node-leave-active {
             transition: opacity, transform;
             transition-duration: 5s;
         }
+
+        .nd-branch-enter-active {
+        transition-property: opacity;
+        transition-timing-function: cubic-bezier( 0.215, 0.61, 0.355, 1);
+        transition-duration: .5s;
+    }
 
         /* .nd-node-move {
             transition: transform, opacity;
@@ -44,7 +50,19 @@
                 <h3>2/1</h3>
             </div>
             <div class="node" data-active>
-                <p contenteditable="true" class="nd-prevent-key"></p>
+                <p contenteditable="true" class="nd-prevent-key">2/2</p>
+                <div class="node">
+                    <h3>2/2/1</h3>
+                </div>
+                <div class="node">
+                    <h3>2/2/2</h3>
+                </div>
+                <div class="node">
+                    <h3>2/2/3</h3>
+                </div>
+                <div class="node">
+                    <h3>2/2/4</h3>
+                </div>
             </div>
             <div class="node" data-id="sizeChange" data-style-content-box="height: 150px; width: 150px;">
                 <p class="el">I will grow and shrink!</p>
