@@ -154,6 +154,7 @@ document.getElementById("deleteMultipleChild").addEventListener("click", () => {
     noodel.getFocalNode().deleteChildren(0, 1);
     noodel.getFocalNode().deleteChildren(0, 1);
     noodel.getFocalNode().deleteChildren(0, 1);
+    //noodel.getFocalNode().deleteChildren(1, 3);
 });
 
 document.getElementById("appendMultipleChild").addEventListener("click", () => {

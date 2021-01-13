@@ -24,9 +24,7 @@ export default interface NodeState {
         isDeleted: boolean;
         isDetached: boolean;
 
-        // temporary states for assigning positions for deleted nodes during fade-out
-        lastBranchOffset: number;
-        deletedChildBuffer: NodeState[];
+        flushExitOffset: boolean;
     };
 
     id: string;

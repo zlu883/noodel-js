@@ -6,7 +6,7 @@ import { traverseDescendants } from './traverse';
 import { nextTick } from 'vue';
 import { disableBranchTransition, disableTrunkTransition, enableBranchTransition, enableTrunkTransition } from './transition';
 import { finalizePan } from './pan';
-import { getAnchorOffsetBranch, getAnchorOffsetTrunk, getFocalNode, getOrientation, isBranchVisible, isPanningBranch, isPanningTrunk } from './getters';
+import { getActualOffsetBranch, getAnchorOffsetBranch, getAnchorOffsetTrunk, getBranchDirection, getFocalNode, getOrientation, isBranchVisible, isPanningBranch, isPanningTrunk } from './getters';
 import { forceReflow } from './util';
 
 export function updateCanvasSize(noodel: NoodelState, height: number, width: number) {
@@ -38,19 +38,22 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
     let diff = newSize - node.size;
 
     if (Math.abs(diff) > 0.01) {
-
-        // Disable branch transition temporarily and apply transit offset
+        
         if (parent.isBranchMounted 
             && isBranchVisible(noodel, parent) 
-            && node.index <= parent.activeChildIndex 
-            && parent.applyBranchMove) {
+            && node.index <= parent.activeChildIndex) {
 
-            disableBranchTransition(noodel, parent, true);
+            if (parent.applyBranchMove) {
+                // Disable branch transition temporarily and apply transit offset
+                disableBranchTransition(noodel, parent, true);
 
-            nextTick(() => {
-                enableBranchTransition(parent);
-                forceReflow();
-            });
+                nextTick(() => {
+                    enableBranchTransition(parent);
+                    forceReflow();
+                });
+            }
+
+            flushExitOffsets(noodel, parent);
         }
 
         // update node size
@@ -58,15 +61,56 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
 
         // update branch relative offsets of next siblings in the branch
         for (let i = node.index + 1; i < siblings.length; i++) {
-            if (!siblings[i].r.isDeleted) {
-                siblings[i].branchRelativeOffset += diff;
-            }
+            siblings[i].branchRelativeOffset += diff;
         }
 
         if (isPanningBranch(noodel) && node.isActive && parent.isFocalParent) {
             adjustBranchMoveOffset(noodel);
         }
     }
+}
+
+/**
+ * Apply the exit offsets of any exiting children on next tick.
+ * The exit offsets are a) initialized to the original relative
+ * offset when a node is deleted; b) adjusted if the branch reference point
+ * (i.e. actual offset) changes due to node size changes (including insert or delete).
+ */
+export function flushExitOffsets(noodel: NoodelState, parent: NodeState) {
+    if (parent.r.flushExitOffset) return;
+    
+    parent.r.flushExitOffset = true;
+
+    let oldBranchOffset = getActualOffsetBranch(noodel, parent, false);
+
+    nextTick(() => {
+
+        let diff = oldBranchOffset - getActualOffsetBranch(noodel, parent, false);
+
+        parent.r.branchSliderEl.querySelectorAll('.nd-exiting').forEach(el => {
+            el['_nd_exit_offset'] += diff;
+
+            let offset = el['_nd_exit_offset'] + 'px';
+            let orientation = getOrientation(noodel);
+            let branchDirection = getBranchDirection(noodel);
+            
+            if (orientation === "ltr" || orientation === "rtl") {
+                if (branchDirection === "normal") {
+                    (el as HTMLDivElement).style.top = offset;
+                } else {
+                    (el as HTMLDivElement).style.bottom = offset;
+                }
+            } else {
+                if (branchDirection === "normal") {
+                    (el as HTMLDivElement).style.left = offset;
+                } else {                           
+                    (el as HTMLDivElement).style.right = offset;
+                }
+            }
+        });
+        
+        parent.r.flushExitOffset = false;
+    });
 }
 
 export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeight: number, newWidth: number) {

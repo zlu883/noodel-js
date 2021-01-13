@@ -147,12 +147,12 @@ export function getActualOffsetTrunk(noodel: NoodelState): number {
  * The actual orientation-agnostic offset of a branch taking into account all
  * calculations.
  */
-export function getActualOffsetBranch(noodel: NoodelState, branchParent: NodeState) {
+export function getActualOffsetBranch(noodel: NoodelState, branchParent: NodeState, useTransitOffset = true) {
     return (
         getFocalOffsetBranch(noodel) 
         - getRelativeOffsetBranch(branchParent)
         - getAnchorOffsetBranch(noodel, getActiveChild(branchParent))
         - (branchParent.isFocalParent ? noodel.branchPanOffset : 0)
-        + branchParent.branchTransitOffset
+        + (useTransitOffset ? branchParent.branchTransitOffset : 0)
     );
 }

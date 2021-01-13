@@ -1,9 +1,9 @@
 /* Module for handling mutations of the noodel tree. */
 
 import NodeState from '../types/NodeState';
-import { getActualOffsetBranch, getBranchDirection, getOrientation, isPanningBranch } from './getters';
+import { getActualOffsetBranch, getBranchDirection, getOrientation, isBranchVisible, isPanningBranch } from './getters';
 import NoodelState from '../types/NoodelState';
-import { updateNodeSize } from './alignment';
+import { flushExitOffsets, updateNodeSize } from './alignment';
 import { finalizePan } from './pan';
 import { registerNodeSubtree } from './identity';
 import NodeDefinition from '../types/NodeDefinition';
@@ -114,19 +114,23 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
         setActiveChild(noodel, parent, null);
     }
     else {
-        // capture current branch offset, and apply fade-out offsets on next tick
-        if (parent.r.lastBranchOffset === null) {
-            parent.r.lastBranchOffset = getActualOffsetBranch(noodel, parent);
-            nextTick(() => applyFadeOutOffset(noodel, parent));
+        if (isBranchVisible(noodel, parent)) {
+            // split into 2 loops to mitigate layout thrashing
+            for (let i = index; i < index + deleteCount; i++) {
+                siblings[i].r.el.classList.add('nd-exiting');
+            }
+
+            for (let i = index; i < index + deleteCount; i++) {
+                siblings[i].r.el['_nd_exit_offset'] = findExitOffset(noodel, siblings[i]);
+            }
+
+            flushExitOffsets(noodel, parent);
         }
 
         for (let i = index; i < index + deleteCount; i++) {
             // set the size of the nodes to delete to 0
             // which will align the branch as appropriate
             updateNodeSize(noodel, siblings[i], 0, 0);
-
-            // also add nodes to delete buffer
-            parent.r.deletedChildBuffer.push(siblings[i]);
         }
 
         if (parent.isFocalParent && isPanningBranch(noodel)) {
@@ -169,38 +173,30 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
 }
 
 /**
- * Apply offsets to deleted nodes so that they are at the right positions
- * when fading out.
+ * Instead of using branchRelativeOffset, the initial exit offset is calculated
+ * using raw DOM dimensions to address the situation where multiple delete
+ * operations are triggered on the same tick.
  */
-function applyFadeOutOffset(noodel: NoodelState, parent: NodeState) {
+function findExitOffset(noodel: NoodelState, node: NodeState): number {
+    let orientation = getOrientation(noodel);
+    let branchDirection = getBranchDirection(noodel);
+    let branchSliderRect = node.parent.r.branchSliderEl.getBoundingClientRect();
+    let nodeRect = node.r.el.getBoundingClientRect();
 
-    if (parent.children.length > 0) {
-        let branchOffsetDiff = getActualOffsetBranch(noodel, parent) - parent.r.lastBranchOffset;
-
-        parent.r.deletedChildBuffer.forEach(node => {
-            let orientation = getOrientation(noodel);
-            let branchDirection = getBranchDirection(noodel);
-            let offset = (node.branchRelativeOffset - branchOffsetDiff) + "px";
-            let el = node.r.el;
-            
-            if (orientation === "ltr" || orientation === "rtl") {
-                if (branchDirection === "normal") {
-                    el.style.top = offset;
-                } else {
-                    el.style.bottom = offset;
-                }
-            } else {
-                if (branchDirection === "normal") {
-                    el.style.left = offset;
-                } else {
-                    el.style.right = offset;
-                }
-            }
-    
-            //node.r.el = null;
-        });
+    if (orientation === 'ltr' || orientation === 'rtl') {
+        if (branchDirection === 'normal') {
+            return nodeRect.top - branchSliderRect.top;
+        }
+        else if (branchDirection === 'reverse') {
+            return nodeRect.bottom - branchSliderRect.bottom;
+        }
     }
-
-    parent.r.lastBranchOffset = null;
-    parent.r.deletedChildBuffer = [];
+    else if (orientation === 'ttb' || orientation === 'btt') {
+        if (branchDirection === 'normal') {
+            return nodeRect.left - branchSliderRect.left;
+        }
+        else if (branchDirection === 'reverse') {
+            return nodeRect.right - branchSliderRect.right;
+        }
+    }
 }
