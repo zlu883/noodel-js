@@ -53,7 +53,7 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
                 });
             }
 
-            flushExitOffsets(noodel, parent);
+            queueExitOffsets(noodel, parent);
         }
 
         // update node size
@@ -76,10 +76,10 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
  * offset when a node is deleted; b) adjusted if the branch reference point
  * (i.e. actual offset) changes due to node size changes (including insert or delete).
  */
-export function flushExitOffsets(noodel: NoodelState, parent: NodeState) {
-    if (parent.r.flushExitOffset) return;
+export function queueExitOffsets(noodel: NoodelState, parent: NodeState) {
+    if (parent.r.exitOffsetQueued) return;
     
-    parent.r.flushExitOffset = true;
+    parent.r.exitOffsetQueued = true;
 
     let oldBranchOffset = getActualOffsetBranch(noodel, parent, false);
 
@@ -93,23 +93,26 @@ export function flushExitOffsets(noodel: NoodelState, parent: NodeState) {
             let offset = el['_nd_exit_offset'] + 'px';
             let orientation = getOrientation(noodel);
             let branchDirection = getBranchDirection(noodel);
+            let style = (el as HTMLDivElement).style;
             
+            style.position = 'absolute';
+
             if (orientation === "ltr" || orientation === "rtl") {
                 if (branchDirection === "normal") {
-                    (el as HTMLDivElement).style.top = offset;
+                    style.top = offset;
                 } else {
-                    (el as HTMLDivElement).style.bottom = offset;
+                    style.bottom = '-' + offset;
                 }
             } else {
                 if (branchDirection === "normal") {
-                    (el as HTMLDivElement).style.left = offset;
+                    style.left = offset;
                 } else {                           
-                    (el as HTMLDivElement).style.right = offset;
+                    style.right = '-' + offset;
                 }
             }
         });
         
-        parent.r.flushExitOffset = false;
+        parent.r.exitOffsetQueued = false;
     });
 }
 

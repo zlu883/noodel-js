@@ -1,16 +1,16 @@
 /* Module for handling mutations of the noodel tree. */
 
 import NodeState from '../types/NodeState';
-import { getActualOffsetBranch, getBranchDirection, getOrientation, isBranchVisible, isPanningBranch } from './getters';
+import { getBranchDirection, getOrientation, isBranchVisible, isPanningBranch } from './getters';
 import NoodelState from '../types/NoodelState';
-import { flushExitOffsets, updateNodeSize } from './alignment';
+import { queueExitOffsets, updateNodeSize } from './alignment';
 import { finalizePan } from './pan';
 import { registerNodeSubtree } from './identity';
 import NodeDefinition from '../types/NodeDefinition';
 import { createNodeState } from './setup';
 import { setActiveChild, setFocalParent } from './navigate';
 import { traverseDescendants } from './traverse';
-import { nextTick } from 'vue';
+import { queueFlipAnimation } from './animate';
 
 /**
  * Insert children to a parent at a particular index. Always keep the current active child
@@ -74,6 +74,8 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
         parent.forceVisible = true;
     }
 
+    queueFlipAnimation(parent);
+
     return children;
 }
 
@@ -124,7 +126,9 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
                 siblings[i].r.el['_nd_exit_offset'] = findExitOffset(noodel, siblings[i]);
             }
 
-            flushExitOffsets(noodel, parent);
+            // exit offsets must come before flip animation since they both occur on the same tick
+            queueExitOffsets(noodel, parent);
+            queueFlipAnimation(parent);
         }
 
         for (let i = index; i < index + deleteCount; i++) {

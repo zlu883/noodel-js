@@ -151,7 +151,8 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
             vm: null,
             isDeleted: false,
             isDetached: false,
-            flushExitOffset: false
+            exitOffsetQueued: false,
+            flipAnimationQueued: false
         }),
         index: index,
         level: isRoot ? 0 : parent.level + 1,

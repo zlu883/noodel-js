@@ -166,11 +166,13 @@ document.getElementById("insertMultipleChild").addEventListener("click", () => {
 });
 
 document.getElementById("insertBefore").addEventListener("click", () => {
-    noodel.getFocalNode().insertBefore([{}, {}, {}]);
+    noodel.getFocalNode().insertBefore([{}]);
+    noodel.nextTick(() => noodel.moveBack(1))
 });
 
 document.getElementById("insertAfter").addEventListener("click", () => {
-    noodel.getFocalNode().insertAfter([{}, {}, {}]);
+    noodel.getFocalNode().insertAfter([{}]);
+    noodel.nextTick(() => noodel.moveForward(1))
 });
 
 document.getElementById("setStyle").addEventListener("click", () => {

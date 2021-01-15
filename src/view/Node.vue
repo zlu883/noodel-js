@@ -2,7 +2,7 @@
 
 <template>
 	<div 
-		class="nd-node" 
+		class="nd-node nd-node-move" 
 		:class="nodeClass"
 		:style="nodeStyle"
 		@pointerup="onPointerUp"

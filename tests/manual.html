@@ -12,24 +12,13 @@
     <style>
         .nd-branch-slider {
             background-color: black;
-            transition: none;
-        }
-
-        .nd-branch-slider-move, .nd-trunk-move, .nd-node-move, .nd-node-leave-active {
-            transition: opacity, transform;
-            transition-duration: 5s;
         }
 
         .nd-branch-enter-active {
-        transition-property: opacity;
-        transition-timing-function: cubic-bezier( 0.215, 0.61, 0.355, 1);
-        transition-duration: .5s;
-    }
-
-        /* .nd-node-move {
-            transition: transform, opacity;
-            transition-duration: 0s, 5s;
-        } */
+            transition-property: opacity;
+            transition-timing-function: cubic-bezier( 0.215, 0.61, 0.355, 1);
+            transition-duration: .5s;
+        }
     </style>
     <div id="template" style="display: none;">
         <div class="node">

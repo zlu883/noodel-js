@@ -24,7 +24,8 @@ export default interface NodeState {
         isDeleted: boolean;
         isDetached: boolean;
 
-        flushExitOffset: boolean;
+        flipAnimationQueued: boolean;
+        exitOffsetQueued: boolean;
     };
 
     id: string;
