@@ -6,7 +6,7 @@ import { nextTick } from 'vue';
 
 function queueEvent(noodel: NoodelState, ev: Function) {
     if (noodel.r.eventQueue.length === 0) {
-        nextTick(() => flushEventQueue(noodel));
+        nextTick(() => nextTick(() => flushEventQueue(noodel)));
     }
 
     noodel.r.eventQueue.push(ev);

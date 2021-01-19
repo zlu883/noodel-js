@@ -81,7 +81,7 @@ export default interface NoodelOptions {
     branchDirection?: BranchDirection;
     /**
      * A function that determines the trunk-axis offset on the canvas where 
-     * the focal branch should be aligned to, given the trunk-axis length of the canvas as reference. 
+     * each branch should align to if they become focal, given the trunk-axis length of the canvas as reference. 
      * Should return a number of pixels counting from the trunk-axis origin of the canvas.
      * If the number is greater than the canvas length, will use the canvas length.
      * Defaults to 1/2 of the canvas length.
@@ -89,7 +89,7 @@ export default interface NoodelOptions {
     focalOffsetTrunk?: (canvasLengthTrunk: number) => number;
     /**
      * A function that determines the branch-axis offset on the canvas where 
-     * the active nodes should be aligned to, given the branch-axis length of the canvas as reference. 
+     * each node should align to if they become active, given the branch-axis length of the canvas as reference. 
      * Should return a number of pixels counting from the branch-axis origin of the canvas.
      * If the number is greater than the canvas length, will use the canvas length.
      * Defaults to 1/2 of the canvas length.
@@ -97,7 +97,7 @@ export default interface NoodelOptions {
     focalOffsetBranch?: (canvasLengthBranch: number) => number;
     /**
      * A function that determines the trunk-axis offset on each branch 
-     * that should align to the focal offset when they become focal, given their length on the trunk axis. 
+     * that should align to the focal offset if they become focal, given their length on the trunk axis. 
      * Should return a number of pixels counting from the trunk-axis origin of the branch.
      * If the number exceeds the branch length, will use the branch length.
      * Defaults to 1/2 of the branch length.
@@ -105,7 +105,7 @@ export default interface NoodelOptions {
     anchorOffsetTrunk?: (branchLength: number) => number;
     /**
      * A function that determines the branch-axis offset on each node 
-     * that should align to the focal position when they become active, given their length on the branch axis. 
+     * that should align to the focal position if they become active, given their length on the branch axis. 
      * Should return a number of pixels counting from the branch-axis origin of the node. 
      * If the number exceeds the node length, will use the node length.
      * Defaults to 1/2 of the node length.

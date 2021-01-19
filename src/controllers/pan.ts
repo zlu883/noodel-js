@@ -1,13 +1,14 @@
 /* Module for handling pan input and logic. */
 
 import NoodelState from 'src/types/NoodelState';
-import { getActiveChild, getAnchorOffsetBranch, getAnchorOffsetTrunk, getBranchDirection, getOrientation, isDeepestBranch, isFirstNode, isLastNode, isPanning, isPanningBranch, isPanningTrunk, isTopmostBranch } from './getters';
+import { getActiveChild, getAnchorOffsetBranch, getAnchorOffsetTrunk, getBranchDirection, getFocalOffsetBranch, getFocalOffsetTrunk, getOrientation, isDeepestBranch, isFirstNode, isLastNode, isPanning, isPanningBranch, isPanningTrunk, isTopmostBranch } from './getters';
 import { setActiveChild, setFocalParent } from './navigate';
 import { NoodelAxis } from 'src/types/NoodelAxis';
 import { Axis } from 'src/types/Axis';
 import { shiftFocalLevel, shiftFocalNode, queueUnsetLimitIndicator } from './navigate';
 import { enableBranchTransition, enableTrunkTransition, disableBranchTransition, disableTrunkTransition } from './transition';
 import NodeState from '../types/NodeState';
+import { handleFocalShiftBranch, handleFocalShiftTrunk } from './alignment';
 
 /**
  * The velocity values obtained from hammerjs is highly unstable and thus need
@@ -292,6 +293,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
 
         appliedDelta *= noodel.options.swipeMultiplierTrunk;
 
+        let oldFocalOffset = getFocalOffsetTrunk(noodel);
         let panResults = getPanResultsTrunk(noodel, appliedDelta);
 
         if (panResults.targetFocalParent !== noodel.focalParent) {
@@ -301,6 +303,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
         noodel.trunkPanOffset = panResults.targetMoveOffset;
         noodel.trunkEndReached = panResults.trunkEndReached;
         noodel.trunkStartReached = panResults.trunkStartReached;
+        handleFocalShiftTrunk(noodel, oldFocalOffset);
     }
     else if (isPanningBranch(noodel)) {
 
@@ -332,6 +335,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
         if (appliedDelta === 0) return;
         appliedDelta *= noodel.options.swipeMultiplierBranch;
 
+        let oldFocalOffset = getFocalOffsetBranch(noodel, noodel.focalParent);
         let panResults = getPanResultsBranch(noodel, appliedDelta);
         let currentFocalNode = getActiveChild(noodel.focalParent);
 
@@ -342,6 +346,7 @@ export function updatePan(noodel: NoodelState, velocityX: number, velocityY: num
         noodel.branchPanOffset = panResults.targetMoveOffset;
         noodel.branchStartReached = panResults.branchStartReached;
         noodel.branchEndReached = panResults.branchEndReached;
+        handleFocalShiftBranch(noodel, noodel.focalParent, oldFocalOffset);
     }
 }
 

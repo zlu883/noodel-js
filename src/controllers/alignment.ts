@@ -6,7 +6,7 @@ import { traverseDescendants } from './traverse';
 import { nextTick } from 'vue';
 import { disableBranchTransition, disableTrunkTransition, enableBranchTransition, enableTrunkTransition } from './transition';
 import { finalizePan } from './pan';
-import { getActualOffsetBranch, getAnchorOffsetBranch, getAnchorOffsetTrunk, getBranchDirection, getFocalNode, getOrientation, isBranchVisible, isPanningBranch, isPanningTrunk } from './getters';
+import { getActualOffsetBranch, getAnchorOffsetBranch, getAnchorOffsetTrunk, getBranchDirection, getFocalNode, getFocalOffsetBranch, getFocalOffsetTrunk, getOrientation, isBranchVisible, isPanningBranch, isPanningTrunk } from './getters';
 import { forceReflow } from './util';
 
 export function updateCanvasSize(noodel: NoodelState, height: number, width: number) {
@@ -65,7 +65,7 @@ export function updateNodeSize(noodel: NoodelState, node: NodeState, newHeight: 
         }
 
         if (isPanningBranch(noodel) && node.isActive && parent.isFocalParent) {
-            adjustBranchMoveOffset(noodel);
+            adjustBranchPanOffset(noodel);
         }
     }
 }
@@ -153,15 +153,15 @@ export function updateBranchSize(noodel: NoodelState, parent: NodeState, newHeig
         traverseDescendants(parent, desc => desc.trunkRelativeOffset += diff, false);
 
         if (isPanningTrunk(noodel) && parent.isFocalParent) {
-            adjustTrunkMoveOffset(noodel);
+            adjustTrunkPanOffset(noodel);
         }
     }
 }
 
 /**
- * Adjust trunk move offset if focal branch size or anchor position changes.
+ * Adjust trunk pan offset if focal branch size or anchor position changes.
  */
-export function adjustTrunkMoveOffset(noodel: NoodelState) {
+export function adjustTrunkPanOffset(noodel: NoodelState) {
     let anchorOffset = getAnchorOffsetTrunk(noodel, noodel.focalParent);
     let endLimit = noodel.focalParent.branchSize - anchorOffset;
     let startLimit = -anchorOffset;
@@ -175,9 +175,9 @@ export function adjustTrunkMoveOffset(noodel: NoodelState) {
 }
 
 /**
- * Adjust branch move offset if focal node size or anchor position changes.
+ * Adjust branch pan offset if focal node size or anchor position changes.
  */
-export function adjustBranchMoveOffset(noodel: NoodelState) {
+export function adjustBranchPanOffset(noodel: NoodelState) {
     let focalNode = getFocalNode(noodel);
     let anchorOffset = getAnchorOffsetBranch(noodel, focalNode);
     let endLimit = focalNode.size - anchorOffset;
@@ -188,6 +188,34 @@ export function adjustBranchMoveOffset(noodel: NoodelState) {
     }
     else if (noodel.branchPanOffset < startLimit) {
         noodel.branchPanOffset = startLimit;
+    }
+}
+
+/**
+ * Checks whether the current trunk focal offset changed from the previous
+ * during pan, and if so, apply a transit offset.
+ */
+export function handleFocalShiftTrunk(noodel: NoodelState, prevFocalOffset: number) {
+    if (!isPanningTrunk(noodel)) return;
+
+    let diff = prevFocalOffset - getFocalOffsetTrunk(noodel);
+
+    if (Math.abs(diff) > 0.01) {
+        noodel.trunkTransitOffset += diff;
+    }
+}
+
+/**
+ * Checks whether the parent's branch focal offset changed from the previous
+ * during pan, and if so, apply a transit offset.
+ */
+export function handleFocalShiftBranch(noodel: NoodelState, parent: NodeState, prevFocalOffset: number) {
+    if (!isPanningBranch(noodel)) return;
+
+    let diff = prevFocalOffset - getFocalOffsetBranch(noodel, parent);
+
+    if (Math.abs(diff) > 0.01) {
+        parent.branchTransitOffset += diff;
     }
 }
 

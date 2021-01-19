@@ -77,18 +77,20 @@ export function getBranchDirection(noodel: NoodelState): BranchDirection {
  */
 export function getFocalOffsetTrunk(noodel: NoodelState): number {
     let canvasSizeTrunk = noodel.canvasSizeTrunk;
+    let func = noodel.focalParent.options.focalOffsetTrunk || noodel.options.focalOffsetTrunk;
 
-    return Math.min(noodel.options.focalOffsetTrunk(canvasSizeTrunk), canvasSizeTrunk);
+    return Math.min(func(canvasSizeTrunk), canvasSizeTrunk);
 }
 
 /**
  * The orientation agnostic distance counting from the start of the branch axis
  * to the focal position.
  */
-export function getFocalOffsetBranch(noodel: NoodelState) {
+export function getFocalOffsetBranch(noodel: NoodelState, parent: NodeState) {
     let canvasSizeBranch = noodel.canvasSizeBranch;
+    let func = getActiveChild(parent).options.focalOffsetBranch || noodel.options.focalOffsetBranch;
 
-    return Math.min(noodel.options.focalOffsetBranch(canvasSizeBranch), canvasSizeBranch);
+    return Math.min(func(canvasSizeBranch), canvasSizeBranch);
 }
 
 /**
@@ -149,7 +151,7 @@ export function getActualOffsetTrunk(noodel: NoodelState): number {
  */
 export function getActualOffsetBranch(noodel: NoodelState, branchParent: NodeState, useTransitOffset = true) {
     return (
-        getFocalOffsetBranch(noodel) 
+        getFocalOffsetBranch(noodel, branchParent) 
         - getRelativeOffsetBranch(branchParent)
         - getAnchorOffsetBranch(noodel, getActiveChild(branchParent))
         - (branchParent.isFocalParent ? noodel.branchPanOffset : 0)

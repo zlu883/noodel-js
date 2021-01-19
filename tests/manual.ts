@@ -6,6 +6,11 @@ let noodel = new Noodel("#template", {
     visibleSubtreeDepth: 1,
 });
 
+noodel.findNodeById('2').setOptions({
+    focalOffsetTrunk: c => 50,
+    focalOffsetBranch: c => 100
+})
+
 let sizeChangeNode = noodel.findNodeById("sizeChange");
 let sizeChangeTriggerNode = noodel.findNodeById("sizeChangeTrigger");
 
