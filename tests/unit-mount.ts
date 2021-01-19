@@ -143,7 +143,7 @@ describe('Lifecycle', function () {
             noodel.on('mount', function () {
                 try {
                     assert.isTrue(noodel.getFocalParent().isChildrenVisible());
-                    assert.isTrue(getComputedStyle(noodel.getFocalParent().getBranchEl()).display === 'flex');
+                    assert.strictEqual(getComputedStyle(noodel.getFocalParent().getBranchEl()).display, 'flex');
                     done();
                 }
                 catch (err) {
@@ -155,7 +155,7 @@ describe('Lifecycle', function () {
             noodel.on('mount', function () {
                 try {
                     assert.isFalse(noodel.getRoot().getChild(1).isChildrenVisible());
-                    assert.isTrue(getComputedStyle(noodel.getRoot().getChild(1).getBranchEl()).display === 'none');
+                    assert.strictEqual(getComputedStyle(noodel.getRoot().getChild(1).getBranchEl()).display, 'none');
                     done();
                 }
                 catch (err) {

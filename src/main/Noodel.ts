@@ -82,7 +82,7 @@ export default class Noodel {
     }
 
     /**
-     * Schedules a callback function to be called after Noodel's current DOM update cycle.
+     * Schedules a callback function to be called after Noodel's current processing cycle.
      * Use this to wait to DOM updates to complete after mutating the view model.
      */
     nextTick(callback: () => any) {

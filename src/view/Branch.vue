@@ -69,7 +69,7 @@ export default defineComponent({
 			branchRect.width
 		);
 
-		this.$nextTick(() => {
+		nextTick(() => {
 			if (this.noodel.isMounted) {
 				// no need to force reflow since it will be done at canvas
 				// unless noodel is already mounted which means this mounting
