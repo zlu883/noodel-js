@@ -86,7 +86,8 @@ export function createNoodelState(root: NodeDefinition, options: NoodelOptions):
             focalOffsetTrunk: (s) => s / 2,
             focalOffsetBranch: (s) => s / 2,
             anchorOffsetTrunk: (s) => s / 2,
-            anchorOffsetBranch: (s) => s / 2
+            anchorOffsetBranch: (s) => s / 2,
+            useFlipAnimation: false
         },
     });
 
@@ -188,7 +189,10 @@ export function createNodeState(noodel: NoodelState, def: NodeDefinition, index:
         options: {
             showChildIndicator: null,
             focalAnchorBranch: null,
-            focalAnchorTrunk: null
+            focalAnchorTrunk: null,
+            focalOffsetBranch: null,
+            focalOffsetTrunk: null,
+            useFlipAnimation: null
         },
     });
 

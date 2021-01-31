@@ -1,7 +1,7 @@
 /* Module for handling mutations of the noodel tree. */
 
 import NodeState from '../types/NodeState';
-import { getBranchDirection, getOrientation, isBranchVisible, isPanningBranch } from './getters';
+import { getBranchDirection, getOrientation, getUseFlipAnimation, isBranchVisible, isPanningBranch } from './getters';
 import NoodelState from '../types/NoodelState';
 import { queueExitOffsets, updateNodeSize } from './alignment';
 import { finalizePan } from './pan';
@@ -74,7 +74,9 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
         parent.forceVisible = true;
     }
 
-    queueFlipAnimation(parent);
+    if (getUseFlipAnimation(noodel, parent)) {
+        queueFlipAnimation(parent);
+    }
 
     return children;
 }
@@ -128,7 +130,10 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
 
             // exit offsets must come before flip animation since they both occur on the same tick
             queueExitOffsets(noodel, parent);
-            queueFlipAnimation(parent);
+
+            if (getUseFlipAnimation(noodel, parent)) {
+                queueFlipAnimation(parent);
+            }
         }
 
         for (let i = index; i < index + deleteCount; i++) {

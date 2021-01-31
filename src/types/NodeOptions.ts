@@ -27,4 +27,9 @@ export default interface NodeOptions {
      * this specific node. Defaults to null.
      */
     anchorOffsetBranch?: null | ((activeNodeSize: number) => number) ;
+    /**
+     * If set to a boolean, will override the global useFlipAnimation option for
+     * this specific node's child branch. Defaults to null.
+     */
+    useFlipAnimation?: boolean | null;
 } 

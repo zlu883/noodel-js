@@ -70,6 +70,10 @@ export function getOrientation(noodel: NoodelState): Orientation {
 export function getBranchDirection(noodel: NoodelState): BranchDirection {
     return noodel.options.branchDirection;
 }
+
+export function getUseFlipAnimation(noodel: NoodelState, parent: NodeState): boolean {
+    return typeof parent.options.useFlipAnimation === 'boolean' ? parent.options.useFlipAnimation : noodel.options.useFlipAnimation;
+}
  
 /**
  * The orientation agnostic distance counting from the start of the trunk axis

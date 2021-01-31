@@ -3,13 +3,9 @@ import '../src/styles/noodel.css';
 import '../src/styles/noodel-default.css';
 
 let noodel = new Noodel("#template", {
-    visibleSubtreeDepth: 1,
+    visibleSubtreeDepth: 4,
+    useFlipAnimation: true
 });
-
-noodel.findNodeById('2').setOptions({
-    focalOffsetTrunk: c => 50,
-    focalOffsetBranch: c => 100
-})
 
 let sizeChangeNode = noodel.findNodeById("sizeChange");
 let sizeChangeTriggerNode = noodel.findNodeById("sizeChangeTrigger");
@@ -183,5 +179,16 @@ document.getElementById("insertAfter").addEventListener("click", () => {
 document.getElementById("setStyle").addEventListener("click", () => {
     noodel.findNodeById("setStyle").setStyles({
         branch: "background-color: green" 
+    });
+});
+
+document.getElementById("reorder").addEventListener("click", () => {
+    noodel.getFocalParent().reorderChildren(children => {
+        for (let i = children.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [children[i], children[j]] = [children[j], children[i]];
+        }
+
+        return children;
     });
 });

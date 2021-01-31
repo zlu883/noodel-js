@@ -111,4 +111,10 @@ export default interface NoodelOptions {
      * Defaults to 1/2 of the node length.
      */
     anchorOffsetBranch?: (nodeLength: number) => number;
+    /**
+     * Whether to apply FLIP animations when inserting, deleting or reordering nodes.
+     * If true, you must also specify CSS transition of the transform property for nodes 
+     * via the nd-node-move class. Defaults to false.
+     */
+    useFlipAnimation?: boolean;
 }
