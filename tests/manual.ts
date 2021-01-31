@@ -148,14 +148,8 @@ document.getElementById("deleteMultipleAfter").addEventListener("click", () => {
     noodel.getFocalNode().deleteAfter(3);
 });
 
-// animation behaviour for deleting multiple items is slightly different depending on
-// whether the call is singular or broken down into multiple calls
-// due to the fact that branchRelativeOffset cannot be adjusted for deleted items
 document.getElementById("deleteMultipleChild").addEventListener("click", () => {
-    noodel.getFocalNode().deleteChildren(0, 1);
-    noodel.getFocalNode().deleteChildren(0, 1);
-    noodel.getFocalNode().deleteChildren(0, 1);
-    //noodel.getFocalNode().deleteChildren(1, 3);
+    noodel.getFocalNode().deleteChildren(0, 3);
 });
 
 document.getElementById("appendMultipleChild").addEventListener("click", () => {
@@ -168,12 +162,18 @@ document.getElementById("insertMultipleChild").addEventListener("click", () => {
 
 document.getElementById("insertBefore").addEventListener("click", () => {
     noodel.getFocalNode().insertBefore([{}]);
-    noodel.nextTick(() => noodel.moveBack(1))
 });
 
 document.getElementById("insertAfter").addEventListener("click", () => {
     noodel.getFocalNode().insertAfter([{}]);
-    noodel.nextTick(() => noodel.moveForward(1))
+});
+
+document.getElementById("insertDelete").addEventListener("click", () => {
+    noodel.getFocalNode().insertBefore([{}]);
+    noodel.nextTick(() => {
+        noodel.moveBack(1);
+        noodel.getFocalNode().deleteAfter(1)
+    });
 });
 
 document.getElementById("setStyle").addEventListener("click", () => {
