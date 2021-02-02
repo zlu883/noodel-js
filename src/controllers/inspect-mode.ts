@@ -4,17 +4,12 @@ import NoodelState from '../types/NoodelState';
 import { getFocalNode } from './getters';
 import { finalizePan } from './pan';
 import { queueEnterInspectMode, queueExitInspectMode } from './event';
-import { disableBranchTransition, disableTrunkTransition, enableBranchTransition, enableTrunkTransition } from './transition';
 
 export function enterInspectMode(noodel: NoodelState) {
     
     if (noodel.isInInspectMode) return;
     
     finalizePan(noodel);
-
-    // stops any animations
-    disableTrunkTransition(noodel);
-    disableBranchTransition(noodel, noodel.focalParent);
 
     // touch-action: auto on focal node under inspect mode
     // interferes with Hammer's recognizers, so they must be disabled first
@@ -29,9 +24,6 @@ export function enterInspectMode(noodel: NoodelState) {
 export function exitInspectMode(noodel: NoodelState) {
 
     if (!noodel.isInInspectMode) return;
-
-    enableTrunkTransition(noodel);
-    enableBranchTransition(noodel.focalParent);
 
     noodel.r.hammerJsInstance.get('pan').set({enable: true});
 

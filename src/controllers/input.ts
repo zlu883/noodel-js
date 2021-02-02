@@ -45,12 +45,11 @@ function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {
     }
     else if (key === "Enter") {
         if (!noodel.options.useInspectModeKey) return;
-        if (noodel.isInInspectMode) {
-            exitInspectMode(noodel);
-        }
-        else {
-            enterInspectMode(noodel);
-        }
+        enterInspectMode(noodel);
+    }
+    else if (key === "Esc" || key === "Escape") {
+        if (!noodel.options.useInspectModeKey) return;
+        exitInspectMode(noodel);
     }
 
     if (!noodel.options.useKeyNavigation) return;
