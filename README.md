@@ -2,29 +2,20 @@
 
 <img alt="Noodel logo" src="assets/logo_v8_textless_512x512.svg" width="90">
 
-Noodel, short for *node model*, is a 4-way scroll-snap user interface for content trees that you can navigate by simply moving up, down, left and right. It offers a new way to present content that is clean, intuitive, and adaptable.
+Noodel, short for *node view model*, is a beautiful, intuitive UI system for presenting
+digital content as a tree of dynamic, flexible containers.
 
-Noodel is currently available as Noodel.js, an open source JavaScript library for use in web projects. 
+It is currently available as Noodel.js, a JavaScript plugin for use in web-based projects. 
 
-## [Demo / documentation](https://js.noodel.io/)
+## Demo
 
-Noodel eats its own dog food: it uses itself to present its own docs ;)
+[See here for an interactive demo](https://js.noodel.io/demo) that showcases Noodel's main features.
 
-See the link above for everything you need to know!
+## Documentation
 
-## Examples
+Noodel eats its own dog food: it uses itself to present its own docs :wink:
 
-- [Basic example](https://codepen.io/zlu883/pen/pogbYWV)
-- [Styling example](https://codepen.io/zlu883/pen/BajLdLr) - example with extensive styling
-- [The Noodle Shop](https://codepen.io/zlu883/pen/QWyGWag) - an example of how you would dynamically control a site/app using Noodel's API
-
-## Browser support
-
-Noodel is targeted to work on all major modern browsers.
-
-Support for IE 10 and 11 is best-effort only - Noodel *should* work on these browsers, but there may be quirks and bugs in some features.
-
-IE 9 and below are not supported.
+[See the full documentation site here.](https://js.noodel.io/)
 
 ## Contribution
 
@@ -38,4 +29,4 @@ If you find Noodel useful or inspiring, please consider supporting the author vi
 
 MIT license
 
-© 2019-2020 Zuohao (Jonny) Lu
+© 2019-present Zuohao (Jonny) Lu
