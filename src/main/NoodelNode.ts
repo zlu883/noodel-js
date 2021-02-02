@@ -2,7 +2,7 @@ import NodeState from '../types/NodeState';
 import NodeDefinition from '../types/NodeDefinition';
 import { deleteChildren, insertChildren } from '../controllers/mutate';
 import { parseAndApplyNodeOptions } from '../controllers/options';
-import { getPath as _getPath, getUseFlipAnimation, isBranchVisible } from '../controllers/getters';
+import { getPath as _getPath, isBranchVisible } from '../controllers/getters';
 import { updateNodeSize, updateBranchSize, queueExitOffsets } from '../controllers/alignment';
 import { shiftFocalNode, jumpTo, setActiveChild } from '../controllers/navigate';
 import NoodelState from '../types/NoodelState';
@@ -510,8 +510,8 @@ export default class NoodelNode {
     }
 
     /**
-     * Reorders the children of this node using the given function. Will always
-     * preserve the current active child.
+     * Reorders the children of this node without using insert/delete operations, and triggers
+     * FLIP animation (if enabled). Will always preserve the current active child.
      * @param func The reorder function. Takes the array of children of this node as parameter,
      * and must return an array containing the exact same set of nodes, possibly in a different order
      */
@@ -556,13 +556,9 @@ export default class NoodelNode {
             branchRelativeOffset += c.size;
         });
 
-        if (getUseFlipAnimation(this._ns, this._s)) {
-            queueFlipAnimation(this._s);
-        }
+        queueFlipAnimation(this._ns, this._s);
 
-        if (this._s.isBranchMounted 
-            && isBranchVisible(this._ns, this._s)) {
-
+        if (this._s.isBranchMounted && isBranchVisible(this._ns, this._s)) {
             if (this._s.applyBranchMove) {
                 disableBranchTransition(this._ns, this._s);
 

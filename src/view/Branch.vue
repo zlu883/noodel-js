@@ -108,7 +108,6 @@ export default defineComponent({
 
 		branchStyle(): string {
 			let orientation = getOrientation(this.noodel);
-			let branchDirection = getBranchDirection(this.noodel);
 			let style = '';
 
 			if (orientation === "ltr") {

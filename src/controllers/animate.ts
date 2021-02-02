@@ -2,6 +2,8 @@
 
 import NodeState from 'src/types/NodeState';
 import { nextTick } from 'vue';
+import NoodelState from '../types/NoodelState';
+import { getUseFlipAnimation } from './getters';
 import { forceReflow } from './util';
 
 /**
@@ -9,7 +11,8 @@ import { forceReflow } from './util';
  * and apply FLIP animations to them after *2* ticks (in order to account for exit offsets which
  * are set after 1 tick).
  */
-export function queueFlipAnimation(parent: NodeState) {
+export function queueFlipAnimation(noodel: NoodelState, parent: NodeState) {
+    if (!getUseFlipAnimation(noodel, parent)) return;
     if (parent.r.flipAnimationQueued) return;
     if (!parent.isBranchMounted) return;
 

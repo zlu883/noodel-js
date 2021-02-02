@@ -1,10 +1,10 @@
 import HelloWorldComponent from './HelloWorld.vue';
 import Noodel from "../src/main/Noodel";
-import { createApp, defineComponent, h, nextTick } from 'vue';
+import { createApp, defineComponent, h } from 'vue';
 
 const assert = chai.assert;
 
-// Tests noodel initialization and getters
+// Tests using Vue components as node content
 
 describe('Vue usage', function () {
 
@@ -32,7 +32,7 @@ describe('Vue usage', function () {
         })
 
         it('should render properly', function (done) {
-            noodel.on('mount', function () {
+            noodel.nextTick(function () {
                 try {
                     assert.strictEqual(
                         noodel.getRoot().getChild(0).getEl().querySelector('.nd-content-box').innerHTML,

@@ -74,9 +74,7 @@ export function insertChildren(noodel: NoodelState, parent: NodeState, index: nu
         parent.forceVisible = true;
     }
 
-    if (getUseFlipAnimation(noodel, parent)) {
-        queueFlipAnimation(parent);
-    }
+    queueFlipAnimation(noodel, parent);
 
     return children;
 }
@@ -128,12 +126,8 @@ export function deleteChildren(noodel: NoodelState, parent: NodeState, index: nu
                 siblings[i].r.el['_nd_exit_offset'] = findExitOffset(noodel, siblings[i]);
             }
 
-            // exit offsets must come before flip animation since they both occur on the same tick
             queueExitOffsets(noodel, parent);
-
-            if (getUseFlipAnimation(noodel, parent)) {
-                queueFlipAnimation(parent);
-            }
+            queueFlipAnimation(noodel, parent);
         }
 
         for (let i = index; i < index + deleteCount; i++) {

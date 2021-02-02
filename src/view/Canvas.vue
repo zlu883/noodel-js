@@ -62,7 +62,6 @@ import { traverseDescendants } from "../controllers/traverse";
 import NoodelState from "../types/NoodelState";
 import NodeState from "../types/NodeState";
 import { PropType, defineComponent, nextTick } from "vue";
-import { queueMount } from "../controllers/event";
 import { getActualOffsetTrunk, getBranchDirection, getOrientation } from '../controllers/getters';
 import { updateCanvasSize } from '../controllers/alignment';
 import { forceReflow } from "../controllers/util";
@@ -89,14 +88,8 @@ export default defineComponent({
             // force reflow is used here to lock in the current DOM
             // with the properly positioned branches so that transitions won't occur on mount
             forceReflow();
-            // another tick is required to ensure all changes are settled before onMount
-            nextTick(() => {
-                this.noodel.isMounted = true;
-
-                // mount event is triggered one tick after
-                queueMount(this.noodel);
-            });
-		})
+            this.noodel.isMounted = true;
+		});
 	},
 
 	unmounted: function () {
@@ -303,7 +296,7 @@ export default defineComponent({
 		trunkClass(): string {
 			if (this.noodel.applyTrunkMove && this.noodel.isMounted) {
 				return "nd-trunk-move";
-			}
+            }
 		},
 
 		allBranchParents(): NodeState[] {

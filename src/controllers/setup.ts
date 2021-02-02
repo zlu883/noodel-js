@@ -22,7 +22,6 @@ export function createNoodelState(root: NodeDefinition, options: NoodelOptions):
             idMap: new Map([]),
             throttleMap: new Map([]),
             eventListeners: new Map([
-                ['mount', []], 
                 ['focalNodeChange', []],
                 ['focalParentChange', []],
                 ['enterInspectMode', []],
