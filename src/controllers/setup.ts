@@ -87,7 +87,7 @@ export function createNoodelState(root: NodeDefinition, options: NoodelOptions):
             focalOffsetBranch: (s) => s / 2,
             anchorOffsetTrunk: (s) => s / 2,
             anchorOffsetBranch: (s) => s / 2,
-            useFlipAnimation: false
+            useFlipAnimation: true
         },
     });
 

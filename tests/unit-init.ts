@@ -258,65 +258,25 @@ describe('Init', function () {
                 anchorOffsetBranch: options.anchorOffsetBranch,
                 anchorOffsetTrunk: options.anchorOffsetTrunk,
                 focalOffsetBranch: options.focalOffsetBranch,
-                focalOffsetTrunk: options.focalOffsetTrunk
+                focalOffsetTrunk: options.focalOffsetTrunk,
+                useFlipAnimation: true
             });
         });
     });
 
     describe('with options', function () {
         it('should override default options', function () {
-            let focalAnchorBranch = () => 100;
-            let focalAnchorTrunk = () => 200;
-            let focalPositionBranch = () => 300;
-            let focalPositionTrunk = () => 400;
+            let anchorOffsetBranch = () => 100;
 
             let noodel = new Noodel([], {
                 visibleSubtreeDepth: 2,
-                retainDepthOnTapNavigation: true,
-                swipeMultiplierBranch: 2,
-                swipeMultiplierTrunk: 2,
-                snapMultiplierBranch: 2,
-                snapMultiplierTrunk: 2,
-                useRouting: false,
-                useKeyNavigation: false,
-                useWheelNavigation: false,
-                useSwipeNavigation: false,
-                useTapNavigation: false,
-                useInspectModeKey: false,
-                useInspectModeDoubleTap: false,
-                showLimitIndicators: false,
-                showChildIndicators: false,
-                orientation: "rtl",
-                branchDirection: "reverse",
-                anchorOffsetTrunk: focalAnchorTrunk,
-                anchorOffsetBranch: focalAnchorBranch,
-                focalOffsetBranch: focalPositionBranch,
-                focalOffsetTrunk: focalPositionTrunk
+                anchorOffsetBranch: anchorOffsetBranch,
             });
 
-            assert.deepStrictEqual(noodel.getOptions(), {
-                visibleSubtreeDepth: 2,
-                retainDepthOnTapNavigation: true,
-                swipeMultiplierBranch: 2,
-                swipeMultiplierTrunk: 2,
-                snapMultiplierBranch: 2,
-                snapMultiplierTrunk: 2,
-                useRouting: false,
-                useKeyNavigation: false,
-                useWheelNavigation: false,
-                useSwipeNavigation: false,
-                useTapNavigation: false,
-                useInspectModeKey: false,
-                useInspectModeDoubleTap: false,
-                showLimitIndicators: false,
-                showChildIndicators: false,
-                orientation: "rtl",
-                branchDirection: "reverse",
-                anchorOffsetTrunk: focalAnchorTrunk,
-                anchorOffsetBranch: focalAnchorBranch,
-                focalOffsetBranch: focalPositionBranch,
-                focalOffsetTrunk: focalPositionTrunk
-            });
+            let options = noodel.getOptions();
+
+            assert.strictEqual(options.visibleSubtreeDepth, 2);
+            assert.strictEqual(options.anchorOffsetBranch, anchorOffsetBranch);
         });
     });
 });
