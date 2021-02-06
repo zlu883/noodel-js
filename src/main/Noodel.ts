@@ -86,7 +86,7 @@ export default class Noodel {
      * Use this to wait to DOM updates to complete after mutating the view model.
      */
     nextTick(callback: () => any) {
-        // triple Vue nextTick to ensure even FLIP animations have been fully processed
+        // three Vue ticks is currently required to ensure all processing are settled after an update
         vueNextTick(() => {
             vueNextTick(() => {
                 vueNextTick(callback);

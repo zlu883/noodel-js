@@ -173,3 +173,9 @@
 .nd-child-indicator {
     z-index: 1000;
 }
+
+/* This class is specifically used to suppress FLIP animations caused by
+Vue's transition-group as we want to handle it ourselves */
+.nd-no-transition {
+    transition: none !important;
+}

@@ -31,6 +31,9 @@ export function parseHTMLToNode(el: Element): NodeDefinition {
                 else if (classNames.some(c => c === 'branch-content')) {
                     branchContent = (node as Element).innerHTML;
                 }
+                else {
+                    content += (node as Element).outerHTML;
+                }
             }
             else {
                 content += (node as Element).outerHTML; // Depends on css white-space property for ignoring white spaces
