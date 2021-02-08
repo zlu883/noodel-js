@@ -45,11 +45,12 @@ function onKeyDown(noodel: NoodelState, ev: KeyboardEvent) {
     }
     else if (key === "Enter") {
         if (!noodel.options.useInspectModeKey) return;
-        enterInspectMode(noodel);
-    }
-    else if (key === "Esc" || key === "Escape") {
-        if (!noodel.options.useInspectModeKey) return;
-        exitInspectMode(noodel);
+        if (noodel.isInInspectMode) {
+            exitInspectMode(noodel);
+        }
+        else {
+            enterInspectMode(noodel);
+        }
     }
 
     if (!noodel.options.useKeyNavigation) return;
@@ -255,9 +256,9 @@ export function setupCanvasInput(noodel: NoodelState) {
 
     let el = noodel.r.canvasEl;
 
-    el.addEventListener('keydown', (ev: KeyboardEvent) => throttle(noodel, 'keydown', () => onKeyDown(noodel, ev), 60));
+    el.addEventListener('keydown', (ev: KeyboardEvent) => throttle(noodel, 'keydown', () => onKeyDown(noodel, ev), 100));
     el.addEventListener('keyup', (ev: KeyboardEvent) => onKeyUp(noodel, ev));
-    el.addEventListener('wheel', (ev: WheelEvent) => throttle(noodel, 'wheel', () => onWheel(noodel, ev), 80));
+    el.addEventListener('wheel', (ev: WheelEvent) => throttle(noodel, 'wheel', () => onWheel(noodel, ev), 120));
 
     const manager = new Hammer.Manager(el);
 
