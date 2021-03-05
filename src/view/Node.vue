@@ -46,9 +46,8 @@
 import NodeState from "../types/NodeState";
 import { updateNodeSize } from "../controllers/alignment";
 import NoodelState from "../types/NoodelState";
-import { traverseAncestors } from "../controllers/traverse";
-import { nextTick, PropType, defineComponent } from "vue";
-import { getBranchDirection, getOrientation, isBranchVisible } from '../controllers/getters';
+import { PropType, defineComponent } from "vue";
+import { isBranchVisible } from '../controllers/getters';
 
 export default defineComponent({
 	props: {

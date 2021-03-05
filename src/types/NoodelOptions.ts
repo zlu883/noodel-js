@@ -41,7 +41,7 @@ export default interface NoodelOptions {
      */
     useInspectModeDoubleTap?: boolean;
     /**
-     * Determines whether routing should be enabled for this noodel. Defaults to true.
+     * Whether routing should be enabled for this noodel. Defaults to true.
      */
     useRouting?: boolean;
     /**

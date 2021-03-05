@@ -20,7 +20,7 @@ export default interface NodeDefinition {
      */
     isActive?: boolean;
     /**
-     * Content for this node. If is a string, will be inserted as innerHTML of the nd-content-box element.
+     * Content of this node. If is a string, will be inserted as innerHTML of the nd-content-box element.
      * Can also be a ComponentContent object that wraps a Vue component.
      */
     content?: string | ComponentContent;

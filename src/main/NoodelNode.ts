@@ -43,7 +43,7 @@ export default class NoodelNode {
     // GETTERS
 
     /**
-     * Get the nd-node element associated with this node. Return null if
+     * Gets the nd-node element associated with this node. Returns null if
      * noodel is not mounted.
      */
     getEl(): HTMLDivElement {
@@ -51,7 +51,7 @@ export default class NoodelNode {
     }
 
     /**
-     * Get the nd-branch element associated with this node's child branch. Return null if
+     * Gets the nd-branch element associated with this node's child branch. Returns null if
      * noodel is not mounted or branch does not exist.
      */
     getBranchEl(): HTMLDivElement {
@@ -59,8 +59,8 @@ export default class NoodelNode {
     }
 
     /**
-     * Get the parent of this node. Return null if this is the root or
-     * if this is detached from its parent by a delete operation.
+     * Gets the parent of this node. Return null if this is the root or
+     * has been detached from its parent by a delete operation.
      */
     getParent(): NoodelNode {
         if (this._s.r.isDetached) return null;
@@ -69,7 +69,7 @@ export default class NoodelNode {
     }
 
     /**
-     * Get the path (an array of zero-based indices counting from the root) of this node.
+     * Gets the path (an array of zero-based indices counting from the root) of this node.
      */
     getPath(): number[] {
         if (this.isDeleted()) return null;
@@ -77,16 +77,16 @@ export default class NoodelNode {
     }
 
     /**
-     * Extract the definition of this node, returning a NodeDefinition object containing this
+     * Extracts the definition of this node, returning a NodeDefinition object containing this
      * node's base properties. Useful for serialization or cloning.
-     * @param deep whether to extract a deep definition tree including descendants, default false
+     * @param deep whether to extract a deep definition tree including descendants, defaults to false
      */
-    extractDefinition(deep = false): NodeDefinition {
+    getDefinition(deep = false): NodeDefinition {
         return deep ? serializeNodeDeep(this._s) : serializeNode(this._s);
     }
 
     /**
-     * Get the child of this node at the given index. Return null if does not exist.
+     * Gets the child of this node at the given index. Return null if does not exist.
      * @param index 0-based index of the child
      */
     getChild(index: number): NoodelNode {
@@ -98,14 +98,28 @@ export default class NoodelNode {
     }
 
     /**
-     * Get the index of the active child of this node. Return null if there's no children.
+     * Gets a copied array of this node's list of children.
+     */
+    getChildren(): NoodelNode[] {
+        return this._s.children.map(c => c.r.vm);
+    }
+
+    /**
+     * Gets the number of children of this node.
+     */
+    getChildCount(): number {
+        return this._s.children.length;
+    }
+
+    /**
+     * Gets the index of the active child. Return null if there's no active child.
      */
     getActiveChildIndex(): number {
         return this._s.activeChildIndex;
     }
 
     /**
-     * Get the active child of this node. Return null if there's no children.
+     * Gets the active child of this node. Return null if there's no active child.
      */
     getActiveChild(): NoodelNode {
         let index = this._s.activeChildIndex;
@@ -115,28 +129,14 @@ export default class NoodelNode {
     }
 
     /**
-     * Get a copied array of this node's list of children.
-     */
-    getChildren(): NoodelNode[] {
-        return this._s.children.map(c => c.r.vm);
-    }
-
-    /**
-     * Get the number of children of this node.
-     */
-    getChildCount(): number {
-        return this._s.children.length;
-    }
-
-    /**
-     * Get the ID of this node.
+     * Gets the ID of this node.
      */
     getId(): string {
         return this._s.id;
     }
 
     /**
-     * Get the content of this node. If content is a ComponentContent object,
+     * Gets the content of this node. If content is a ComponentContent object,
      * will return a deeply cloned object except the 'component' property which is
      * shallowly copied.
      */
@@ -145,7 +145,7 @@ export default class NoodelNode {
     }
 
     /**
-     * Get the branch content of this node. If content is a ComponentContent object,
+     * Gets the branch content of this node. If content is a ComponentContent object,
      * will return a deeply cloned object except the 'component' property which is
      * shallowly copied.
      */
@@ -154,7 +154,7 @@ export default class NoodelNode {
     }
 
     /**
-     * Get a cloned object containing the custom CSS classes applied to this node.
+     * Gets a cloned object containing the custom CSS classes applied to this node.
      */
     getClassNames(): NodeCss {
         return {
@@ -163,7 +163,7 @@ export default class NoodelNode {
     }
 
     /**
-     * Get a cloned object containing the custom styles applied to this node.
+     * Gets a cloned object containing the custom styles applied to this node.
      */
     getStyles(): NodeCss {
         return {
@@ -172,7 +172,7 @@ export default class NoodelNode {
     }
 
     /**
-     * Get a cloned object containing the options applied to this node.
+     * Gets a cloned object containing the options applied to this node.
      */
     getOptions(): NodeOptions {
         return {
@@ -181,8 +181,8 @@ export default class NoodelNode {
     }
 
     /**
-     * Get the 0-based index (position among siblings) of this node.
-     * Will return 0 if detached from its parent by a delete operation.
+     * Gets the 0-based index (position among siblings) of this node.
+     * Returns 0 if this node has been detached from its parent by a delete operation.
      */
     getIndex(): number {
         if (this._s.r.isDetached) return 0;
@@ -190,9 +190,8 @@ export default class NoodelNode {
     }
 
     /**
-     * Get the level of this node. The root has level 0,
-     * children of the root has level 1, and so on.
-     * If this node has been deleted, will return null.
+     * Get the level of this node.
+     * Returns null if this node has been deleted.
      */
     getLevel(): number {
         if (this.isDeleted()) return null;
@@ -239,7 +238,7 @@ export default class NoodelNode {
     }
 
     /**
-     * Check whether this node is logically visible (i.e is part of the active tree 
+     * Check whether this node is visible (i.e is part of the active tree 
      * in display).
      */
     isVisible(): boolean {
@@ -249,10 +248,10 @@ export default class NoodelNode {
     }
 
     /**
-     * Check whether this node's child branch is logically visible (i.e is part of the active tree 
+     * Check whether this node's child branch is visible (i.e is part of the active tree 
      * in display).
      */
-    isChildrenVisible(): boolean {
+    isBranchVisible(): boolean {
         if (this.isDeleted()) return false;
         return isBranchVisible(this._ns, this._s);
     }
@@ -267,7 +266,7 @@ export default class NoodelNode {
     // MUTATERS
 
     /**
-     * Set the ID of this node.
+     * Sets the ID of this node.
      * @param id new ID for this node, should not start with '_'
      */
     setId(id: string) {
@@ -278,8 +277,7 @@ export default class NoodelNode {
     }
 
     /**
-     * Set the content of this node.
-     * @param content new content for this node, either an HTML string or Vue component wrapper
+     * Sets the content of this node.
      */
     setContent(content: string | ComponentContent) {
         this.throwErrorIfDeleted();
@@ -288,9 +286,8 @@ export default class NoodelNode {
     }
 
     /**
-     * Set the custom class names for this node. Properties of the provided object
+     * Sets the custom class names for this node. Properties of the provided object
      * will be merged into the existing object.
-     * @param classNames
      */
     setClassNames(classNames: NodeCss) {
         this.throwErrorIfDeleted();
@@ -302,9 +299,8 @@ export default class NoodelNode {
     }
 
     /**
-     * Set the custom inline styles for this node. Properties of the provided object
+     * Sets the custom inline styles for this node. Properties of the provided object
      * will be merged into the existing object.
-     * @param styles
      */
     setStyles(styles: NodeCss) {
         this.throwErrorIfDeleted();
@@ -316,9 +312,8 @@ export default class NoodelNode {
     }
 
     /**
-     * Set the options for this node. Properties of the provided object
+     * Sets the options for this node. Properties of the provided object
      * will be merged into the existing object.
-     * @param options
      */
     setOptions(options: NodeOptions) {
         this.throwErrorIfDeleted();
@@ -330,7 +325,6 @@ export default class NoodelNode {
      * Change the active child of this node. If doing so will toggle
      * the visibility of the focal branch (i.e this node is an ancestor
      * of the focal branch), the view will jump to focus on the new active child.
-     * @param index 0-based index of the new active child
      */
     setActiveChild(index: number) {
         this.throwErrorIfDeleted();
@@ -351,7 +345,7 @@ export default class NoodelNode {
     }
 
     /**
-     * Perform a navigational jump to focus on this node.
+     * Performs a navigational jump to focus on this node.
      * Cannot jump to the root.
      */
     jumpToFocus() {
@@ -365,11 +359,11 @@ export default class NoodelNode {
     }
 
     /**
-     * Insert one or more new nodes (and their descendants) as children of this node.
-     * Will always preserve the current active child if possible. Return the 
+     * Inserts one or more new nodes (and their descendants) as children of this node.
+     * Will always preserve the current active child if possible. Returns the 
      * list of inserted nodes.
-     * @param defs definition trees of the new node(s)
-     * @param index index to insert at, will append to the end of existing children if omitted
+     * @param defs array or HTML template that specifies the definitions of the new node(s)
+     * @param index index to insert at, will append to existing children if omitted
      */
     insertChildren(defs: NodeDefinition[] | string | Element, index?: number): NoodelNode[] {
         this.throwErrorIfDeleted();
@@ -391,8 +385,6 @@ export default class NoodelNode {
 
     /**
      * Convenience method for inserting sibling node(s) before this node. 
-     * Return the list of inserted nodes.
-     * @param defs node definitions to add
      */
     insertBefore(defs: NodeDefinition[] | string | Element): NoodelNode[] {
         this.throwErrorIfDeleted();
@@ -406,8 +398,6 @@ export default class NoodelNode {
 
     /**
      * Convenience method for inserting sibling node(s) after this node.
-     * Return the list of inserted nodes.
-     * @param defs node definitions to add
      */
     insertAfter(defs: NodeDefinition[] | string | Element): NoodelNode[] {
         this.throwErrorIfDeleted();
@@ -420,13 +410,13 @@ export default class NoodelNode {
     }
 
     /**
-     * Delete one or more children (and their descendants) of this node.
+     * Deletes one or more children (and their descendants) of this node.
      * If the active child is removed, will set the next child active,
      * unless the child is the last in the list, where the previous child
      * will be set active. If the focal branch is deleted, will move focus
-     * to the nearest ancestor branch. Return the list of deleted nodes.
-     * @param index index to start the deletion from
-     * @param count number of children to delete, will adjust to maximum if greater than possible range
+     * to the nearest ancestor branch. Returns the list of deleted nodes.
+     * @param index index to delete from
+     * @param count number of children to delete, will limit to maximum if greater than possible range
      */
     deleteChildren(index: number, count: number): NoodelNode[] {
         this.throwErrorIfDeleted();
@@ -455,7 +445,7 @@ export default class NoodelNode {
     /**
      * Convenience method for deleting sibling node(s) before this node. 
      * Return the list of deleted nodes.
-     * @param count number of nodes to remove, will adjust to maximum if greater than possible range
+     * @param count number of nodes to remove, will limit to maximum if greater than possible range
      */
     deleteBefore(count: number): NoodelNode[] {
         this.throwErrorIfDeleted();
@@ -480,7 +470,7 @@ export default class NoodelNode {
     /**
      * Convenience method for deleting sibling node(s) after this node.
      * Return the list of deleted nodes.
-     * @param count number of nodes to remove, will adjust to maximum if greater than possible range
+     * @param count number of nodes to remove, will limit to maximum if greater than possible range
      */
     deleteAfter(count: number): NoodelNode[] {
         this.throwErrorIfDeleted();
@@ -630,8 +620,6 @@ export default class NoodelNode {
 
     /**
      * Attach an event listener on this node.
-     * @param ev event name
-     * @param listener event listener to attach
      */
     on<E extends keyof NodeEventMap>(ev: E, listener: NodeEventMap[E]) {
         this._s.r.eventListeners.get(ev).push(listener);
@@ -639,8 +627,6 @@ export default class NoodelNode {
 
     /**
      * Remove an event listener from this node.
-     * @param ev event name
-     * @param listener the event listener to remove, by reference comparison
      */
     off<E extends keyof NodeEventMap>(ev: E, listener: NodeEventMap[E]) {
         let handlers = this._s.r.eventListeners.get(ev);

@@ -67,7 +67,7 @@ export default class Noodel {
 
     /**
      * Destroys the noodel's view and removes it from the DOM,
-     * but keeping the current state of the view model.
+     * but keeps the current state of the view model.
      */
     unmount() {
         let vueInstance = this._s.r.vueInstance;
@@ -83,7 +83,7 @@ export default class Noodel {
 
     /**
      * Schedules a callback function to be called after Noodel's current processing cycle.
-     * Use this to wait to DOM updates to complete after mutating the view model.
+     * Use this to wait for an operation to be fully processed and reflected in the DOM before the next operation..
      */
     nextTick(callback: () => any) {
         // three Vue ticks is currently required to ensure all processing are settled after an update
@@ -105,15 +105,7 @@ export default class Noodel {
     }
 
     /**
-     * Get the DOM element of the noodel's outmost container, i.e. nd-canvas.
-     */
-    getEl(): HTMLDivElement {
-        return this._s.r.canvasEl;
-    }
-
-    /**
-     * Get the options applied to this node.
-     * Return a cloned object.
+     * Gets the options applied to this node. Returns a cloned object.
      */
     getOptions(): NoodelOptions {
         return {
@@ -122,14 +114,21 @@ export default class Noodel {
     }
 
     /**
-     * Get the level of the current focal branch. The first branch has level 1.
+     * Get the DOM element of the noodel's outmost container, i.e. nd-canvas.
+     */
+    getEl(): HTMLDivElement {
+        return this._s.r.canvasEl;
+    }
+
+    /**
+     * Gets the level of the current focal branch. The first branch has level 1.
      */
     getFocalLevel(): number {
         return this._s.focalLevel;
     }
 
     /**
-     * Get the height (total number of levels) in the current active tree,
+     * Gets the height (total number of levels) in the current active tree,
      * excluding the root.
      */
     getActiveTreeHeight(): number {
@@ -145,22 +144,21 @@ export default class Noodel {
     }
 
     /**
-     * Get the number of nodes in this noodel (excluding the root).
+     * Gets the number of nodes in this noodel (excluding the root).
      */
     getNodeCount(): number {
         return this._s.r.idMap.size - 1;
     }
 
     /**
-     * Get the root node. The root is an invisible node
-     * that serves as the parent of the topmost branch, and always exists.
+     * Gets the root node.
      */
     getRoot(): NoodelNode {
         return this._s.root.r.vm;
     }
 
     /**
-     * Get the parent node of the current focal branch. Return the root
+     * Gets the parent node of the current focal branch. Return the root
      * if there's no focal branch (i.e. noodel is empty).
      */
     getFocalParent(): NoodelNode {
@@ -168,7 +166,7 @@ export default class Noodel {
     }
 
     /**
-     * Get the focal node. Return null if noodel is empty.
+     * Gets the focal node. Return null if noodel is empty.
      */
     getFocalNode(): NoodelNode {
         let focalNode =  getFocalNode(this._s);
@@ -177,8 +175,8 @@ export default class Noodel {
     }
 
     /**
-     * Get the node at the given path, an array of 0-based indices
-     * starting from the root. Return null if no such node exist.
+     * Gets the node at the given path, an array of 0-based indices
+     * starting from the root. Returns null if no such node exist.
      */
     findNodeByPath(path: number[]): NoodelNode {
         let target = _findNodeByPath(this._s, path);
@@ -187,7 +185,7 @@ export default class Noodel {
     }
 
     /**
-     * Get the node with the given ID. Return null if no such node exist.
+     * Gets the node with the given ID. Return null if no such node exist.
      */
     findNodeById(id: string): NoodelNode {
         let target = findNode(this._s, id);
@@ -202,16 +200,16 @@ export default class Noodel {
         return this._s.isInInspectMode;
     }
 
-    // MUTATERS
-
+    // UPDATE
+    
     /**
-     * Change the options of the noodel. Properties of the given object
+     * Updates the options of the noodel. Properties of the given object
      * will be merged into the current options.
      */
     setOptions(options: NoodelOptions) {
         parseAndApplyOptions(options, this._s);
     }
-    
+
     /**
      * Navigate the noodel to focus on the branch at the given level of
      * the active tree. If the level is greater or smaller than
@@ -222,7 +220,7 @@ export default class Noodel {
     }
 
     /**
-     * Navigate towards the child branches of the current
+     * Navigates toward the child branches of the current
      * focal node.
      * @param levelCount number of levels to move, defaults to 1
      */
@@ -231,7 +229,7 @@ export default class Noodel {
     }
 
     /**
-     * Navigate towards the parent branches of the current
+     * Navigates toward the parent branches of the current
      * focal node.
      * @param levelCount number of levels to move, defaults to 1
      */
@@ -240,7 +238,7 @@ export default class Noodel {
     }
 
     /**
-     * Navigate towards the next siblings of the current
+     * Navigate toward the next siblings of the current
      * focal node.
      * @param nodeCount number of nodes to move, defaults to 1
      */
@@ -249,7 +247,7 @@ export default class Noodel {
     }
 
     /**
-     * Navigate towards the previous siblings of the current
+     * Navigate toward the previous siblings of the current
      * focal node.
      * @param nodeCount number of nodes to move, defaults to 1
      */
@@ -272,7 +270,7 @@ export default class Noodel {
     // ALIGNMENT
     
     /**
-     * Recapture the size of the canvas and adjust the noodel's positions
+     * Recapture the size of the canvas and adjust the noodel's position
      * if necessary. Use immediately after an operation that changes
      * the size of the canvas. 
      * Does nothing if the noodel is not mounted.
@@ -288,8 +286,8 @@ export default class Noodel {
     }
 
     /**
-     * Convenience method to recapture the size of the canvas
-     * and ALL nodes and branches, and realign positions if necessary. 
+     * Convenience method to recapture the size of the canvas,
+     * ALL nodes and ALL branches, realigning positions if necessary. 
      * Use this if you need to align everything after a size change.
      * Does nothing if the noodel is not mounted.
      */
@@ -321,18 +319,14 @@ export default class Noodel {
     // EVENT
 
     /**
-     * Attach an event listener on this noodel.
-     * @param ev event name
-     * @param listener event listener to attach
+     * Attach a listener for the given event. See here for the list of events available.
      */
     on<E extends keyof NoodelEventMap>(ev: E, listener: NoodelEventMap[E]) {
         this._s.r.eventListeners.get(ev).push(listener);
     }
 
     /**
-     * Remove an event listener from this noodel.
-     * @param ev event name
-     * @param listener the event listener to remove, by reference comparison
+     * Remove a listener for the given event.
      */
     off<E extends keyof NoodelEventMap>(ev: E, listener: NoodelEventMap[E]) {
         let handlers = this._s.r.eventListeners.get(ev);
