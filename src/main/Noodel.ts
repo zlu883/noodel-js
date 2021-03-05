@@ -319,7 +319,7 @@ export default class Noodel {
     // EVENT
 
     /**
-     * Attach a listener for the given event. See here for the list of events available.
+     * Attach a listener for the given event.
      */
     on<E extends keyof NoodelEventMap>(ev: E, listener: NoodelEventMap[E]) {
         this._s.r.eventListeners.get(ev).push(listener);
